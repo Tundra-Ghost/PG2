@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pigeon Chess — Game Design Document v0.1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;700&display=swap');
+
+  :root {
+    --ink: #1a1410;
+    --parchment: #f5f0e8;
+    --parchment-dark: #ede6d6;
+    --pigeon: #7a6e8a;
+    --pigeon-light: #b8aec8;
+    --chaos: #c0392b;
+    --gold: #c8a84b;
+    --gold-light: #e8d080;
+    --moss: #4a6741;
+    --board-dark: #2d1f0e;
+    --accent-blue: #2c4a6e;
+    --scope-green: #2d5a2d;
+    --scope-yellow: #7a5a00;
+    --scope-red: #6a1a1a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.7;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh;
+    background: var(--board-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 4rem 2rem;
+  }
+
+  .cover-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(200,168,75,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,168,75,0.08) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .cover-noise {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+
+  .pigeon-stamp {
+    font-size: 7rem;
+    margin-bottom: 1rem;
+    animation: wobble 4s ease-in-out infinite;
+    position: relative;
+    z-index: 2;
+  }
+
+  @keyframes wobble {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg) scale(1.05); }
+  }
+
+  .cover-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--gold);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .cover-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 12vw, 10rem);
+    color: var(--parchment);
+    line-height: 0.9;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    text-shadow: 4px 4px 0 var(--chaos), 8px 8px 0 rgba(192,57,43,0.3);
+  }
+
+  .cover-title span {
+    color: var(--gold);
+    display: block;
+    font-size: clamp(3rem, 7vw, 6rem);
+  }
+
+  .cover-subtitle {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--pigeon-light);
+    margin-top: 1.5rem;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 500px;
+  }
+
+  .cover-meta {
+    margin-top: 3rem;
+    display: flex;
+    gap: 3rem;
+    position: relative;
+    z-index: 2;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cover-meta-item {
+    text-align: center;
+  }
+
+  .cover-meta-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--pigeon-light);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    display: block;
+  }
+
+  .cover-meta-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+  }
+
+  .cover-divider {
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 2rem auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ── LAYOUT ── */
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+
+  /* ── TABLE OF CONTENTS ── */
+  .toc {
+    background: var(--board-dark);
+    color: var(--parchment);
+    padding: 3rem;
+    margin: 3rem 0;
+    position: relative;
+  }
+
+  .toc::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid var(--gold);
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .toc-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .toc-list {
+    list-style: none;
+    columns: 2;
+    gap: 2rem;
+  }
+
+  @media (max-width: 600px) { .toc-list { columns: 1; } }
+
+  .toc-list li {
+    margin-bottom: 0.5rem;
+    break-inside: avoid;
+  }
+
+  .toc-list a {
+    color: var(--parchment-dark);
+    text-decoration: none;
+    font-family: 'Crimson Pro', serif;
+    font-size: 1rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    transition: color 0.2s;
+  }
+
+  .toc-list a:hover { color: var(--gold); }
+
+  .toc-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gold);
+    opacity: 0.7;
+    min-width: 2rem;
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section {
+    margin-bottom: 5rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--chaos);
+    letter-spacing: 0.1em;
+    background: var(--ink);
+    color: var(--parchment);
+    padding: 0.2rem 0.5rem;
+    font-weight: 700;
+  }
+
+  h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+
+  h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--board-dark);
+    letter-spacing: 0.05em;
+    margin: 2rem 0 0.75rem;
+  }
+
+  h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--pigeon);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  p { margin-bottom: 1rem; }
+
+  /* ── CALLOUT BOXES ── */
+  .callout {
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    border-left: 4px solid;
+    font-size: 0.95rem;
+  }
+
+  .callout-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .callout.design {
+    background: rgba(44, 74, 110, 0.08);
+    border-color: var(--accent-blue);
+  }
+  .callout.design .callout-label { color: var(--accent-blue); }
+
+  .callout.chaos {
+    background: rgba(192, 57, 43, 0.07);
+    border-color: var(--chaos);
+  }
+  .callout.chaos .callout-label { color: var(--chaos); }
+
+  .callout.lore {
+    background: rgba(74, 103, 65, 0.08);
+    border-color: var(--moss);
+    font-style: italic;
+  }
+  .callout.lore .callout-label { color: var(--moss); font-style: normal; }
+
+  /* ── SCOPE BADGES ── */
+  .scope {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    font-weight: 700;
+    vertical-align: middle;
+    margin-left: 0.5rem;
+  }
+
+  .scope.launch { background: var(--scope-green); color: #90ee90; }
+  .scope.post { background: var(--scope-yellow); color: #ffd966; }
+  .scope.v2 { background: var(--scope-red); color: #ff9999; }
+
+  /* ── TABLES ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+  }
+
+  thead { background: var(--board-dark); color: var(--parchment); }
+
+  th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.75rem 1rem;
+    text-align: left;
+  }
+
+  td {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--parchment-dark);
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td { background: rgba(0,0,0,0.03); }
+
+  /* ── MODIFIER CARDS ── */
+  .modifier-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .modifier-card {
+    background: var(--board-dark);
+    color: var(--parchment);
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .modifier-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .modifier-card.tier-s::before { background: var(--gold); }
+  .modifier-card.tier-a::before { background: #a855f7; }
+  .modifier-card.tier-b::before { background: var(--accent-blue); }
+  .modifier-card.tier-c::before { background: var(--moss); }
+  .modifier-card.cursed::before { background: var(--chaos); }
+
+  .modifier-card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.05em;
+    color: var(--gold);
+    margin-bottom: 0.25rem;
+  }
+
+  .modifier-card-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pigeon-light);
+    margin-bottom: 0.75rem;
+  }
+
+  .modifier-card-desc {
+    font-size: 0.88rem;
+    line-height: 1.5;
+    color: var(--parchment-dark);
+  }
+
+  .modifier-card-cost {
+    margin-top: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gold-light);
+  }
+
+  /* ── PHASE TIMELINE ── */
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+    margin: 2rem 0;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--gold), var(--chaos));
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 2.5rem;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2.45rem;
+    top: 0.4rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid var(--parchment);
+  }
+
+  .timeline-phase {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--chaos);
+    margin-bottom: 0.25rem;
+  }
+
+  .timeline-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: var(--board-dark);
+    margin-bottom: 0.5rem;
+  }
+
+  /* ── STAT BARS ── */
+  .stat-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    min-width: 130px;
+    color: var(--ink);
+  }
+
+  .stat-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--parchment-dark);
+    position: relative;
+  }
+
+  .stat-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: var(--board-dark);
+    transition: width 1s ease;
+  }
+
+  .stat-fill.high { background: var(--chaos); }
+  .stat-fill.med { background: var(--gold); }
+  .stat-fill.low { background: var(--moss); }
+
+  /* ── PULL QUOTES ── */
+  .pull-quote {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 1.6rem;
+    line-height: 1.4;
+    color: var(--board-dark);
+    border-left: 5px solid var(--gold);
+    padding: 1rem 2rem;
+    margin: 2.5rem 0;
+  }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    background: var(--board-dark);
+    color: var(--pigeon-light);
+    padding: 2rem;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    margin-top: 5rem;
+  }
+
+  /* ── UTILITY ── */
+  ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+  li { margin-bottom: 0.4rem; }
+  strong { font-weight: 600; }
+  em { font-style: italic; }
+
+  .tag {
+    display: inline-block;
+    background: var(--parchment-dark);
+    border: 1px solid var(--pigeon-light);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    padding: 0.15rem 0.4rem;
+    margin: 0.1rem;
+    color: var(--pigeon);
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 1rem 0;
+  }
+
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+  .highlight-box {
+    background: var(--board-dark);
+    color: var(--parchment);
+    padding: 1.5rem 2rem;
+    margin: 1.5rem 0;
+  }
+
+  .highlight-box h4 { color: var(--gold); margin-top: 0; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════ COVER -->
+<div class="cover">
+  <div class="cover-grid"></div>
+  <div class="cover-noise"></div>
+  <div class="pigeon-stamp">🐦</div>
+  <div class="cover-eyebrow">Game Design Document — Version 0.1</div>
+  <h1 class="cover-title">Pigeon<span>Chess</span></h1>
+  <p class="cover-subtitle">"A cursed board. A disgraced champion. An infinite flock of consequences."</p>
+  <div class="cover-divider"></div>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">Genre</span>
+      <span class="cover-meta-value">Roguelike Chess</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">Platform</span>
+      <span class="cover-meta-value">Web + Steam</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">Model</span>
+      <span class="cover-meta-value">F2P + Battle Pass</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">Team Size</span>
+      <span class="cover-meta-value">Solo / Tiny</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">Status</span>
+      <span class="cover-meta-value">Pre-Production</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ BODY -->
+<div class="page">
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc">
+    <div class="toc-title">Table of Contents</div>
+    <ul class="toc-list">
+      <li><a href="#vision"><span class="toc-num">01</span>Vision & Pillars</a></li>
+      <li><a href="#story"><span class="toc-num">02</span>Story & Narrative</a></li>
+      <li><a href="#core-loop"><span class="toc-num">03</span>Core Game Loop</a></li>
+      <li><a href="#modifiers"><span class="toc-num">04</span>Modifier System</a></li>
+      <li><a href="#roguelike"><span class="toc-num">05</span>Roguelike Meta-Progression</a></li>
+      <li><a href="#modes"><span class="toc-num">06</span>Game Modes</a></li>
+      <li><a href="#chess-rules"><span class="toc-num">07</span>Chess Rule Variants</a></li>
+      <li><a href="#ranking"><span class="toc-num">08</span>Ranking & Competitive</a></li>
+      <li><a href="#community"><span class="toc-num">09</span>Community & Puzzles</a></li>
+      <li><a href="#monetization"><span class="toc-num">10</span>Monetization</a></li>
+      <li><a href="#technical"><span class="toc-num">11</span>Technical Architecture</a></li>
+      <li><a href="#roadmap"><span class="toc-num">12</span>Roadmap & Scope</a></li>
+    </ul>
+  </div>
+
+  <!-- ══ 01 VISION -->
+  <div class="section" id="vision">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>Vision & Design Pillars</h2>
+    </div>
+
+    <div class="pull-quote">
+      Chess is the most elegant game ever devised. Pigeon Chess is what happens when you let pigeons play it.
+    </div>
+
+    <p>Pigeon Chess is a <strong>web-based and Steam roguelike chess game</strong> where every match is shaped by a chaotic, community-driven modifier system. No two games are ever the same. Players bring skill, the pigeons bring entropy.</p>
+
+    <p>The game respects the strategic foundations of chess while systematically dismantling them — one absurd modifier at a time. It targets chess players who are bored, non-chess players who are curious, and anyone who has ever wanted to watch a bishop gain sentience and walk off the board.</p>
+
+    <h3>Design Pillars</h3>
+
+    <div class="two-col">
+      <div class="callout design">
+        <span class="callout-label">🎲 Pillar 1 — Controlled Chaos</span>
+        Every modifier must be <strong>legible</strong> at a glance, no matter how absurd. Players should understand what's happening to them and laugh, not be confused. Chaos is the aesthetic. Clarity is the discipline.
+      </div>
+      <div class="callout design">
+        <span class="callout-label">📈 Pillar 2 — Skill Always Matters</span>
+        Even in maximum chaos mode, a better chess player should win more often than not. Modifiers shift the odds; they don't eliminate agency. The roguelike is a strategic layer, not a slot machine.
+      </div>
+      <div class="callout design">
+        <span class="callout-label">🐦 Pillar 3 — The Flock is Alive</span>
+        The game world feels inhabited. Pigeons are not a UI skin — they are characters. They have names. They have opinions. They land on squares when you don't want them to. The board is their city.
+      </div>
+      <div class="callout design">
+        <span class="callout-label">🌍 Pillar 4 — Community is the Content</span>
+        Puzzles, cosmetics, modifier suggestions, and seasonal events are shaped by the player community. The game grows because players grow it. Systems are built to enable this from day one.
+      </div>
+    </div>
+
+    <h3>Target Audience</h3>
+    <table>
+      <thead><tr><th>Segment</th><th>Profile</th><th>Hook</th></tr></thead>
+      <tbody>
+        <tr><td>Chess Casuals</td><td>Plays chess.com, 800–1200 ELO, frustrated by rigid rules</td><td>Same game, finally fun and weird</td></tr>
+        <tr><td>Roguelike Fans</td><td>Slay the Spire, Hades, Monster Train players</td><td>Deep meta-progression and modifier synergies</td></tr>
+        <tr><td>Chaos Enjoyers</td><td>Twitch viewers, meme culture, party gamers</td><td>Streamable, sharable, unpredictable moments</td></tr>
+        <tr><td>Competitive Players</td><td>ELO-driven, tournament-minded</td><td>Ranked mode with a real skill ceiling</td></tr>
+        <tr><td>Puzzle Solvers</td><td>Wordle, NYT Games, hobbyist chess puzzles</td><td>Community puzzle platform</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ 02 STORY -->
+  <div class="section" id="story">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Story & Narrative</h2>
+    </div>
+
+    <div class="callout lore">
+      <span class="callout-label">📖 Premise</span>
+      You are <strong>Viktor Crumb</strong>, once the world's most feared chess grandmaster. Undefeated for eleven years. Then, at the World Championship, a flock of pigeons descended on the board mid-match — and you made the wrong move. You lost. You were disgraced. The chess world cast you out.<br><br>
+      Years later, you find a strange board in a flea market. It pulses. It coos. When you place a piece on it, the pigeons come. And they change everything.
+    </div>
+
+    <h3>Narrative Structure</h3>
+    <p>The Story Mode is structured as a <strong>roguelike campaign</strong>: Viktor must fight through the five "Grandmaster Towers" — each a gauntlet of increasingly unhinged opponents — to reclaim his title at the World Invitational. Each run through a Tower is a roguelike run: you pick modifiers, battle opponents, unlock lore, and accumulate the cursed power of the board.</p>
+
+    <h4>The Five Towers</h4>
+    <table>
+      <thead><tr><th>Tower</th><th>Name</th><th>Theme</th><th>Boss</th><th>Scope</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>The Beginner's Gauntlet</td><td>Tutorial chaos — modifiers are light, rules bend gently</td><td>The Prodigy — an 8-year-old who plays perfectly but hates birds</td><td><span class="scope launch">Launch</span></td></tr>
+        <tr><td>2</td><td>The Clocktower</td><td>Time manipulation — timers, turns, temporal pieces</td><td>The Archivist — plays every game as if it's already been played</td><td><span class="scope launch">Launch</span></td></tr>
+        <tr><td>3</td><td>The Fungal Board</td><td>Mutating tiles, spreading terrain, organic chaos</td><td>The Groundskeeper — believes the board is a garden</td><td><span class="scope launch">Launch</span></td></tr>
+        <tr><td>4</td><td>The Mirror Palace</td><td>Asymmetric armies, fog of war, information warfare</td><td>The Diplomat — every move is a negotiation</td><td><span class="scope post">Post-Launch</span></td></tr>
+        <tr><td>5</td><td>The Pigeon Sanctum</td><td>Pure absurdist chaos, all modifier types active</td><td>The Flock — a pigeon collective that plays as one</td><td><span class="scope post">Post-Launch</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Tone of Writing</h3>
+    <p>Dialogue is <strong>dry, deadpan, and self-aware</strong>. Viktor takes chess desperately seriously. Everyone around him treats the chaos as completely normal. The humor is in the gap.</p>
+
+    <div class="callout chaos">
+      <span class="callout-label">📝 Sample Dialogue</span>
+      <em>Viktor:</em> "There is a pigeon sitting on my queen."<br>
+      <em>The Prodigy:</em> "I know. She's been there since last Tuesday. Her name is Margaret. She's ranked 1,400 ELO."<br>
+      <em>Viktor:</em> "That is not possible."<br>
+      <em>The Prodigy:</em> "Margaret, it's your turn."<br>
+      <em>[The pigeon moves a rook.]</em>
+    </div>
+  </div>
+
+  <!-- ══ 03 CORE LOOP -->
+  <div class="section" id="core-loop">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Core Game Loop</h2>
+    </div>
+
+    <h3>The Match Loop</h3>
+    <div class="highlight-box">
+      <h4>Every Match — In Order</h4>
+      <ol>
+        <li><strong>Lobby / Draft Phase</strong> — Players enter the modifier draft. Based on mode, they pick, ban, or budget modifiers from their unlocked pool.</li>
+        <li><strong>Board Setup</strong> — The board is generated based on active modifiers. Tile mutations, fog overlays, asymmetric armies are applied before piece placement.</li>
+        <li><strong>Match</strong> — Standard chess with active modifiers. Cooldown abilities are available via UI. Mid-match events (pigeon landings, tile eruptions) trigger on defined intervals or conditions.</li>
+        <li><strong>Resolution</strong> — Win/loss/draw determined. ELO updated (ranked). XP and currency awarded.</li>
+        <li><strong>Post-Match</strong> — Replay available. Highlight moments auto-clipped. In Story/Roguelike: next node on the run map is revealed.</li>
+      </ol>
+    </div>
+
+    <h3>The Roguelike Run Loop (Story & Roguelike Mode)</h3>
+    <div class="highlight-box">
+      <h4>One Run — Start to End</h4>
+      <ol>
+        <li><strong>Run Start</strong> — Player begins with a base modifier loadout (1 free pick, 0 curses). Starting deck of available modifiers drawn from unlocked pool.</li>
+        <li><strong>Run Map</strong> — A branching path of nodes: matches, events, shops, and rest sites (modifier swaps). Player chooses their route.</li>
+        <li><strong>Between Matches</strong> — Earn Feathers (run currency). Visit shops to buy/sell modifiers. Remove curses for a price. Find relics.</li>
+        <li><strong>Boss Match</strong> — End of each Tower. Boss has unique modifiers pre-applied that the player cannot ban. High stakes, high reward.</li>
+        <li><strong>Run End (Win or Loss)</strong> — Unlock permanent meta-progression rewards. Expand the modifier pool. Unlock new relics, Viktor upgrades, and cosmetics.</li>
+      </ol>
+    </div>
+
+    <h3>Player Engagement Loop</h3>
+    <div class="stat-row"><span class="stat-label">Session (20–40 min)</span><div class="stat-bar"><div class="stat-fill high" style="width:60%"></div></div></div>
+    <div class="stat-row"><span class="stat-label">Daily (XP + Quest)</span><div class="stat-bar"><div class="stat-fill med" style="width:80%"></div></div></div>
+    <div class="stat-row"><span class="stat-label">Weekly (Battle Pass)</span><div class="stat-bar"><div class="stat-fill med" style="width:70%"></div></div></div>
+    <div class="stat-row"><span class="stat-label">Seasonal (Ranked)</span><div class="stat-bar"><div class="stat-fill low" style="width:90%"></div></div></div>
+    <div class="stat-row"><span class="stat-label">Long-Term (Story)</span><div class="stat-bar"><div class="stat-fill low" style="width:50%"></div></div></div>
+  </div>
+
+  <!-- ══ 04 MODIFIERS -->
+  <div class="section" id="modifiers">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Modifier System</h2>
+    </div>
+
+    <p>Modifiers are the <strong>heart of Pigeon Chess</strong>. They are categorized by type, tier, and cost. Each modifier has a point cost in the Auction system, a rarity tier, and a Curse rating (0–3) that contributes to Viktor's "Madness Meter" during roguelike runs.</p>
+
+    <h3>Modifier Categories</h3>
+
+    <h4>Category A — Board Mutations (Tile-Based)</h4>
+    <div class="modifier-grid">
+      <div class="modifier-card tier-s">
+        <div class="modifier-card-name">The Spreading Mold</div>
+        <div class="modifier-card-type">🟫 Board Mutation · Tier S</div>
+        <div class="modifier-card-desc">Every 5 turns, one random tile becomes Moldy. Pieces on Moldy tiles lose 1 movement square per turn until the tile is "aired out" by a bishop or queen passing through.</div>
+        <div class="modifier-card-cost">Cost: 4pts · Curse: 1 · Mid-match trigger</div>
+      </div>
+      <div class="modifier-card tier-a">
+        <div class="modifier-card-name">Lava Squares</div>
+        <div class="modifier-card-type">🟥 Board Mutation · Tier A</div>
+        <div class="modifier-card-desc">Four random squares become Lava at match start. Any piece landing on Lava is immediately captured. Lava moves clockwise one square every 10 turns.</div>
+        <div class="modifier-card-cost">Cost: 3pts · Curse: 1 · Persistent</div>
+      </div>
+      <div class="modifier-card tier-b">
+        <div class="modifier-card-name">Trapdoor Tiles</div>
+        <div class="modifier-card-type">⬛ Board Mutation · Tier B</div>
+        <div class="modifier-card-desc">Three tiles are secretly designated trapdoors at match start. The first piece to land on each trapdoor falls through and reappears on the opposite side of the board.</div>
+        <div class="modifier-card-cost">Cost: 2pts · Curse: 0 · Hidden</div>
+      </div>
+      <div class="modifier-card tier-b">
+        <div class="modifier-card-name">Frozen Tundra</div>
+        <div class="modifier-card-type">🟦 Board Mutation · Tier B</div>
+        <div class="modifier-card-desc">The top two rows of each side are frozen. Pieces entering the frozen zone move at half speed (every other turn). Pawns that reach the frozen zone are stuck for 2 turns before promoting.</div>
+        <div class="modifier-card-cost">Cost: 2pts · Curse: 0 · Persistent</div>
+      </div>
+    </div>
+
+    <h4>Category B — Cursed Modifiers</h4>
+    <div class="modifier-grid">
+      <div class="modifier-card cursed">
+        <div class="modifier-card-name">The Madness</div>
+        <div class="modifier-card-type">☠️ Curse · Tier S</div>
+        <div class="modifier-card-desc">Every 7 turns, one of YOUR pieces makes a random legal move on its own. You do not choose. The piece does. It seems happy about it. +2 Feathers per match.</div>
+        <div class="modifier-card-cost">Cost: -3pts (grants points) · Curse: 3</div>
+      </div>
+      <div class="modifier-card cursed">
+        <div class="modifier-card-name">Pigeon Infestation</div>
+        <div class="modifier-card-type">🐦 Curse · Tier A</div>
+        <div class="modifier-card-desc">A pigeon named Gerald lands on one of your pieces each turn. Gerald blocks that piece from moving until YOU click him off (costs your action). Gerald has favorites. He always comes back.</div>
+        <div class="modifier-card-cost">Cost: -2pts (grants points) · Curse: 2</div>
+      </div>
+      <div class="modifier-card cursed">
+        <div class="modifier-card-name">Opposite Day</div>
+        <div class="modifier-card-type">🔄 Curse · Tier B</div>
+        <div class="modifier-card-desc">Your pieces move in the opposite direction of what you click for the first 5 turns of the match. No exceptions. The UI will warn you. The pieces will not care.</div>
+        <div class="modifier-card-cost">Cost: -1pt (grants points) · Curse: 1</div>
+      </div>
+      <div class="modifier-card cursed">
+        <div class="modifier-card-name">The Heavy Crown</div>
+        <div class="modifier-card-type">👑 Curse · Tier A</div>
+        <div class="modifier-card-desc">Your King moves one square slower than normal (must spend 2 turns to move 1 square). He is very important and moves accordingly. Checkmate conditions unchanged.</div>
+        <div class="modifier-card-cost">Cost: -2pts (grants points) · Curse: 2</div>
+      </div>
+    </div>
+
+    <h4>Category C — Piece Ability Cooldowns (Active Powers)</h4>
+    <div class="modifier-grid">
+      <div class="modifier-card tier-s">
+        <div class="modifier-card-name">Royal Decree</div>
+        <div class="modifier-card-type">⚡ Active Ability · King · Cooldown: 8 turns</div>
+        <div class="modifier-card-desc">Activate: Your King declares a "No Fly Zone" on any row or column. No opponent pieces may enter that line for 3 turns. Pigeons are exempt. The King cannot enforce pigeon compliance.</div>
+        <div class="modifier-card-cost">Cost: 4pts · Curse: 0</div>
+      </div>
+      <div class="modifier-card tier-a">
+        <div class="modifier-card-name">Bishop's Confession</div>
+        <div class="modifier-card-type">⚡ Active Ability · Bishop · Cooldown: 5 turns</div>
+        <div class="modifier-card-desc">Activate: Choose one opponent piece. That piece must reveal its intended next move to you before making it (for 2 turns). Opponent sees the confession icon. They know you know.</div>
+        <div class="modifier-card-cost">Cost: 3pts · Curse: 0</div>
+      </div>
+      <div class="modifier-card tier-a">
+        <div class="modifier-card-name">Knight's Gambit</div>
+        <div class="modifier-card-type">⚡ Active Ability · Knight · Cooldown: 6 turns</div>
+        <div class="modifier-card-desc">Activate: Your Knight may make ONE non-standard move this turn — it can move like a rook for this turn only. The Knight is aware this is illegal and seems thrilled about it.</div>
+        <div class="modifier-card-cost">Cost: 3pts · Curse: 0</div>
+      </div>
+      <div class="modifier-card tier-b">
+        <div class="modifier-card-name">Pawn Strike</div>
+        <div class="modifier-card-type">⚡ Active Ability · Pawn · Cooldown: 4 turns</div>
+        <div class="modifier-card-desc">Activate on any pawn: That pawn can capture backwards this turn only. No promotion is awarded for this capture. The pawn will look very surprised at itself afterward.</div>
+        <div class="modifier-card-cost">Cost: 2pts · Curse: 0</div>
+      </div>
+    </div>
+
+    <h4>Category D — Fog of War Variants</h4>
+    <div class="modifier-grid">
+      <div class="modifier-card tier-s">
+        <div class="modifier-card-name">Dark Board</div>
+        <div class="modifier-card-type">🌑 Fog of War · Tier S</div>
+        <div class="modifier-card-desc">You can only see squares within 2 squares of any of your own pieces. The rest of the board is hidden. Your opponent is in the dark too. Pigeons are always visible. They don't respect fog.</div>
+        <div class="modifier-card-cost">Cost: 4pts · Curse: 1 · Symmetric</div>
+      </div>
+      <div class="modifier-card tier-a">
+        <div class="modifier-card-name">Ghost Pieces</div>
+        <div class="modifier-card-type">👻 Fog of War · Tier A</div>
+        <div class="modifier-card-desc">Both players see phantom decoy pieces on the board — 2 fake pieces per side that appear real until moved through. Only you know which of your pieces are real. Hover doesn't help.</div>
+        <div class="modifier-card-cost">Cost: 3pts · Curse: 0</div>
+      </div>
+    </div>
+
+    <h4>Category E — Asymmetric Armies</h4>
+    <div class="modifier-grid">
+      <div class="modifier-card tier-s">
+        <div class="modifier-card-name">The Flock Army</div>
+        <div class="modifier-card-type">🐦 Asymmetric · Tier S</div>
+        <div class="modifier-card-desc">One player replaces all knights with "Pigeons" — pieces that move like knights but also randomly hop to any empty square every 5 turns. Both players can see where the pigeon will land next. The pigeon announces it 2 turns in advance.</div>
+        <div class="modifier-card-cost">Cost: 5pts · Curse: 0</div>
+      </div>
+      <div class="modifier-card tier-a">
+        <div class="modifier-card-name">The Peasant Revolt</div>
+        <div class="modifier-card-type">♟️ Asymmetric · Tier A</div>
+        <div class="modifier-card-desc">One player starts with 12 pawns instead of the standard 8. No knights, no bishops. Just an overwhelming tide of extremely determined pawns. The other player keeps standard pieces.</div>
+        <div class="modifier-card-cost">Cost: 3pts · Curse: 0</div>
+      </div>
+    </div>
+
+    <h3>Modifier Draft Rules by Mode</h3>
+    <table>
+      <thead><tr><th>Mode</th><th>Draft Format</th><th>Points Budget</th><th>Bans</th></tr></thead>
+      <tbody>
+        <tr><td>Story / Roguelike</td><td>One-sided: Player picks from unlocked pool</td><td>8 pts per match, scales with Tower</td><td>None (player chooses freely)</td></tr>
+        <tr><td>Casual Multiplayer</td><td>Auction: Both players bid from shared point pool</td><td>10 pts each</td><td>1 ban per player</td></tr>
+        <tr><td>Ranked Multiplayer</td><td>Draft: Alternating picks/bans (LoL-style)</td><td>12 pts shared pool</td><td>2 bans per player</td></tr>
+        <tr><td>VS Bots</td><td>Free pick: No limits, sandbox mode</td><td>Unlimited</td><td>None</td></tr>
+        <tr><td>Puzzle Mode</td><td>Pre-set by puzzle creator</td><td>Fixed</td><td>None</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout chaos">
+      <span class="callout-label">⚖️ Balance Philosophy</span>
+      Every modifier must pass the "Laugh Test" (is the chaos fun?) and the "Rematch Test" (do players want to play again rather than quit?). Modifiers that consistently produce unfun states — where one player is helpless rather than challenged — must be nerfed or redesigned. Balance patches ship on a 2-week cadence.
+    </div>
+  </div>
+
+  <!-- ══ 05 ROGUELIKE -->
+  <div class="section" id="roguelike">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Roguelike Meta-Progression</h2>
+    </div>
+
+    <h3>Run Structure</h3>
+    <p>Each run takes place within one Tower (Story Mode) or an Endless Gauntlet (Roguelike Mode). Runs are structured as a <strong>branching node map</strong> — inspired by Slay the Spire — with the following node types:</p>
+
+    <table>
+      <thead><tr><th>Node Type</th><th>Icon</th><th>What Happens</th><th>Frequency</th></tr></thead>
+      <tbody>
+        <tr><td>Match</td><td>♟️</td><td>Standard match with current modifier loadout vs. AI or player</td><td>60%</td></tr>
+        <tr><td>The Flock Event</td><td>🐦</td><td>Narrative event with 2–3 choices. Gain modifier, lose modifier, face a cursed bargain</td><td>15%</td></tr>
+        <tr><td>The Roost (Shop)</td><td>🏪</td><td>Spend Feathers to add/remove modifiers, buy relics, unlock Viktor upgrades</td><td>15%</td></tr>
+        <tr><td>The Perch (Rest)</td><td>🌿</td><td>Remove one curse OR preview next opponent's modifier loadout</td><td>10%</td></tr>
+        <tr><td>Boss Match</td><td>👑</td><td>End-of-Tower boss. Pre-set cursed modifiers + unique boss mechanic</td><td>1 per Tower</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Currencies & Resources</h3>
+    <div class="two-col">
+      <div>
+        <h4>🪶 Feathers (Run Currency)</h4>
+        <p>Earned per match. Spent at The Roost. Lost on run end. Used to buy modifiers, remove curses, and purchase relics mid-run.</p>
+        <h4>📿 Relics</h4>
+        <p>Passive items that persist for the entire run. Max 3 active at a time. Examples: <em>The Bent Pawn</em> (pawns promote one rank early), <em>Margaret's Feather</em> (one pigeon interference negated per match), <em>The Crumpled Draw Offer</em> (draw once per run without penalty).</p>
+      </div>
+      <div>
+        <h4>🏆 Prestige Tokens (Meta Currency)</h4>
+        <p>Earned by completing runs regardless of win/loss. Spent in the permanent meta-progression tree to unlock new modifiers, new relics, Viktor's storyline upgrades, and cosmetics.</p>
+        <h4>😤 The Madness Meter</h4>
+        <p>Tracks total Curse rating of active modifiers. As Madness fills, Viktor's dialogue becomes increasingly unhinged, new hidden modifiers unlock, and the board begins exhibiting unexplained visual anomalies. Full Madness triggers the "Full Flock" secret modifier.</p>
+      </div>
+    </div>
+
+    <h3>Permanent Meta-Progression Tree</h3>
+    <p>Viktor's Redemption Tree is a <strong>persistent skill web</strong> unlocked with Prestige Tokens. It is split into three branches:</p>
+    <div class="callout design">
+      <span class="callout-label">🌳 The Redemption Tree — Branches</span>
+      <strong>The Tactician Branch:</strong> Unlocks deeper modifier synergies, increases point budget in draft, unlocks advanced chess rule variant modifiers.<br><br>
+      <strong>The Survivor Branch:</strong> Unlocks more rest nodes, better relic drops, curse removal discounts, pigeon deterrent abilities.<br><br>
+      <strong>The Flock Whisperer Branch:</strong> Embraces chaos — unlocks higher Curse modifiers, grants Feather bonuses for cursed play, unlocks pigeon companion cosmetics and the secret Flock Army modifiers.
+    </div>
+  </div>
+
+  <!-- ══ 06 GAME MODES -->
+  <div class="section" id="modes">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>Game Modes</h2>
+    </div>
+
+    <table>
+      <thead><tr><th>Mode</th><th>Description</th><th>Modifier System</th><th>Timer</th><th>Scope</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Story Mode</strong></td><td>Viktor's campaign through the 5 Towers. Narrative, roguelike runs, boss fights.</td><td>One-sided pick (8pt budget)</td><td>Optional per match</td><td><span class="scope launch">Launch</span></td></tr>
+        <tr><td><strong>Endless Roguelike</strong></td><td>Infinite gauntlet. No story. Just how deep can you go. Leaderboard-tracked.</td><td>One-sided pick (scaling budget)</td><td>Optional</td><td><span class="scope launch">Launch</span></td></tr>
+        <tr><td><strong>VS Bots</strong></td><td>Practice mode. Sandbox modifier system. Bot difficulty: Chick / Pigeon / Magnus.</td><td>Unlimited free pick</td><td>Optional</td><td><span class="scope launch">Launch</span></td></tr>
+        <tr><td><strong>Casual Multiplayer</strong></td><td>Play with friends or matched players. No ELO impact. Shared modifier auction.</td><td>Auction (10pt each)</td><td>Hybrid optional</td><td><span class="scope launch">Launch</span></td></tr>
+        <tr><td><strong>Ranked Multiplayer</strong></td><td>ELO-based ladder. Seasons. Competitive draft system. Limited modifier pool per season.</td><td>Draft + Bans</td><td>Required (Rapid or Blitz)</td><td><span class="scope launch">Launch</span></td></tr>
+        <tr><td><strong>Puzzle Mode</strong></td><td>Community-made puzzles. Daily featured puzzle. Puzzle creator tool.</td><td>Creator-defined</td><td>Optional by puzzle</td><td><span class="scope launch">Launch</span></td></tr>
+        <tr><td><strong>Tournaments</strong></td><td>Scheduled community and official tournaments. Custom ruleset per tournament.</td><td>Tournament organizer-defined</td><td>Organizer-defined</td><td><span class="scope post">Post-Launch</span></td></tr>
+        <tr><td><strong>Spectator Mode</strong></td><td>Watch ranked and tournament matches live. Commentator UI.</td><td>N/A</td><td>Live</td><td><span class="scope post">Post-Launch</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Timer Options (Hybrid System)</h3>
+    <p>All modes with timers offer these options at match creation:</p>
+    <ul>
+      <li><strong>Bullet:</strong> 1 min + 0 sec increment</li>
+      <li><strong>Blitz:</strong> 3 min + 2 sec increment</li>
+      <li><strong>Rapid:</strong> 10 min + 5 sec increment</li>
+      <li><strong>Classical:</strong> 30 min (Story and Casual only)</li>
+      <li><strong>Untimed:</strong> Async-friendly, available in Casual and Puzzle</li>
+    </ul>
+  </div>
+
+  <!-- ══ 07 CHESS RULE VARIANTS -->
+  <div class="section" id="chess-rules">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>Chess Rule Variants</h2>
+    </div>
+
+    <p>Beyond modifiers, certain unlockable game states alter the fundamental rules of chess. These are only available in VS Bots and Casual modes at launch — never in Ranked, where standard FIDE rules apply (with modifier overlays only).</p>
+
+    <table>
+      <thead><tr><th>Variant</th><th>Rule Change</th><th>Source</th><th>Scope</th></tr></thead>
+      <tbody>
+        <tr><td>Pigeon Chess Standard</td><td>Base game — FIDE rules + modifier system</td><td>Default</td><td><span class="scope launch">Launch</span></td></tr>
+        <tr><td>960 Flock</td><td>Chess960 starting positions + modifier draft</td><td>Unlock via meta-tree</td><td><span class="scope launch">Launch</span></td></tr>
+        <tr><td>Extinction Chess</td><td>Win by capturing all of one piece type, not checkmate</td><td>Unlock via meta-tree</td><td><span class="scope post">Post-Launch</span></td></tr>
+        <tr><td>Three-Check Pigeon</td><td>Win by checking the king 3 times</td><td>Unlock via meta-tree</td><td><span class="scope post">Post-Launch</span></td></tr>
+        <tr><td>Atomic Chess</td><td>Captures cause explosions affecting surrounding squares</td><td>Tower 3 unlock</td><td><span class="scope post">Post-Launch</span></td></tr>
+        <tr><td>Horde Mode</td><td>One side plays 36 pawns vs. standard army</td><td>Flock Whisperer branch</td><td><span class="scope v2">v2.0</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ 08 RANKING -->
+  <div class="section" id="ranking">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>Ranking & Competitive System</h2>
+    </div>
+
+    <h3>ELO System — The Pecking Order</h3>
+    <p>Pigeon Chess uses a <strong>modified Glicko-2 ELO system</strong> (the same model used by chess.com and lichess) with a modifier-awareness adjustment. Because modifiers affect match outcomes, a small <strong>Chaos Coefficient</strong> is applied to reduce ELO volatility in high-modifier matches.</p>
+
+    <h3>Rank Tiers</h3>
+    <table>
+      <thead><tr><th>Tier</th><th>Name</th><th>ELO Range</th><th>Reward</th></tr></thead>
+      <tbody>
+        <tr><td>🥚</td><td>Egg</td><td>0–499</td><td>Season participation cosmetic</td></tr>
+        <tr><td>🐣</td><td>Hatchling</td><td>500–799</td><td>Animated board border</td></tr>
+        <tr><td>🐦</td><td>Fledgling</td><td>800–1099</td><td>Modifier card skin</td></tr>
+        <tr><td>🕊️</td><td>City Pigeon</td><td>1100–1399</td><td>Piece cosmetic set</td></tr>
+        <tr><td>🦅</td><td>Roof Hawk</td><td>1400–1699</td><td>Animated board theme</td></tr>
+        <tr><td>🦉</td><td>The Owlmaster</td><td>1700–1999</td><td>Exclusive title + pigeon companion</td></tr>
+        <tr><td>👑🐦</td><td>The Flock King</td><td>2000+</td><td>Season trophy, profile crown, legacy cosmetic</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Ranked Seasons</h3>
+    <ul>
+      <li>Each season lasts <strong>3 months</strong> with a themed modifier pool (e.g., Season 1: Winter Flock — ice tile modifiers added to ranked pool).</li>
+      <li>Season reset: ELO soft-resets by 30% toward the median at season end.</li>
+      <li>Top 100 players on a <strong>live leaderboard</strong> visible in-game.</li>
+      <li>Ranked matches require a <strong>minimum 10 calibration games</strong> before ELO assignment.</li>
+    </ul>
+  </div>
+
+  <!-- ══ 09 COMMUNITY -->
+  <div class="section" id="community">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2>Community Systems & Puzzles</h2>
+    </div>
+
+    <h3>Puzzle System</h3>
+    <p>Community puzzles are positions + modifier loadouts that present a defined challenge. They may ask: "Win in 3 moves with The Spreading Mold active" or "Survive 5 turns against The Flock Army."</p>
+
+    <div class="two-col">
+      <div>
+        <h4>Puzzle Creator Tool</h4>
+        <ul>
+          <li>Drag-and-drop board editor</li>
+          <li>Set any modifier combination</li>
+          <li>Define win condition (checkmate, capture, survive N turns)</li>
+          <li>Set difficulty tag (Egg / Hatchling / Grandmaster)</li>
+          <li>Submit for community review (voting system)</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Puzzle Discovery</h4>
+        <ul>
+          <li>Daily Featured Puzzle (editorially selected)</li>
+          <li>Hot / New / Top tabs</li>
+          <li>Filter by modifier type, difficulty, piece count</li>
+          <li>Puzzle streaks for daily engagement</li>
+          <li>Creator attribution + follower system</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Community Cosmetics Pipeline</h3>
+    <p>Players can submit cosmetic designs (board themes, piece skins, modifier card art) through a <strong>Community Workshop</strong>. Approved designs enter the store with revenue sharing (suggested: 30% to creator). This reduces art production burden for a solo/tiny team dramatically.</p>
+
+    <div class="callout design">
+      <span class="callout-label">🎨 Cosmetic Categories</span>
+      <strong>Board Themes</strong> — Full board visual reskin (tiles, borders, frame)<br>
+      <strong>Piece Sets</strong> — Complete or partial piece reskins (e.g., all pigeons, medieval, space)<br>
+      <strong>Modifier Card Art</strong> — Illustrated card faces for the modifier draft UI<br>
+      <strong>Pigeon Companions</strong> — Named pigeon sidekicks with idle animations on your UI<br>
+      <strong>Viktor Outfits</strong> — Cosmetic changes to Viktor's portrait in Story Mode<br>
+      <strong>Captured Piece Effects</strong> — Particle/animation effects when pieces are taken
+    </div>
+  </div>
+
+  <!-- ══ 10 MONETIZATION -->
+  <div class="section" id="monetization">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2>Monetization</h2>
+    </div>
+
+    <div class="callout chaos">
+      <span class="callout-label">⚖️ Iron Rule</span>
+      No modifier, relic, or gameplay advantage may ever be purchased with real money. The modifier unlock system is meta-progression earned through play only. Every purchasable item is cosmetic. Violating this rule destroys the competitive community.
+    </div>
+
+    <h3>Revenue Streams</h3>
+    <table>
+      <thead><tr><th>Stream</th><th>Description</th><th>Price Point</th><th>Cadence</th></tr></thead>
+      <tbody>
+        <tr><td>Battle Pass</td><td>Seasonal 50-tier cosmetic track. Free track + Premium track. Earnable via play.</td><td>$9.99/season</td><td>Quarterly</td></tr>
+        <tr><td>Cosmetics Store</td><td>Individual board themes, piece sets, companions. No randomized loot boxes.</td><td>$2.99–$14.99</td><td>Rotating weekly</td></tr>
+        <tr><td>Community Store</td><td>Community-created cosmetics. Revenue split with creator.</td><td>$1.99–$9.99</td><td>Ongoing</td></tr>
+        <tr><td>Pigeon Pass</td><td>Annual subscription: permanent Premium Battle Pass access + monthly exclusive companion.</td><td>$29.99/year</td><td>Annual</td></tr>
+      </tbody>
+    </table>
+
+    <h3>What is Never Sold</h3>
+    <ul>
+      <li>Modifiers of any kind</li>
+      <li>ELO boosts or ranked advantages</li>
+      <li>Loot boxes or gacha mechanics</li>
+      <li>Pay-to-skip story progression</li>
+      <li>Exclusive game modes</li>
+    </ul>
+
+    <h3>Battle Pass Structure (Per Season)</h3>
+    <p>50 tiers. Free track contains: XP boosts, Feather bonuses (run currency), 1 board theme, 1 modifier card skin. Premium track adds: full piece set, 2 pigeon companions, Viktor outfit, animated board effects, exclusive title, season trophy.</p>
+  </div>
+
+  <!-- ══ 11 TECHNICAL -->
+  <div class="section" id="technical">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <h2>Technical Architecture</h2>
+    </div>
+
+    <div class="callout design">
+      <span class="callout-label">🏗️ Architecture Principle</span>
+      Design for web-first, optimize for Steam via Electron or Tauri wrapper. A single codebase serves both platforms. Mobile is not in scope at launch but the architecture must not preclude it.
+    </div>
+
+    <h3>Recommended Stack</h3>
+    <table>
+      <thead><tr><th>Layer</th><th>Technology</th><th>Rationale</th></tr></thead>
+      <tbody>
+        <tr><td>Frontend</td><td>React + TypeScript</td><td>Component-based UI, large ecosystem, easy Steam wrapper integration</td></tr>
+        <tr><td>Game Engine</td><td>Custom chess engine (TypeScript) or chess.js</td><td>Chess logic must be server-authoritative; chess.js is battle-tested</td></tr>
+        <tr><td>Rendering</td><td>PixiJS or Phaser</td><td>2D canvas rendering for board animations, pigeon landings, tile mutations</td></tr>
+        <tr><td>Backend</td><td>Node.js + Express / Fastify</td><td>Real-time matchmaking, game state, ELO calculations</td></tr>
+        <tr><td>Real-time</td><td>Socket.IO or native WebSockets</td><td>Move synchronization, chat, pigeon event broadcasts</td></tr>
+        <tr><td>Database</td><td>PostgreSQL + Redis</td><td>Postgres for persistent data; Redis for session state and matchmaking queues</td></tr>
+        <tr><td>Auth</td><td>Auth0 or Clerk</td><td>OAuth (Google, Steam, Discord), JWT session management</td></tr>
+        <tr><td>Steam</td><td>Tauri (Rust) wrapper</td><td>Lightweight, fast, wraps web app for Steam distribution</td></tr>
+        <tr><td>Hosting</td><td>Railway / Render (MVP) → AWS/GCP (scale)</td><td>Low-cost for solo dev, scalable for growth</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Critical Systems to Architect First</h3>
+    <ol>
+      <li><strong>Server-Authoritative Chess Engine</strong> — All move validation must happen server-side. No client-side trust. Anti-cheat starts here.</li>
+      <li><strong>Modifier State Machine</strong> — Each modifier is a discrete state object with hooks into the game loop (on_turn_start, on_piece_moved, on_capture, on_match_end). This architecture lets modifiers be added without rewriting core logic.</li>
+      <li><strong>Matchmaking Service</strong> — ELO-based pairing with modifier-awareness (pair players with similar unlocked pools in casual modes).</li>
+      <li><strong>Replay System</strong> — Every match recorded as a deterministic event stream. Essential for puzzles, anti-cheat review, and highlight sharing.</li>
+    </ol>
+  </div>
+
+  <!-- ══ 12 ROADMAP -->
+  <div class="section" id="roadmap">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <h2>Roadmap & Scope</h2>
+    </div>
+
+    <div class="callout chaos">
+      <span class="callout-label">🎯 Solo/Tiny Team Reality Check</span>
+      This is an ambitious game. The roadmap below is designed so that each phase is a shippable, playable product. Do not attempt to build everything before launching. A functional Phase 1 with 20 modifiers and 2 modes will teach you more than 2 years of solo development.
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 0 — Months 1–2</div>
+        <div class="timeline-title">Prototype & Proof of Concept</div>
+        <p>Build a playable chess game in the browser. No modifiers. No accounts. Just chess that works reliably. Validate the chess engine, the board renderer, and real-time multiplayer sync. This is the foundation everything else sits on. Do not skip it.</p>
+        <p><span class="tag">Chess Engine</span><span class="tag">Board Renderer</span><span class="tag">WebSocket Sync</span><span class="tag">Basic UI</span></p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 1 — Months 3–5</div>
+        <div class="timeline-title">MVP Launch — "The Cursed Board"</div>
+        <p>Launch with: 20 modifiers (all 5 categories represented), VS Bots, Casual Multiplayer, and the first Story Tower. Basic accounts, basic ELO. No battle pass yet — just the core chaos loop. Get players. Get feedback. Balance aggressively.</p>
+        <p><span class="tag">20 Modifiers</span><span class="tag">Story Tower 1</span><span class="tag">VS Bots</span><span class="tag">Casual MP</span><span class="tag">Basic ELO</span><span class="tag">Puzzle (10 built-in)</span></p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 2 — Months 6–8</div>
+        <div class="timeline-title">Ranked Season 1 + Battle Pass</div>
+        <p>Launch Ranked Mode with full ELO system, Season 1 themed modifier additions, Battle Pass Season 1, cosmetics store, and community puzzle submission. Story Tower 2 ships here. Steam Early Access launch.</p>
+        <p><span class="tag">Ranked + ELO</span><span class="tag">Battle Pass</span><span class="tag">Cosmetics Store</span><span class="tag">Puzzle Creator</span><span class="tag">Tower 2</span><span class="tag">Steam EA</span></p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 3 — Months 9–12</div>
+        <div class="timeline-title">Full Launch — "The Flock Arrives"</div>
+        <p>Story Towers 3–4, Endless Roguelike mode, full meta-progression tree, community cosmetics workshop, spectator mode, Season 2. Full Steam launch. Community tournament tools.</p>
+        <p><span class="tag">Towers 3–4</span><span class="tag">Endless Mode</span><span class="tag">Meta-Progression Tree</span><span class="tag">Community Workshop</span><span class="tag">Tournaments</span></p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-phase">Phase 4 — Year 2+</div>
+        <div class="timeline-title">Tower 5 + Platform Expansion</div>
+        <p>The Pigeon Sanctum (Tower 5), chess rule variants, mobile platform evaluation, advanced anti-cheat, modding API, live events. The game is now community-sustained.</p>
+        <p><span class="tag">Tower 5</span><span class="tag">Chess Variants</span><span class="tag">Modding API</span><span class="tag">Mobile Eval</span><span class="tag">Live Events</span></p>
+      </div>
+    </div>
+
+    <h3>Scope Risk Register</h3>
+    <table>
+      <thead><tr><th>System</th><th>Risk</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr><td>Modifier balance</td><td>High — exponential complexity with stacking</td><td>Launch with small pool; strict cooldown architecture; 2-week patch cadence</td></tr>
+        <tr><td>Real-time multiplayer</td><td>High — latency, desync, cheating</td><td>Server-authoritative engine from day one; no shortcuts</td></tr>
+        <tr><td>Full roguelike (5 Towers)</td><td>High — content volume for tiny team</td><td>Phase release; Tower 1–3 is launch; 4–5 is post-launch</td></tr>
+        <tr><td>Community puzzle abuse</td><td>Medium — bad actors submit broken/offensive puzzles</td><td>Community review + flagging system before editorial approval</td></tr>
+        <tr><td>ELO integrity w/ modifiers</td><td>Medium — modifiers skew outcomes</td><td>Chaos Coefficient; restricted modifier pool in Ranked per season</td></tr>
+        <tr><td>Art/cosmetics volume</td><td>Medium — cosmetics store needs content</td><td>Community Workshop pipeline reduces dependency on internal art team</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- /page -->
+
+<div class="doc-footer">
+  PIGEON CHESS — GAME DESIGN DOCUMENT v0.1 · PRE-PRODUCTION · CONFIDENTIAL<br>
+  Next Document: Technical Design Document (TDD) · Art Direction Guide · Modifier Balance Spreadsheet
+</div>
+
+</body>
+</html>

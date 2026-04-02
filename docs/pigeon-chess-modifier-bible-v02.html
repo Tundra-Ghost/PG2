@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pigeon Chess — Modifier Design Bible v0.2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Lora:ital,wght@0,400;0,600;1,400&family=Fira+Code:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0d0d0f;
+    --bg2: #13131a;
+    --bg3: #1a1a24;
+    --surface: #1e1e2e;
+    --border: #2a2a3e;
+    --text: #e8e6f0;
+    --text-dim: #8a87a0;
+    --text-faint: #4a4760;
+    --cat-a: #e8a23a;
+    --cat-b: #c0392b;
+    --cat-c: #3a9de8;
+    --cat-d: #7c3ae8;
+    --cat-e: #3ae87c;
+    --tier-s: #f0c040;
+    --tier-a: #c878f0;
+    --tier-b: #4090f0;
+    --tier-c: #50c878;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* COVER */
+  .cover {
+    background: var(--bg);
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .cover-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 50%, rgba(232,162,58,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 80% at 80% 30%, rgba(192,57,43,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 50% at 50% 80%, rgba(124,58,232,0.05) 0%, transparent 70%);
+  }
+  .cover-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .cover-inner { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
+  .cover-tag { font-family: 'Fira Code', monospace; font-size: 0.7rem; letter-spacing: 0.3em; color: var(--cat-a); text-transform: uppercase; margin-bottom: 1.5rem; display: block; }
+  .cover-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(3rem, 8vw, 6rem); line-height: 1; color: var(--text); margin-bottom: 0.5rem; }
+  .cover-title em { font-style: normal; color: var(--cat-a); }
+  .cover-sub { font-family: 'Syne', sans-serif; font-size: 1.1rem; color: var(--text-dim); margin-bottom: 0.75rem; }
+  .cover-version-note { font-family: 'Fira Code', monospace; font-size: 0.7rem; color: var(--cat-b); letter-spacing: 0.1em; margin-bottom: 2rem; }
+  .cover-stats { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+  .cover-stat { background: var(--surface); border: 1px solid var(--border); padding: 0.5rem 1rem; font-family: 'Fira Code', monospace; font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.1em; }
+  .cover-stat span { color: var(--text); }
+
+  .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; max-width: 900px; margin: 0 auto; }
+  .legend-item { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid; padding: 0.75rem 1rem; text-align: left; }
+  .legend-label { font-family: 'Fira Code', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.2rem; display: block; }
+  .legend-desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.4; }
+
+  /* LAYOUT */
+  .page { max-width: 1100px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+
+  /* NAV */
+  .cat-nav { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 3rem; padding: 1.5rem; background: var(--bg2); border: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .cat-nav-btn { font-family: 'Fira Code', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.4rem 0.9rem; border: 1px solid; background: transparent; cursor: pointer; text-decoration: none; transition: all 0.15s; display: block; }
+  .cat-nav-btn:hover { opacity: 0.7; }
+
+  /* CATEGORY */
+  .category { margin-bottom: 5rem; }
+  .category-header { display: flex; align-items: flex-end; gap: 1.5rem; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+  .category-letter { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 5rem; line-height: 1; opacity: 0.12; color: var(--text); }
+  .category-info { flex: 1; }
+  .category-tag { font-family: 'Fira Code', monospace; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 0.3rem; display: block; }
+  .category-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 2rem; line-height: 1; margin-bottom: 0.5rem; }
+  .category-desc { font-size: 0.9rem; color: var(--text-dim); max-width: 600px; font-style: italic; }
+  .category-count { font-family: 'Fira Code', monospace; font-size: 0.7rem; color: var(--text-faint); white-space: nowrap; padding-bottom: 0.5rem; }
+
+  /* MODIFIER GRID */
+  .modifier-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+
+  .mod-card { background: var(--bg2); padding: 1.5rem; position: relative; transition: background 0.15s; }
+  .mod-card:hover { background: var(--bg3); }
+
+  .mod-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; gap: 0.5rem; }
+  .mod-id { font-family: 'Fira Code', monospace; font-size: 0.6rem; color: var(--text-faint); letter-spacing: 0.1em; margin-bottom: 0.3rem; display: block; }
+  .mod-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.05rem; line-height: 1.2; color: var(--text); }
+
+  /* pop culture reference tag */
+  .mod-ref { font-family: 'Fira Code', monospace; font-size: 0.6rem; color: var(--cat-a); letter-spacing: 0.08em; margin-bottom: 0.4rem; display: block; opacity: 0.8; }
+
+  .mod-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; flex-shrink: 0; }
+  .badge { font-family: 'Fira Code', monospace; font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.15rem 0.45rem; white-space: nowrap; }
+  .badge-tier-s { background: var(--tier-s); color: #1a1000; }
+  .badge-tier-a { background: var(--tier-a); color: #1a001a; }
+  .badge-tier-b { background: var(--tier-b); color: #001030; }
+  .badge-tier-c { background: var(--tier-c); color: #001a10; }
+
+  .mod-type { font-family: 'Fira Code', monospace; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.75rem; }
+  .mod-trigger { display: inline-block; font-family: 'Fira Code', monospace; font-size: 0.6rem; letter-spacing: 0.08em; padding: 0.15rem 0.4rem; border: 1px solid var(--border); color: var(--text-dim); margin-bottom: 0.75rem; }
+  .mod-desc { font-size: 0.88rem; line-height: 1.6; color: var(--text); margin-bottom: 1rem; }
+  .mod-flavor { font-style: italic; font-size: 0.8rem; color: var(--text-faint); border-left: 2px solid var(--border); padding-left: 0.75rem; margin-bottom: 1rem; line-height: 1.5; }
+
+  .mod-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; border-top: 1px solid var(--border); padding-top: 1rem; }
+  .mod-stat { text-align: center; }
+  .mod-stat-label { font-family: 'Fira Code', monospace; font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-faint); display: block; margin-bottom: 0.2rem; }
+  .mod-stat-value { font-family: 'Fira Code', monospace; font-size: 0.85rem; font-weight: 600; color: var(--text); }
+  .cost-pos { color: #f0c040; }
+  .cost-neg { color: #50c878; }
+
+  .curse-pips { display: flex; justify-content: center; gap: 3px; }
+  .curse-pip { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+  .curse-pip.active { background: var(--cat-b); }
+
+  .mod-interactions { background: var(--bg); border: 1px solid var(--border); padding: 0.75rem; margin-top: 0.75rem; font-size: 0.78rem; }
+  .mod-interactions-label { font-family: 'Fira Code', monospace; font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 0.4rem; display: block; }
+  .mod-interactions ul { list-style: none; padding: 0; }
+  .mod-interactions li { color: var(--text-dim); line-height: 1.5; padding-left: 1rem; position: relative; margin-bottom: 0.2rem; }
+  .mod-interactions li::before { content: '→'; position: absolute; left: 0; color: var(--text-faint); font-family: 'Fira Code', monospace; }
+  .synergy { color: #50c878 !important; }
+  .conflict { color: #e84a3a !important; }
+
+  /* BALANCE TABLE */
+  .balance-section { margin-top: 5rem; padding-top: 3rem; border-top: 1px solid var(--border); }
+  .section-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .section-sub { color: var(--text-dim); font-style: italic; margin-bottom: 2rem; font-size: 0.9rem; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  thead { background: var(--surface); }
+  th { font-family: 'Fira Code', monospace; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); padding: 0.65rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
+  tr:hover td { background: var(--bg3); }
+  .td-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; }
+  .td-ref { font-family: 'Fira Code', monospace; font-size: 0.65rem; color: var(--cat-a); }
+  .td-cat { font-family: 'Fira Code', monospace; font-size: 0.65rem; color: var(--text-dim); }
+
+  .pill { display: inline-block; font-family: 'Fira Code', monospace; font-size: 0.58rem; letter-spacing: 0.08em; padding: 0.1rem 0.4rem; border-radius: 2px; }
+  .pill-launch { background: #1a3a1a; color: #50c878; border: 1px solid #2a5a2a; }
+  .pill-post { background: #3a2a00; color: #f0c040; border: 1px solid #5a4000; }
+
+  /* DESIGN RULES */
+  .rules-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin: 2rem 0; }
+  .rule-card { background: var(--bg2); border: 1px solid var(--border); padding: 1.25rem; }
+  .rule-num { font-family: 'Fira Code', monospace; font-size: 0.65rem; color: var(--cat-a); letter-spacing: 0.15em; margin-bottom: 0.4rem; display: block; }
+  .rule-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; }
+  .rule-body { font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; }
+
+  /* CHANGELOG */
+  .changelog { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--cat-a); padding: 1.5rem 2rem; margin-bottom: 3rem; }
+  .changelog h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: var(--cat-a); margin-bottom: 0.75rem; }
+  .changelog p { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 0.4rem; }
+
+  .doc-footer { text-align: center; padding: 3rem 1rem; font-family: 'Fira Code', monospace; font-size: 0.65rem; color: var(--text-faint); letter-spacing: 0.15em; border-top: 1px solid var(--border); margin-top: 4rem; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-bg"></div>
+  <div class="cover-grid"></div>
+  <div class="cover-inner">
+    <span class="cover-tag">Internal Design Document · Ref: PC-MOD-001</span>
+    <h1 class="cover-title">Modifier<br><em>Design Bible</em></h1>
+    <p class="cover-sub">Pigeon Chess · v0.2 · Pre-Production</p>
+    <p class="cover-version-note">↑ v0.2 — Pop Culture Retheme · Mechanics unchanged · Names & flavor text rewritten</p>
+    <div class="cover-stats">
+      <div class="cover-stat">TOTAL MODIFIERS <span>40</span></div>
+      <div class="cover-stat">CATEGORIES <span>5</span></div>
+      <div class="cover-stat">POP-CULTURE REFS <span>40 / 40</span></div>
+      <div class="cover-stat">MAX CURSE RATING <span>3</span></div>
+      <div class="cover-stat">MAX POINT COST <span>5pts</span></div>
+      <div class="cover-stat">STATUS <span>DRAFT</span></div>
+    </div>
+    <div class="legend">
+      <div class="legend-item" style="border-color:var(--cat-a)"><span class="legend-label" style="color:var(--cat-a)">A — Board Mutations</span><span class="legend-desc">Tiles that change, move, or destroy</span></div>
+      <div class="legend-item" style="border-color:var(--cat-b)"><span class="legend-label" style="color:var(--cat-b)">B — Cursed Modifiers</span><span class="legend-desc">Negative effects that grant points</span></div>
+      <div class="legend-item" style="border-color:var(--cat-c)"><span class="legend-label" style="color:var(--cat-c)">C — Active Abilities</span><span class="legend-desc">Cooldown powers on piece types</span></div>
+      <div class="legend-item" style="border-color:var(--cat-d)"><span class="legend-label" style="color:var(--cat-d)">D — Fog of War</span><span class="legend-desc">Information & visibility variants</span></div>
+      <div class="legend-item" style="border-color:var(--cat-e)"><span class="legend-label" style="color:var(--cat-e)">E — Asymmetric Armies</span><span class="legend-desc">Non-standard piece configurations</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- CHANGELOG -->
+  <div class="changelog">
+    <h3>📋 v0.2 Change Log — Pop Culture Retheme</h3>
+    <p>→ All 40 modifier names rewritten with pop-culture adjacent references</p>
+    <p>→ All flavor text rewritten. Viktor's voice maintained — he remains baffled by all references</p>
+    <p>→ Reference source noted on each card (internal use only — not displayed in-game)</p>
+    <p>→ All mechanics, costs, curse ratings, tiers, and interaction notes UNCHANGED from v0.1</p>
+    <p>→ Legal approach: names are adjacent parody — no direct trademarked names or likenesses used</p>
+  </div>
+
+  <!-- NAV -->
+  <nav class="cat-nav">
+    <a class="cat-nav-btn" style="border-color:var(--cat-a);color:var(--cat-a)" href="#cat-a">A · Board Mutations</a>
+    <a class="cat-nav-btn" style="border-color:var(--cat-b);color:var(--cat-b)" href="#cat-b">B · Cursed</a>
+    <a class="cat-nav-btn" style="border-color:var(--cat-c);color:var(--cat-c)" href="#cat-c">C · Active Abilities</a>
+    <a class="cat-nav-btn" style="border-color:var(--cat-d);color:var(--cat-d)" href="#cat-d">D · Fog of War</a>
+    <a class="cat-nav-btn" style="border-color:var(--cat-e);color:var(--cat-e)" href="#cat-e">E · Asymmetric Armies</a>
+    <a class="cat-nav-btn" style="border-color:var(--text-faint);color:var(--text-faint)" href="#balance">Balance Summary</a>
+    <a class="cat-nav-btn" style="border-color:var(--text-faint);color:var(--text-faint)" href="#rules">Design Rules</a>
+  </nav>
+
+  <!-- ══════════ CATEGORY A — BOARD MUTATIONS ══════════ -->
+  <div class="category" id="cat-a">
+    <div class="category-header">
+      <div class="category-letter">A</div>
+      <div class="category-info">
+        <span class="category-tag" style="color:var(--cat-a)">Category A · 8 Modifiers</span>
+        <div class="category-name" style="color:var(--cat-a)">Board Mutations</div>
+        <div class="category-desc">The board physically changes mid-match. Tiles spread, burn, sink, freeze, or flip. It has opinions and they are not in your favour.</div>
+      </div>
+      <div class="category-count">MOD-A001 → MOD-A008</div>
+    </div>
+    <div class="modifier-grid">
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-A001</span>
+            <span class="mod-ref">≈ The Last of Us / Cordyceps meme</span>
+            <div class="mod-name">The Cordyceptic Spread</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-s">Tier S</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-a)">▪ Board Mutation · Persistent · Mid-Match Trigger</div>
+        <span class="mod-trigger">TRIGGER: Every 5 turns</span>
+        <div class="mod-desc">One random empty tile becomes Infected. Pieces standing on Infected tiles lose 1 square of movement per turn they remain stationary. A Bishop or Queen passing through clears the infection. Infected tiles spread: 25% chance to infect an adjacent tile each turn. The mushroom is patient. The mushroom always wins eventually.</div>
+        <div class="mod-flavor">"There is something growing on the board. Viktor has chosen not to investigate what it is."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">4 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Dark Board — hidden infected tiles are catastrophic</li>
+          <li class="conflict">Conflict: The Floor Is Lava — infection cannot spread onto Lava tiles</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-A002</span>
+            <span class="mod-ref">≈ "The Floor Is Lava" meme / viral challenge</span>
+            <div class="mod-name">The Floor Is Lava</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-a)">▪ Board Mutation · Persistent · Rotating</div>
+        <span class="mod-trigger">TRIGGER: Match start + every 10 turns</span>
+        <div class="mod-desc">Four tiles are Lava. Any piece landing on Lava is immediately captured — including your own. Every 10 turns, each Lava tile rotates clockwise one square. The next position is shown as an amber outline one turn in advance. Everyone knows the floor is lava. Nobody is handling it well.</div>
+        <div class="mod-flavor">"The floor is lava. Viktor's knight is on the floor. Viktor is processing this."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Trapdoor Tiles — a piece falling through a trapdoor onto Lava is captured</li>
+          <li class="conflict">Conflict: The Cordyceptic Spread — Lava tiles cannot become Infected</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-A003</span>
+            <span class="mod-ref">≈ Among Us / Fall Guys trap mechanics</span>
+            <div class="mod-name">Vent Tiles</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-b">Tier B</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-a)">▪ Board Mutation · Hidden · One-Time</div>
+        <span class="mod-trigger">TRIGGER: On piece landing</span>
+        <div class="mod-desc">Three tiles are secretly Vents at match start. The first piece to land on a Vent gets ejected — teleporting to the diametrically opposite square. If that square is occupied, the arriving piece captures whatever is there regardless of colour. Once used, Vents become visible empty shafts (impassable). Nobody saw what happened. Nobody is talking about it.</div>
+        <div class="mod-flavor">"Viktor's bishop vanished and reappeared behind enemy lines. Viktor did not do that on purpose. Viktor is going to pretend he did."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">2 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Ghost Pieces — decoy pieces can trigger Vents and vanish convincingly</li>
+          <li class="synergy">Synergy: Dark Board — neither player can track Vent positions in fog</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-A004</span>
+            <span class="mod-ref">≈ Game of Thrones / Winter Is Coming</span>
+            <div class="mod-name">Winter Is Coming (To Your Pieces)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-b">Tier B</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-a)">▪ Board Mutation · Persistent · Zone</div>
+        <span class="mod-trigger">TRIGGER: Match start (permanent)</span>
+        <div class="mod-desc">Both home rows (Ranks 1–3 and 6–8) are Frozen. Any piece entering a Frozen zone must thaw for 1 full turn before moving again. Pawns freeze before promoting. Kings cannot castle if either castle-path tile is Frozen. The White Walkers are not here. That would be a different game. The cold, however, is very real.</div>
+        <div class="mod-flavor">"Viktor's entire back rank is frozen. A raven arrived to warn him. Viktor does not know how to talk to ravens."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">2 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: The Heavy Is The Crown — King thaws slower (2 turns), castling nearly impossible</li>
+          <li class="conflict">Conflict: The Small Council (Peasant Revolt) — 12 pawns all thawing on home rows risks gridlock</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-A005</span>
+            <span class="mod-ref">≈ Minecraft world border / Fortnite storm</span>
+            <div class="mod-name">The Storm Closes In</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-a)">▪ Board Mutation · Shrinking · Progressive</div>
+        <span class="mod-trigger">TRIGGER: Every 8 turns</span>
+        <div class="mod-desc">The outer ring of the board is consumed by the Storm every 8 turns. Pieces on Storm tiles are eliminated. The board shrinks from 8×8 toward 6×6 by turn 40. Pieces pushed to the edge by the Storm's advance are removed from play. Standard checkmate applies on the reduced board. Get to the circle. Stay in the circle.</div>
+        <div class="mod-flavor">"The board is getting smaller. Viktor is getting calmer. These things are unrelated."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: The Floor Is Lava — shrinking board forces pieces toward Lava</li>
+          <li class="conflict">Conflict: The Small Council — 12 pawns + shrinking board = very crowded endgame</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-A006</span>
+            <span class="mod-ref">≈ Shrek's swamp / internet "Swamp" meme</span>
+            <div class="mod-name">This Is My Swamp</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-b">Tier B</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-a)">▪ Board Mutation · Zone · Symmetric</div>
+        <span class="mod-trigger">TRIGGER: Match start (permanent)</span>
+        <div class="mod-desc">The four central squares (d4, d5, e4, e5) are the Swamp. Any piece entering the Swamp moves at 1 square per turn regardless of normal movement. Knights entering the Swamp are trapped for 2 turns. Capturing from the Swamp is permitted at reduced range. The Swamp is contested. The Swamp is disgusting. The Swamp is strategically essential.</div>
+        <div class="mod-flavor">"Viktor entered the Swamp to seize the centre. The Swamp seized Viktor. They are negotiating terms."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">2 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Royal Decree — King can declare Swamp a No-Fly Zone</li>
+          <li class="conflict">Conflict: Knight's Gambit — rook-move cannot originate from inside the Swamp</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-A007</span>
+            <span class="mod-ref">≈ Interstellar gravity / Gravity Falls</span>
+            <div class="mod-name">Gravitational Anomaly (Don't Think About It)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-s">Tier S</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-a)">▪ Board Mutation · Directional · Triggered</div>
+        <span class="mod-trigger">TRIGGER: Every 12 turns</span>
+        <div class="mod-desc">Every 12 turns, gravity flips. All pieces slide 1 square toward the new "bottom" edge if that square is empty. Pieces sliding off the board are captured. Pawns re-orient to the new gravity direction. Kings slide too. The board tips with a full animation. Nobody ordered this. It happened anyway. Do not think about it too hard.</div>
+        <div class="mod-flavor">"Viktor's rook slid sideways. Viktor's pawns are now facing east. Viktor is not thinking about it."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">5 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip active"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL exc. Ranked S1</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: The Storm Closes In — gravity can push pieces off a shrunken board</li>
+          <li class="conflict">Conflict: Winter Is Coming — frozen pieces do not slide</li>
+          <li class="conflict">⚠ Balance Flag: Requires softlock testing with all piece types</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-A008</span>
+            <span class="mod-ref">≈ Black Mirror / Bandersnatch mirror world</span>
+            <div class="mod-name">Bandersnatch Protocol</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-a)">▪ Board Mutation · Structural · Persistent</div>
+        <span class="mod-trigger">TRIGGER: Match start (permanent)</span>
+        <div class="mod-desc">The board is split by an invisible axis. Any move made on the left half is simultaneously mirrored on the right half for that piece. Pieces colliding on the axis swap positions. Kings are exempt. Both players are affected equally. Every choice echoes. Every move has a reflection. You chose this. You can't unchoose it.</div>
+        <div class="mod-flavor">"Viktor moved his bishop left. His bishop also moved right. Viktor is questioning the nature of his own free will."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">Casual · Story</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Ghost Pieces — mirrored decoys compound information confusion</li>
+          <li class="conflict">⚠ Balance Flag: Needs extensive edge case testing with castling logic</li>
+        </ul></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ CATEGORY B — CURSED MODIFIERS ══════════ -->
+  <div class="category" id="cat-b">
+    <div class="category-header">
+      <div class="category-letter">B</div>
+      <div class="category-info">
+        <span class="category-tag" style="color:var(--cat-b)">Category B · 8 Modifiers</span>
+        <div class="category-name" style="color:var(--cat-b)">Cursed Modifiers</div>
+        <div class="category-desc">Negative effects that grant extra point budget. Stack curses. Fill the Madness Meter. Viktor's dialogue gets increasingly unhinged. Worth it.</div>
+      </div>
+      <div class="category-count">MOD-B001 → MOD-B008</div>
+    </div>
+    <div class="modifier-grid">
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-B001</span>
+            <span class="mod-ref">≈ Elden Ring "You Died" / Dark Souls chaos</span>
+            <div class="mod-name">YOU DIED (But A Piece Did)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-s">Tier S</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-b)">▪ Curse · Autonomous Piece · High Madness</div>
+        <span class="mod-trigger">TRIGGER: Every 7 turns</span>
+        <div class="mod-desc">Every 7 turns, one of YOUR pieces chooses its own legal move autonomously. You have no input. The piece has decided. It counts as your turn. The piece appears confident. It is not. +2 Feathers per match this modifier is active. The screen briefly flashes the words "A PIECE MOVED" in large red letters, because atmosphere matters.</div>
+        <div class="mod-flavor">"A piece moved itself to h4. Viktor stared at the screen for a long time. Large red letters appeared. They were not helpful."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-neg">−3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip active"></div><div class="curse-pip active"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">No Ranked</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="conflict">Conflict: Active Abilities — autonomous move cannot trigger cooldown abilities</li>
+          <li class="conflict">⚠ Balance Flag: Must never trigger on King if it causes self-check</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-B002</span>
+            <span class="mod-ref">≈ "Distracted Boyfriend" meme</span>
+            <div class="mod-name">Distracted Piece</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-b)">▪ Curse · Interference · Named NPC</div>
+        <span class="mod-trigger">TRIGGER: Start of each of your turns</span>
+        <div class="mod-desc">At the start of each turn, a pigeon named Gerald lands on one of your pieces, blocking it. You can spend your turn clicking Gerald off — freeing the piece but forfeiting your move. Gerald returns next turn. Gerald always returns. Gerald has a personal leaderboard tracking how many turns he has ruined. Gerald is proud of this number.</div>
+        <div class="mod-flavor">"Gerald is looking at something else entirely. Viktor's rook is right there. Gerald does not care about Viktor's rook."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-neg">−2 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip active"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: The Confession Bishop — reveals which piece Gerald targets 1 turn early</li>
+          <li class="conflict">Conflict: Gerald refuses to sit on Pigeon pieces (professional solidarity)</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-B003</span>
+            <span class="mod-ref">≈ "No, I don't think I will" / Captain A meme</span>
+            <div class="mod-name">No, I Don't Think I Will</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-b">Tier B</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-b)">▪ Curse · Directional Inversion · Time-Limited</div>
+        <span class="mod-trigger">TRIGGER: First 5 turns of match</span>
+        <div class="mod-desc">For the first 5 turns, all your pieces move in the opposite direction to your click. Left becomes right. Forward becomes backward. Legal move rules still apply — pieces won't move illegally, just inversely. A bold "NO, I DON'T THINK I WILL" banner appears at match start. Experienced players can learn to exploit this. Most players will not.</div>
+        <div class="mod-flavor">"Viktor clicked forward. His pawn went backward, with the energy of someone who has made their decision and is at peace with it."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-neg">−1 pt</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Winter Is Coming — being inverted in frozen zones creates extreme early-game risk</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-B004</span>
+            <span class="mod-ref">≈ "Heavy Is The Head" / Drake lyric / Kendrick beef</span>
+            <div class="mod-name">Heavy Is The Crown (uneasy lies)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-b)">▪ Curse · Piece Debuff · King Only</div>
+        <span class="mod-trigger">TRIGGER: Permanent (your King only)</span>
+        <div class="mod-desc">Your King moves at half speed. Moving the King is a two-turn commitment: select on turn one, confirm on turn two. During the commitment window, the King glows and the destination is visible to your opponent. Checkmate rules unchanged. Castling takes 3 turns total. The King is aware of the symbolism. The King does not appreciate you pointing it out.</div>
+        <div class="mod-flavor">"The crown weighs heavily. The King moves slowly. Somewhere, someone is writing bars about this."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-neg">−2 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip active"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="conflict">Conflict: Winter Is Coming — King in frozen zone takes 3 turns per square (near-softlock near check)</li>
+          <li class="synergy">Synergy: The Royal Decree — King compensates with the No-Fly Zone ability</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-B005</span>
+            <span class="mod-ref">≈ 50 First Dates / Memento / Drew Barrymore forgetting meme</span>
+            <div class="mod-name">50 First Moves</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-b)">▪ Curse · Information Loss · Persistent</div>
+        <span class="mod-trigger">TRIGGER: Every 6 turns</span>
+        <div class="mod-desc">Every 6 turns, the move history panel wipes and becomes unreadable for 3 turns. During the blackout, you cannot verify past moves — only the current board state is visible. En passant cannot be claimed during a blackout. Opponent move history is also hidden. Every day is a new game. Every game is the first game. This is romantic if you are not in a tournament.</div>
+        <div class="mod-flavor">"Viktor cannot remember what his opponent did three turns ago. He is choosing to frame this as a fresh start."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-neg">−2 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip active"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">No Ranked</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Dark Board — double information denial is brutally effective</li>
+          <li class="conflict">Conflict: The Confession Bishop — confession nullified during blackout window</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-B006</span>
+            <span class="mod-ref">≈ Among Us / "They were the Impostor" ejection screen</span>
+            <div class="mod-name">They Were The Traitor (1 Impostor Remains)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-s">Tier S</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-b)">▪ Curse · Piece Defection · Random</div>
+        <span class="mod-trigger">TRIGGER: Once, random turn after turn 10</span>
+        <div class="mod-desc">After turn 10, at a random point, one of your non-King pieces defects to the opponent. It changes colour and joins their army immediately. The defection is weighted toward your highest-value active piece. You are warned 1 turn in advance — the piece glows red. The ejection screen appears briefly. It says who it was. It says how many remain. It does not say sorry.</div>
+        <div class="mod-flavor">"Queen was The Traitor. 7 pieces remain. Viktor stares at the screen. Viktor voted wrong."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-neg">−3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip active"></div><div class="curse-pip active"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">No Ranked</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="conflict">⚠ Balance Flag: King must be explicitly excluded from defection logic</li>
+          <li class="conflict">Conflict: YOU DIED — autonomous moves cannot defect pieces early (separate event)</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-B007</span>
+            <span class="mod-ref">≈ "I'm a Lover Not a Fighter" / peaceful protest memes</span>
+            <div class="mod-name">Conscientious Objector</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-b">Tier B</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-b)">▪ Curse · Piece Restriction · Selective</div>
+        <span class="mod-trigger">TRIGGER: Match start (permanent)</span>
+        <div class="mod-desc">One randomly selected pawn holds deeply personal convictions and will not capture. It moves normally, it blocks, it promotes — but it will not take a piece. It carries a small white flag. This is not a glitch. This is its truth. A Conscientious Objector promoted to Queen creates a philosophical crisis that the game resolves by making the Queen also a pacifist. It sets a precedent.</div>
+        <div class="mod-flavor">"The pawn has values. Viktor respects this. Viktor is also trying to win a chess match."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-neg">−1 pt</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="conflict">Conflict: Pawn Strike (Retaliatory Swipe) — Conscientious Objector cannot use it</li>
+          <li class="synergy">Skilled play: Objector as blocker or decoy is genuinely viable strategy</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-B008</span>
+            <span class="mod-ref">≈ IGN "too much water" review / Rotten Tomatoes culture</span>
+            <div class="mod-name">7/10 — Too Many Pieces</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-b">Tier B</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-b)">▪ Curse · UI Disruption · Commentary</div>
+        <span class="mod-trigger">TRIGGER: After every move you make</span>
+        <div class="mod-desc">After every move, a pigeon critic named Reginald Beak appears in the corner with a 200ms review of your decision. Reviews include: "6/10 — Predictable.", "4/10 — Too much knight.", "9/10 — Bold. Stupid, but bold.", and "1/10 — My grandmother could have done this and she is a pigeon." Reginald has no gameplay effect. He has many opinions.</div>
+        <div class="mod-flavor">"Reginald gave Viktor's en passant a 3/10. Viktor has given Reginald a 0/10. Reginald's score was not impacted."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-neg">−1 pt</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Content requirement: Reginald needs 150+ unique review lines — dedicated writing task</li>
+          <li class="synergy">Synergy: Distracted Piece — Reginald and Gerald appearing simultaneously is maximum chaos</li>
+        </ul></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ CATEGORY C — ACTIVE ABILITIES ══════════ -->
+  <div class="category" id="cat-c">
+    <div class="category-header">
+      <div class="category-letter">C</div>
+      <div class="category-info">
+        <span class="category-tag" style="color:var(--cat-c)">Category C · 8 Modifiers</span>
+        <div class="category-name" style="color:var(--cat-c)">Active Abilities</div>
+        <div class="category-desc">Cooldown powers attached to piece types. Select a piece, press the ability button. Costs your turn. Cooldowns tracked per piece independently.</div>
+      </div>
+      <div class="category-count">MOD-C001 → MOD-C008</div>
+    </div>
+    <div class="modifier-grid">
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-C001</span>
+            <span class="mod-ref">≈ Trump executive order / "I hereby declare" meme format</span>
+            <div class="mod-name">I Hereby Declare (Executive Move)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-s">Tier S</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-c)">▪ Active Ability · King · Cooldown: 8 turns</div>
+        <span class="mod-trigger">ACTIVATE: Select King → press Ability</span>
+        <div class="mod-desc">The King declares a No-Fly Zone on any one row or column. No opponent piece may enter or cross that line for 3 turns. Shown as a golden line. Pigeons are exempt — they cannot read executive orders. The King must remain alive for the zone to persist. The decree is signed. The decree is binding. The pigeons have not been briefed.</div>
+        <div class="mod-flavor">"The King has issued an executive order banning rooks from the d-file. Enforcement is ongoing."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">4 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: This Is My Swamp — decree a row through the swamp to create an impassable corridor</li>
+          <li class="conflict">Conflict: Heavy Is The Crown — slow King delays decree setup significantly</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-C002</span>
+            <span class="mod-ref">≈ Confession Bear meme / Catholic confession booth</span>
+            <div class="mod-name">Forgive Me, For I Have Moved</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-c)">▪ Active Ability · Bishop · Cooldown: 5 turns</div>
+        <span class="mod-trigger">ACTIVATE: Select Bishop → target opponent piece</span>
+        <div class="mod-desc">Target one opponent piece. For 2 turns, that piece must reveal its intended destination before moving — a ghost outline appears showing where it will go. The opponent commits 1 turn early. The targeted piece gets a confessional glow. The opponent can see the confession icon and knows they are being watched. The bishop has heard things. The bishop will share these things.</div>
+        <div class="mod-flavor">"The bishop leaned in. The rook confessed where it was planning to go. The bishop did not offer absolution."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Dark Board — confession reveals piece through fog for duration</li>
+          <li class="synergy">Synergy: The Shapeshifter (Ghost Pieces) — confession reveals whether target is real or decoy</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-C003</span>
+            <span class="mod-ref">≈ "Did I do that?" Urkel / Oops I Broke The Rules meme</span>
+            <div class="mod-name">Did I Do That? (Oops)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-c)">▪ Active Ability · Knight · Cooldown: 6 turns</div>
+        <span class="mod-trigger">ACTIVATE: Select Knight → press Ability</span>
+        <div class="mod-desc">This turn, your Knight moves like a Rook — any distance horizontally or vertically. It can capture on this move. The Knight is fully aware this is illegal. It moves anyway, with the body language of someone who has just accidentally broken something and is hoping nobody noticed. Spoiler: everyone noticed. The move is valid. The Knight has no regrets.</div>
+        <div class="mod-flavor">"The knight moved in a straight line. It looked around. Nobody stopped it. It kept going. Viktor pretended this was planned."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="conflict">Conflict: This Is My Swamp — rook-mode move cannot originate from the Swamp</li>
+          <li class="synergy">Synergy: The Storm Closes In — Knight can escape a crumbling edge in one move</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-C004</span>
+            <span class="mod-ref">≈ "Retaliatory strike" political meme / Taylor Swift "Reputation"</span>
+            <div class="mod-name">Retaliatory Swipe (Look What You Made Me Do)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-b">Tier B</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-c)">▪ Active Ability · Pawn · Cooldown: 4 turns</div>
+        <span class="mod-trigger">ACTIVATE: Select Pawn → press Ability</span>
+        <div class="mod-desc">The selected pawn captures diagonally backwards this turn only. No promotion is awarded for this capture. The pawn returns to normal forward movement afterward. Each pawn tracks its own cooldown independently. The pawn did not start this. The pawn is finishing it. The pawn has a very specific look on its face about the whole situation.</div>
+        <div class="mod-flavor">"The pawn turned around. 'Look what you made me do,' it communicated through chess movement. Viktor agreed, uncomfortably."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">2 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="conflict">Conflict: Conscientious Objector pawn cannot use Retaliatory Swipe</li>
+          <li class="synergy">Synergy: The Small Council (Peasant Revolt) — 12 pawns with backward capture is highly aggressive</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-C005</span>
+            <span class="mod-ref">≈ "Not my job" meme / Quiet Quitting trend</span>
+            <div class="mod-name">Quiet Quitting (Zone Of Control)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-s">Tier S</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-c)">▪ Active Ability · Queen · Cooldown: 10 turns</div>
+        <span class="mod-trigger">ACTIVATE: Select Queen → press Ability</span>
+        <div class="mod-desc">The Queen refuses to move this turn. Instead, she establishes a 3×3 Zone of Control. Any opponent piece entering the zone is pushed back 1 square. The Queen cannot move during the 2-turn zone. The zone is visible to both players. The Queen is not being lazy. The Queen is doing exactly what is required of her, no more, no less. This is a strategy. She has decided.</div>
+        <div class="mod-flavor">"The queen established her zone and sat quietly within it. This turned out to be extremely effective. Viktor noted this."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">5 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: I Hereby Declare — Zone + No-Fly Zone creates an impassable fortress</li>
+          <li class="conflict">Conflict: They Were The Traitor — if Queen defects during zone, zone follows her to opponent's side</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-C006</span>
+            <span class="mod-ref">≈ Warhammer 40K / "For The Emperor" big gun energy</span>
+            <div class="mod-name">FOR THE EMPEROR (Rook Fires)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-c)">▪ Active Ability · Rook · Cooldown: 7 turns</div>
+        <span class="mod-trigger">ACTIVATE: Select Rook → choose direction</span>
+        <div class="mod-desc">The Rook fires a cannonball in a chosen direction (N/S/E/W) that travels the full board length, capturing the first piece it hits regardless of colour. Yes — it can capture your own pieces. The Rook does not move. The cannonball is animated in flight. Nobody asked where the rook got a cannon. Nobody is asking now. FOR THE EMPEROR.</div>
+        <div class="mod-flavor">"The rook fired. Something was hit. Viktor is checking whether it was his. It was his."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">4 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Fog of War — cannonball can hit hidden pieces (blind fire)</li>
+          <li class="conflict">⚠ Balance Flag: Cannonball must not capture Kings (game-ending logic issue)</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-C007</span>
+            <span class="mod-ref">≈ "This is Sparta" / Thanos snap concept / sacrifice meta</span>
+            <div class="mod-name">This Is Necessary (The Snap)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-c)">▪ Active Ability · Any Piece · Cooldown: Once per piece</div>
+        <span class="mod-trigger">ACTIVATE: Select any non-King piece → Sacrifice</span>
+        <div class="mod-desc">Sacrifice any non-King piece. It is removed from the board. You receive a Tempo Token. Spend a Tempo Token to take an additional turn immediately after your current one — your opponent does not move between your two turns. Max 2 Tempo Tokens held at once. Each piece can only be sacrificed once. Was this necessary? Yes. Was it worth it? Ask the knight.</div>
+        <div class="mod-flavor">"The knight volunteered. 'This is necessary,' it communicated. Viktor used the extra turn. The knight was not wrong."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">4 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: The Small Council — 12 pawns = 12 potential Tempo Tokens</li>
+          <li class="conflict">⚠ Balance Flag: Double-turn must be validated to prevent check exploitation</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-C008</span>
+            <span class="mod-ref">≈ Revenge plots / "I've been waiting" thriller trope</span>
+            <div class="mod-name">I've Been Waiting For This (En Passant Banked)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-b">Tier B</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-c)">▪ Active Ability · Pawn · Cooldown: 3 turns</div>
+        <span class="mod-trigger">ACTIVATE: Available when en passant is legal</span>
+        <div class="mod-desc">En passant is no longer a one-turn window. Bank it. Store the capture option for up to 3 turns. Execute it whenever the moment is right — even if the opponent's pawn has since moved again. One banked en passant per pawn. The pawn glows faintly while holding it. The pawn has not forgotten. The pawn has been waiting for exactly the right moment. The pawn is ready.</div>
+        <div class="mod-flavor">"The pawn remembered. The pawn waited three turns. The pawn struck. 'I've been waiting for this,' the pawn communicated via movement."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">2 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="conflict">Conflict: 50 First Moves — banked en passant lost during history blackout</li>
+          <li class="synergy">Synergy: Retaliatory Swipe — backward capture + banked forward passant = extremely mobile pawns</li>
+        </ul></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ CATEGORY D — FOG OF WAR ══════════ -->
+  <div class="category" id="cat-d">
+    <div class="category-header">
+      <div class="category-letter">D</div>
+      <div class="category-info">
+        <span class="category-tag" style="color:var(--cat-d)">Category D · 8 Modifiers</span>
+        <div class="category-name" style="color:var(--cat-d)">Fog of War</div>
+        <div class="category-desc">Information is power. These modifiers restrict, corrupt, or weaponise visibility. Applies symmetrically to both players unless stated otherwise.</div>
+      </div>
+      <div class="category-count">MOD-D001 → MOD-D008</div>
+    </div>
+    <div class="modifier-grid">
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-D001</span>
+            <span class="mod-ref">≈ Minecraft night / "It's dark and I'm scared" meme</span>
+            <div class="mod-name">It's Dark And I'm Scared</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-s">Tier S</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-d)">▪ Fog of War · Radial Vision · Symmetric</div>
+        <span class="mod-trigger">TRIGGER: Match start (permanent)</span>
+        <div class="mod-desc">Both players can only see within 2 squares of their own pieces. The rest: black. Opponent pieces appear only when entering visible range. Crumbling edges make sound but are not visible in fog. Pigeon pieces are always visible — they have luminescent tail feathers for exactly this reason. Everything else is theory and anxiety.</div>
+        <div class="mod-flavor">"Viktor can see two squares in any direction. The other sixty-one squares are a philosophical position."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">4 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Forgive Me Bishop — reveals target through fog</li>
+          <li class="synergy">Synergy: Vent Tiles — vents invisible in fog until triggered</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-D002</span>
+            <span class="mod-ref">≈ Hollow Man / Predator / "I'm literally right here" invisible meme</span>
+            <div class="mod-name">I'm Literally Right Here</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-d)">▪ Fog of War · Decoys · Symmetric</div>
+        <span class="mod-trigger">TRIGGER: Match start (permanent)</span>
+        <div class="mod-desc">Each player places 2 Ghost Pieces — decoys that look real to the opponent. You choose which pieces are Ghosts during setup. Ghosts can move and appear real but vanish if an opponent piece passes through their square. You see your own Ghosts clearly. Your opponent cannot tell. Neither can Viktor, if Viktor is being honest, and Viktor is always being honest.</div>
+        <div class="mod-flavor">"One of those bishops isn't real. The opponent is very confident about which one. The opponent is wrong."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Forgive Me Bishop — confession reveals if target is a Ghost</li>
+          <li class="conflict">Conflict: YOU DIED autonomous moves never select Ghost pieces (the pieces know)</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-D003</span>
+            <span class="mod-ref">≈ Cheech & Chong / Snoop Dogg cloud / "What just happened" smoke</span>
+            <div class="mod-name">What's In The Cloud, Bro</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-b">Tier B</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-d)">▪ Fog of War · Temporary · Zone</div>
+        <span class="mod-trigger">TRIGGER: Every 10 turns + on each capture</span>
+        <div class="mod-desc">Every 10 turns, and on each capture, a 2×2 smoke cloud appears at that location for 3 turns. You see through your own smoke. Opponent does not. Any piece inside the cloud is invisible to the opponent. Movement through smoke is unaffected. What's in the cloud? Nobody knows. Probably a rook. Possibly a pigeon. Actually both.</div>
+        <div class="mod-flavor">"Something was captured in there. Viktor thinks it was his knight. Viktor is not sure anymore. Viktor is not sure about a lot of things."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">2 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: FOR THE EMPEROR — cannonball passes through smoke invisibly</li>
+          <li class="synergy">Synergy: The Floor Is Lava — smoke obscures Lava tile rotation path</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-D004</span>
+            <span class="mod-ref">≈ Rumsfeld "unknown unknowns" / "What you don't know" meme</span>
+            <div class="mod-name">Known Unknowns (The Rumsfeld)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-b">Tier B</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-d)">▪ Fog of War · Asymmetric · Random</div>
+        <span class="mod-trigger">TRIGGER: Match start + every 15 turns</span>
+        <div class="mod-desc">Each player has a randomly assigned Blind Spot — a 2×2 area they cannot see even if their pieces are adjacent. Blind Spots differ per player and shift every 15 turns. Players see the outline of their Blind Spot (they know where they can't see) but not what's inside it. There are known unknowns. This is one of them. There are also unknown unknowns. That's a different modifier.</div>
+        <div class="mod-flavor">"Viktor knows there is a 2×2 area he cannot see. Viktor does not know what is in it. Viktor knows that he does not know. Viktor is spiralling."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">2 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Forgive Me Bishop — target a piece you suspect is inside your Blind Spot</li>
+          <li class="conflict">Conflict: The Floor Is Lava — Lava rotating into Blind Spot is catastrophic</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-D005</span>
+            <span class="mod-ref">≈ Among Us Impostor / Spy kids / "Wolf in sheep's clothing"</span>
+            <div class="mod-name">Sus (One Of These Is Lying)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-d)">▪ Fog of War · Identity Corruption · Persistent</div>
+        <span class="mod-trigger">TRIGGER: Match start (permanent)</span>
+        <div class="mod-desc">One of your opponent's pieces is displayed to you as a different piece type. You see a bishop — it might be a rook. You see a pawn — it might be a queen. The piece moves like its true self (revealing identity through movement patterns if you pay attention). The disguise is permanent for the match. You are not told which piece is sus. Everyone is a little sus now.</div>
+        <div class="mod-flavor">"That pawn moved like a rook. Viktor voted it out. Viktor was wrong. Viktor always votes wrong."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: I'm Literally Right Here — two layers of identity uncertainty</li>
+          <li class="conflict">Conflict: Forgive Me Bishop — confession reveals true piece type of the Sus piece</li>
+          <li class="conflict">⚠ Balance Flag: King cannot be Sus (illegal checkmate scenarios)</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-D006</span>
+            <span class="mod-ref">≈ Cat with night vision / "I can see in the dark" Reddit moment</span>
+            <div class="mod-name">Cat Mode (Night Vision Activated)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-b">Tier B</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-d)">▪ Fog of War · Counter-Fog · Combo Modifier</div>
+        <span class="mod-trigger">TRIGGER: Active alongside any Fog modifier</span>
+        <div class="mod-desc">Only useful in combination with another Fog modifier. Extends visibility radius by 1 additional square beyond the fog variant's normal limit. Does nothing without an accompanying fog effect. Designed as a combo pick: take darkness, take Cat Mode to partially compensate. The cat sees further. The cat does not tell you what it sees. The cat stares into the void on its own terms.</div>
+        <div class="mod-flavor">"Viktor engaged Cat Mode. Viktor can see slightly more of the darkness. The darkness remains unimpressed."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">1 pt</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Intended combo: It's Dark And I'm Scared (4pt) + Cat Mode (1pt) = 5pt fog with extended sight</li>
+          <li class="conflict">Cat Mode cannot see into a Blind Spot — different visibility system</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-D007</span>
+            <span class="mod-ref">≈ GPS rerouting / "Recalculating" Siri meme</span>
+            <div class="mod-name">Recalculating… (Move Hints Corrupted)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-d)">▪ Fog of War · Move Hint Corruption · Persistent</div>
+        <span class="mod-trigger">TRIGGER: Match start (permanent)</span>
+        <div class="mod-desc">When you select a piece, the legal move highlights include 1–2 false squares that look legal but aren't. Attempting a false square triggers a "RECALCULATING…" message and wastes your selection — you must pick again. False squares are randomised each selection. All actual legal moves are still highlighted. The board is confidently wrong. The board is rerouting you. The board knows a shortcut.</div>
+        <div class="mod-flavor">"Viktor selected his knight. The board suggested f9. Viktor tried f9. f9 does not exist. RECALCULATING."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">No Ranked</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: YOU DIED autonomous moves use server logic — never affected by corrupted hints</li>
+          <li class="conflict">Conflict: I've Been Waiting — banked en passant highlight is never corrupted</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-D008</span>
+            <span class="mod-ref">≈ Big Brother / "The panopticon" / "I'm always watching" meme</span>
+            <div class="mod-name">Big Beak Is Watching</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-b">Tier B</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-d)">▪ Fog of War · Surveillance · Shared Mechanic</div>
+        <span class="mod-trigger">TRIGGER: Match start (permanent)</span>
+        <div class="mod-desc">One tile is designated the Surveillance Square at match start — visible to both players as a golden eye. Any piece moving within 1 square of it is revealed to BOTH players for 3 turns, regardless of fog. Both players can use the Surveillance Square strategically — bait opponents into it, or use it to confirm enemy positions. Big Beak is watching. Big Beak reports to both sides equally. Big Beak is impartial.</div>
+        <div class="mod-flavor">"There is a square that sees everything. Viktor is avoiding it. His opponent has noticed that Viktor is avoiding it. The square has noted this also."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">2 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: It's Dark And I'm Scared — Surveillance Square becomes the only source of shared information in full fog</li>
+          <li class="conflict">Conflict: Vent Tiles — a piece ejected through a Vent into the Surveillance field is immediately revealed</li>
+        </ul></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ CATEGORY E — ASYMMETRIC ARMIES ══════════ -->
+  <div class="category" id="cat-e">
+    <div class="category-header">
+      <div class="category-letter">E</div>
+      <div class="category-info">
+        <span class="category-tag" style="color:var(--cat-e)">Category E · 8 Modifiers</span>
+        <div class="category-name" style="color:var(--cat-e)">Asymmetric Armies</div>
+        <div class="category-desc">Non-standard piece configurations. Different counts, different types, or entirely new piece behaviours. Both players see each other's army before the match begins.</div>
+      </div>
+      <div class="category-count">MOD-E001 → MOD-E008</div>
+    </div>
+    <div class="modifier-grid">
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-E001</span>
+            <span class="mod-ref">≈ Pigeon chess origin meme / Hatoful Boyfriend game</span>
+            <div class="mod-name">Hatoful Gambit (The Flock Army)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-s">Tier S</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-e)">▪ Asymmetric · New Piece Type · Knight Replacement</div>
+        <span class="mod-trigger">TRIGGER: Match start (one player)</span>
+        <div class="mod-desc">Replace both Knights with Pigeon pieces. Pigeons move like Knights (L-shape) but every 5 turns each Pigeon announces (1 turn in advance) where it will autonomously hop — and then hops there regardless of your wishes. Hops can capture. The destination is visible to your opponent. Gerald will not sit on Pigeon pieces. Professional courtesy between birds.</div>
+        <div class="mod-flavor">"The pigeons are on the board. The pigeons have opinions about their positioning. Viktor is negotiating. The pigeons are not."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">5 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Did I Do That? — Pigeon pieces can also use the illegal rook-move ability</li>
+          <li class="synergy">Synergy: It's Dark And I'm Scared — Pigeon hop destinations always visible through fog</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-E002</span>
+            <span class="mod-ref">≈ Les Misérables / Occupy Wall Street / pawn as working class</span>
+            <div class="mod-name">The Small Council (Do You Hear The Pawns Sing)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-e)">▪ Asymmetric · Pawn Army · High Count</div>
+        <span class="mod-trigger">TRIGGER: Match start (one player)</span>
+        <div class="mod-desc">Replace Knights and Bishops with 4 extra Pawns — total: 12 Pawns, King, Queen, 2 Rooks. No Knights, no Bishops. The 12-pawn side starts one rank forward (Rank 3). Promote normally. The opponent keeps their standard army. Do you hear the pawns sing? Yes. Yes you do. They are singing right now. They are marching. They have a flag.</div>
+        <div class="mod-flavor">"The pawns are singing. Viktor is uncomfortable with the energy this brings to an otherwise professional chess match."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Retaliatory Swipe — 12 pawns with backward capture creates a mobile wall</li>
+          <li class="conflict">Conflict: The Storm Closes In — 12 pawns + shrinking board = gridlock (⚠ softlock risk)</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-E003</span>
+            <span class="mod-ref">≈ John Wick "there are three of them" / bodyguard trope</span>
+            <div class="mod-name">Yeah, There Are Three Of Them (Royal Guard)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-e)">▪ Asymmetric · King-Centric · Defensive</div>
+        <span class="mod-trigger">TRIGGER: Match start (one player)</span>
+        <div class="mod-desc">No Queen. Instead: 2 additional Kings (Royal Guards). Guards move like Kings and must also be kept out of check — but if a Guard is checkmated, it is removed from play rather than ending the game. The real King must still be protected normally. The opponent sees three Kings and has concerns. Their concerns are valid. There are three of them.</div>
+        <div class="mod-flavor">"Three kings on the board. The opponent looked at Viktor. Viktor looked at the board. 'Yeah,' Viktor said, 'there are three of them.'"</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: Heavy Is The Crown — all three kings move slowly (cursed combo)</li>
+          <li class="conflict">⚠ Balance Flag: Check/checkmate logic must tag the "real King" explicitly</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-E004</span>
+            <span class="mod-ref">≈ Fullmetal Alchemist "equivalent exchange" / overpowered anime character trope</span>
+            <div class="mod-name">Equivalent Exchange (The Chancellor)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-s">Tier S</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-e)">▪ Asymmetric · New Piece Type · Compound Mover</div>
+        <span class="mod-trigger">TRIGGER: Match start (replaces one Rook)</span>
+        <div class="mod-desc">Replace one Rook with The Chancellor — a piece combining Rook and Knight movement. Each turn choose: move like a Rook (any distance orthogonally) OR like a Knight (L-shape leap). Not both. To gain this power, you sacrifice a Rook. Equivalent exchange. The Chancellor does not question the arrangement. The Chancellor simply arrives wherever it needs to be.</div>
+        <div class="mod-flavor">"The Chancellor can go anywhere. The Chancellor chose here. Viktor is thinking about why it chose here. Viktor is now scared."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">5 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">All exc. Ranked S1</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="conflict">Conflict: This Is My Swamp — Chancellor in Swamp limited to 1 square regardless of move type</li>
+          <li class="synergy">Synergy: Did I Do That? — Chancellor using the Knight-ability as Rook move effectively covers the entire board in 2 turns</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-E005</span>
+            <span class="mod-ref">≈ Twin telepathy TikTok trend / "We share one brain" meme</span>
+            <div class="mod-name">Twin Telepathy (We Share One Brain)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-b">Tier B</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-e)">▪ Asymmetric · Linked Pieces · Symmetric Effect</div>
+        <span class="mod-trigger">TRIGGER: Match start (both players)</span>
+        <div class="mod-desc">Both players' Bishops are telepathically linked. When one Bishop moves, the other automatically mirrors the direction (not destination) as far as legally possible. If the mirror is illegal, the secondary Bishop doesn't move. Applies to both players equally. They share one brain. The brain is doing its best. The brain is making decisions for both of them and not asking permission.</div>
+        <div class="mod-flavor">"Viktor moved his bishop diagonally. His other bishop also moved diagonally. They did this without communicating. Viktor finds this unsettling. The bishops find it natural."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">2 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="conflict">Conflict: Forgive Me Bishop — confessing a Twin reveals its probable mirror move too</li>
+          <li class="conflict">⚠ Balance Flag: Mirror move must resolve server-side; client must not predict before confirmation</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-E006</span>
+            <span class="mod-ref">≈ Kratos / God of War "BOY!" / rage-mode gaming</span>
+            <div class="mod-name">BOY. (The Berserker)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-e)">▪ Asymmetric · Capture Chain · Aggressive</div>
+        <span class="mod-trigger">TRIGGER: On Berserker capture</span>
+        <div class="mod-desc">One designated non-King piece is The Berserker. Whenever it captures a piece, it may immediately chain-capture if another legal capture is available — and keep going as long as captures exist. The chain continues indefinitely. If The Berserker is captured, its title passes to a random surviving piece. The Berserker does not choose to do this. The Berserker simply does this. BOY.</div>
+        <div class="mod-flavor">"The rook captured once. Then again. Then a third time. 'BOY.' said the rook, to nobody in particular. The board was mostly empty now."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">4 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="conflict">Conflict: The Floor Is Lava — chain cannot continue if chain-land is on Lava</li>
+          <li class="synergy">Synergy: FOR THE EMPEROR — Berserker Rook with cannon ability is extremely high value</li>
+          <li class="conflict">⚠ Balance Flag: Chain capture termination condition must be explicit</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-E007</span>
+            <span class="mod-ref">≈ "Reject Modernity, Embrace Tradition" meme / underdog sports trope</span>
+            <div class="mod-name">Reject Queen, Embrace Knight (The Underpromoter)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-b">Tier B</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-e)">▪ Asymmetric · Promotion Rule · Strategic</div>
+        <span class="mod-trigger">TRIGGER: On pawn promotion (one player)</span>
+        <div class="mod-desc">Your pawns cannot promote to Queen. Knight, Bishop, or Rook only. However, any promoted piece gains BOY. chain-capture for their first capture after promotion. Underpromotion is no longer the consolation prize. Underpromotion is the strategy. Reject the queen. Embrace the knight. The knight is ready. The knight has always been ready.</div>
+        <div class="mod-flavor">"It became a knight. Everyone in the room was surprised. The knight had been expecting this. The knight had been training."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">2 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip active"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="synergy">Synergy: BOY. (Berserker) — if Berserker active, promoted piece chains from first capture</li>
+          <li class="synergy">Synergy: The Small Council — 12 unpromotable-to-queen pawns creates a fascinating strategic puzzle</li>
+        </ul></div>
+      </div>
+
+      <div class="mod-card">
+        <div class="mod-card-top">
+          <div>
+            <span class="mod-id">MOD-E008</span>
+            <span class="mod-ref">≈ Moneyball / free agency / "I'll pay to get them back" sports market</span>
+            <div class="mod-name">Moneyball (We'll Buy Them Back)</div>
+          </div>
+          <div class="mod-badges"><span class="badge badge-tier-a">Tier A</span></div>
+        </div>
+        <div class="mod-type" style="color:var(--cat-e)">▪ Asymmetric · Captured Piece Reuse · Economy</div>
+        <span class="mod-trigger">TRIGGER: On opponent capturing your piece</span>
+        <div class="mod-desc">Each piece you lose generates a Mercenary Token. Spend a Token (costs your turn) to drop a captured piece back onto any empty square as your own. Cannot drop to give check. Cannot drop pawns on Rank 1 or 8. Max 3 Tokens held. The piece asks no questions about working conditions. The piece is simply back. This is Moneyball. You've done the analysis. The market inefficiency is your captured rook.</div>
+        <div class="mod-flavor">"Viktor lost a bishop. Viktor ran the numbers. Viktor bought the bishop back at a discount. The bishop did not know it was traded. The bishop will not know."</div>
+        <div class="mod-stats">
+          <div class="mod-stat"><span class="mod-stat-label">Point Cost</span><span class="mod-stat-value cost-pos">4 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">All exc. Ranked S1</span></div>
+        </div>
+        <div class="mod-interactions"><span class="mod-interactions-label">Interactions</span><ul>
+          <li class="conflict">Conflict: They Were The Traitor — defected piece captured = can be bought back (YES, this is the ruling)</li>
+          <li class="synergy">Synergy: This Is Necessary (The Snap) — sacrificed pieces generate Tokens (economy loop)</li>
+          <li class="conflict">⚠ Balance Flag: Drop-check guard is critical — server-side validation required every placement</li>
+        </ul></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BALANCE SUMMARY -->
+  <div class="balance-section" id="balance">
+    <div class="section-title">Balance Summary — v0.2</div>
+    <div class="section-sub">All 40 modifiers · pop-culture names · costs and tiers unchanged from v0.1</div>
+    <table>
+      <thead><tr><th>ID</th><th>v0.2 Name</th><th>Reference</th><th>Cat</th><th>Tier</th><th>Cost</th><th>Curse</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td class="td-cat">A001</td><td class="td-name">The Cordyceptic Spread</td><td class="td-ref">The Last of Us</td><td class="td-cat" style="color:var(--cat-a)">Board</td><td><span class="badge badge-tier-s">S</span></td><td class="cost-pos">4</td><td>1</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">A002</td><td class="td-name">The Floor Is Lava</td><td class="td-ref">Viral Meme</td><td class="td-cat" style="color:var(--cat-a)">Board</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-pos">3</td><td>1</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">A003</td><td class="td-name">Vent Tiles</td><td class="td-ref">Among Us</td><td class="td-cat" style="color:var(--cat-a)">Board</td><td><span class="badge badge-tier-b">B</span></td><td class="cost-pos">2</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">A004</td><td class="td-name">Winter Is Coming (To Your Pieces)</td><td class="td-ref">Game of Thrones</td><td class="td-cat" style="color:var(--cat-a)">Board</td><td><span class="badge badge-tier-b">B</span></td><td class="cost-pos">2</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">A005</td><td class="td-name">The Storm Closes In</td><td class="td-ref">Fortnite / Minecraft</td><td class="td-cat" style="color:var(--cat-a)">Board</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-pos">3</td><td>1</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">A006</td><td class="td-name">This Is My Swamp</td><td class="td-ref">Shrek Meme</td><td class="td-cat" style="color:var(--cat-a)">Board</td><td><span class="badge badge-tier-b">B</span></td><td class="cost-pos">2</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">A007</td><td class="td-name">Gravitational Anomaly (Don't Think About It)</td><td class="td-ref">Interstellar / Gravity Falls</td><td class="td-cat" style="color:var(--cat-a)">Board</td><td><span class="badge badge-tier-s">S</span></td><td class="cost-pos">5</td><td>2</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">A008</td><td class="td-name">Bandersnatch Protocol</td><td class="td-ref">Black Mirror</td><td class="td-cat" style="color:var(--cat-a)">Board</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-pos">3</td><td>1</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">B001</td><td class="td-name">YOU DIED (But A Piece Did)</td><td class="td-ref">Elden Ring / Dark Souls</td><td class="td-cat" style="color:var(--cat-b)">Curse</td><td><span class="badge badge-tier-s">S</span></td><td class="cost-neg">−3</td><td>3</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">B002</td><td class="td-name">Distracted Piece</td><td class="td-ref">Distracted Boyfriend Meme</td><td class="td-cat" style="color:var(--cat-b)">Curse</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-neg">−2</td><td>2</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">B003</td><td class="td-name">No, I Don't Think I Will</td><td class="td-ref">Captain A Meme</td><td class="td-cat" style="color:var(--cat-b)">Curse</td><td><span class="badge badge-tier-b">B</span></td><td class="cost-neg">−1</td><td>1</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">B004</td><td class="td-name">Heavy Is The Crown (uneasy lies)</td><td class="td-ref">Drake / Kendrick / Shakespeare</td><td class="td-cat" style="color:var(--cat-b)">Curse</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-neg">−2</td><td>2</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">B005</td><td class="td-name">50 First Moves</td><td class="td-ref">50 First Dates / Memento</td><td class="td-cat" style="color:var(--cat-b)">Curse</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-neg">−2</td><td>2</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">B006</td><td class="td-name">They Were The Traitor</td><td class="td-ref">Among Us ejection screen</td><td class="td-cat" style="color:var(--cat-b)">Curse</td><td><span class="badge badge-tier-s">S</span></td><td class="cost-neg">−3</td><td>3</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">B007</td><td class="td-name">Conscientious Objector</td><td class="td-ref">Pacifist protest memes</td><td class="td-cat" style="color:var(--cat-b)">Curse</td><td><span class="badge badge-tier-b">B</span></td><td class="cost-neg">−1</td><td>1</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">B008</td><td class="td-name">7/10 — Too Many Pieces</td><td class="td-ref">IGN "Too Much Water" review</td><td class="td-cat" style="color:var(--cat-b)">Curse</td><td><span class="badge badge-tier-b">B</span></td><td class="cost-neg">−1</td><td>1</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">C001</td><td class="td-name">I Hereby Declare (Executive Move)</td><td class="td-ref">Executive order meme</td><td class="td-cat" style="color:var(--cat-c)">Ability</td><td><span class="badge badge-tier-s">S</span></td><td class="cost-pos">4</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">C002</td><td class="td-name">Forgive Me, For I Have Moved</td><td class="td-ref">Confession Bear Meme</td><td class="td-cat" style="color:var(--cat-c)">Ability</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-pos">3</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">C003</td><td class="td-name">Did I Do That? (Oops)</td><td class="td-ref">Urkel / Break The Rules meme</td><td class="td-cat" style="color:var(--cat-c)">Ability</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-pos">3</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">C004</td><td class="td-name">Retaliatory Swipe (Look What You Made Me Do)</td><td class="td-ref">Taylor Swift Reputation</td><td class="td-cat" style="color:var(--cat-c)">Ability</td><td><span class="badge badge-tier-b">B</span></td><td class="cost-pos">2</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">C005</td><td class="td-name">Quiet Quitting (Zone Of Control)</td><td class="td-ref">Quiet Quitting Trend</td><td class="td-cat" style="color:var(--cat-c)">Ability</td><td><span class="badge badge-tier-s">S</span></td><td class="cost-pos">5</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">C006</td><td class="td-name">FOR THE EMPEROR (Rook Fires)</td><td class="td-ref">Warhammer 40K</td><td class="td-cat" style="color:var(--cat-c)">Ability</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-pos">4</td><td>1</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">C007</td><td class="td-name">This Is Necessary (The Snap)</td><td class="td-ref">MCU / Thanos concept</td><td class="td-cat" style="color:var(--cat-c)">Ability</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-pos">4</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">C008</td><td class="td-name">I've Been Waiting For This</td><td class="td-ref">Thriller / revenge trope</td><td class="td-cat" style="color:var(--cat-c)">Ability</td><td><span class="badge badge-tier-b">B</span></td><td class="cost-pos">2</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">D001</td><td class="td-name">It's Dark And I'm Scared</td><td class="td-ref">Minecraft night meme</td><td class="td-cat" style="color:var(--cat-d)">Fog</td><td><span class="badge badge-tier-s">S</span></td><td class="cost-pos">4</td><td>1</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">D002</td><td class="td-name">I'm Literally Right Here</td><td class="td-ref">Invisible man memes</td><td class="td-cat" style="color:var(--cat-d)">Fog</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-pos">3</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">D003</td><td class="td-name">What's In The Cloud, Bro</td><td class="td-ref">Snoop / smoke culture</td><td class="td-cat" style="color:var(--cat-d)">Fog</td><td><span class="badge badge-tier-b">B</span></td><td class="cost-pos">2</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">D004</td><td class="td-name">Known Unknowns (The Rumsfeld)</td><td class="td-ref">Rumsfeld press conference</td><td class="td-cat" style="color:var(--cat-d)">Fog</td><td><span class="badge badge-tier-b">B</span></td><td class="cost-pos">2</td><td>1</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">D005</td><td class="td-name">Sus (One Of These Is Lying)</td><td class="td-ref">Among Us</td><td class="td-cat" style="color:var(--cat-d)">Fog</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-pos">3</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">D006</td><td class="td-name">Cat Mode (Night Vision Activated)</td><td class="td-ref">Cat meme / night vision Reddit</td><td class="td-cat" style="color:var(--cat-d)">Fog</td><td><span class="badge badge-tier-b">B</span></td><td class="cost-pos">1</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">D007</td><td class="td-name">Recalculating…</td><td class="td-ref">GPS / Siri rerouting meme</td><td class="td-cat" style="color:var(--cat-d)">Fog</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-pos">3</td><td>1</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">D008</td><td class="td-name">Big Beak Is Watching</td><td class="td-ref">Big Brother / panopticon</td><td class="td-cat" style="color:var(--cat-d)">Fog</td><td><span class="badge badge-tier-b">B</span></td><td class="cost-pos">2</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">E001</td><td class="td-name">Hatoful Gambit</td><td class="td-ref">Hatoful Boyfriend / pigeon chess meme</td><td class="td-cat" style="color:var(--cat-e)">Army</td><td><span class="badge badge-tier-s">S</span></td><td class="cost-pos">5</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">E002</td><td class="td-name">The Small Council (Do You Hear The Pawns Sing)</td><td class="td-ref">Les Misérables / Occupy</td><td class="td-cat" style="color:var(--cat-e)">Army</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-pos">3</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">E003</td><td class="td-name">Yeah, There Are Three Of Them</td><td class="td-ref">John Wick bodyguard trope</td><td class="td-cat" style="color:var(--cat-e)">Army</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-pos">3</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">E004</td><td class="td-name">Equivalent Exchange (The Chancellor)</td><td class="td-ref">Fullmetal Alchemist</td><td class="td-cat" style="color:var(--cat-e)">Army</td><td><span class="badge badge-tier-s">S</span></td><td class="cost-pos">5</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">E005</td><td class="td-name">Twin Telepathy (We Share One Brain)</td><td class="td-ref">Twin telepathy TikTok trend</td><td class="td-cat" style="color:var(--cat-e)">Army</td><td><span class="badge badge-tier-b">B</span></td><td class="cost-pos">2</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">E006</td><td class="td-name">BOY. (The Berserker)</td><td class="td-ref">God of War / Kratos</td><td class="td-cat" style="color:var(--cat-e)">Army</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-pos">4</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">E007</td><td class="td-name">Reject Queen, Embrace Knight</td><td class="td-ref">Reject Modernity meme</td><td class="td-cat" style="color:var(--cat-e)">Army</td><td><span class="badge badge-tier-b">B</span></td><td class="cost-pos">2</td><td>1</td><td><span class="pill pill-launch">Launch</span></td></tr>
+        <tr><td class="td-cat">E008</td><td class="td-name">Moneyball (We'll Buy Them Back)</td><td class="td-ref">Moneyball / sports market</td><td class="td-cat" style="color:var(--cat-e)">Army</td><td><span class="badge badge-tier-a">A</span></td><td class="cost-pos">4</td><td>0</td><td><span class="pill pill-launch">Launch</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- DESIGN RULES -->
+  <div class="balance-section" id="rules">
+    <div class="section-title">Modifier Design Rules</div>
+    <div class="section-sub">Unchanged from v0.1. Every modifier satisfies these before entering production.</div>
+    <div class="rules-grid">
+      <div class="rule-card"><span class="rule-num">RULE 01</span><div class="rule-title">The Laugh Test</div><div class="rule-body">Every modifier must produce at least one moment per match that makes a player laugh, groan, or say "what?" out loud. Frustration without delight = rewrite.</div></div>
+      <div class="rule-card"><span class="rule-num">RULE 02</span><div class="rule-title">The Rematch Test</div><div class="rule-body">After losing with a modifier active, the loser should want to play again — not quit. Consistently produces "I want to uninstall" = nerf or remove.</div></div>
+      <div class="rule-card"><span class="rule-num">RULE 03</span><div class="rule-title">The Legibility Rule</div><div class="rule-body">Every modifier effect must be understandable at a glance. If an effect requires reading a tooltip mid-game, simplify it.</div></div>
+      <div class="rule-card"><span class="rule-num">RULE 04</span><div class="rule-title">The King Is Sacred</div><div class="rule-body">No modifier may directly capture, permanently disable, or hide the King without explicit checkmate resolution logic. Every King-touching modifier requires double review.</div></div>
+      <div class="rule-card"><span class="rule-num">RULE 05</span><div class="rule-title">Server Authority</div><div class="rule-body">All modifier logic executes server-side. No exceptions. Client renders only. Anti-cheat starts here.</div></div>
+      <div class="rule-card"><span class="rule-num">RULE 06</span><div class="rule-title">No Softlocks</div><div class="rule-body">Every interaction that could theoretically prevent game-end must be tested. Softlock potential = combination banned or forced-draw rule added.</div></div>
+      <div class="rule-card"><span class="rule-num">RULE 07</span><div class="rule-title">Balance Patch Cadence</div><div class="rule-body">Point costs adjust in 0.5pt increments every 2 weeks. No modifier above 60% or below 40% win rate in its bracket after 2 weeks of live data.</div></div>
+      <div class="rule-card"><span class="rule-num">RULE 08</span><div class="rule-title">Curse Must Pay</div><div class="rule-body">Every Cursed modifier must grant enough negative points that a skilled player can build a viable loadout around the extra budget.</div></div>
+      <div class="rule-card"><span class="rule-num">RULE 09</span><div class="rule-title">Ranked Pool Curation</div><div class="rule-body">Not every modifier enters Ranked every season. New modifiers spend one season in Casual-only before Ranked eligibility.</div></div>
+      <div class="rule-card"><span class="rule-num">RULE 10</span><div class="rule-title">Interactions Are Features</div><div class="rule-body">Surprising modifier interactions are content, not bugs. Document all discovered combos. Patch only interactions that violate Rules 04 or 06.</div></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="doc-footer">
+  PIGEON CHESS · MODIFIER DESIGN BIBLE · PC-MOD-001 · v0.2 · POP CULTURE RETHEME · PRE-PRODUCTION<br>
+  40 MODIFIERS · 5 CATEGORIES · ALL LAUNCH TARGET · MECHANICS UNCHANGED FROM v0.1<br>
+  Next: Technical Design Document · Art Direction Guide · Reginald Beak's 150-Line Review Script
+</div>
+
+</body>
+</html>

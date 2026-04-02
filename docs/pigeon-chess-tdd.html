@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pigeon Chess — Technical Design Document v0.1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:ital,wght@0,300;0,400;0,600;0,700;1,300&family=Barlow+Condensed:wght@700;800&display=swap');
+
+  :root {
+    --bg:       #080b10;
+    --bg2:      #0d1117;
+    --bg3:      #131920;
+    --surface:  #1a2230;
+    --border:   #1e2d40;
+    --border2:  #243550;
+    --text:     #c8d8e8;
+    --text-dim: #6a8aaa;
+    --text-faint: #2a4060;
+
+    --green:  #00e5a0;
+    --blue:   #0090ff;
+    --amber:  #ffaa00;
+    --red:    #ff4455;
+    --purple: #aa66ff;
+    --cyan:   #00ccee;
+
+    --mono: 'Share Tech Mono', monospace;
+    --body: 'Barlow', sans-serif;
+    --head: 'Barlow Condensed', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: var(--body); font-size: 15px; line-height: 1.7; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    padding: 4rem 2rem;
+  }
+
+  .cover-scanlines {
+    position: absolute; inset: 0; z-index: 1;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+  }
+
+  .cover-grid {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,144,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,144,255,0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .cover-glow {
+    position: absolute; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(0,144,255,0.07) 0%, transparent 70%);
+  }
+
+  .cover-inner { position: relative; z-index: 2; text-align: center; max-width: 800px; }
+
+  .cover-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--green);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+  }
+
+  .cover-eyebrow::before, .cover-eyebrow::after {
+    content: '';
+    display: block;
+    width: 40px; height: 1px;
+    background: var(--green);
+    opacity: 0.5;
+  }
+
+  .cover-title {
+    font-family: var(--head);
+    font-weight: 800;
+    font-size: clamp(3.5rem, 9vw, 7rem);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .cover-title .accent { color: var(--blue); }
+  .cover-title .dim { color: var(--text-dim); font-weight: 300; }
+
+  .cover-version {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--amber);
+    letter-spacing: 0.2em;
+    margin: 1.5rem 0;
+  }
+
+  .cover-tags {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;
+    margin: 2rem 0;
+  }
+
+  .cover-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--border2);
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .cover-tag.hi { border-color: var(--blue); color: var(--blue); }
+
+  .cover-refs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .cover-ref {
+    background: var(--bg2);
+    padding: 0.75rem 1rem;
+    text-align: left;
+  }
+
+  .cover-ref-label {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    color: var(--text-faint);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+
+  .cover-ref-val {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--text);
+  }
+
+  /* ── LAYOUT ── */
+  .page { max-width: 1000px; margin: 0 auto; padding: 4rem 1.5rem 8rem; }
+
+  /* ── STICKY NAV ── */
+  .toc-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,11,16,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1.5rem;
+    display: flex; flex-wrap: wrap; gap: 0.4rem;
+    margin-bottom: 4rem;
+  }
+
+  .toc-btn {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+
+  .toc-btn:hover { border-color: var(--border2); color: var(--text); }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 6rem; }
+
+  .section-header {
+    display: flex; align-items: baseline; gap: 1rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--blue);
+    letter-spacing: 0.15em;
+    white-space: nowrap;
+  }
+
+  h2 {
+    font-family: var(--head);
+    font-weight: 800;
+    font-size: 2.2rem;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  h3 {
+    font-family: var(--head);
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    margin: 2.5rem 0 1rem;
+  }
+
+  h4 {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--amber);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin: 2rem 0 0.75rem;
+  }
+
+  p { margin-bottom: 1rem; color: var(--text); font-weight: 300; }
+  strong { font-weight: 600; color: var(--text); }
+
+  ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+  li { margin-bottom: 0.35rem; font-weight: 300; }
+
+  /* ── CODE BLOCKS ── */
+  .code-block {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--blue);
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    position: relative;
+  }
+
+  .code-block-label {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    color: var(--blue);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  .code-block pre {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: var(--text);
+    white-space: pre;
+  }
+
+  .cm  { color: var(--text-dim); }   /* comment */
+  .ck  { color: var(--purple); }     /* keyword */
+  .cs  { color: var(--green); }      /* string */
+  .cn  { color: var(--cyan); }       /* name/type */
+  .cv  { color: var(--amber); }      /* value */
+  .cf  { color: var(--blue); }       /* function */
+
+  /* ── CALLOUTS ── */
+  .callout {
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    border-left: 3px solid;
+    font-size: 0.9rem;
+    font-weight: 300;
+  }
+
+  .callout-label {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 400;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .callout.warn  { background: rgba(255,170,0,0.05); border-color: var(--amber); }
+  .callout.warn .callout-label { color: var(--amber); }
+
+  .callout.info  { background: rgba(0,144,255,0.05); border-color: var(--blue); }
+  .callout.info .callout-label { color: var(--blue); }
+
+  .callout.danger { background: rgba(255,68,85,0.05); border-color: var(--red); }
+  .callout.danger .callout-label { color: var(--red); }
+
+  .callout.success { background: rgba(0,229,160,0.05); border-color: var(--green); }
+  .callout.success .callout-label { color: var(--green); }
+
+  /* ── DECISION TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin: 1.5rem 0;
+  }
+
+  thead { background: var(--surface); }
+
+  th {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 0.6rem 0.9rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border2);
+  }
+
+  td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    font-weight: 300;
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
+  tr:hover td { background: var(--bg3); }
+
+  .td-code { font-family: var(--mono); font-size: 0.75rem; }
+  .td-green { color: var(--green); font-family: var(--mono); font-size: 0.72rem; }
+  .td-amber { color: var(--amber); font-family: var(--mono); font-size: 0.72rem; }
+  .td-red   { color: var(--red);   font-family: var(--mono); font-size: 0.72rem; }
+  .td-blue  { color: var(--blue);  font-family: var(--mono); font-size: 0.72rem; }
+
+  /* ── ARCH DIAGRAM ── */
+  .arch-diagram {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin: 1.5rem 0;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    line-height: 1.8;
+    color: var(--text-dim);
+    overflow-x: auto;
+  }
+
+  .arch-diagram .layer-label {
+    color: var(--blue);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .arch-diagram .box { color: var(--text); }
+  .arch-diagram .arrow { color: var(--text-faint); }
+  .arch-diagram .highlight { color: var(--green); }
+  .arch-diagram .warn { color: var(--amber); }
+
+  /* ── STATE MACHINE ── */
+  .state-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 1.5rem 0;
+  }
+
+  .state-card {
+    background: var(--bg2);
+    padding: 1.25rem;
+  }
+
+  .state-name {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--cyan);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .state-desc {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+  }
+
+  .state-hooks {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--text-faint);
+    line-height: 1.7;
+  }
+
+  .state-hook-item { color: var(--purple); }
+
+  /* ── DB SCHEMA ── */
+  .schema-block {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--purple);
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+  }
+
+  .schema-table-name {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--purple);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.1em;
+  }
+
+  .schema-fields {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    line-height: 1.9;
+  }
+
+  .sf-name { color: var(--cyan); }
+  .sf-type { color: var(--amber); }
+  .sf-note { color: var(--text-faint); }
+  .sf-pk   { color: var(--green); }
+
+  /* ── PRIORITY LIST ── */
+  .priority-list { list-style: none; padding: 0; margin: 1.5rem 0; }
+
+  .priority-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+
+  .priority-item:hover { background: var(--bg2); }
+
+  .priority-num {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--blue);
+    min-width: 2rem;
+    padding-top: 0.1rem;
+  }
+
+  .priority-content { flex: 1; }
+
+  .priority-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .priority-desc {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .priority-badge {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 2px;
+    white-space: nowrap;
+    align-self: center;
+  }
+
+  .pb-critical { background: rgba(255,68,85,0.15); color: var(--red); border: 1px solid rgba(255,68,85,0.3); }
+  .pb-high     { background: rgba(255,170,0,0.10); color: var(--amber); border: 1px solid rgba(255,170,0,0.3); }
+  .pb-medium   { background: rgba(0,144,255,0.10); color: var(--blue); border: 1px solid rgba(0,144,255,0.3); }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--text-faint);
+    letter-spacing: 0.15em;
+    margin-top: 4rem;
+  }
+
+  /* ── TWO COL ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0; }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+  .info-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+  }
+
+  .info-box-label {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--text-faint);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ COVER ═══ -->
+<div class="cover">
+  <div class="cover-grid"></div>
+  <div class="cover-glow"></div>
+  <div class="cover-scanlines"></div>
+  <div class="cover-inner">
+    <div class="cover-eyebrow">Technical Design Document</div>
+    <h1 class="cover-title">
+      <span class="dim">PIGEON</span><br>
+      <span class="accent">CHESS</span><br>
+      <span class="dim">TDD</span>
+    </h1>
+    <div class="cover-version">PC-TDD-001 · VERSION 0.1 · PRE-PRODUCTION</div>
+    <div class="cover-tags">
+      <span class="cover-tag hi">React + TypeScript</span>
+      <span class="cover-tag hi">Node.js + Fastify</span>
+      <span class="cover-tag hi">PostgreSQL + Redis</span>
+      <span class="cover-tag hi">Phaser 3</span>
+      <span class="cover-tag hi">Socket.IO</span>
+      <span class="cover-tag hi">Tauri (Steam)</span>
+      <span class="cover-tag">Web + Steam</span>
+      <span class="cover-tag">Solo / Tiny Team</span>
+      <span class="cover-tag">Ref: GDD v0.1 · MOD-001 v0.2</span>
+    </div>
+    <div class="cover-refs">
+      <div class="cover-ref"><span class="cover-ref-label">Sections</span><span class="cover-ref-val">12</span></div>
+      <div class="cover-ref"><span class="cover-ref-label">Critical Systems</span><span class="cover-ref-val">6</span></div>
+      <div class="cover-ref"><span class="cover-ref-label">DB Tables</span><span class="cover-ref-val">14</span></div>
+      <div class="cover-ref"><span class="cover-ref-label">Modifier Hooks</span><span class="cover-ref-val">9</span></div>
+      <div class="cover-ref"><span class="cover-ref-label">Build Order</span><span class="cover-ref-val">Defined</span></div>
+      <div class="cover-ref"><span class="cover-ref-label">Status</span><span class="cover-ref-val">DRAFT</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE ═══ -->
+<div class="page">
+
+<nav class="toc-nav">
+  <a class="toc-btn" href="#s01">01 · Stack Decisions</a>
+  <a class="toc-btn" href="#s02">02 · System Architecture</a>
+  <a class="toc-btn" href="#s03">03 · Chess Engine</a>
+  <a class="toc-btn" href="#s04">04 · Modifier State Machine</a>
+  <a class="toc-btn" href="#s05">05 · Real-Time Layer</a>
+  <a class="toc-btn" href="#s06">06 · Database Schema</a>
+  <a class="toc-btn" href="#s07">07 · Matchmaking</a>
+  <a class="toc-btn" href="#s08">08 · Replay System</a>
+  <a class="toc-btn" href="#s09">09 · Roguelike Systems</a>
+  <a class="toc-btn" href="#s10">10 · Auth + Accounts</a>
+  <a class="toc-btn" href="#s11">11 · Steam / Tauri</a>
+  <a class="toc-btn" href="#s12">12 · Build Order</a>
+</nav>
+
+
+<!-- ══════════════════════════════ 01 STACK ══════════════════════════════ -->
+<div class="section" id="s01">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2>Stack Decisions</h2>
+  </div>
+
+  <p>Every decision below was evaluated against three constraints set in the GDD: <strong>solo/tiny team</strong>, <strong>web-first with Steam wrapper</strong>, and <strong>modifier logic must be server-authoritative</strong>. The decisions marked LOCKED are final. OPEN items are documented with trade-offs and must be resolved before Phase 0 begins.</p>
+
+  <h3>Final Decisions — LOCKED</h3>
+
+  <table>
+    <thead><tr><th>Layer</th><th>Decision</th><th>Rationale</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Frontend Framework</strong></td>
+        <td class="td-code">React 18 + TypeScript 5</td>
+        <td>Component model maps well to game UI (board, modifier cards, draft UI). Large ecosystem. Tauri supports React natively. Strict TypeScript enforces game state typing from day one.</td>
+        <td class="td-green">LOCKED</td>
+      </tr>
+      <tr>
+        <td><strong>Game Renderer</strong></td>
+        <td class="td-code">Phaser 3</td>
+        <td>Phaser's Scene system is ideal for board rendering, pigeon animations, tile mutation effects, and fog overlays. Has built-in tweens, particles, and camera controls. Embeds cleanly inside a React component via a canvas ref. More complete than PixiJS for a game with mid-match visual events.</td>
+        <td class="td-green">LOCKED</td>
+      </tr>
+      <tr>
+        <td><strong>Backend Runtime</strong></td>
+        <td class="td-code">Node.js 20 LTS + Fastify</td>
+        <td>Fastify is 35% faster than Express on benchmarks, has first-class TypeScript support, and better plugin architecture. Shares TypeScript types with frontend — game state interfaces defined once, used everywhere.</td>
+        <td class="td-green">LOCKED</td>
+      </tr>
+      <tr>
+        <td><strong>Real-Time</strong></td>
+        <td class="td-code">Socket.IO 4</td>
+        <td>Auto-reconnect, rooms, namespaces, and fallback to long-polling are essential for a chess game where a dropped connection mid-match is a serious UX failure. Native WebSockets lack these guarantees.</td>
+        <td class="td-green">LOCKED</td>
+      </tr>
+      <tr>
+        <td><strong>Primary Database</strong></td>
+        <td class="td-code">PostgreSQL 16</td>
+        <td>ACID compliance required for ELO updates, match results, and currency transactions. JSON columns handle flexible modifier state storage. Mature, battle-tested, free.</td>
+        <td class="td-green">LOCKED</td>
+      </tr>
+      <tr>
+        <td><strong>Cache / Session Store</strong></td>
+        <td class="td-code">Redis 7</td>
+        <td>Active game state lives in Redis during a match (sub-millisecond reads). Matchmaking queues. Session tokens. Cooldown timers. Pub/Sub for multi-server scale. Persisted to Postgres on match end.</td>
+        <td class="td-green">LOCKED</td>
+      </tr>
+      <tr>
+        <td><strong>ORM</strong></td>
+        <td class="td-code">Prisma 5</td>
+        <td>Type-safe DB queries that share TypeScript interfaces with the rest of the stack. Auto-migration workflow suits a small team. Prisma Studio is useful for debugging game state during development.</td>
+        <td class="td-green">LOCKED</td>
+      </tr>
+      <tr>
+        <td><strong>Auth</strong></td>
+        <td class="td-code">Clerk</td>
+        <td>Handles OAuth (Google, Discord, Steam), JWT session management, and user metadata out of the box. Clerk's pre-built components reduce auth UI work to near zero. Free tier sufficient for launch.</td>
+        <td class="td-green">LOCKED</td>
+      </tr>
+      <tr>
+        <td><strong>Steam Wrapper</strong></td>
+        <td class="td-code">Tauri 2</td>
+        <td>Rust-based, produces a ~3MB binary vs Electron's ~80MB. Wraps the web app with minimal overhead. Tauri 2 supports mobile targets if needed post-launch. Greenworks (Steam SDK bindings) available via community plugin.</td>
+        <td class="td-green">LOCKED</td>
+      </tr>
+      <tr>
+        <td><strong>Hosting (MVP)</strong></td>
+        <td class="td-code">Railway</td>
+        <td>One-command deploy for Node.js + Postgres + Redis. Free tier for development. Auto-scales. ~$20/mo for a production hobby tier — appropriate for solo dev MVP. Migrate to AWS/GCP at meaningful scale.</td>
+        <td class="td-green">LOCKED</td>
+      </tr>
+      <tr>
+        <td><strong>Monorepo</strong></td>
+        <td class="td-code">pnpm workspaces + Turborepo</td>
+        <td>Shared TypeScript types between client, server, and shared packages (game logic types, modifier definitions). Turborepo caches builds intelligently — critical for a small team's iteration speed.</td>
+        <td class="td-green">LOCKED</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Open Decisions — Must Resolve Before Phase 0</h3>
+
+  <div class="callout warn">
+    <span class="callout-label">⚠ Open Decision 1 — Chess Engine: chess.js vs. Custom</span>
+    <strong>chess.js</strong> is battle-tested, handles all FIDE rules, and ships in days. But it has no concept of modifier hooks — every modifier that breaks standard rules requires monkey-patching chess.js internals or wrapping it in adapter logic that grows increasingly brittle.<br><br>
+    <strong>Custom engine</strong> is designed from day one around the modifier state machine. It takes 2–4 weeks to build to parity with chess.js, but every modifier integrates cleanly.<br><br>
+    <strong>Recommendation:</strong> Use chess.js for Phase 0 prototype only. Build the custom engine in parallel during Phase 1. The custom engine replaces chess.js before MVP launch. Do not ship chess.js to production — the modifier interaction debt will compound fast.
+  </div>
+
+  <div class="callout warn">
+    <span class="callout-label">⚠ Open Decision 2 — Anti-Cheat Strategy</span>
+    All move validation is server-authoritative (non-negotiable). The open question is the depth of anti-cheat beyond that: engine analysis flagging (like Stockfish comparison), behavioral analysis (move timing patterns), or report-and-review only at launch.<br><br>
+    <strong>Recommendation:</strong> Report-and-review at MVP. Stockfish integration in Ranked Season 2 when there's data to set meaningful thresholds. Modifier chaos makes engine comparison unreliable until baseline data is established.
+  </div>
+
+</div>
+
+
+<!-- ══════════════════════════════ 02 ARCHITECTURE ══════════════════════════════ -->
+<div class="section" id="s02">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2>System Architecture</h2>
+  </div>
+
+  <div class="arch-diagram">
+    <span class="layer-label">── CLIENT LAYER ───────────────────────────────────────────────</span>
+
+    <span class="box">  [ React App ]  ←──────────────────────────────────────────────────────────┐</span>
+    <span class="box">      │                                                                      │</span>
+    <span class="box">      ├── [ Phaser 3 Scene ]  ← Board rendering, animations, FX             │</span>
+    <span class="box">      ├── [ Modifier Draft UI ]  ← Card picking, auction, ban UI            │</span>
+    <span class="box">      ├── [ Run Map UI ]  ← Roguelike node map (Slay the Spire style)       │</span>
+    <span class="box">      ├── [ Meta / Store UI ]  ← ELO display, cosmetics, battle pass        │</span>
+    <span class="box">      └── [ Socket.IO Client ]  ──────────────────────────────────────────┤</span>
+    <span class="arrow">                                                                             │</span>
+    <span class="layer-label">── TRANSPORT ──────────────────────────────────────────────────</span>
+    <span class="arrow">                                                                             │</span>
+    <span class="box">  WebSocket (Socket.IO)  ←── moves, events, game state sync                 │</span>
+    <span class="box">  REST (HTTPS)           ←── auth, profiles, matchmaking, store, puzzles    │</span>
+    <span class="arrow">                                │                                            │</span>
+    <span class="layer-label">── SERVER LAYER ───────────────────────────────────────────────</span>
+    <span class="arrow">                                │                                            │</span>
+    <span class="box">  [ Fastify API Server ]         │                                            │</span>
+    <span class="box">      │                           │                                            │</span>
+    <span class="box">      ├── [ Auth Middleware ] (Clerk JWT verification)                       │</span>
+    <span class="box">      ├── [ Game Room Manager ]  ←── creates/destroys Socket.IO rooms        │</span>
+    <span class="highlight">      ├── [ Chess Engine ]  ←── ALL move validation lives here</span>               │
+    <span class="highlight">      ├── [ Modifier State Machine ]  ←── ALL modifier logic lives here</span>      │
+    <span class="box">      ├── [ Matchmaking Service ]  ←── ELO pairing, queue management         │</span>
+    <span class="box">      ├── [ Replay Recorder ]  ←── event stream writer                       │</span>
+    <span class="box">      ├── [ ELO Calculator ]  ←── Glicko-2 implementation                    │</span>
+    <span class="box">      └── [ REST Route Handlers ]  ←── profiles, store, puzzles, run state   │</span>
+    <span class="arrow">                                │                                            │</span>
+    <span class="layer-label">── DATA LAYER ─────────────────────────────────────────────────</span>
+    <span class="arrow">                                │                                            │</span>
+    <span class="box">  [ Redis ]  ←── active game state, sessions, matchmaking queues             │</span>
+    <span class="box">  [ PostgreSQL ]  ←── users, match history, ELO, runs, puzzles, store        │</span>
+    <span class="arrow">                                │                                            │</span>
+    <span class="layer-label">── STEAM / DESKTOP ────────────────────────────────────────────</span>
+    <span class="arrow">                                │                                            │</span>
+    <span class="box">  [ Tauri 2 Shell ]  ←── wraps React app, provides Steam SDK bridge  ────────┘</span>
+    <span class="box">  [ Greenworks ]  ←── Steam achievements, cloud saves, overlay</span>
+  </div>
+
+  <div class="callout info">
+    <span class="callout-label">ℹ Architecture Principle</span>
+    The Chess Engine and Modifier State Machine are <strong>pure TypeScript modules</strong> with no framework dependencies. They live in a shared package (<code>packages/game-core</code>) and are imported by the server. The client never runs game logic — it only renders server-emitted state. This makes anti-cheat trivial and future mobile ports straightforward.
+  </div>
+
+  <h3>Monorepo Package Structure</h3>
+
+  <div class="code-block">
+    <span class="code-block-label">Directory Structure</span>
+    <pre>
+<span class="cn">pigeon-chess/</span>
+<span class="cm">├── apps/</span>
+<span class="cm">│   ├── web/</span>                    <span class="cm">← React + Phaser frontend</span>
+<span class="cm">│   ├── server/</span>                 <span class="cm">← Fastify API + Socket.IO</span>
+<span class="cm">│   └── desktop/</span>                <span class="cm">← Tauri wrapper (Steam build)</span>
+<span class="cm">├── packages/</span>
+<span class="cm">│   ├── game-core/</span>              <span class="cm">← Chess engine + Modifier State Machine</span>
+<span class="cm">│   │   ├── engine/</span>             <span class="cm">← Move generation, validation, check detection</span>
+<span class="cm">│   │   ├── modifiers/</span>          <span class="cm">← All 40 modifier definitions</span>
+<span class="cm">│   │   └── types/</span>              <span class="cm">← Shared GameState, Move, Piece interfaces</span>
+<span class="cm">│   ├── shared-types/</span>           <span class="cm">← API request/response types (used by web + server)</span>
+<span class="cm">│   └── elo/</span>                    <span class="cm">← Glicko-2 implementation (pure, no dependencies)</span>
+<span class="cm">├── prisma/</span>
+<span class="cm">│   └── schema.prisma</span>           <span class="cm">← Database schema (single source of truth)</span>
+<span class="cm">├── pnpm-workspace.yaml</span>
+<span class="cm">└── turbo.json</span>
+    </pre>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════ 03 CHESS ENGINE ══════════════════════════════ -->
+<div class="section" id="s03">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2>Chess Engine</h2>
+  </div>
+
+  <p>The custom chess engine lives in <code>packages/game-core/engine/</code>. It is the only source of truth for move legality. The server calls it. The client renders whatever the server emits. No exceptions.</p>
+
+  <h3>Core Data Types</h3>
+
+  <div class="code-block">
+    <span class="code-block-label">TypeScript — Core Types (packages/game-core/types/index.ts)</span>
+    <pre>
+<span class="ck">type</span> <span class="cn">Square</span> = <span class="cs">`${'a'|'b'|'c'|'d'|'e'|'f'|'g'|'h'}${'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'}`</span>;
+
+<span class="ck">type</span> <span class="cn">PieceType</span> = <span class="cs">'king'</span> | <span class="cs">'queen'</span> | <span class="cs">'rook'</span> | <span class="cs">'bishop'</span> | <span class="cs">'knight'</span> | <span class="cs">'pawn'</span>
+              | <span class="cs">'pigeon'</span>    <span class="cm">// MOD-E001 Hatoful Gambit</span>
+              | <span class="cs">'chancellor'</span> <span class="cm">// MOD-E004 Equivalent Exchange</span>
+              | <span class="cs">'royal_guard'</span>; <span class="cm">// MOD-E003 Royal Guard</span>
+
+<span class="ck">type</span> <span class="cn">Color</span> = <span class="cs">'white'</span> | <span class="cs">'black'</span>;
+
+<span class="ck">interface</span> <span class="cn">Piece</span> {
+  id:          <span class="cv">string</span>;          <span class="cm">// uuid — stable across modifier effects</span>
+  type:        <span class="cn">PieceType</span>;
+  color:       <span class="cn">Color</span>;
+  square:      <span class="cn">Square</span>;
+  isGhost?:    <span class="cv">boolean</span>;         <span class="cm">// MOD-D002 I'm Literally Right Here</span>
+  isBerserker?:<span class="cv">boolean</span>;         <span class="cm">// MOD-E006 BOY.</span>
+  isPacifist?: <span class="cv">boolean</span>;         <span class="cm">// MOD-B007 Conscientious Objector</span>
+  isRealKing?: <span class="cv">boolean</span>;         <span class="cm">// MOD-E003 — explicit real King tag</span>
+  cooldowns:   <span class="cn">Record</span>&lt;<span class="cn">ModifierID</span>, <span class="cv">number</span>&gt;; <span class="cm">// turns remaining per ability</span>
+  bannedEP?:   <span class="cn">Square</span>;          <span class="cm">// MOD-C008 banked en passant target</span>
+}
+
+<span class="ck">interface</span> <span class="cn">TileState</span> {
+  square:      <span class="cn">Square</span>;
+  effects:     <span class="cn">TileEffect</span>[];    <span class="cm">// stacked effects (lava, infected, frozen...)</span>
+  isVent?:     <span class="cv">boolean</span>;         <span class="cm">// MOD-A003</span>
+  isSwamp?:    <span class="cv">boolean</span>;         <span class="cm">// MOD-A006</span>
+  isVoid?:     <span class="cv">boolean</span>;         <span class="cm">// crumbled tile (MOD-A005)</span>
+  isSurveilled?:<span class="cv">boolean</span>;        <span class="cm">// MOD-D008</span>
+  noFlyZone?:  <span class="cn">Color</span>;           <span class="cm">// MOD-C001 — which side declared it</span>
+}
+
+<span class="ck">interface</span> <span class="cn">GameState</span> {
+  id:          <span class="cv">string</span>;
+  pieces:      <span class="cn">Map</span>&lt;<span class="cn">Square</span>, <span class="cn">Piece</span>&gt;;
+  tiles:       <span class="cn">Map</span>&lt;<span class="cn">Square</span>, <span class="cn">TileState</span>&gt;;
+  turn:        <span class="cn">Color</span>;
+  turnNumber:  <span class="cv">number</span>;
+  activeModifiers: <span class="cn">ModifierInstance</span>[];
+  modifierState:   <span class="cn">Record</span>&lt;<span class="cn">ModifierID</span>, <span class="cv">unknown</span>&gt;; <span class="cm">// modifier-specific runtime state</span>
+  moveHistory: <span class="cn">MoveRecord</span>[];
+  status:      <span class="cs">'draft'</span> | <span class="cs">'active'</span> | <span class="cs">'checkmate'</span> | <span class="cs">'draw'</span> | <span class="cs">'abandoned'</span>;
+  flags:       <span class="cn">GameFlags</span>;       <span class="cm">// castling rights, en passant square, etc.</span>
+  madnessMeter:<span class="cv">number</span>;         <span class="cm">// 0-100, derived from active curse ratings</span>
+  tempoTokens: <span class="cn">Record</span>&lt;<span class="cn">Color</span>, <span class="cv">number</span>&gt;;   <span class="cm">// MOD-C007</span>
+  mercTokens:  <span class="cn">Record</span>&lt;<span class="cn">Color</span>, <span class="cv">number</span>&gt;;   <span class="cm">// MOD-E008</span>
+}
+    </pre>
+  </div>
+
+  <h3>Move Validation Pipeline</h3>
+  <p>Every move passes through this pipeline on the server. If any stage rejects, the move is refused and the client is notified. No move reaches the board without completing all stages.</p>
+
+  <div class="code-block">
+    <span class="code-block-label">Move Validation Pipeline (pseudo-code)</span>
+    <pre>
+<span class="cf">validateMove</span>(state: <span class="cn">GameState</span>, move: <span class="cn">Move</span>): <span class="cn">ValidationResult</span> {
+
+  <span class="cm">// Stage 1 — Structural validity</span>
+  <span class="ck">if</span> (state.turn !== move.playerColor) <span class="ck">return</span> <span class="cn">REJECT</span>(<span class="cs">'not your turn'</span>)
+  <span class="ck">if</span> (state.status !== <span class="cs">'active'</span>)      <span class="ck">return</span> <span class="cn">REJECT</span>(<span class="cs">'game not active'</span>)
+  <span class="ck">if</span> (!state.pieces.has(move.from))    <span class="ck">return</span> <span class="cn">REJECT</span>(<span class="cs">'no piece at source'</span>)
+
+  <span class="cm">// Stage 2 — Piece ownership</span>
+  <span class="ck">const</span> piece = state.pieces.get(move.from)
+  <span class="ck">if</span> (piece.color !== move.playerColor) <span class="ck">return</span> <span class="cn">REJECT</span>(<span class="cs">'not your piece'</span>)
+
+  <span class="cm">// Stage 3 — Pre-move modifier hooks</span>
+  <span class="cm">// e.g. Opposite Day inverts direction, Heavy Crown requires 2-turn commit</span>
+  <span class="ck">const</span> preResult = <span class="cf">runHooks</span>(<span class="cs">'PRE_MOVE_VALIDATE'</span>, state, move)
+  <span class="ck">if</span> (preResult.blocked) <span class="ck">return</span> <span class="cn">REJECT</span>(preResult.reason)
+
+  <span class="cm">// Stage 4 — Piece movement rules (engine or modifier override)</span>
+  <span class="ck">const</span> legalSquares = <span class="cf">getLegalMoves</span>(state, piece)
+  <span class="ck">if</span> (!legalSquares.includes(move.to)) <span class="ck">return</span> <span class="cn">REJECT</span>(<span class="cs">'illegal move'</span>)
+
+  <span class="cm">// Stage 5 — Tile effect checks</span>
+  <span class="cm">// e.g. cannot move INTO lava if not intended, swamp movement limits</span>
+  <span class="ck">const</span> tileResult = <span class="cf">checkTileEffects</span>(state, move)
+  <span class="ck">if</span> (tileResult.blocked) <span class="ck">return</span> <span class="cn">REJECT</span>(tileResult.reason)
+
+  <span class="cm">// Stage 6 — Self-check guard (ALWAYS runs, cannot be bypassed by modifiers)</span>
+  <span class="ck">const</span> projected = <span class="cf">applyMoveToState</span>(state, move)
+  <span class="ck">if</span> (<span class="cf">isInCheck</span>(projected, move.playerColor)) <span class="ck">return</span> <span class="cn">REJECT</span>(<span class="cs">'leaves king in check'</span>)
+
+  <span class="ck">return</span> <span class="cn">ACCEPT</span>
+}
+    </pre>
+  </div>
+
+  <h3>King Safety — Absolute Rules</h3>
+
+  <div class="callout danger">
+    <span class="callout-label">⛔ Non-Negotiable Engine Rules</span>
+    These are hard-coded engine constants that no modifier can override. They are enforced at Stage 6 of validation and cannot be hooked by any modifier in the state machine:<br><br>
+    1. <strong>A move that leaves or places the real King in check is always illegal.</strong><br>
+    2. <strong>The real King (isRealKing: true) cannot be targeted by Betrayal, Rook Cannon, or The Snap.</strong><br>
+    3. <strong>Checkmate is evaluated only against the real King — Royal Guards (MOD-E003) are exempt.</strong><br>
+    4. <strong>The Sus modifier (MOD-D005) cannot disguise the real King.</strong><br>
+    5. <strong>Drop-to-check (MOD-E008 Moneyball) is validated at Stage 6 before the drop is accepted.</strong>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════ 04 MODIFIER STATE MACHINE ══════════════════════════════ -->
+<div class="section" id="s04">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2>Modifier State Machine</h2>
+  </div>
+
+  <p>This is the most critical architectural system in the game. Every modifier is a <strong>self-contained object</strong> that registers hooks into the game loop. New modifiers are added by creating a new file and registering hooks — no changes to engine core code required.</p>
+
+  <h3>Modifier Interface</h3>
+
+  <div class="code-block">
+    <span class="code-block-label">TypeScript — Modifier Definition Interface</span>
+    <pre>
+<span class="ck">interface</span> <span class="cn">ModifierDefinition</span> {
+  id:          <span class="cn">ModifierID</span>;         <span class="cm">// e.g. 'MOD-A001'</span>
+  name:        <span class="cv">string</span>;
+  category:    <span class="cs">'board'</span> | <span class="cs">'curse'</span> | <span class="cs">'ability'</span> | <span class="cs">'fog'</span> | <span class="cs">'army'</span>;
+  pointCost:   <span class="cv">number</span>;             <span class="cm">// negative = grants points (curses)</span>
+  curseRating: <span class="cv">0</span> | <span class="cv">1</span> | <span class="cv">2</span> | <span class="cv">3</span>;
+
+  <span class="cm">// Called when modifier is added to a game — sets up initial state</span>
+  onActivate:  (state: <span class="cn">GameState</span>) => <span class="cn">GameState</span>;
+
+  <span class="cm">// Called at the START of every turn before the player moves</span>
+  onTurnStart?: (state: <span class="cn">GameState</span>, color: <span class="cn">Color</span>) => <span class="cn">GameState</span>;
+
+  <span class="cm">// Called BEFORE a move is validated — can block or transform the move</span>
+  onPreMoveValidate?: (state: <span class="cn">GameState</span>, move: <span class="cn">Move</span>) => <span class="cn">PreMoveResult</span>;
+
+  <span class="cm">// Called AFTER a legal move is confirmed but BEFORE board state updates</span>
+  onPreMoveApply?: (state: <span class="cn">GameState</span>, move: <span class="cn">Move</span>) => <span class="cn">GameState</span>;
+
+  <span class="cm">// Called AFTER board state is updated with the move result</span>
+  onPostMove?: (state: <span class="cn">GameState</span>, move: <span class="cn">Move</span>) => <span class="cn">GameState</span>;
+
+  <span class="cm">// Called AFTER a capture occurs (either player capturing)</span>
+  onCapture?: (state: <span class="cn">GameState</span>, captured: <span class="cn">Piece</span>, by: <span class="cn">Piece</span>) => <span class="cn">GameState</span>;
+
+  <span class="cm">// Called when a pawn reaches the promotion rank</span>
+  onPromotion?: (state: <span class="cn">GameState</span>, pawn: <span class="cn">Piece</span>, toSquare: <span class="cn">Square</span>) => <span class="cn">GameState</span>;
+
+  <span class="cm">// Called at the END of every turn after all effects resolve</span>
+  onTurnEnd?: (state: <span class="cn">GameState</span>, color: <span class="cn">Color</span>) => <span class="cn">GameState</span>;
+
+  <span class="cm">// Called when the game ends — cleanup, bonus Feathers, etc.</span>
+  onMatchEnd?: (state: <span class="cn">GameState</span>, result: <span class="cn">MatchResult</span>) => <span class="cn">MatchEnd</span>;
+
+  <span class="cm">// Fog modifiers: which squares are visible to a given color?</span>
+  getVisibleSquares?: (state: <span class="cn">GameState</span>, color: <span class="cn">Color</span>) => <span class="cn">Set</span>&lt;<span class="cn">Square</span>&gt;;
+}
+    </pre>
+  </div>
+
+  <h3>Hook Execution Order (Per Turn)</h3>
+
+  <div class="code-block">
+    <span class="code-block-label">Turn Execution Sequence</span>
+    <pre>
+<span class="cm">TURN START</span>
+    │
+    ├── <span class="highlight">onTurnStart</span>  ← All active modifiers fire in registration order
+    │         e.g. Cordyceptic Spread tick, Storm shrink check, Gerald lands
+    │
+    ├── <span class="cn">PLAYER INPUT</span>: move or ability activation received
+    │
+    ├── <span class="highlight">onPreMoveValidate</span>  ← Can BLOCK or TRANSFORM move
+    │         e.g. No I Don't Think I Will (inversion), Heavy Crown (2-turn commit)
+    │         e.g. Conscientious Objector (blocks capture), Swamp (range limit)
+    │
+    ├── <span class="cn">ENGINE VALIDATION</span>: standard move legality + self-check guard
+    │
+    ├── <span class="highlight">onPreMoveApply</span>  ← State changes before board updates
+    │         e.g. Vent tile teleport resolution, Bandersnatch mirror calculation
+    │
+    ├── <span class="cn">BOARD UPDATE</span>: piece moves, captures applied to GameState
+    │
+    ├── <span class="highlight">onCapture</span>  ← If a capture occurred
+    │         e.g. BOY. chain capture check, Moneyball token generation
+    │         e.g. Smoke Screen cloud spawn, They Were The Traitor defection timer
+    │
+    ├── <span class="highlight">onPromotion</span>  ← If a pawn promoted
+    │         e.g. Reject Queen Embrace Knight enforcement
+    │         e.g. Conscientious Queen (pacifism carries through)
+    │
+    ├── <span class="highlight">onPostMove</span>  ← After all board updates settle
+    │         e.g. Berserker chain capture continuation
+    │         e.g. Mirror Twins secondary bishop movement
+    │         e.g. Tempo Token expenditure resolution (double turn)
+    │
+    ├── <span class="cn">CHECK DETECTION</span>: isInCheck() runs for both colors
+    │
+    ├── <span class="cn">CHECKMATE / DRAW DETECTION</span>: getLegalMoves() for next player
+    │
+    ├── <span class="highlight">onTurnEnd</span>  ← Cleanup, cooldown decrements, turn counter
+    │         e.g. Cooldown timers tick down, No-Fly Zone duration check
+    │         e.g. Floor Is Lava rotation check, Winter Is Coming thaw check
+    │
+    └── <span class="cn">EMIT STATE</span>: server pushes updated GameState to both clients
+    </pre>
+  </div>
+
+  <h3>Example Modifier Implementation</h3>
+
+  <div class="code-block">
+    <span class="code-block-label">Example — MOD-B002 "Distracted Piece" (Gerald)</span>
+    <pre>
+<span class="ck">const</span> <span class="cn">DistractedPiece</span>: <span class="cn">ModifierDefinition</span> = {
+  id:          <span class="cs">'MOD-B002'</span>,
+  name:        <span class="cs">'Distracted Piece'</span>,
+  category:    <span class="cs">'curse'</span>,
+  pointCost:   <span class="cv">-2</span>,
+  curseRating: <span class="cv">2</span>,
+
+  onActivate: (state) => {
+    <span class="cm">// Store Gerald's state in modifierState</span>
+    state.modifierState[<span class="cs">'MOD-B002'</span>] = {
+      geraldTarget: <span class="cv">null</span>,
+      geraldLandCount: <span class="cv">0</span>   <span class="cm">// for Gerald's leaderboard</span>
+    };
+    <span class="ck">return</span> state;
+  },
+
+  onTurnStart: (state, color) => {
+    <span class="cm">// Gerald only bothers the CURSED player</span>
+    <span class="ck">const</span> cursedColor = state.modifierState[<span class="cs">'MOD-B002'</span>].cursedColor;
+    <span class="ck">if</span> (color !== cursedColor) <span class="ck">return</span> state;
+
+    <span class="cm">// Pick a random non-ghost, non-pigeon piece to land on</span>
+    <span class="ck">const</span> eligible = [...state.pieces.values()].filter(p =>
+      p.color === cursedColor && !p.isGhost &&
+      p.type !== <span class="cs">'pigeon'</span>  <span class="cm">// MOD-B002 × MOD-E001 interaction</span>
+    );
+
+    <span class="ck">const</span> target = <span class="cf">randomFrom</span>(eligible);
+    state.modifierState[<span class="cs">'MOD-B002'</span>].geraldTarget = target.id;
+    state.modifierState[<span class="cs">'MOD-B002'</span>].geraldLandCount++;
+
+    <span class="cm">// Emit visual event to client</span>
+    state.<span class="cf">queueClientEvent</span>({ type: <span class="cs">'GERALD_LANDS'</span>, pieceId: target.id });
+    <span class="ck">return</span> state;
+  },
+
+  onPreMoveValidate: (state, move) => {
+    <span class="ck">const</span> ms = state.modifierState[<span class="cs">'MOD-B002'</span>];
+    <span class="ck">const</span> piece = state.pieces.get(move.from);
+
+    <span class="cm">// If the targeted piece tries to move, block it</span>
+    <span class="ck">if</span> (piece?.id === ms.geraldTarget) {
+      <span class="ck">return</span> { blocked: <span class="cv">true</span>, reason: <span class="cs">'Gerald is sitting on this piece'</span>,
+               clientEvent: { type: <span class="cs">'GERALD_BLOCKS'</span> } };
+    }
+
+    <span class="cm">// Special: player clicks Gerald to shoo him (spends turn)</span>
+    <span class="ck">if</span> (move.type === <span class="cs">'SHOO_GERALD'</span>) {
+      ms.geraldTarget = <span class="cv">null</span>;
+      state.<span class="cf">queueClientEvent</span>({ type: <span class="cs">'GERALD_LEAVES'</span> });
+      <span class="ck">return</span> { blocked: <span class="cv">false</span>, consumesTurn: <span class="cv">true</span> };
+    }
+
+    <span class="ck">return</span> { blocked: <span class="cv">false</span> };
+  }
+};
+    </pre>
+  </div>
+
+  <h3>The 9 Hook Types — Usage by Modifier</h3>
+
+  <div class="state-grid">
+    <div class="state-card">
+      <div class="state-name">onActivate</div>
+      <div class="state-desc">Runs once when modifier is added. Sets up initial state in modifierState record.</div>
+      <div class="state-hooks">Used by: <span class="state-hook-item">ALL modifiers</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">onTurnStart</div>
+      <div class="state-desc">Runs at the start of each turn before player input. Ticks, landings, spread effects.</div>
+      <div class="state-hooks">Used by: <span class="state-hook-item">Cordyceptic Spread, Gerald, Storm, Floor Is Lava rotation, YOU DIED autonomous move</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">onPreMoveValidate</div>
+      <div class="state-desc">Can block or transform a move before engine validation. First line of modifier interference.</div>
+      <div class="state-hooks">Used by: <span class="state-hook-item">No I Don't Think I Will, Heavy Crown, Conscientious Objector, Swamp range, Frozen Tundra</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">onPreMoveApply</div>
+      <div class="state-desc">State mutations before board updates. Teleports, mirroring, etc.</div>
+      <div class="state-hooks">Used by: <span class="state-hook-item">Vent Tiles, Bandersnatch Protocol, Gravitational Anomaly</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">onCapture</div>
+      <div class="state-desc">Fires when any piece is captured. Economy effects, chain capture checks.</div>
+      <div class="state-hooks">Used by: <span class="state-hook-item">BOY. (chain check), Moneyball (token gen), Smoke Screen (cloud spawn), They Were The Traitor (timer)</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">onPromotion</div>
+      <div class="state-desc">Fires when a pawn reaches the back rank. Promotion rule enforcement.</div>
+      <div class="state-hooks">Used by: <span class="state-hook-item">Reject Queen Embrace Knight, Conscientious Objector carry-through</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">onPostMove</div>
+      <div class="state-desc">After all board updates. Chain continuations, secondary effects, double-turns.</div>
+      <div class="state-hooks">Used by: <span class="state-hook-item">BOY. chain, Twin Telepathy bishop mirror, This Is Necessary double-turn</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">onTurnEnd</div>
+      <div class="state-desc">Cleanup, cooldown tick, duration expiry, zone checks.</div>
+      <div class="state-hooks">Used by: <span class="state-hook-item">ALL ability cooldowns, No-Fly Zone duration, Frozen thaw, Floor Is Lava rotation counter</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">getVisibleSquares</div>
+      <div class="state-desc">Fog modifiers override this to return a custom visibility set per color.</div>
+      <div class="state-hooks">Used by: <span class="state-hook-item">It's Dark And I'm Scared, Cat Mode, Known Unknowns, Big Beak Is Watching</span></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════ 05 REAL-TIME ══════════════════════════════ -->
+<div class="section" id="s05">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2>Real-Time Layer</h2>
+  </div>
+
+  <p>All real-time communication uses Socket.IO rooms. Each active game is a room. Players join their room on match start. Spectators (post-launch) join as read-only listeners.</p>
+
+  <h3>Socket Event Taxonomy</h3>
+
+  <table>
+    <thead><tr><th>Event</th><th>Direction</th><th>Payload</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="td-code">game:move</td><td>Client → Server</td><td><code>{ from, to, type, playerId }</code></td><td>All moves. Server validates before applying.</td></tr>
+      <tr><td class="td-code">game:state</td><td>Server → Client</td><td><code>GameState (filtered)</code></td><td>Emitted after every state change. Fog filters applied per-recipient before send.</td></tr>
+      <tr><td class="td-code">game:event</td><td>Server → Client</td><td><code>{ type, payload }</code></td><td>Visual/audio cues: GERALD_LANDS, LAVA_ROTATES, STORM_SHRINKS, YOU_DIED, etc.</td></tr>
+      <tr><td class="td-code">game:ability</td><td>Client → Server</td><td><code>{ modifierId, pieceId, target? }</code></td><td>Active ability activation. Server validates cooldown and legality.</td></tr>
+      <tr><td class="td-code">game:draft</td><td>Client ↔ Server</td><td><code>{ action, modifierId }</code></td><td>Pick, ban, or pass during modifier draft phase.</td></tr>
+      <tr><td class="td-code">game:resign</td><td>Client → Server</td><td><code>{ playerId }</code></td><td>Immediate resign. Server records result and cleans up room.</td></tr>
+      <tr><td class="td-code">game:draw_offer</td><td>Client ↔ Server</td><td><code>{ playerId, accept? }</code></td><td>Draw offer / response flow.</td></tr>
+      <tr><td class="td-code">game:heartbeat</td><td>Client ↔ Server</td><td><code>{ timestamp }</code></td><td>Every 5s. Server detects disconnection after 2 missed beats. Clock continues during reconnect window (30s).</td></tr>
+      <tr><td class="td-code">game:reconnect</td><td>Client → Server</td><td><code>{ gameId, playerId, token }</code></td><td>Full state resync on reconnect. Redis holds state for 30s post-disconnect.</td></tr>
+      <tr><td class="td-code">match:found</td><td>Server → Client</td><td><code>{ gameId, opponent, color }</code></td><td>Matchmaking resolution. Client navigates to draft phase.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Fog Filtering — Per-Recipient State</h3>
+
+  <div class="callout info">
+    <span class="callout-label">ℹ Critical: Never Send Full State to Both Players</span>
+    When any Fog modifier is active, the server runs <code>getVisibleSquares(state, color)</code> for each player and strips hidden piece positions before emitting. A player must never receive the position of a piece they shouldn't be able to see — even as dead data in a JSON payload. This is server-enforced, not client-enforced.
+  </div>
+
+  <div class="code-block">
+    <span class="code-block-label">Fog State Filtering (server/game/emitState.ts)</span>
+    <pre>
+<span class="ck">function</span> <span class="cf">emitGameState</span>(room: <span class="cn">GameRoom</span>, state: <span class="cn">GameState</span>) {
+  <span class="ck">for</span> (<span class="ck">const</span> [playerId, color] <span class="ck">of</span> room.players) {
+
+    <span class="ck">const</span> visibleSquares = <span class="cf">computeVisibleSquares</span>(state, color);
+
+    <span class="ck">const</span> filteredState: <span class="cn">ClientGameState</span> = {
+      ...state,
+      pieces: <span class="cf">filterPieces</span>(state.pieces, visibleSquares, color),
+      tiles:  <span class="cf">filterTiles</span>(state.tiles, visibleSquares),
+      <span class="cm">// Ghost pieces: opponent sees ghost as real; owner sees it as ghost</span>
+      <span class="cm">// Sus (MOD-D005): opponent sees disguised type, owner sees true type</span>
+    };
+
+    room.socket.to(playerId).<span class="cf">emit</span>(<span class="cs">'game:state'</span>, filteredState);
+  }
+}
+    </pre>
+  </div>
+
+  <h3>Reconnection & Timeout Rules</h3>
+
+  <table>
+    <thead><tr><th>Scenario</th><th>Behaviour</th></tr></thead>
+    <tbody>
+      <tr><td>Disconnect during match (timer modes)</td><td>Clock continues. 30s reconnect window. On reconnect: full state resync emitted.</td></tr>
+      <tr><td>Disconnect during match (untimed)</td><td>Match paused for 5 minutes. If no reconnect: forfeit.</td></tr>
+      <tr><td>Disconnect during draft</td><td>30s reconnect window. On reconnect: draft state resync. If no reconnect: random auto-pick fills remaining budget.</td></tr>
+      <tr><td>Both players disconnect simultaneously</td><td>Match recorded as abandoned. No ELO change.</td></tr>
+      <tr><td>Server restart during match</td><td>Redis holds GameState. On reconnect: state restored from Redis. If Redis lost: match abandoned, no ELO change.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ══════════════════════════════ 06 DATABASE ══════════════════════════════ -->
+<div class="section" id="s06">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2>Database Schema</h2>
+  </div>
+
+  <p>14 core tables. All defined in <code>prisma/schema.prisma</code>. JSON columns used for flexible modifier state, run state, and cosmetic metadata.</p>
+
+  <div class="two-col">
+    <div class="schema-block">
+      <div class="schema-table-name">users</div>
+      <div class="schema-fields">
+        <span class="sf-pk">id</span>           <span class="sf-type">uuid</span>     <span class="sf-note">PK</span><br>
+        <span class="sf-name">clerk_id</span>    <span class="sf-type">text</span>     <span class="sf-note">UNIQUE — from Clerk auth</span><br>
+        <span class="sf-name">username</span>    <span class="sf-type">text</span>     <span class="sf-note">UNIQUE, display name</span><br>
+        <span class="sf-name">email</span>       <span class="sf-type">text</span><br>
+        <span class="sf-name">avatar_url</span>  <span class="sf-type">text</span><br>
+        <span class="sf-name">created_at</span>  <span class="sf-type">timestamp</span><br>
+        <span class="sf-name">is_banned</span>   <span class="sf-type">bool</span>     <span class="sf-note">default false</span>
+      </div>
+    </div>
+    <div class="schema-block">
+      <div class="schema-table-name">elo_ratings</div>
+      <div class="schema-fields">
+        <span class="sf-pk">id</span>           <span class="sf-type">uuid</span>     <span class="sf-note">PK</span><br>
+        <span class="sf-name">user_id</span>     <span class="sf-type">uuid</span>     <span class="sf-note">FK → users</span><br>
+        <span class="sf-name">mode</span>        <span class="sf-type">text</span>     <span class="sf-note">'rapid' | 'blitz' | 'bullet'</span><br>
+        <span class="sf-name">rating</span>      <span class="sf-type">float</span>    <span class="sf-note">Glicko-2, default 1200</span><br>
+        <span class="sf-name">deviation</span>   <span class="sf-type">float</span>    <span class="sf-note">Glicko-2 RD, default 350</span><br>
+        <span class="sf-name">volatility</span>  <span class="sf-type">float</span>    <span class="sf-note">Glicko-2 σ</span><br>
+        <span class="sf-name">season</span>      <span class="sf-type">int</span>      <span class="sf-note">current season number</span><br>
+        <span class="sf-name">updated_at</span>  <span class="sf-type">timestamp</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="schema-block">
+      <div class="schema-table-name">matches</div>
+      <div class="schema-fields">
+        <span class="sf-pk">id</span>           <span class="sf-type">uuid</span>     <span class="sf-note">PK</span><br>
+        <span class="sf-name">white_id</span>    <span class="sf-type">uuid</span>     <span class="sf-note">FK → users</span><br>
+        <span class="sf-name">black_id</span>    <span class="sf-type">uuid</span>     <span class="sf-note">FK → users (null = vs bot)</span><br>
+        <span class="sf-name">mode</span>        <span class="sf-type">text</span>     <span class="sf-note">'ranked' | 'casual' | 'story' | 'bot'</span><br>
+        <span class="sf-name">time_control</span><span class="sf-type">text</span>     <span class="sf-note">'blitz_3_2' | 'rapid_10_5' etc.</span><br>
+        <span class="sf-name">result</span>      <span class="sf-type">text</span>     <span class="sf-note">'white' | 'black' | 'draw' | 'abandoned'</span><br>
+        <span class="sf-name">modifiers</span>   <span class="sf-type">jsonb</span>    <span class="sf-note">array of ModifierID strings</span><br>
+        <span class="sf-name">pgn</span>         <span class="sf-type">text</span>     <span class="sf-note">standard PGN (base moves only)</span><br>
+        <span class="sf-name">event_log</span>   <span class="sf-type">jsonb</span>    <span class="sf-note">full event stream for replay</span><br>
+        <span class="sf-name">elo_delta_w</span> <span class="sf-type">float</span>    <span class="sf-note">ELO change for white</span><br>
+        <span class="sf-name">elo_delta_b</span> <span class="sf-type">float</span><br>
+        <span class="sf-name">started_at</span>  <span class="sf-type">timestamp</span><br>
+        <span class="sf-name">ended_at</span>    <span class="sf-type">timestamp</span>
+      </div>
+    </div>
+    <div class="schema-block">
+      <div class="schema-table-name">roguelike_runs</div>
+      <div class="schema-fields">
+        <span class="sf-pk">id</span>           <span class="sf-type">uuid</span>     <span class="sf-note">PK</span><br>
+        <span class="sf-name">user_id</span>     <span class="sf-type">uuid</span>     <span class="sf-note">FK → users</span><br>
+        <span class="sf-name">mode</span>        <span class="sf-type">text</span>     <span class="sf-note">'story' | 'endless'</span><br>
+        <span class="sf-name">tower</span>       <span class="sf-type">int</span>      <span class="sf-note">1–5, current tower</span><br>
+        <span class="sf-name">node_map</span>    <span class="sf-type">jsonb</span>    <span class="sf-note">generated node graph</span><br>
+        <span class="sf-name">current_node</span><span class="sf-type">int</span><br>
+        <span class="sf-name">modifiers</span>   <span class="sf-type">jsonb</span>    <span class="sf-note">active modifier loadout</span><br>
+        <span class="sf-name">relics</span>      <span class="sf-type">jsonb</span>    <span class="sf-note">active relics</span><br>
+        <span class="sf-name">feathers</span>    <span class="sf-type">int</span>      <span class="sf-note">run currency</span><br>
+        <span class="sf-name">madness</span>     <span class="sf-type">int</span>      <span class="sf-note">0–100</span><br>
+        <span class="sf-name">status</span>      <span class="sf-type">text</span>     <span class="sf-note">'active' | 'won' | 'lost'</span><br>
+        <span class="sf-name">started_at</span>  <span class="sf-type">timestamp</span><br>
+        <span class="sf-name">ended_at</span>    <span class="sf-type">timestamp</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="schema-block">
+      <div class="schema-table-name">modifier_unlocks</div>
+      <div class="schema-fields">
+        <span class="sf-pk">id</span>           <span class="sf-type">uuid</span>     <span class="sf-note">PK</span><br>
+        <span class="sf-name">user_id</span>     <span class="sf-type">uuid</span>     <span class="sf-note">FK → users</span><br>
+        <span class="sf-name">modifier_id</span> <span class="sf-type">text</span>     <span class="sf-note">e.g. 'MOD-A001'</span><br>
+        <span class="sf-name">unlocked_at</span> <span class="sf-type">timestamp</span><br>
+        <span class="sf-name">source</span>      <span class="sf-type">text</span>     <span class="sf-note">'meta_tree' | 'story' | 'default'</span>
+      </div>
+    </div>
+    <div class="schema-block">
+      <div class="schema-table-name">meta_progression</div>
+      <div class="schema-fields">
+        <span class="sf-pk">id</span>           <span class="sf-type">uuid</span>     <span class="sf-note">PK</span><br>
+        <span class="sf-name">user_id</span>     <span class="sf-type">uuid</span>     <span class="sf-note">FK → users, UNIQUE</span><br>
+        <span class="sf-name">prestige_tokens</span><span class="sf-type">int</span>   <span class="sf-note">meta currency</span><br>
+        <span class="sf-name">tree_nodes</span>  <span class="sf-type">jsonb</span>    <span class="sf-note">unlocked node IDs</span><br>
+        <span class="sf-name">viktor_level</span><span class="sf-type">int</span>     <span class="sf-note">story progression tracker</span><br>
+        <span class="sf-name">flock_branch</span><span class="sf-type">int</span>     <span class="sf-note">Flock Whisperer branch level</span><br>
+        <span class="sf-name">updated_at</span>  <span class="sf-type">timestamp</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="schema-block">
+      <div class="schema-table-name">puzzles</div>
+      <div class="schema-fields">
+        <span class="sf-pk">id</span>           <span class="sf-type">uuid</span>     <span class="sf-note">PK</span><br>
+        <span class="sf-name">creator_id</span>  <span class="sf-type">uuid</span>     <span class="sf-note">FK → users</span><br>
+        <span class="sf-name">title</span>       <span class="sf-type">text</span><br>
+        <span class="sf-name">board_state</span> <span class="sf-type">jsonb</span>    <span class="sf-note">initial GameState snapshot</span><br>
+        <span class="sf-name">modifiers</span>   <span class="sf-type">jsonb</span>    <span class="sf-note">active modifiers for puzzle</span><br>
+        <span class="sf-name">win_condition</span><span class="sf-type">jsonb</span>   <span class="sf-note">{ type: 'checkmate', in: 3 }</span><br>
+        <span class="sf-name">difficulty</span>  <span class="sf-type">text</span>     <span class="sf-note">'egg' | 'hatchling' | 'grandmaster'</span><br>
+        <span class="sf-name">status</span>      <span class="sf-type">text</span>     <span class="sf-note">'pending' | 'approved' | 'rejected'</span><br>
+        <span class="sf-name">votes</span>       <span class="sf-type">int</span>      <span class="sf-note">community approval score</span><br>
+        <span class="sf-name">play_count</span>  <span class="sf-type">int</span><br>
+        <span class="sf-name">solve_rate</span>  <span class="sf-type">float</span>
+      </div>
+    </div>
+    <div class="schema-block">
+      <div class="schema-table-name">cosmetics + user_cosmetics</div>
+      <div class="schema-fields">
+        <span class="sf-pk">cosmetics.id</span>        <span class="sf-type">uuid</span>   <span class="sf-note">PK</span><br>
+        <span class="sf-name">cosmetics.type</span>      <span class="sf-type">text</span>   <span class="sf-note">'board' | 'pieces' | 'companion' | 'card_art'</span><br>
+        <span class="sf-name">cosmetics.name</span>      <span class="sf-type">text</span><br>
+        <span class="sf-name">cosmetics.price_usd</span> <span class="sf-type">float</span><br>
+        <span class="sf-name">cosmetics.creator_id</span><span class="sf-type">uuid</span>   <span class="sf-note">null = Anthropic/official</span><br>
+        <span class="sf-name">cosmetics.assets</span>    <span class="sf-type">jsonb</span>  <span class="sf-note">CDN URLs</span><br><br>
+        <span class="sf-pk">user_cosmetics.id</span>   <span class="sf-type">uuid</span>   <span class="sf-note">PK</span><br>
+        <span class="sf-name">user_cosmetics.user_id</span>    <span class="sf-type">uuid</span><br>
+        <span class="sf-name">user_cosmetics.cosmetic_id</span><span class="sf-type">uuid</span><br>
+        <span class="sf-name">user_cosmetics.equipped</span>  <span class="sf-type">bool</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="schema-block">
+      <div class="schema-table-name">battle_pass_progress</div>
+      <div class="schema-fields">
+        <span class="sf-pk">id</span>           <span class="sf-type">uuid</span>     <span class="sf-note">PK</span><br>
+        <span class="sf-name">user_id</span>     <span class="sf-type">uuid</span>     <span class="sf-note">FK → users, UNIQUE per season</span><br>
+        <span class="sf-name">season</span>      <span class="sf-type">int</span><br>
+        <span class="sf-name">tier</span>        <span class="sf-type">int</span>      <span class="sf-note">0–50</span><br>
+        <span class="sf-name">xp</span>          <span class="sf-type">int</span>      <span class="sf-note">XP within current tier</span><br>
+        <span class="sf-name">is_premium</span>  <span class="sf-type">bool</span>     <span class="sf-note">has purchased premium track</span><br>
+        <span class="sf-name">claimed</span>     <span class="sf-type">jsonb</span>    <span class="sf-note">array of claimed tier rewards</span>
+      </div>
+    </div>
+    <div class="schema-block">
+      <div class="schema-table-name">modifier_stats (analytics)</div>
+      <div class="schema-fields">
+        <span class="sf-pk">id</span>           <span class="sf-type">uuid</span>     <span class="sf-note">PK</span><br>
+        <span class="sf-name">modifier_id</span> <span class="sf-type">text</span><br>
+        <span class="sf-name">season</span>      <span class="sf-type">int</span><br>
+        <span class="sf-name">mode</span>        <span class="sf-type">text</span><br>
+        <span class="sf-name">pick_count</span>  <span class="sf-type">int</span><br>
+        <span class="sf-name">win_count</span>   <span class="sf-type">int</span><br>
+        <span class="sf-name">ban_count</span>   <span class="sf-type">int</span><br>
+        <span class="sf-name">win_rate</span>    <span class="sf-type">float</span>    <span class="sf-note">computed, updated nightly</span><br>
+        <span class="sf-name">updated_at</span>  <span class="sf-type">timestamp</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════ 07 MATCHMAKING ══════════════════════════════ -->
+<div class="section" id="s07">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2>Matchmaking Service</h2>
+  </div>
+
+  <p>Matchmaking runs as a lightweight service loop in Redis. Players join a queue key, the loop pairs them by ELO range, and creates a game room. All matchmaking state lives in Redis — if the server restarts, queues drain and players re-queue automatically.</p>
+
+  <h3>Matching Algorithm</h3>
+
+  <div class="code-block">
+    <span class="code-block-label">Matchmaking Loop (pseudo-code, runs every 2s)</span>
+    <pre>
+<span class="ck">for each</span> mode <span class="ck">in</span> [<span class="cs">'ranked_blitz'</span>, <span class="cs">'ranked_rapid'</span>, <span class="cs">'casual'</span>]:
+
+  queue = <span class="cf">redis.zrange</span>(mode + <span class="cs">':queue'</span>, <span class="cv">0</span>, <span class="cv">-1</span>, <span class="cs">'WITHSCORES'</span>)
+  <span class="cm">// Queue stored as sorted set: score = ELO rating</span>
+
+  <span class="ck">for each</span> player <span class="ck">in</span> queue:
+    waitTime = now - player.queuedAt
+
+    <span class="cm">// Expand ELO range the longer they wait</span>
+    eloRange = <span class="cv">100</span> + (waitTime / <span class="cv">10s</span>) * <span class="cv">25</span>  <span class="cm">// +25 ELO per 10 seconds</span>
+    eloRange = <span class="cf">min</span>(eloRange, <span class="cv">400</span>)            <span class="cm">// cap at ±400</span>
+
+    candidates = <span class="cf">redis.zrangebyscore</span>(
+      mode + <span class="cs">':queue'</span>,
+      player.elo - eloRange,
+      player.elo + eloRange
+    ).<span class="cf">filter</span>(c => c.id !== player.id)
+
+    <span class="ck">if</span> candidates.length > <span class="cv">0</span>:
+      opponent = <span class="cf">closest</span>(candidates, player.elo)
+      <span class="cf">createGame</span>(player, opponent, mode)
+      <span class="cf">removeFromQueue</span>(player, opponent)
+</pre>
+  </div>
+
+  <h3>Bot Difficulty Tiers (VS Bots Mode)</h3>
+
+  <table>
+    <thead><tr><th>Tier</th><th>Name</th><th>Engine Depth</th><th>Modifier Awareness</th><th>Behaviour</th></tr></thead>
+    <tbody>
+      <tr><td class="td-amber">🐣 Easy</td><td>Chick</td><td>Depth 1</td><td>None — ignores all modifiers</td><td>Random legal moves with basic material evaluation</td></tr>
+      <tr><td class="td-blue">🐦 Medium</td><td>Pigeon</td><td>Depth 3</td><td>Partial — avoids Lava, uses abilities if available</td><td>Minimax with alpha-beta pruning. Plays standard chess with modifier awareness</td></tr>
+      <tr><td class="td-green">🦅 Hard</td><td>Magnus</td><td>Depth 6</td><td>Full — optimises modifier interactions</td><td>Deep minimax + modifier-weighted evaluation function. Will exploit Fog aggressively</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <span class="callout-label">⚠ Bot Implementation Note</span>
+    Bot AI runs server-side only. The "Magnus" bot uses Stockfish 16 as a base engine with a custom modifier evaluation wrapper. Stockfish is called via a child process. The modifier evaluation layer adjusts position scores based on active modifier effects before Stockfish evaluates. This is a Phase 1 engineering task — the Chick bot ships at Phase 0 prototype.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════ 08 REPLAY ══════════════════════════════ -->
+<div class="section" id="s08">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2>Replay System</h2>
+  </div>
+
+  <p>Every match is recorded as a <strong>deterministic event stream</strong>. The replay system re-feeds the event stream through the game engine to reconstruct any board state at any point in the match. This serves four purposes: player replays, puzzle creation, anti-cheat review, and shareable highlight clips.</p>
+
+  <h3>Event Stream Structure</h3>
+
+  <div class="code-block">
+    <span class="code-block-label">Replay Event Record</span>
+    <pre>
+<span class="ck">interface</span> <span class="cn">ReplayEvent</span> {
+  seq:       <span class="cv">number</span>;       <span class="cm">// monotonic sequence number</span>
+  turn:      <span class="cv">number</span>;       <span class="cm">// game turn when event occurred</span>
+  timestamp: <span class="cv">number</span>;       <span class="cm">// Unix ms</span>
+  type:      <span class="cn">EventType</span>;
+  payload:   <span class="cv">unknown</span>;      <span class="cm">// typed per EventType</span>
+}
+
+<span class="ck">type</span> <span class="cn">EventType</span> =
+  | <span class="cs">'MOVE'</span>              <span class="cm">// { from, to, piece, captured? }</span>
+  | <span class="cs">'ABILITY_USED'</span>      <span class="cm">// { modifierId, pieceId, target? }</span>
+  | <span class="cs">'MODIFIER_TRIGGER'</span>  <span class="cm">// { modifierId, effect, affected[] }</span>
+  | <span class="cs">'PIECE_DEFECTED'</span>    <span class="cm">// MOD-B006 { pieceId, fromColor, toColor }</span>
+  | <span class="cs">'GERALD_LANDS'</span>      <span class="cm">// MOD-B002 { pieceId }</span>
+  | <span class="cs">'STORM_SHRINKS'</span>     <span class="cm">// MOD-A005 { removedSquares[] }</span>
+  | <span class="cs">'VENT_TRIGGERED'</span>    <span class="cm">// MOD-A003 { from, to, pieceId }</span>
+  | <span class="cs">'PROMOTION'</span>         <span class="cm">// { from, to, pawnId, promotedTo }</span>
+  | <span class="cs">'DRAW_OFFER'</span>        <span class="cm">// { byColor }</span>
+  | <span class="cs">'RESIGN'</span>            <span class="cm">// { byColor }</span>
+  | <span class="cs">'GAME_END'</span>;         <span class="cm">// { result, reason }</span>
+    </pre>
+  </div>
+
+  <h3>Replay Determinism Rules</h3>
+
+  <div class="callout success">
+    <span class="callout-label">✓ Determinism Guarantee</span>
+    The game engine is a <strong>pure function</strong>: given an initial state and a sequence of events, it always produces the same final state. This means:<br><br>
+    • All randomness (Gerald targeting, Cordyceptic spread, YOU DIED piece selection) uses a <strong>seeded PRNG</strong> — the seed is stored with the match and included in the event stream.<br>
+    • No modifier reads from external state (time, network, etc.) — only from GameState and the event payload.<br>
+    • Replay playback is byte-identical to the original match at every turn.
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════ 09 ROGUELIKE ══════════════════════════════ -->
+<div class="section" id="s09">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2>Roguelike Systems</h2>
+  </div>
+
+  <h3>Run State Machine</h3>
+
+  <div class="state-grid">
+    <div class="state-card">
+      <div class="state-name">RUN_START</div>
+      <div class="state-desc">Run initialised. Node map generated. Starting modifier assigned. Feathers set to 0.</div>
+      <div class="state-hooks">Stored in: <span class="state-hook-item">roguelike_runs</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">NODE_SELECT</div>
+      <div class="state-desc">Player chooses next node from available branches. Node type determines next state.</div>
+      <div class="state-hooks">Transitions to: <span class="state-hook-item">MATCH | EVENT | SHOP | REST | BOSS</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">IN_MATCH</div>
+      <div class="state-desc">Standard match in progress. Run state paused until match resolves.</div>
+      <div class="state-hooks">On win: <span class="state-hook-item">NODE_COMPLETE</span> · On loss: <span class="state-hook-item">RUN_LOST</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">IN_EVENT</div>
+      <div class="state-desc">Flock Event node. Present 2–3 choices. Apply chosen consequence to run state.</div>
+      <div class="state-hooks">Consequences: <span class="state-hook-item">modifier add/remove, feather gain/loss, curse add</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">IN_SHOP</div>
+      <div class="state-desc">The Roost. Player spends Feathers to buy/sell modifiers and relics.</div>
+      <div class="state-hooks">Items: <span class="state-hook-item">from unlocked modifier pool + relics table</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">IN_REST</div>
+      <div class="state-desc">The Perch. Player chooses: remove one curse OR preview next opponent's loadout.</div>
+      <div class="state-hooks">Single choice: <span class="state-hook-item">cannot do both</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">NODE_COMPLETE</div>
+      <div class="state-desc">Feathers awarded. Madness meter updated. Next node options revealed.</div>
+      <div class="state-hooks">Returns to: <span class="state-hook-item">NODE_SELECT</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">TOWER_CLEAR</div>
+      <div class="state-desc">Boss defeated. Prestige Tokens awarded. Tower 5 = RUN_WON.</div>
+      <div class="state-hooks">Unlocks: <span class="state-hook-item">meta-progression rewards, Viktor story segment</span></div>
+    </div>
+    <div class="state-card">
+      <div class="state-name">RUN_LOST / RUN_WON</div>
+      <div class="state-desc">Run ends. Prestige Tokens awarded (win or loss). Run archived. Meta-progression updated.</div>
+      <div class="state-hooks">Stored in: <span class="state-hook-item">roguelike_runs (status updated)</span></div>
+    </div>
+  </div>
+
+  <h3>Node Map Generation</h3>
+
+  <div class="code-block">
+    <span class="code-block-label">Node Map Algorithm</span>
+    <pre>
+<span class="cm">// Generates a Slay the Spire-style branching node map for one Tower</span>
+<span class="cf">generateNodeMap</span>(tower: <span class="cv">number</span>, seed: <span class="cv">string</span>): <span class="cn">NodeMap</span> {
+
+  <span class="ck">const</span> ROWS = <span class="cv">8</span>           <span class="cm">// nodes per tower</span>
+  <span class="ck">const</span> WIDTH = <span class="cv">3</span>          <span class="cm">// max parallel paths</span>
+  <span class="ck">const</span> rng = <span class="cf">seededRNG</span>(seed)
+
+  <span class="ck">const</span> distribution = {
+    MATCH: <span class="cv">0.60</span>,
+    EVENT: <span class="cv">0.15</span>,
+    SHOP:  <span class="cv">0.15</span>,
+    REST:  <span class="cv">0.10</span>
+  }
+
+  <span class="cm">// Rules:</span>
+  <span class="cm">// Row 1 is always MATCH (start fighting immediately)</span>
+  <span class="cm">// Row 4 is always SHOP (mid-tower upgrade opportunity)</span>
+  <span class="cm">// Row 8 is always BOSS</span>
+  <span class="cm">// No two consecutive REST nodes</span>
+  <span class="cm">// At least one SHOP in every tower</span>
+  <span class="cm">// Each node connects to 1–3 nodes in the next row</span>
+
+  <span class="ck">return</span> <span class="cf">buildGraph</span>(ROWS, WIDTH, distribution, rng)
+}
+    </pre>
+  </div>
+
+  <h3>Madness Meter Logic</h3>
+  <p>The Madness Meter is derived from the total curse rating of all active modifiers. It is not a stored value — it's computed on each state read.</p>
+
+  <div class="code-block">
+    <span class="code-block-label">Madness Calculation</span>
+    <pre>
+<span class="cf">computeMadness</span>(activeModifiers: <span class="cn">ModifierInstance</span>[]): <span class="cv">number</span> {
+  <span class="ck">const</span> totalCurse = activeModifiers
+    .<span class="cf">reduce</span>((sum, m) => sum + m.definition.curseRating, <span class="cv">0</span>)
+
+  <span class="cm">// Max theoretical curse: all 8 curses active = curse ratings of 3+3+2+2+2+1+1+1 = 15</span>
+  <span class="cm">// Scale to 0–100</span>
+  <span class="ck">return</span> <span class="cf">Math.min</span>(<span class="cv">100</span>, (totalCurse / <span class="cv">15</span>) * <span class="cv">100</span>)
+}
+
+<span class="cm">// Madness thresholds</span>
+<span class="cm">// 0–25:  Viktor is composed. Normal dialogue.</span>
+<span class="cm">// 26–50: Viktor is unsettled. Board has minor visual glitches.</span>
+<span class="cm">// 51–75: Viktor is unravelling. Dialogue becomes erratic. Board shows pigeon shadows.</span>
+<span class="cm">// 76–99: Viktor has accepted it. Hidden modifiers available. Board is deeply wrong.</span>
+<span class="cm">// 100:   Full Flock. Secret modifier triggers. Pigeons everywhere.</span>
+    </pre>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════ 10 AUTH ══════════════════════════════ -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2>Auth & Accounts</h2>
+  </div>
+
+  <h3>Auth Flow</h3>
+
+  <div class="arch-diagram">
+    <span class="box">  [ User ] → clicks "Sign In" → [ Clerk hosted UI ]</span>
+    <span class="arrow">                                        │</span>
+    <span class="box">                              OAuth provider (Google / Discord / Steam)</span>
+    <span class="arrow">                                        │</span>
+    <span class="box">                              Clerk issues JWT → stored in httpOnly cookie</span>
+    <span class="arrow">                                        │</span>
+    <span class="box">                    [ React app ] reads Clerk session → attaches JWT to all API calls</span>
+    <span class="arrow">                                        │</span>
+    <span class="box">                    [ Fastify ] verifies JWT via Clerk SDK on every protected route</span>
+    <span class="arrow">                                        │</span>
+    <span class="box">                    [ Fastify ] looks up user by clerk_id in PostgreSQL users table</span>
+    <span class="arrow">                                        │</span>
+    <span class="box">                    New user → creates users row + default elo_ratings rows</span>
+  </div>
+
+  <h3>Socket Auth</h3>
+  <p>Socket.IO connections authenticate during the handshake by passing the Clerk JWT as an <code>auth</code> parameter. The server middleware verifies the JWT before allowing the socket to join any game room. Unauthenticated sockets can observe public spectator rooms only (post-launch).</p>
+
+  <h3>Guest Play</h3>
+  <p>Guests (no account) can play VS Bots and Puzzle Mode with a temporary session. Casual and Ranked multiplayer require an account. Guest progress is not saved. A persistent upsell prompt appears after each guest match.</p>
+</div>
+
+
+<!-- ══════════════════════════════ 11 STEAM ══════════════════════════════ -->
+<div class="section" id="s11">
+  <div class="section-header">
+    <span class="section-num">11</span>
+    <h2>Steam / Tauri Desktop Build</h2>
+  </div>
+
+  <h3>Tauri Build Configuration</h3>
+  <p>The desktop build wraps the React web app in a Tauri 2 shell. The web app runs against the same production server — there is no local game server in the desktop build. All game logic remains server-side.</p>
+
+  <div class="code-block">
+    <span class="code-block-label">tauri.conf.json (key settings)</span>
+    <pre>
+{
+  <span class="cs">"productName"</span>: <span class="cs">"Pigeon Chess"</span>,
+  <span class="cs">"version"</span>: <span class="cs">"0.1.0"</span>,
+  <span class="cs">"bundle"</span>: {
+    <span class="cs">"targets"</span>: [<span class="cs">"nsis"</span>, <span class="cs">"app"</span>],   <span class="cm">// Windows + macOS</span>
+    <span class="cs">"icon"</span>: [<span class="cs">"icons/pigeon.png"</span>]
+  },
+  <span class="cs">"app"</span>: {
+    <span class="cs">"windows"</span>: [{
+      <span class="cs">"url"</span>: <span class="cs">"https://pigeonchess.gg"</span>,  <span class="cm">// loads web app</span>
+      <span class="cs">"width"</span>: <span class="cv">1280</span>, <span class="cs">"height"</span>: <span class="cv">800</span>,
+      <span class="cs">"minWidth"</span>: <span class="cv">1024</span>, <span class="cs">"minHeight"</span>: <span class="cv">640</span>,
+      <span class="cs">"resizable"</span>: <span class="cv">true</span>
+    }]
+  },
+  <span class="cs">"plugins"</span>: {
+    <span class="cs">"greenworks"</span>: { <span class="cs">"appId"</span>: <span class="cs">"[STEAM_APP_ID]"</span> }
+  }
+}
+    </pre>
+  </div>
+
+  <h3>Steam Integration Features</h3>
+
+  <table>
+    <thead><tr><th>Feature</th><th>Implementation</th><th>Phase</th></tr></thead>
+    <tbody>
+      <tr><td>Steam Login</td><td>Clerk OAuth provider via Steam OpenID. Tauri passes Steam session token.</td><td><span class="td-green">Launch</span></td></tr>
+      <tr><td>Steam Achievements</td><td>Greenworks plugin. Achievement triggers fired from server on match events.</td><td><span class="td-green">Launch</span></td></tr>
+      <tr><td>Steam Cloud Saves</td><td>Roguelike run state synced to Steam Cloud via Greenworks. Backup to Postgres.</td><td><span class="td-green">Launch</span></td></tr>
+      <tr><td>Steam Overlay</td><td>Enabled by default via Greenworks. No additional config needed.</td><td><span class="td-green">Launch</span></td></tr>
+      <tr><td>Steam Workshop</td><td>Community cosmetics and puzzle upload pipeline. Requires Workshop API integration.</td><td><span class="td-amber">Post-Launch</span></td></tr>
+      <tr><td>Steam Trading Cards</td><td>Design card set (pigeon companions, modifiers). Submit via Steamworks partner.</td><td><span class="td-amber">Post-Launch</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ══════════════════════════════ 12 BUILD ORDER ══════════════════════════════ -->
+<div class="section" id="s12">
+  <div class="section-header">
+    <span class="section-num">12</span>
+    <h2>Build Order — Phase 0 to Launch</h2>
+  </div>
+
+  <p>This is the exact order in which systems must be built. Each item is a dependency for the next. Do not skip steps. Do not build out of order.</p>
+
+  <div class="callout danger">
+    <span class="callout-label">⛔ Solo Dev Warning</span>
+    This list assumes the entire Phase 0 prototype is the singular focus. Do not attempt to build the modifier system, roguelike, or store until the chess engine and real-time multiplayer are production-stable. A beautiful modifier that runs on a buggy chess engine ships as a buggy modifier.
+  </div>
+
+  <ul class="priority-list">
+    <li class="priority-item">
+      <span class="priority-num">P0-01</span>
+      <div class="priority-content">
+        <div class="priority-title">Monorepo scaffold + TypeScript config</div>
+        <div class="priority-desc">pnpm workspaces, Turborepo, shared tsconfig. Define GameState, Piece, Move interfaces in game-core/types. This is the contract everything else builds to.</div>
+      </div>
+      <span class="priority-badge pb-critical">Critical</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P0-02</span>
+      <div class="priority-content">
+        <div class="priority-title">Chess engine — move generation + validation</div>
+        <div class="priority-desc">All FIDE piece movements. Check detection. Checkmate/stalemate. Castling. En passant. Draw conditions. No modifiers yet. Must pass a full chess test suite (use chess.js tests as reference).</div>
+      </div>
+      <span class="priority-badge pb-critical">Critical</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P0-03</span>
+      <div class="priority-content">
+        <div class="priority-title">Fastify server + Socket.IO rooms</div>
+        <div class="priority-desc">Basic game room creation. Two players join a room. Moves emitted, validated server-side, state broadcast back. No auth yet. Localhost only. Test with two browser tabs.</div>
+      </div>
+      <span class="priority-badge pb-critical">Critical</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P0-04</span>
+      <div class="priority-content">
+        <div class="priority-title">Phaser board renderer (React + Phaser integration)</div>
+        <div class="priority-desc">Render a chess board from GameState. Click to select piece, click to move. Highlight legal moves. Show captures. No animations yet — just correct state rendering.</div>
+      </div>
+      <span class="priority-badge pb-critical">Critical</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P0-05</span>
+      <div class="priority-content">
+        <div class="priority-title">Postgres + Prisma setup + Redis connection</div>
+        <div class="priority-desc">Define and migrate the 14-table schema. Redis connection with active game state storage. Match result persistence. This is the data foundation.</div>
+      </div>
+      <span class="priority-badge pb-critical">Critical</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P0-06</span>
+      <div class="priority-content">
+        <div class="priority-title">Clerk auth integration</div>
+        <div class="priority-desc">Sign in with Google/Discord. JWT verification in Fastify middleware. Socket handshake auth. User row creation on first login. Without auth, nothing can be persisted to a user.</div>
+      </div>
+      <span class="priority-badge pb-critical">Critical</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P1-01</span>
+      <div class="priority-content">
+        <div class="priority-title">Modifier State Machine — architecture + first 5 modifiers</div>
+        <div class="priority-desc">Build the hook registration system. Implement 5 modifiers covering all hook types: The Floor Is Lava (onTurnStart), Distracted Piece/Gerald (onTurnStart + onPreMoveValidate), Winter Is Coming (onPreMoveValidate), Retaliatory Swipe (onPreMoveValidate), BOY./Berserker (onCapture + onPostMove).</div>
+      </div>
+      <span class="priority-badge pb-critical">Critical</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P1-02</span>
+      <div class="priority-content">
+        <div class="priority-title">Remaining 35 modifiers</div>
+        <div class="priority-desc">Implement all 40 modifiers in modifier priority order: Board Mutations first (fewest edge cases), then Fog, then Curses, then Abilities, then Army (most complex — new piece types last).</div>
+      </div>
+      <span class="priority-badge pb-high">High</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P1-03</span>
+      <div class="priority-content">
+        <div class="priority-title">Modifier Draft UI</div>
+        <div class="priority-desc">Auction, pick/ban, and free-pick formats. Point budget enforcement. Modifier card UI from the design system. Connected to real-time Socket.IO draft events.</div>
+      </div>
+      <span class="priority-badge pb-high">High</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P1-04</span>
+      <div class="priority-content">
+        <div class="priority-title">Matchmaking + ELO (Glicko-2)</div>
+        <div class="priority-desc">Redis queue-based matchmaking. Glicko-2 ELO calculation in the packages/elo package. ELO update on match end. Basic ranked lobby UI.</div>
+      </div>
+      <span class="priority-badge pb-high">High</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P1-05</span>
+      <div class="priority-content">
+        <div class="priority-title">Replay system + event stream</div>
+        <div class="priority-desc">All matches recorded as seeded event streams. Replay viewer with step-forward/back controls. Required for puzzle creation tool in Phase 2.</div>
+      </div>
+      <span class="priority-badge pb-high">High</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P1-06</span>
+      <div class="priority-content">
+        <div class="priority-title">Chick bot (depth-1 AI)</div>
+        <div class="priority-desc">Random legal move selection with basic material evaluation. Sufficient for VS Bots at MVP. Magnus bot deferred to Phase 2.</div>
+      </div>
+      <span class="priority-badge pb-high">High</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P2-01</span>
+      <div class="priority-content">
+        <div class="priority-title">Roguelike run system (Story Mode + Endless)</div>
+        <div class="priority-desc">Node map generation. Run state machine. Feather economy. Flock Events. The Roost shop. The Perch rest node. Madness Meter. Viktor dialogue system.</div>
+      </div>
+      <span class="priority-badge pb-medium">Medium</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P2-02</span>
+      <div class="priority-content">
+        <div class="priority-title">Meta-progression tree</div>
+        <div class="priority-desc">Prestige Token economy. Three-branch unlock tree (Tactician / Survivor / Flock Whisperer). Modifier unlock tracking in modifier_unlocks table.</div>
+      </div>
+      <span class="priority-badge pb-medium">Medium</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P2-03</span>
+      <div class="priority-content">
+        <div class="priority-title">Battle Pass + cosmetics store</div>
+        <div class="priority-desc">battle_pass_progress table. XP accrual on match end. Tier reward claiming. Cosmetics store with static inventory. Stripe or equivalent for payments.</div>
+      </div>
+      <span class="priority-badge pb-medium">Medium</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P2-04</span>
+      <div class="priority-content">
+        <div class="priority-title">Puzzle system + creator tool</div>
+        <div class="priority-desc">Board state editor. Win condition definition. Community submission + voting pipeline. Daily puzzle selection. Puzzle streak tracking.</div>
+      </div>
+      <span class="priority-badge pb-medium">Medium</span>
+    </li>
+    <li class="priority-item">
+      <span class="priority-num">P2-05</span>
+      <div class="priority-content">
+        <div class="priority-title">Tauri build + Steam integration</div>
+        <div class="priority-desc">Configure Tauri 2. Greenworks plugin for Steam SDK. Achievements definition. Cloud save integration. Steam build pipeline and store page assets.</div>
+      </div>
+      <span class="priority-badge pb-medium">Medium</span>
+    </li>
+  </ul>
+
+</div>
+
+</div><!-- /page -->
+
+<div class="doc-footer">
+  PIGEON CHESS · TECHNICAL DESIGN DOCUMENT · PC-TDD-001 · v0.1 · PRE-PRODUCTION<br>
+  REFERENCES: GDD v0.1 · MODIFIER BIBLE v0.2 (PC-MOD-001)<br>
+  NEXT: Art Direction Guide · Tower 1 Story Script · Reginald Beak Dialogue (150 lines)
+</div>
+
+</body>
+</html>
