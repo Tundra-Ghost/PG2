@@ -1,0 +1,1827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pigeon Chess — Art Direction Guide v0.1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    /* ── MASTER PALETTE ── */
+    --ink:          #18120a;
+    --ink-soft:     #2e2318;
+    --parchment:    #f2ead8;
+    --parchment2:   #e8ddc4;
+    --parchment3:   #ddd0b0;
+    --cream:        #faf7f0;
+
+    /* Brand primaries */
+    --pigeon-grey:  #8a8298;
+    --pigeon-neck:  #6a7d5a;   /* iridescent green-purple */
+    --pigeon-chest: #b09090;   /* muted rose */
+    --pigeon-wing:  #5a5068;   /* dark slate */
+
+    /* Accent system */
+    --gold:         #c8973a;
+    --gold-light:   #e8c870;
+    --gold-pale:    #f5e8c0;
+    --chaos-red:    #b83228;
+    --chaos-light:  #d85040;
+    --cursed-plum:  #5a2850;
+    --board-dark:   #1e1408;
+    --board-mid:    #3a2818;
+    --board-light:  #c8a870;
+    --board-shadow: #8a6840;
+
+    /* Modifier category colors (from Bible v0.2) */
+    --mod-board:    #e8a23a;
+    --mod-curse:    #c0392b;
+    --mod-ability:  #3a9de8;
+    --mod-fog:      #7c3ae8;
+    --mod-army:     #3ae87c;
+
+    /* Madness tiers */
+    --madness-0:    #c8973a;   /* gold — composed */
+    --madness-1:    #c87838;   /* amber — unsettled */
+    --madness-2:    #a84828;   /* ember — unravelling */
+    --madness-3:    #782868;   /* plum — lost */
+    --madness-4:    #480858;   /* void — full flock */
+
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body:    'DM Sans', system-ui, sans-serif;
+    --font-mono:    'DM Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--parchment); }
+  ::-webkit-scrollbar-thumb { background: var(--parchment3); }
+
+  /* ══ COVER ══ */
+  .cover {
+    min-height: 100vh;
+    background: var(--board-dark);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @media (max-width: 700px) { .cover { grid-template-columns: 1fr; } }
+
+  .cover-left {
+    padding: 5rem 3rem 5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .cover-right {
+    background: var(--board-mid);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Abstract board pattern on cover right */
+  .cover-board {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    opacity: 0.35;
+  }
+
+  .cover-board-cell {
+    border: 1px solid rgba(200,151,58,0.15);
+  }
+
+  .cover-board-cell.lit {
+    background: rgba(200,151,58,0.18);
+  }
+
+  .cover-hero-pigeon {
+    position: relative;
+    z-index: 2;
+    font-size: 9rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 40px rgba(200,151,58,0.3));
+    animation: float 5s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50% { transform: translateY(-12px) rotate(4deg); }
+  }
+
+  /* Diagonal stripe texture on cover */
+  .cover-texture {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(200,151,58,0.03) 40px,
+      rgba(200,151,58,0.03) 41px
+    );
+  }
+
+  .cover-tag {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .cover-tag::after {
+    content: '';
+    display: block;
+    height: 1px;
+    width: 40px;
+    background: var(--gold);
+    opacity: 0.4;
+  }
+
+  .cover-title {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    line-height: 1;
+    color: var(--parchment);
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+  }
+
+  .cover-title em {
+    font-style: italic;
+    color: var(--gold);
+    display: block;
+  }
+
+  .cover-subtitle {
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 1rem;
+    color: var(--board-shadow);
+    margin-bottom: 3rem;
+    max-width: 340px;
+    line-height: 1.6;
+  }
+
+  .cover-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .cover-meta-row {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+    font-size: 0.8rem;
+  }
+
+  .cover-meta-key {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--board-shadow);
+    min-width: 90px;
+  }
+
+  .cover-meta-val { color: var(--parchment2); }
+
+  /* ══ PAGE ══ */
+  .page { max-width: 980px; margin: 0 auto; padding: 5rem 2rem 8rem; }
+
+  /* ══ STICKY NAV ══ */
+  .art-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(242,234,216,0.97);
+    backdrop-filter: blur(8px);
+    border-bottom: 2px solid var(--parchment3);
+    padding: 0.75rem 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-bottom: 5rem;
+  }
+
+  .art-nav-btn {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pigeon-grey);
+    text-decoration: none;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+
+  .art-nav-btn:hover {
+    border-color: var(--parchment3);
+    color: var(--ink);
+  }
+
+  /* ══ SECTIONS ══ */
+  .section { margin-bottom: 7rem; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .section-num {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--chaos-red);
+    letter-spacing: 0.15em;
+    background: var(--ink);
+    color: var(--parchment);
+    padding: 0.2rem 0.5rem;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 2.4rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.4rem;
+    margin: 2.5rem 0 1rem;
+    color: var(--ink);
+  }
+
+  h4 {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pigeon-grey);
+    margin: 2rem 0 0.75rem;
+  }
+
+  p { margin-bottom: 1rem; font-weight: 300; }
+  strong { font-weight: 500; }
+
+  ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+  li { margin-bottom: 0.4rem; font-weight: 300; }
+
+  /* ══ PALETTE SWATCHES ══ */
+  .swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .swatch {
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .swatch-color {
+    height: 80px;
+    position: relative;
+  }
+
+  .swatch-check {
+    position: absolute;
+    bottom: 6px;
+    right: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+  }
+
+  .swatch-info {
+    background: var(--parchment2);
+    padding: 0.5rem 0.6rem;
+  }
+
+  .swatch-name {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display: block;
+    margin-bottom: 0.15rem;
+  }
+
+  .swatch-hex {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--pigeon-grey);
+  }
+
+  .swatch-use {
+    font-size: 0.68rem;
+    color: var(--pigeon-grey);
+    margin-top: 0.15rem;
+    line-height: 1.3;
+    display: block;
+  }
+
+  /* ══ TYPOGRAPHY SPECIMENS ══ */
+  .type-specimen {
+    background: var(--parchment2);
+    border: 1px solid var(--parchment3);
+    padding: 2rem;
+    margin: 1rem 0;
+  }
+
+  .type-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pigeon-grey);
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  .spec-display {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 3.5rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .spec-display-italic {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 2.5rem;
+    line-height: 1.2;
+    color: var(--chaos-red);
+  }
+
+  .spec-body {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--ink);
+    max-width: 60ch;
+  }
+
+  .spec-mono {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--pigeon-grey);
+    letter-spacing: 0.05em;
+  }
+
+  /* ══ BOARD SPECS ══ */
+  .board-demo {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    border: 3px solid var(--board-dark);
+    box-shadow: 6px 6px 0 var(--ink);
+    margin: 1.5rem 0;
+    max-width: 420px;
+  }
+
+  .board-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    position: relative;
+  }
+
+  .board-cell.dark  { background: var(--board-mid); }
+  .board-cell.light { background: var(--board-light); }
+
+  /* Tile effect overlays */
+  .board-cell.lava    { background: #8a2020; }
+  .board-cell.infected { background: #3a5020; }
+  .board-cell.frozen  { background: #304858; }
+  .board-cell.swamp   { background: #2a3820; }
+  .board-cell.void    { background: #080808; }
+  .board-cell.fog     { background: #181820; }
+  .board-cell.glow {
+    box-shadow: inset 0 0 8px rgba(200,151,58,0.6);
+  }
+
+  .tile-tag {
+    position: absolute;
+    bottom: 1px;
+    right: 2px;
+    font-family: var(--font-mono);
+    font-size: 0.35rem;
+    letter-spacing: 0.05em;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+  }
+
+  /* ══ PIECE SPEC CARDS ══ */
+  .piece-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .piece-card {
+    background: var(--parchment2);
+    border: 1px solid var(--parchment3);
+    padding: 1.25rem;
+    border-top: 3px solid var(--gold);
+  }
+
+  .piece-card.new-piece  { border-top-color: var(--chaos-red); }
+  .piece-card.ghost-piece { border-top-color: var(--pigeon-wing); }
+
+  .piece-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .piece-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .piece-tag {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pigeon-grey);
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+
+  .piece-desc {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  /* ══ UI COMPONENT SPECS ══ */
+  .ui-demo {
+    background: var(--board-dark);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    position: relative;
+  }
+
+  .ui-demo-label {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--board-shadow);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  /* Modifier card mock */
+  .mod-card-mock {
+    background: #13131a;
+    border: 1px solid #2a2a3e;
+    padding: 1rem 1.25rem;
+    max-width: 280px;
+    position: relative;
+  }
+
+  .mod-card-mock-stripe {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .mod-card-mock-id {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: #4a4760;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.25rem;
+  }
+
+  .mod-card-mock-ref {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.3rem;
+    opacity: 0.8;
+  }
+
+  .mod-card-mock-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #e8e6f0;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .mod-card-mock-type {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #8a87a0;
+    margin-bottom: 0.6rem;
+  }
+
+  .mod-card-mock-desc {
+    font-size: 0.8rem;
+    color: #e8e6f0;
+    line-height: 1.55;
+    margin-bottom: 0.75rem;
+    font-weight: 300;
+  }
+
+  .mod-card-mock-flavor {
+    font-style: italic;
+    font-size: 0.72rem;
+    color: #4a4760;
+    border-left: 2px solid #2a2a3e;
+    padding-left: 0.6rem;
+    line-height: 1.5;
+  }
+
+  .mod-card-mock-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.4rem;
+    border-top: 1px solid #2a2a3e;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
+    text-align: center;
+  }
+
+  .mod-stat-mock-label {
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #4a4760;
+    display: block;
+    margin-bottom: 0.15rem;
+  }
+
+  .mod-stat-mock-val {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--gold-light);
+  }
+
+  /* ══ ANIMATION SPECS ══ */
+  .anim-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .anim-card {
+    background: var(--parchment2);
+    border: 1px solid var(--parchment3);
+    padding: 1.25rem;
+  }
+
+  .anim-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .anim-trigger {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--chaos-red);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .anim-desc {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    font-weight: 300;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+  }
+
+  .anim-spec {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--pigeon-grey);
+    background: var(--parchment3);
+    padding: 0.3rem 0.5rem;
+  }
+
+  /* ══ CALLOUTS ══ */
+  .callout {
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    border-left: 4px solid;
+    font-size: 0.9rem;
+    font-weight: 300;
+  }
+
+  .callout-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .callout.rule  { background: rgba(184,50,40,0.06); border-color: var(--chaos-red); }
+  .callout.rule .callout-label { color: var(--chaos-red); }
+
+  .callout.note  { background: rgba(138,130,152,0.08); border-color: var(--pigeon-grey); }
+  .callout.note .callout-label { color: var(--pigeon-grey); }
+
+  .callout.gold  { background: rgba(200,151,58,0.07); border-color: var(--gold); }
+  .callout.gold .callout-label { color: var(--gold); }
+
+  /* ══ MADNESS SPECTRUM ══ */
+  .madness-bar {
+    height: 48px;
+    border-radius: 2px;
+    background: linear-gradient(
+      to right,
+      var(--madness-0) 0%,
+      var(--madness-1) 25%,
+      var(--madness-2) 50%,
+      var(--madness-3) 75%,
+      var(--madness-4) 100%
+    );
+    margin: 1rem 0;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  .madness-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.4rem;
+  }
+
+  .madness-label {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pigeon-grey);
+    text-align: center;
+    flex: 1;
+  }
+
+  /* ══ TWO COL ══ */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 1rem 0;
+  }
+
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* ══ REFERENCE IMAGES / MOOD BOARD ══ */
+  .moodboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin: 1.5rem 0;
+    background: var(--ink);
+  }
+
+  @media (max-width: 600px) { .moodboard { grid-template-columns: 1fr 1fr; } }
+
+  .mood-cell {
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    text-align: center;
+    padding: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mood-cell-label {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.6);
+    color: var(--parchment);
+    padding: 0.15rem 0.4rem;
+  }
+
+  /* ══ TABLE ══ */
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 1.5rem 0; }
+  thead { background: var(--parchment2); }
+  th {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--pigeon-grey);
+    padding: 0.65rem 0.9rem;
+    text-align: left;
+    border-bottom: 2px solid var(--parchment3);
+  }
+  td {
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid var(--parchment2);
+    font-weight: 300;
+    vertical-align: top;
+  }
+  tr:hover td { background: var(--parchment2); }
+
+  /* ══ FOOTER ══ */
+  .doc-footer {
+    background: var(--board-dark);
+    color: var(--board-shadow);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    margin-top: 5rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ COVER ══════════ -->
+<div class="cover">
+  <div class="cover-left">
+    <div class="cover-tag">Art Direction Guide</div>
+    <h1 class="cover-title">
+      Pigeon
+      <em>Chess</em>
+    </h1>
+    <p class="cover-subtitle">Visual language, colour systems, typography, board design, piece aesthetics, UI components, and animation direction for all game surfaces.</p>
+    <div class="cover-meta">
+      <div class="cover-meta-row"><span class="cover-meta-key">Document</span><span class="cover-meta-val">PC-ART-001 · v0.1</span></div>
+      <div class="cover-meta-row"><span class="cover-meta-key">References</span><span class="cover-meta-val">GDD v0.1 · MOD-001 v0.2 · TDD v0.1</span></div>
+      <div class="cover-meta-row"><span class="cover-meta-key">Renderer</span><span class="cover-meta-val">Phaser 3 (board) + React (UI)</span></div>
+      <div class="cover-meta-row"><span class="cover-meta-key">Tone</span><span class="cover-meta-val">Chaotic & Absurdist — Deadpan Grandeur</span></div>
+      <div class="cover-meta-row"><span class="cover-meta-key">Status</span><span class="cover-meta-val">Draft — Pre-Production</span></div>
+    </div>
+  </div>
+  <div class="cover-right">
+    <div class="cover-texture"></div>
+    <div class="cover-board" id="coverBoard"></div>
+    <div class="cover-hero-pigeon">🐦</div>
+  </div>
+</div>
+
+<script>
+  // Generate chess board pattern on cover
+  const board = document.getElementById('coverBoard');
+  const litCells = [9,11,13,16,19,22,25,27,34,37,38,43,50,53,54,59];
+  for (let i = 0; i < 64; i++) {
+    const cell = document.createElement('div');
+    const row = Math.floor(i / 8);
+    const col = i % 8;
+    cell.className = 'cover-board-cell' + ((row + col) % 2 === 0 ? ' lit' : '');
+    board.appendChild(cell);
+  }
+</script>
+
+<!-- ══════════ PAGE ══════════ -->
+<div class="page">
+
+  <nav class="art-nav">
+    <a class="art-nav-btn" href="#s01">01 · Vision</a>
+    <a class="art-nav-btn" href="#s02">02 · Colour System</a>
+    <a class="art-nav-btn" href="#s03">03 · Typography</a>
+    <a class="art-nav-btn" href="#s04">04 · Board Design</a>
+    <a class="art-nav-btn" href="#s05">05 · Piece Design</a>
+    <a class="art-nav-btn" href="#s06">06 · Tile Effects</a>
+    <a class="art-nav-btn" href="#s07">07 · Modifier Cards</a>
+    <a class="art-nav-btn" href="#s08">08 · UI System</a>
+    <a class="art-nav-btn" href="#s09">09 · Animation</a>
+    <a class="art-nav-btn" href="#s10">10 · Viktor & Characters</a>
+    <a class="art-nav-btn" href="#s11">11 · Madness States</a>
+    <a class="art-nav-btn" href="#s12">12 · Cosmetics</a>
+  </nav>
+
+
+  <!-- ══ 01 VISION ══ -->
+  <div class="section" id="s01">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>Art Direction Vision</h2>
+    </div>
+
+    <div class="callout gold">
+      <span class="callout-label">🎨 The One Sentence</span>
+      Pigeon Chess looks like a <strong>prestigious Victorian chess journal that has been slowly taken over by pigeons</strong> and refuses to acknowledge it.
+    </div>
+
+    <p>The visual identity of Pigeon Chess is built on a single tension: <strong>dignified formality vs. escalating chaos</strong>. The base aesthetic is serious, classical, and slightly dusty — aged parchment, engraved typography, candlelit board warmth. This is the world Viktor believes he still inhabits. Over this foundation, chaos accumulates: mold spreads, tiles catch fire, modifier cards reference internet memes, a pigeon named Gerald sits on your queen. The board does not explain itself.</p>
+
+    <p>The art direction must always serve both sides of this tension simultaneously. A lava tile should feel genuinely dramatic — not cartoonish. Gerald's arrival should feel genuinely absurd — not whimsical. The deadpan is the joke. The gravitas is what makes the pigeons funny.</p>
+
+    <h3>Visual Pillars</h3>
+
+    <div class="two-col">
+      <div class="callout rule">
+        <span class="callout-label">Pillar 1 — Deadpan Grandeur</span>
+        Every game element is presented with maximum seriousness regardless of content. Lava tiles have a formal Latin label. Gerald gets a nameplate. The "YOU DIED" screen uses a classical serif font. The absurdity lives in the content, never the presentation style.
+      </div>
+      <div class="callout rule">
+        <span class="callout-label">Pillar 2 — Organic Corruption</span>
+        The visual language starts clean and becomes progressively corrupted. Fresh board: pristine squares, warm light, crisp pieces. Madness at 75%: board grain increases, ink bleeds at tile edges, pieces cast wrong shadows. Full Flock: everything feathers.
+      </div>
+      <div class="callout rule">
+        <span class="callout-label">Pillar 3 — Tactile Physicality</span>
+        Everything feels like it exists in a physical world. The board has weight. Pieces have wood grain. Cards have paper texture. No flat design. No gradients for their own sake. Light sources are consistent. Shadows are real.
+      </div>
+      <div class="callout rule">
+        <span class="callout-label">Pillar 4 — Modifier Visual Identity</span>
+        Each of the five modifier categories has a distinct visual language — not just a colour, but a texture, a border treatment, a particle effect. Players should be able to identify a modifier category at a glance from across the screen.
+      </div>
+    </div>
+
+    <h3>Mood Board Reference Points</h3>
+    <p>These are not sources to copy — they are reference tones to understand the target aesthetic.</p>
+
+    <div class="moodboard">
+      <div class="mood-cell" style="background:#1a1208;">
+        <span style="color:#c8973a;font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;font-style:italic;opacity:0.8;">Victorian<br>Chess Journal</span>
+        <span class="mood-cell-label">Base tone</span>
+      </div>
+      <div class="mood-cell" style="background:#2a1a08;">
+        <span style="font-size:3rem;filter:sepia(0.5);">♟️🐦♟️<br>🐦♟️🐦</span>
+        <span class="mood-cell-label">Pigeon intrusion</span>
+      </div>
+      <div class="mood-cell" style="background:#0d180d;background-image:repeating-linear-gradient(0deg,rgba(58,80,32,0.3) 0px,transparent 2px,transparent 8px);">
+        <span style="color:#4a8030;font-family:monospace;font-size:0.7rem;opacity:0.9;">INFECTED<br>TILE A4<br>SPREADING<br>TURN 12</span>
+        <span class="mood-cell-label">Body horror calm</span>
+      </div>
+      <div class="mood-cell" style="background:linear-gradient(135deg,#1a0808,#380808);">
+        <span style="color:#d05030;font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;letter-spacing:-0.02em;">THE<br>FLOOR<br>IS LAVA</span>
+        <span class="mood-cell-label">Deadpan drama</span>
+      </div>
+      <div class="mood-cell" style="background:#080810;">
+        <span style="color:#7c3ae8;font-family:monospace;font-size:2.5rem;opacity:0.5;">???</span>
+        <span class="mood-cell-label">Fog of war</span>
+      </div>
+      <div class="mood-cell" style="background:#100810;">
+        <span style="color:#c878f0;font-family:'Playfair Display',serif;font-size:1rem;font-style:italic;text-align:center;line-height:1.5;">7/10<br>Too Many<br>Pieces<br>— Reginald Beak</span>
+        <span class="mood-cell-label">Pop culture deadpan</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ 02 COLOUR ══ -->
+  <div class="section" id="s02">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Colour System</h2>
+    </div>
+
+    <h3>Foundation Palette — "The Board"</h3>
+    <p>These colours govern the board, UI chrome, backgrounds, and Viktor's world. Warm, aged, and serious.</p>
+
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#18120a;"><span class="swatch-check" style="color:#c8973a;">#18120a</span></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Deep Ink</span>
+          <span class="swatch-hex">#18120a</span>
+          <span class="swatch-use">Primary text, UI chrome, board border</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#1e1408;"><span class="swatch-check" style="color:#c8973a;">#1e1408</span></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Board Dark</span>
+          <span class="swatch-hex">#1e1408</span>
+          <span class="swatch-use">Dark board squares, deep backgrounds</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#3a2818;"><span class="swatch-check" style="color:#c8973a;">#3a2818</span></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Board Mid</span>
+          <span class="swatch-hex">#3a2818</span>
+          <span class="swatch-use">Mid-dark UI surfaces, panel backgrounds</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#c8a870;"><span class="swatch-check" style="color:#18120a;">#c8a870</span></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Board Light</span>
+          <span class="swatch-hex">#c8a870</span>
+          <span class="swatch-use">Light board squares, warm highlights</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#f2ead8;"><span class="swatch-check" style="color:#18120a;">#f2ead8</span></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Parchment</span>
+          <span class="swatch-hex">#f2ead8</span>
+          <span class="swatch-use">UI backgrounds, modifier card base, panels</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#c8973a;"><span class="swatch-check" style="color:#18120a;">#c8973a</span></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Viktor's Gold</span>
+          <span class="swatch-hex">#c8973a</span>
+          <span class="swatch-use">Primary accent, highlights, ELO badges</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#b83228;"><span class="swatch-check" style="color:#f2ead8;">#b83228</span></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Chaos Red</span>
+          <span class="swatch-hex">#b83228</span>
+          <span class="swatch-use">Danger states, curse indicators, YOU DIED</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#8a8298;"><span class="swatch-check" style="color:#f2ead8;">#8a8298</span></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Pigeon Grey</span>
+          <span class="swatch-hex">#8a8298</span>
+          <span class="swatch-use">Secondary text, inactive states, Gerald</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>Modifier Category Colours</h3>
+    <p>Each modifier category owns a colour. These are used consistently across modifier cards, UI badges, and in-game tile/piece effect overlays.</p>
+
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#e8a23a;"><span class="swatch-check" style="color:#18120a;">#e8a23a</span></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Category A</span>
+          <span class="swatch-hex">#e8a23a</span>
+          <span class="swatch-use">Board Mutations — amber fire</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#c0392b;"><span class="swatch-check" style="color:#f2ead8;">#c0392b</span></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Category B</span>
+          <span class="swatch-hex">#c0392b</span>
+          <span class="swatch-use">Cursed Modifiers — blood red</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#3a9de8;"><span class="swatch-check" style="color:#18120a;">#3a9de8</span></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Category C</span>
+          <span class="swatch-hex">#3a9de8</span>
+          <span class="swatch-use">Active Abilities — electric blue</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#7c3ae8;"><span class="swatch-check" style="color:#f2ead8;">#7c3ae8</span></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Category D</span>
+          <span class="swatch-hex">#7c3ae8</span>
+          <span class="swatch-use">Fog of War — deep violet</span>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#3ae87c;"><span class="swatch-check" style="color:#18120a;">#3ae87c</span></div>
+        <div class="swatch-info">
+          <span class="swatch-name">Category E</span>
+          <span class="swatch-hex">#3ae87c</span>
+          <span class="swatch-use">Asymmetric Armies — flock green</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>The Madness Spectrum</h3>
+    <p>As the Madness Meter fills (0–100), the entire visual environment shifts along this gradient. This affects board saturation, UI glow, shadow intensity, Viktor's portrait, and ambient particle density.</p>
+
+    <div class="madness-bar"></div>
+    <div class="madness-labels">
+      <span class="madness-label">0–25<br>Composed<br>#c8973a</span>
+      <span class="madness-label">26–50<br>Unsettled<br>#c87838</span>
+      <span class="madness-label">51–75<br>Unravelling<br>#a84828</span>
+      <span class="madness-label">76–99<br>Lost<br>#782868</span>
+      <span class="madness-label">100<br>Full Flock<br>#480858</span>
+    </div>
+
+    <div class="callout note">
+      <span class="callout-label">ℹ Implementation Note</span>
+      The Madness tint is applied as a Phaser post-processing colour matrix filter on the board scene. UI chrome receives the tint via a CSS custom property (<code>--madness-tint</code>) updated by the React layer. At Full Flock, a feather particle system activates across the entire screen. The board's light squares take on a violet hue. Viktor's portrait changes to a fully corrupted state.
+    </div>
+
+    <h3>Colour Rules</h3>
+    <div class="callout rule">
+      <span class="callout-label">⛔ Colour Prohibitions</span>
+      1. <strong>No pure white (#ffffff) anywhere.</strong> Use Parchment (#f2ead8) or Cream (#faf7f0) instead. Pure white reads as digital and breaks the physical world illusion.<br>
+      2. <strong>No cyan or teal in the base palette.</strong> These are reserved for Fog of War effects only — seeing cyan elsewhere is a visual signal that something is hidden.<br>
+      3. <strong>No flat gradient backgrounds</strong> on game surfaces. Texture overlays required on all large background areas.<br>
+      4. <strong>Category colours are exclusive.</strong> A board mutation tile must not use Category C (ability) blue. Visual language must be consistent.
+    </div>
+  </div>
+
+
+  <!-- ══ 03 TYPOGRAPHY ══ -->
+  <div class="section" id="s03">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Typography</h2>
+    </div>
+
+    <p>Three typefaces. No substitutions. Each serves a defined role and must not be used outside it.</p>
+
+    <div class="type-specimen">
+      <span class="type-label">Display — Playfair Display · Headings, Titles, Viktor's Dialogue, Modifier Names</span>
+      <div class="spec-display">Pigeon Chess</div>
+      <div style="margin-top:0.5rem;" class="spec-display-italic">"The board has opinions."</div>
+    </div>
+
+    <div class="callout note">
+      <span class="callout-label">Playfair Display — Usage Rules</span>
+      Use 900 weight for all game titles, section headers, and major UI labels. Use 400 italic for Viktor's dialogue lines, modifier flavor text, and pull quotes. The contrast between the two weights IS the visual voice of the game — serious headline, wry italic aside. Never use Playfair Display in all-caps. Never use it at sizes below 14px.
+    </div>
+
+    <div class="type-specimen">
+      <span class="type-label">Body — DM Sans · All UI text, descriptions, rules, tutorial copy</span>
+      <div class="spec-body">Viktor Crumb placed his knight on d4. The knight did not ask for this. The knight has an active ability cooldown of 6 turns and a deeply complicated relationship with the concept of legal movement. Viktor is aware of this. Viktor does not care.</div>
+    </div>
+
+    <div class="callout note">
+      <span class="callout-label">DM Sans — Usage Rules</span>
+      300 weight for all body copy, descriptions, and paragraph text. 500 weight for UI labels, button text, and emphasized information. Never bold (700) — use 500 as the heavy weight. DM Sans is the utilitarian counterpart to Playfair's expressiveness. It should feel invisible — clear, never decorative.
+    </div>
+
+    <div class="type-specimen">
+      <span class="type-label">Mono — DM Mono · IDs, Stats, Timers, Code, System Labels</span>
+      <div class="spec-mono">MOD-B002 · CURSE · TURN 14 · COOLDOWN 3 · ELO +24 · FEATHERS ×7</div>
+    </div>
+
+    <div class="callout note">
+      <span class="callout-label">DM Mono — Usage Rules</span>
+      Used exclusively for data, identifiers, timers, ELO numbers, modifier stats, and system labels. Letter-spacing: 0.1em minimum. Color: always a secondary/dim tone — never primary text color. DM Mono signals "this is a number, a code, a system value" — it should never appear in descriptive prose.
+    </div>
+
+    <h3>Type Scale</h3>
+    <table>
+      <thead><tr><th>Name</th><th>Font</th><th>Size</th><th>Weight</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td>Hero</td><td>Playfair Display</td><td>64–96px</td><td>900</td><td>Game title, cover, Tower titles</td></tr>
+        <tr><td>H1</td><td>Playfair Display</td><td>40–52px</td><td>900</td><td>Screen titles, boss names</td></tr>
+        <tr><td>H2</td><td>Playfair Display</td><td>28–36px</td><td>700</td><td>Section headers, modifier names on cards</td></tr>
+        <tr><td>H3</td><td>Playfair Display</td><td>20–24px</td><td>700</td><td>Sub-headers, node names on run map</td></tr>
+        <tr><td>Quote</td><td>Playfair Display Italic</td><td>16–20px</td><td>400</td><td>Flavor text, Viktor dialogue</td></tr>
+        <tr><td>Body</td><td>DM Sans</td><td>14–16px</td><td>300</td><td>All descriptive copy</td></tr>
+        <tr><td>Label</td><td>DM Sans</td><td>12–14px</td><td>500</td><td>Button text, UI labels</td></tr>
+        <tr><td>Mono</td><td>DM Mono</td><td>11–13px</td><td>400</td><td>Stats, IDs, timers, data</td></tr>
+        <tr><td>Micro</td><td>DM Mono</td><td>9–11px</td><td>400</td><td>Modifier IDs on cards, version numbers</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ══ 04 BOARD DESIGN ══ -->
+  <div class="section" id="s04">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Board Design</h2>
+    </div>
+
+    <h3>Default Board — "The Crumbed Board"</h3>
+    <p>The default board is Viktor's cursed board — aged walnut wood, warm candlelit light, slight grain. It should feel like a physical object from a high-end Victorian chess set that has seen better days.</p>
+
+    <div class="two-col">
+      <div>
+        <h4>Dark Square Spec</h4>
+        <ul>
+          <li>Base colour: <strong>#1e1408</strong> (Board Dark)</li>
+          <li>Wood grain texture: subtle horizontal lines, 2px spacing, 3% opacity</li>
+          <li>Ambient light: slight top-left warmth (radial gradient 8% opacity)</li>
+          <li>Border: 1px inset shadow, 15% darker than base</li>
+        </ul>
+        <h4>Light Square Spec</h4>
+        <ul>
+          <li>Base colour: <strong>#c8a870</strong> (Board Light)</li>
+          <li>Wood grain texture: same as dark, but lighter grain</li>
+          <li>Ambient light: slightly more luminous at centre</li>
+          <li>Border: 1px inset shadow matching dark square treatment</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Board Frame Spec</h4>
+        <ul>
+          <li>Outer frame: 12px, deep walnut <strong>#100a04</strong></li>
+          <li>Rank/file labels: DM Mono, 10px, <strong>#8a6840</strong></li>
+          <li>Corner rosettes: small carved pigeon motif (4px × 4px)</li>
+          <li>Drop shadow: 8px offset, 40% opacity, warm tone</li>
+        </ul>
+        <h4>Selected Piece Highlight</h4>
+        <ul>
+          <li>Selected square: <strong>#c8973a</strong> at 40% opacity overlay</li>
+          <li>Legal move dot: 12px circle, <strong>#c8973a</strong> at 60% opacity</li>
+          <li>Capture target: full square red tint <strong>#b83228</strong> at 30%</li>
+          <li>King in check: full square red tint pulsing 0.5s ease</li>
+        </ul>
+      </div>
+    </div>
+
+    <h4>Board Demo — Default State</h4>
+    <div class="board-demo" id="defaultBoard"></div>
+
+    <script>
+      const defaultBoard = document.getElementById('defaultBoard');
+      const pieces = {0:'♜',1:'♞',2:'♝',3:'♛',4:'♚',5:'♝',6:'♞',7:'♜',
+                      8:'♟',9:'♟',10:'♟',11:'♟',12:'♟',13:'♟',14:'♟',15:'♟',
+                      48:'♙',49:'♙',50:'♙',51:'♙',52:'♙',53:'♙',54:'♙',55:'♙',
+                      56:'♖',57:'♘',58:'♗',59:'♕',60:'♔',61:'♗',62:'♘',63:'♖'};
+      for (let i = 0; i < 64; i++) {
+        const cell = document.createElement('div');
+        const row = Math.floor(i / 8);
+        const col = i % 8;
+        cell.className = 'board-cell ' + ((row + col) % 2 === 0 ? 'light' : 'dark');
+        if (pieces[i]) cell.textContent = pieces[i];
+        defaultBoard.appendChild(cell);
+      }
+    </script>
+
+    <h3>Board Coordinate System (Phaser)</h3>
+    <p>The board renders in a Phaser Scene at a base resolution of <strong>640×640px</strong> (80px per square). The scene scales to fill available container space using Phaser's <code>ScaleManager</code> with <code>FIT</code> mode. All tile effect overlays are rendered as separate Phaser layers above the board base layer, allowing independent opacity and blending control per effect type.</p>
+
+    <table>
+      <thead><tr><th>Layer</th><th>Phaser Depth</th><th>Contents</th></tr></thead>
+      <tbody>
+        <tr><td>Board Base</td><td>0</td><td>64 static square sprites, frame, rank/file labels</td></tr>
+        <tr><td>Tile Effects</td><td>10</td><td>Lava, infection, frost, swamp, void overlays — animated sprites</td></tr>
+        <tr><td>Fog Layer</td><td>20</td><td>Dark overlay masked by visible squares set — updates per turn</td></tr>
+        <tr><td>Pieces</td><td>30</td><td>All piece sprites. Selected piece renders at depth 50 (above all)</td></tr>
+        <tr><td>Piece Effects</td><td>40</td><td>Gerald, ability cooldown rings, ghost transparency, berserker glow</td></tr>
+        <tr><td>Board Events</td><td>60</td><td>Cannonball animation, vent flash, storm shrink, gravity flip</td></tr>
+        <tr><td>UI Overlay</td><td>70</td><td>Ability buttons, no-fly zone lines, surveillance eye, zone of control</td></tr>
+        <tr><td>Notifications</td><td>80</td><td>Reginald's review popup, Gerald nameplate, "YOU DIED" screen</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ══ 05 PIECE DESIGN ══ -->
+  <div class="section" id="s05">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Piece Design</h2>
+    </div>
+
+    <p>All pieces in the default set are rendered as <strong>top-down 2D illustrated sprites</strong> at 64×64px base resolution (scaled to 72×72 on the 80px board with 4px padding). The art style is engraved illustration — high-contrast, slightly aged, as if from a Victorian chess manual. No 3D. No gradients. Strong outlines with internal hatching for depth.</p>
+
+    <div class="callout gold">
+      <span class="callout-label">🎨 Style Reference</span>
+      Target look: Staunton chess pieces as if drawn by a 19th-century engraver for a natural history journal. Think Audubon bird illustrations but for chess pieces. Slightly absurd anatomical accuracy. Every piece takes itself completely seriously.
+    </div>
+
+    <h3>Standard Pieces</h3>
+    <div class="piece-grid">
+      <div class="piece-card">
+        <span class="piece-icon">♟</span>
+        <div class="piece-name">The Pawn</div>
+        <span class="piece-tag">Standard · 8 per side</span>
+        <div class="piece-desc">Small, stoic, determined. White version has clean hatching. Black version has cross-hatching for density distinction. Wears a tiny expression of resigned ambition. Pacifist Pawn variant carries a barely-visible white flag.</div>
+      </div>
+      <div class="piece-card">
+        <span class="piece-icon">♞</span>
+        <div class="piece-name">The Knight</div>
+        <span class="piece-tag">Standard · 2 per side</span>
+        <div class="piece-desc">Side-profile horse head, Staunton-inspired. When "Did I Do That?" ability is available, a faint rook silhouette appears behind the knight as a ghost outline. Ability activation triggers a brief look-around animation.</div>
+      </div>
+      <div class="piece-card">
+        <span class="piece-icon">♝</span>
+        <div class="piece-name">The Bishop</div>
+        <span class="piece-tag">Standard · 2 per side</span>
+        <div class="piece-desc">Classic mitre with slight lean. When "Forgive Me" confession ability is ready, a small confessional booth icon appears as a subtle overlay. Twin Telepathy bishops have a fine dotted line connecting them.</div>
+      </div>
+      <div class="piece-card">
+        <span class="piece-icon">♜</span>
+        <div class="piece-name">The Rook</div>
+        <span class="piece-tag">Standard · 2 per side</span>
+        <div class="piece-desc">Fortified tower, crenellated top. When "FOR THE EMPEROR" cannon ability is loaded, a small cannon barrel appears at the tower base. Berserker Rook has a faint red aura when active.</div>
+      </div>
+      <div class="piece-card">
+        <span class="piece-icon">♛</span>
+        <div class="piece-name">The Queen</div>
+        <span class="piece-tag">Standard · 1 per side</span>
+        <div class="piece-desc">Elaborate crown, the tallest piece. When "Quiet Quitting" Zone of Control is active, the queen sits with notably better posture. Betrayal warning: piece pulses red when 1 turn from defection.</div>
+      </div>
+      <div class="piece-card">
+        <span class="piece-icon">♚</span>
+        <div class="piece-name">The King</div>
+        <span class="piece-tag">Standard · 1 per side · SACRED</span>
+        <div class="piece-desc">Cross-topped crown, slightly larger base. Heavy Crown curse makes the King visually droop — the crown appears heavier than usual. In check: red pulse. "I Hereby Declare" ability ready: golden aura. Always isRealKing: true in code.</div>
+      </div>
+    </div>
+
+    <h3>Modifier-Introduced Pieces</h3>
+    <div class="piece-grid">
+      <div class="piece-card new-piece">
+        <span class="piece-icon">🐦</span>
+        <div class="piece-name">The Pigeon</div>
+        <span class="piece-tag">MOD-E001 Hatoful Gambit · Replaces Knights</span>
+        <div class="piece-desc">A city pigeon drawn in the same Victorian engraving style as standard pieces. Takes itself deeply seriously. When announcing its autonomous hop destination, a small dotted-line arrow appears 1 turn in advance. The pigeon does not explain the arrow.</div>
+      </div>
+      <div class="piece-card new-piece">
+        <span class="piece-icon">⚔️</span>
+        <div class="piece-name">The Chancellor</div>
+        <span class="piece-tag">MOD-E004 Equivalent Exchange · Replaces one Rook</span>
+        <div class="piece-desc">A hybrid piece visually: rook tower base with knight horse-head emerging from the top. Two silhouettes merged. When player chooses Rook mode vs. Knight mode, the dominant silhouette brightens while the other dims. Moves with purpose and no hesitation.</div>
+      </div>
+      <div class="piece-card new-piece">
+        <span class="piece-icon">👑</span>
+        <div class="piece-name">The Royal Guard</div>
+        <span class="piece-tag">MOD-E003 Yeah, There Are Three of Them</span>
+        <div class="piece-desc">Identical to King visually but slightly smaller and with a shield motif instead of a cross on the crown. Real King has a subtle golden glow distinguishable at close inspection. Royal Guards have silver colouring. If a Guard is checkmated and removed, a small explosion of silver confetti.</div>
+      </div>
+      <div class="piece-card ghost-piece">
+        <span class="piece-icon">👻</span>
+        <div class="piece-name">Ghost Pieces</div>
+        <span class="piece-tag">MOD-D002 I'm Literally Right Here</span>
+        <div class="piece-desc">To the owner: same piece sprite at 60% opacity with a faint shimmer animation. To the opponent: identical to a real piece — no visual distinction. The shimmer is visible only to the owner. Clicking Gerald off a Ghost Piece produces no Gerald (Gerald knows).</div>
+      </div>
+    </div>
+
+    <h3>Named NPCs — Gerald</h3>
+    <div class="callout gold">
+      <span class="callout-label">🐦 Gerald Design Spec</span>
+      Gerald is a city pigeon. He is rendered at 32×32px — smaller than a piece, which makes him feel like a visitor rather than a game element. He has a nameplate that appears when he lands: "GERALD" in DM Mono, 9px, with a small trophy icon showing his current interference count. Gerald's feathers are slightly ruffled. Gerald has seen things. Gerald is not impressed by any of this.
+    </div>
+  </div>
+
+
+  <!-- ══ 06 TILE EFFECTS ══ -->
+  <div class="section" id="s06">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>Tile Effects</h2>
+    </div>
+
+    <p>Every Board Mutation modifier produces a distinct tile visual state. These must be instantly recognisable, visually distinct from each other, and consistent with the "physical world" aesthetic — each effect looks like something that could genuinely happen to a wooden chess board.</p>
+
+    <h4>Board Demo — Active Tile Effects</h4>
+    <div class="board-demo" id="effectBoard"></div>
+
+    <script>
+      const effectBoard = document.getElementById('effectBoard');
+      const effectMap = {
+        10:'lava', 11:'lava', 18:'infected', 19:'infected', 20:'infected',
+        26:'frozen', 27:'frozen', 34:'swamp', 35:'swamp', 42:'void', 43:'fog',
+        50:'glow', 51:'glow'
+      };
+      const effectLabels = {
+        'lava':'🔥', 'infected':'🍄', 'frozen':'❄️',
+        'swamp':'🌿', 'void':'⬛', 'fog':'🌑', 'glow':'✨'
+      };
+      for (let i = 0; i < 64; i++) {
+        const cell = document.createElement('div');
+        const row = Math.floor(i / 8);
+        const col = i % 8;
+        const baseClass = (row + col) % 2 === 0 ? 'light' : 'dark';
+        const fx = effectMap[i] || '';
+        cell.className = 'board-cell ' + baseClass + (fx ? ' ' + fx : '');
+        if (fx) {
+          cell.textContent = effectLabels[fx] || '';
+          const tag = document.createElement('span');
+          tag.className = 'tile-tag';
+          tag.textContent = fx;
+          cell.appendChild(tag);
+        }
+        effectBoard.appendChild(cell);
+      }
+    </script>
+
+    <div class="anim-grid" style="margin-top:1.5rem;">
+      <div class="anim-card">
+        <div class="anim-name">🔥 Lava (The Floor Is Lava)</div>
+        <span class="anim-trigger">MOD-A002 — Persistent</span>
+        <div class="anim-desc">Glowing orange-red tile with animated heat shimmer. Small flame particles emitting upward at 30% opacity. Tile border glows amber. Rotation preview shown as amber dashed outline on adjacent target square.</div>
+        <div class="anim-spec">Base: #8a2020 · Glow: #e85020 · Particles: 4fps · Shimmer: 2s sine wave</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">🍄 Infected (The Cordyceptic Spread)</div>
+        <span class="anim-trigger">MOD-A001 — Spreading</span>
+        <div class="anim-desc">Dark green tile with mycelium texture overlay — fine white thread network drawn as static illustration. Slow pulsing glow at 4s intervals. Adjacent uninfected tiles show a faint green tint as "spread warning" when infection is 1 turn from spreading.</div>
+        <div class="anim-spec">Base: #1a2808 · Mycelium: #304818 · Pulse: 4s ease-in-out · Spread warning: 20% opacity</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">❄️ Frozen (Winter Is Coming)</div>
+        <span class="anim-trigger">MOD-A004 — Zone</span>
+        <div class="anim-desc">Blue-grey tile with ice crack texture overlay. Small snowflake particles drifting downward very slowly. A piece on a frozen tile shows a frost ring around its base. Thawing piece has the frost ring slowly dissolving over the turn.</div>
+        <div class="anim-spec">Base: #182838 · Cracks: #304858 at 60% opacity · Particles: 8fps, slow drift · Frost ring: 2s dissolve</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">🌿 Swamp (This Is My Swamp)</div>
+        <span class="anim-trigger">MOD-A006 — Zone</span>
+        <div class="anim-desc">Dark green-brown tile with occasional bubble animation at the surface. Pieces in the swamp have a slow "sinking" idle animation (bob 2px down). The swamp makes a squelching sound on entry. It does not apologise for this.</div>
+        <div class="anim-spec">Base: #182010 · Bubbles: 6s random interval · Piece bob: 2px, 3s sine · Border: muddy edge texture</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">⬛ Void (Storm Consumed)</div>
+        <span class="anim-trigger">MOD-A005 — Storm</span>
+        <div class="anim-desc">Complete black with faint edge crumble particles falling inward. Not fog — void. The tile is gone. A piece eliminated by the storm produces a small dust effect before disappearing. No pieces can enter void squares.</div>
+        <div class="anim-spec">Base: #040404 · Edge particles: inward-falling, 2px dust, 3fps · Piece elimination: 0.3s dust burst</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">🌑 Fog (It's Dark And I'm Scared)</div>
+        <span class="anim-trigger">MOD-D001 — Fog</span>
+        <div class="anim-desc">Near-black with a subtle deep blue undertone. The boundary between visible and fog is not hard-edged — a 2-square gradient feathering at the visibility edge. This makes the board feel like it exists in darkness rather than being cut off.</div>
+        <div class="anim-spec">Base: #080810 · Boundary: 2-square gradient feather · Cat Mode: boundary shifts 1 square outward</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">👁️ Surveillance (Big Beak Is Watching)</div>
+        <span class="anim-trigger">MOD-D008 — Surveillance</span>
+        <div class="anim-desc">Normal tile with a golden eye symbol rendered at the centre at 50% opacity. When a piece enters the 1-square radius, the eye briefly opens fully (100% opacity, 0.3s) and the tile pulses gold. The eye closes again slowly. Very unsettling.</div>
+        <div class="anim-spec">Eye: Playfair Display "👁" glyph, 24px · Open pulse: 0.3s ease · Ambient: slow blink, 8s interval</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">⚡ No-Fly Zone (I Hereby Declare)</div>
+        <span class="anim-trigger">MOD-C001 — Active</span>
+        <div class="anim-desc">A golden line across the entire row or column. Not a tile effect — a Phaser Graphics overlay at depth 70. Line is 2px, dashed, animated dash-offset. Small crown icon at each end of the line. Opponent pieces attempting to cross are visually blocked and snapped back.</div>
+        <div class="anim-spec">Line: 2px dashed, #c8973a · Dash animation: 0.5s scroll · Crown icons: 16px at line ends</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ 07 MODIFIER CARDS ══ -->
+  <div class="section" id="s07">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>Modifier Cards</h2>
+    </div>
+
+    <p>Modifier cards are the primary UI surface players interact with during the draft phase. They must communicate five things instantly: name, category, point cost, curse rating, and the core mechanic. The visual treatment is a dark collectible card — physical feeling, heavy, with category colour as the defining accent.</p>
+
+    <h3>Card Anatomy</h3>
+    <div class="ui-demo">
+      <span class="ui-demo-label">Modifier Card — MOD-B002 "Distracted Piece" (Rendered mockup)</span>
+      <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
+
+        <!-- Card mock 1: Curse -->
+        <div class="mod-card-mock">
+          <div class="mod-card-mock-stripe" style="background:#c0392b;"></div>
+          <div class="mod-card-mock-id">MOD-B002</div>
+          <div class="mod-card-mock-ref">≈ Distracted Boyfriend Meme</div>
+          <div class="mod-card-mock-name">Distracted Piece</div>
+          <div class="mod-card-mock-type" style="color:#c0392b;">▪ Curse · Interference · Named NPC</div>
+          <div class="mod-card-mock-desc">Gerald lands on one of your pieces each turn, blocking it. Spend your turn clicking him off to free it. Gerald returns next turn. Gerald has a leaderboard.</div>
+          <div class="mod-card-mock-flavor">"Gerald is back. Gerald has brought a friend."</div>
+          <div class="mod-card-mock-stats">
+            <div><span class="mod-stat-mock-label">Cost</span><span class="mod-stat-mock-val" style="color:#50c878;">−2 pts</span></div>
+            <div><span class="mod-stat-mock-label">Curse</span><span class="mod-stat-mock-val" style="color:#c0392b;">●● ○</span></div>
+            <div><span class="mod-stat-mock-label">Modes</span><span class="mod-stat-mock-val" style="font-size:0.62rem;">ALL</span></div>
+          </div>
+        </div>
+
+        <!-- Card mock 2: Ability -->
+        <div class="mod-card-mock">
+          <div class="mod-card-mock-stripe" style="background:#3a9de8;"></div>
+          <div class="mod-card-mock-id">MOD-C006</div>
+          <div class="mod-card-mock-ref">≈ Warhammer 40K</div>
+          <div class="mod-card-mock-name">FOR THE EMPEROR (Rook Fires)</div>
+          <div class="mod-card-mock-type" style="color:#3a9de8;">▪ Active Ability · Rook · CD: 7 turns</div>
+          <div class="mod-card-mock-desc">Rook fires a cannonball the full length of the board, capturing the first piece it hits regardless of colour. Rook does not move. Nobody asked where it got a cannon.</div>
+          <div class="mod-card-mock-flavor">"The rook fired. Something was hit. Viktor is checking whether it was his."</div>
+          <div class="mod-card-mock-stats">
+            <div><span class="mod-stat-mock-label">Cost</span><span class="mod-stat-mock-val" style="color:#f0c040;">4 pts</span></div>
+            <div><span class="mod-stat-mock-label">Curse</span><span class="mod-stat-mock-val" style="color:#c0392b;">● ○ ○</span></div>
+            <div><span class="mod-stat-mock-label">Modes</span><span class="mod-stat-mock-val" style="font-size:0.62rem;">ALL</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <h3>Card Spec</h3>
+    <table>
+      <thead><tr><th>Element</th><th>Spec</th></tr></thead>
+      <tbody>
+        <tr><td>Card size</td><td>240×340px at 1x. Scales proportionally. Aspect ratio locked 9:13.</td></tr>
+        <tr><td>Card background</td><td>#13131a — near-black with faint blue undertone</td></tr>
+        <tr><td>Category stripe</td><td>3px horizontal bar at top, full card width, category colour</td></tr>
+        <tr><td>Card border</td><td>1px solid #2a2a3e</td></tr>
+        <tr><td>Modifier ID</td><td>DM Mono 9px, #4a4760, top-left</td></tr>
+        <tr><td>Reference line</td><td>DM Mono 9px, category colour at 80% opacity, top-left below ID</td></tr>
+        <tr><td>Modifier name</td><td>Playfair Display Bold 16px, #e8e6f0, line-height 1.2</td></tr>
+        <tr><td>Type line</td><td>DM Mono 10px, category colour, uppercase</td></tr>
+        <tr><td>Description</td><td>DM Sans 300 12px, #e8e6f0, line-height 1.55</td></tr>
+        <tr><td>Flavor text</td><td>Playfair Display Italic 11px, #4a4760, left-bordered</td></tr>
+        <tr><td>Stats bar</td><td>3-column grid, DM Mono, separated by top border</td></tr>
+        <tr><td>Positive cost</td><td>#f0c040 (gold)</td></tr>
+        <tr><td>Negative cost</td><td>#50c878 (green — grants points)</td></tr>
+        <tr><td>Curse pips</td><td>● filled = active (#c0392b), ○ empty = inactive (#2a2a3e)</td></tr>
+        <tr><td>Hover state</td><td>Border brightens to category colour, card lifts 4px, shadow appears</td></tr>
+        <tr><td>Selected state</td><td>Full category colour border, 2px. Slight scale-up 1.02. Glow shadow.</td></tr>
+        <tr><td>Banned state</td><td>Greyscale, red X overlay, reduced opacity 40%</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Tier Badges</h3>
+    <table>
+      <thead><tr><th>Tier</th><th>Badge Colour</th><th>Text Colour</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>S</td><td>#f0c040 (Gold)</td><td>#1a1000</td><td>Highest impact. Game-defining picks.</td></tr>
+        <tr><td>A</td><td>#c878f0 (Purple)</td><td>#1a001a</td><td>High value. Reliable power.</td></tr>
+        <tr><td>B</td><td>#4090f0 (Blue)</td><td>#001030</td><td>Situational. Good in the right build.</td></tr>
+        <tr><td>C</td><td>#50c878 (Green)</td><td>#001a10</td><td>Niche or experimental. (Post-launch)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ══ 08 UI SYSTEM ══ -->
+  <div class="section" id="s08">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>UI System</h2>
+    </div>
+
+    <h3>Screen Layout Architecture</h3>
+    <p>The game uses a two-zone layout: <strong>the board zone</strong> (Phaser canvas, always centred) and <strong>the UI chrome</strong> (React, surrounding the board). The board is always the visual anchor. UI chrome is functional and recedes — it should never compete with the board for attention.</p>
+
+    <table>
+      <thead><tr><th>Screen</th><th>Layout</th><th>Dominant Element</th></tr></thead>
+      <tbody>
+        <tr><td>Main Menu</td><td>Full-screen, board background at 30% opacity</td><td>Logo + nav options</td></tr>
+        <tr><td>Draft Phase</td><td>Board preview (50%) + modifier card grid (50%)</td><td>Modifier cards</td></tr>
+        <tr><td>In Match</td><td>Board (centre, 70% of width) + side panels (15% each)</td><td>The board</td></tr>
+        <tr><td>Run Map</td><td>Full-screen illustrated map with node overlay</td><td>Node path</td></tr>
+        <tr><td>The Roost (Shop)</td><td>Dark panel with modifier cards in grid</td><td>Items for sale</td></tr>
+        <tr><td>Post Match</td><td>Board fade to background + result card foreground</td><td>Result / ELO change</td></tr>
+        <tr><td>Viktor Dialogue</td><td>Board dimmed + portrait left + speech right</td><td>Viktor portrait</td></tr>
+      </tbody>
+    </table>
+
+    <h3>In-Match UI Panels</h3>
+
+    <div class="callout note">
+      <span class="callout-label">ℹ Left Panel — Player Info</span>
+      Contains: player avatar, username, ELO badge (ranked only), active modifier list (icons + abbreviated names), Madness Meter bar, active curse count, Tempo Token count (if The Snap active), Mercenary Token count (if Moneyball active).
+    </div>
+
+    <div class="callout note">
+      <span class="callout-label">ℹ Right Panel — Match Info</span>
+      Contains: opponent info (mirrored from left), clock (if timed), move history (collapses during 50 First Moves curse), captured pieces display, draw offer button, resign button. Reginald Beak's review popup appears anchored to the bottom-right of this panel.
+    </div>
+
+    <h3>Button System</h3>
+    <table>
+      <thead><tr><th>Button Type</th><th>Background</th><th>Border</th><th>Text</th><th>Use</th></tr></thead>
+      <tbody>
+        <tr><td>Primary</td><td>#c8973a (Gold)</td><td>none</td><td>#18120a (Ink)</td><td>Main CTA — "Find Match", "Start Run", "Confirm Pick"</td></tr>
+        <tr><td>Secondary</td><td>Transparent</td><td>1px #c8973a</td><td>#c8973a</td><td>Secondary actions — "Back", "Skip", "View Replay"</td></tr>
+        <tr><td>Danger</td><td>Transparent</td><td>1px #b83228</td><td>#b83228</td><td>Destructive — "Resign", "Abandon Run"</td></tr>
+        <tr><td>Ability</td><td>Category colour at 20%</td><td>1px category colour</td><td>Category colour</td><td>Active ability activation button per piece</td></tr>
+        <tr><td>Disabled</td><td>#2a2a3e</td><td>none</td><td>#4a4760</td><td>Unavailable state for any button type</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Ability Button</h3>
+    <p>When a piece with an active ability is selected, an ability button appears adjacent to the board at the piece's edge. It shows: ability icon, name (abbreviated), cooldown remaining (in turns). The button pulses with the category colour when the ability is ready. When on cooldown, a circular progress ring depletes around the button. Using the ability consumes the player's turn — a confirmation step appears for high-cost abilities (Quiet Quitting, Equivalent Exchange).</p>
+  </div>
+
+
+  <!-- ══ 09 ANIMATION ══ -->
+  <div class="section" id="s09">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2>Animation Direction</h2>
+    </div>
+
+    <div class="callout gold">
+      <span class="callout-label">🎬 Animation Philosophy</span>
+      Animations in Pigeon Chess serve the deadpan tone. Chaos events are presented with the visual gravity of important chess moments. Gerald lands with the same ceremonial weight as a checkmate. The "YOU DIED" screen appears with operatic slowness. Nothing winks at the player. The game takes all of it completely seriously.
+    </div>
+
+    <h3>Board Animations</h3>
+
+    <div class="anim-grid">
+      <div class="anim-card">
+        <div class="anim-name">Piece Move</div>
+        <span class="anim-trigger">On every legal move</span>
+        <div class="anim-desc">Piece lifts slightly (4px scale-up, shadow appears), slides to destination along a slight arc, lands with a subtle bounce. Duration: 180ms. Pieces do not slide through other pieces — they arc above.</div>
+        <div class="anim-spec">Duration: 180ms · Easing: cubic-bezier(0.34, 1.56, 0.64, 1) · Arc height: 8px</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">Capture</div>
+        <span class="anim-trigger">On piece capture</span>
+        <div class="anim-desc">Capturing piece moves normally. Captured piece does a brief shake (0.1s) then fades out with a small puff of board dust particles. Not cartoonish — dignified. The piece accepts its fate with composure.</div>
+        <div class="anim-spec">Shake: ±3px, 3 oscillations, 100ms · Fade: 200ms · Dust: 8 particles, 300ms</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">Gerald Lands</div>
+        <span class="anim-trigger">MOD-B002 turn start</span>
+        <div class="anim-desc">Gerald drops from above with a slight wing-flutter. Landing produces a small ripple on the tile. Gerald's nameplate slides in from the left (0.2s). The targeted piece's available moves dim. Gerald settles and looks around, unimpressed.</div>
+        <div class="anim-spec">Drop: 200ms, ease-out · Nameplate slide: 200ms · Wing flutter: 3-frame sprite</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">Rook Cannon Fire</div>
+        <span class="anim-trigger">MOD-C006 activation</span>
+        <div class="anim-desc">Rook shudders briefly. A cannonball sprite (small, dark sphere with smoke trail) travels the board in 0.4s. It hits its target with a flash and a brief screen shake (2px, 100ms). Captured piece explodes into dust fragments.</div>
+        <div class="anim-spec">Travel: 400ms linear · Screen shake: ±2px, 100ms · Impact flash: #ffaa00, 150ms fade</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">YOU DIED Screen</div>
+        <span class="anim-trigger">MOD-B001 autonomous move</span>
+        <div class="anim-desc">Screen fades to near-black over 300ms. Large red text "A PIECE MOVED" fades in over 500ms in Playfair Display 900 weight. Holds for 1200ms. Fades out. Control returns. The piece looks pleased. The player does not.</div>
+        <div class="anim-spec">Fade in: 500ms · Hold: 1200ms · Fade out: 300ms · Total: 2000ms</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">Gravity Flip</div>
+        <span class="anim-trigger">MOD-A007 every 12 turns</span>
+        <div class="anim-desc">The entire board tilts 15 degrees in the new gravity direction (0.6s), all pieces slide simultaneously, the board returns to flat (0.4s). Pieces sliding off the edge don't fall — they dissolve at the boundary. Total: 2s. Phaser camera tween controls the board rotation.</div>
+        <div class="anim-spec">Tilt: 15deg, 600ms ease-in-out · Slide: 400ms · Return: 400ms ease-out</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">Betrayal / Defection</div>
+        <span class="anim-trigger">MOD-B006 trigger</span>
+        <div class="anim-desc">Defecting piece glows red for 1 full turn (warning). On defection: piece flips colour (colour-swap sprite tween, 400ms), Among Us-style ejection card appears at screen bottom for 1.5s: "[Piece] was The Traitor. [N] pieces remain." Card slides in from bottom, pauses, slides out.</div>
+        <div class="anim-spec">Warning glow: 1 full turn · Colour flip: 400ms · Card slide: 300ms in/out · Hold: 1500ms</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">BOY. Chain Capture</div>
+        <span class="anim-trigger">MOD-E006 each chain step</span>
+        <div class="anim-desc">Each chain capture plays the standard capture animation at 0.7x speed. A golden trail follows the Berserker piece between captures. After the chain ends, the Berserker piece does a brief "victory bob" (2px up/down, 200ms). If 3+ captures in chain, screen edge flashes amber once.</div>
+        <div class="anim-spec">Each capture: 126ms (0.7x) · Trail: golden line, fades 600ms · Victory bob: 200ms · 3+ flash: 300ms</div>
+      </div>
+    </div>
+
+    <h3>UI Animations</h3>
+    <div class="anim-grid">
+      <div class="anim-card">
+        <div class="anim-name">Modifier Card Deal</div>
+        <span class="anim-trigger">Draft phase opens</span>
+        <div class="anim-desc">Cards deal from a central "deck" position to their grid slots. Staggered by 60ms per card. Each card flips (rotateY 90°→0°) on arrival. The feeling: shuffling and dealing a physical card hand.</div>
+        <div class="anim-spec">Deal duration: 200ms per card · Stagger: 60ms · Flip: rotateY, 150ms ease-out</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">ELO Change</div>
+        <span class="anim-trigger">Post-match screen</span>
+        <div class="anim-desc">ELO number counts up (gain) or down (loss) over 1.5s using an ease-out counter. Colour shifts from neutral to gold (gain) or red (loss). The number arrives at its final value and holds for 500ms before the tier badge updates (if changed).</div>
+        <div class="anim-spec">Count duration: 1500ms ease-out · Colour transition: 500ms · Badge update delay: 2000ms</div>
+      </div>
+      <div class="anim-card">
+        <div class="anim-name">Reginald's Review</div>
+        <span class="anim-trigger">MOD-B008 after each move</span>
+        <div class="anim-desc">Small panel slides in from bottom-right (150ms). Contains Reginald's portrait (tiny pigeon thumbnail), score badge, and one-line review. Holds for 200ms (fast enough to not disrupt play). Slides out downward (120ms). Total: ~470ms per review.</div>
+        <div class="anim-spec">Slide in: 150ms ease-out · Hold: 200ms · Slide out: 120ms ease-in · Total: ~470ms</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ 10 VIKTOR ══ -->
+  <div class="section" id="s10">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2>Viktor & Characters</h2>
+    </div>
+
+    <h3>Viktor Crumb — Visual Design</h3>
+
+    <div class="callout gold">
+      <span class="callout-label">👤 Viktor Crumb — Character Brief</span>
+      Viktor is a disgraced chess grandmaster in his early 50s. He dresses as if still competing at the highest level — formal, slightly too formal for wherever he currently is. His expression is permanently composed — the expression of a man who has decided that he will not be surprised by anything ever again, and is being regularly surprised. His posture is immaculate. Everything else is going wrong.
+    </div>
+
+    <h4>Portrait Spec</h4>
+    <ul>
+      <li><strong>Format:</strong> Illustrated portrait, 200×260px, waist-up. Same Victorian engraving style as pieces — hatching, high contrast, aged warmth.</li>
+      <li><strong>Base expression:</strong> Composed. Controlled. A man maintaining dignity under pressure.</li>
+      <li><strong>Expression variants:</strong> 5 core states — Composed (default), Unsettled (Madness 26–50), Unravelling (51–75), Accepted (76–99), Full Flock (100, eyes wide, pigeon on head).</li>
+      <li><strong>Clothing:</strong> Dark formal jacket, white shirt, chess tournament badge still pinned from his last official match (11 years ago). The badge is slightly askew by Madness tier 3.</li>
+      <li><strong>Pigeon accumulation:</strong> At Madness 51+, a pigeon appears on Viktor's shoulder in the portrait. At 76+, two pigeons. At Full Flock: Viktor is covered in pigeons. The portrait still shows his face. Viktor's expression remains composed.</li>
+    </ul>
+
+    <h3>Opponent Characters (Story Mode Bosses)</h3>
+
+    <table>
+      <thead><tr><th>Tower</th><th>Boss</th><th>Visual Direction</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>The Prodigy</td>
+          <td>8-year-old in oversized formal wear. Portrait style: same engraved illustration. Expression: serene indifference. A pigeon named Margaret sits on the board in the portrait. Margaret appears to be concentrating.</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>The Archivist</td>
+          <td>Elderly figure surrounded by stacked chess books. Portrait is partially obscured by a large tome. Wears reading glasses. Everything about them suggests they have seen this position before. They have.</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>The Groundskeeper</td>
+          <td>Appears to be tending plants that are growing out of the board. Wearing gardening apron over formal wear. A small watering can visible in portrait background. Completely calm about the mold spreading.</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>The Diplomat</td>
+          <td>Impeccably dressed, every move is preceded by a small formal bow gesture in portrait. Fog of war means their portrait is partially obscured — their hands are always visible, their face is not.</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>The Flock</td>
+          <td>No single portrait — instead, 12 pigeon thumbnail portraits arranged in a grid where the opponent portrait usually is. They move in sequence. One of them is Gerald. Gerald has a slightly different look about him in this context. Like he knew this would happen.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Reginald Beak — Visual Design</h3>
+    <p>Reginald is a pigeon wearing a small monocle and a press badge that reads "CRITIC" in DM Mono. His review panel is 200×60px. Portrait thumbnail: 40×40px, circular crop. He has a resting expression of profound disappointment. When delivering a high score (8/10+), his expression does not change. The score alone communicates his surprise at being impressed.</p>
+  </div>
+
+
+  <!-- ══ 11 MADNESS STATES ══ -->
+  <div class="section" id="s11">
+    <div class="section-header">
+      <span class="section-num">11</span>
+      <h2>Madness Visual States</h2>
+    </div>
+
+    <p>The Madness Meter (0–100, derived from active curse ratings) progressively corrupts the visual environment. This is the most technically complex part of the art direction — it requires coordinated changes across Phaser (board layer), React (UI chrome), and audio. Every Madness state must be immediately legible to the player.</p>
+
+    <table>
+      <thead><tr><th>Tier</th><th>Range</th><th>Board Changes</th><th>UI Changes</th><th>Viktor Portrait</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--madness-0);font-weight:500;">Composed</td>
+          <td>0–25</td>
+          <td>Default. Warm board light. Clean piece shadows. No aberrations.</td>
+          <td>Default gold accents. Clean typography. No distortion.</td>
+          <td>Composed expression. Formal posture. No pigeons.</td>
+        </tr>
+        <tr>
+          <td style="color:var(--madness-1);font-weight:500;">Unsettled</td>
+          <td>26–50</td>
+          <td>Board grain increases slightly. Piece shadows occasionally wrong direction (1 in 20 frames). Ink bleeding at tile edges.</td>
+          <td>Gold accents shift slightly amber. Modifier card borders hairline-thicker. Subtle page grain overlay appears.</td>
+          <td>Slight tension in expression. One hand visible adjusting jacket. No pigeons yet.</td>
+        </tr>
+        <tr>
+          <td style="color:var(--madness-2);font-weight:500;">Unravelling</td>
+          <td>51–75</td>
+          <td>Board squares occasionally flicker wrong colour (brief, 150ms). Pigeon shadow silhouettes drift across empty squares every 30s. Piece outlines slightly blurred.</td>
+          <td>UI headings occasionally render in italic before correcting. Timer font briefly wrong. Sidebar glow shifts ember.</td>
+          <td>One pigeon on shoulder. Viktor's expression tightening. Badge slightly askew. Viktor is aware of the pigeon. Viktor is not acknowledging the pigeon.</td>
+        </tr>
+        <tr>
+          <td style="color:var(--madness-3);font-weight:500;">Lost</td>
+          <td>76–99</td>
+          <td>Board has permanent violet undertone. Pieces cast extra shadows toward wrong light source. Feather particles drift across board at low opacity. Legal move dots are slightly the wrong shape.</td>
+          <td>UI text in Viktor's dialogue panel has occasional letter substitutions (corrects itself). Victory/defeat conditions display in italic. ELO badge flickers between gold and plum.</td>
+          <td>Two pigeons. Viktor's expression now openly strained. The badge has fallen off. Viktor is still in the correct posture.</td>
+        </tr>
+        <tr>
+          <td style="color:var(--madness-4);font-weight:500;">Full Flock</td>
+          <td>100</td>
+          <td>Full feather particle storm across entire board. Squares pulse slowly. Pieces have faint iridescent sheen (pigeon neck colour overlay). The "Full Flock" secret modifier activates.</td>
+          <td>All UI chrome has pigeon feather texture overlay. Gold accents have shifted fully to void plum. Viktor's dialogue font changes to italic permanently.</td>
+          <td>Viktor is covered in pigeons. His face remains visible. His expression is composed. He has made his peace. The pigeons are not leaving.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ══ 12 COSMETICS ══ -->
+  <div class="section" id="s12">
+    <div class="section-header">
+      <span class="section-num">12</span>
+      <h2>Cosmetics Design System</h2>
+    </div>
+
+    <p>Cosmetics replace visual elements without changing gameplay. Every cosmetic must respect the deadpan grandeur aesthetic while allowing creative variation. Community-created cosmetics go through an art review process to ensure consistency.</p>
+
+    <h3>Cosmetic Categories</h3>
+
+    <table>
+      <thead><tr><th>Category</th><th>What It Replaces</th><th>Constraints</th><th>Example Themes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Board Themes</strong></td>
+          <td>Full board visual — tile colours, frame design, grain, ambient light</td>
+          <td>Must maintain light/dark square legibility at all Madness states. No tiles that make piece identification ambiguous.</td>
+          <td>Marble Palace, Moonlit Garden, Space Station, Coral Reef, The Sewers (Shrek themed)</td>
+        </tr>
+        <tr>
+          <td><strong>Piece Sets</strong></td>
+          <td>All 6 piece types (or subset). Can be full sets or partial (pawns only, etc.)</td>
+          <td>Must maintain size proportions. King must always be tallest. Pieces must be distinguishable from their tile at any zoom level.</td>
+          <td>Full Pigeon Set (all pieces are pigeons), Space Marines, Rubber Ducks, Victorian Ladies, Cursed Statues</td>
+        </tr>
+        <tr>
+          <td><strong>Modifier Card Art</strong></td>
+          <td>The illustrated face of a modifier card. Name and stats unchanged.</td>
+          <td>Must still show the category stripe colour. Must not obscure stat readability.</td>
+          <td>Anime-style "YOU DIED" card, Watercolour "Winter Is Coming", Pixel art "The Floor Is Lava"</td>
+        </tr>
+        <tr>
+          <td><strong>Pigeon Companions</strong></td>
+          <td>Gerald is replaced by a named companion with a custom sprite and nameplate</td>
+          <td>Must remain at 32×32px. Must be clearly a bird or pigeon-adjacent creature. Must have landing and idle animations.</td>
+          <td>Reginald (same pigeon, monocle), Corporate Gerald (tiny briefcase), Goth Gerald (all black), Margaret (The Prodigy's pigeon)</td>
+        </tr>
+        <tr>
+          <td><strong>Viktor Outfits</strong></td>
+          <td>Viktor's portrait clothing (jacket, badge, accessories)</td>
+          <td>Must be waist-up only. Must not change Viktor's face. Madness variants must still apply over any outfit.</td>
+          <td>Hoodie Viktor, Tracksuit Viktor, Tuxedo Viktor (ultra formal), Viktor In Pyjamas (Endless Mode 3am energy)</td>
+        </tr>
+        <tr>
+          <td><strong>Capture Effects</strong></td>
+          <td>The particle/animation effect when a piece is captured</td>
+          <td>Must complete in under 400ms. Must not obscure the board during the effect.</td>
+          <td>Confetti burst, Golden dust, Explosion (very small), Feather shower, Money raining (Moneyball themed)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Community Cosmetic Submission Guidelines</h3>
+    <div class="callout rule">
+      <span class="callout-label">📋 Art Review Checklist (All Community Submissions)</span>
+      1. <strong>Style consistency:</strong> Must match Victorian engraving aesthetic OR commit to an alternate style that is complete and self-contained (not a mix of styles within one cosmetic).<br>
+      2. <strong>Legibility at all sizes:</strong> Test at 50% zoom. Pieces must still be distinguishable from each other.<br>
+      3. <strong>Madness compatibility:</strong> The Madness tint system overlays on all board themes. Verify the theme still reads correctly at Full Flock plum tint.<br>
+      4. <strong>Category stripe preservation:</strong> Modifier card art must not interfere with the top category stripe colour.<br>
+      5. <strong>No real trademarked characters or likenesses.</strong> Pop-culture adjacent is fine. Direct copies are not.<br>
+      6. <strong>File formats:</strong> PNG for static sprites, spritesheet PNG for animated. Max 512×512 per sprite. Spritesheets: max 2048×2048.
+    </div>
+
+    <h3>Battle Pass Cosmetic Cadence</h3>
+    <p>Each 50-tier Battle Pass includes exactly: 1 full board theme, 1 full piece set, 2 pigeon companions (free track: 1, premium: 1 additional), 1 Viktor outfit (premium only), 3 modifier card art skins (for specific high-profile modifiers), 1 capture effect, 2 exclusive titles (rank-gated). The premium track contains 60% of cosmetics. The free track is genuinely rewarding — not a preview of what you're missing.</p>
+  </div>
+
+
+</div><!-- /page -->
+
+<div class="doc-footer">
+  PIGEON CHESS · ART DIRECTION GUIDE · PC-ART-001 · v0.1 · PRE-PRODUCTION<br>
+  REFERENCES: GDD v0.1 · MODIFIER BIBLE v0.2 (PC-MOD-001) · TDD v0.1 (PC-TDD-001)<br>
+  NEXT DOCUMENTS: Tower 1 Story Script · Reginald Beak Dialogue (150 lines) · Asset Production List
+</div>
+
+</body>
+</html>

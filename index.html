@@ -1,0 +1,2418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pigeon Chess — The Roguelike Chess Game</title>
+<meta name="description" content="A web-based and Steam roguelike chess game where every match is shaped by a chaotic, community-driven modifier system. No two games are ever the same.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   TOKENS & RESET
+═══════════════════════════════════════ */
+:root {
+  --ink:           #18120a;
+  --ink-soft:      #2e2318;
+  --parchment:     #f2ead8;
+  --parchment2:    #e8ddc4;
+  --parchment3:    #ddd0b0;
+  --cream:         #faf7f0;
+
+  --pigeon-grey:   #8a8298;
+  --pigeon-neck:   #6a7d5a;
+  --pigeon-chest:  #b09090;
+  --pigeon-wing:   #5a5068;
+
+  --gold:          #c8973a;
+  --gold-light:    #e8c870;
+  --gold-pale:     #f5e8c0;
+  --chaos:         #b83228;
+  --chaos-light:   #d85040;
+  --cursed:        #5a2850;
+
+  --board-dark:    #1e1408;
+  --board-mid:     #3a2818;
+  --board-light:   #c8a870;
+  --board-shadow:  #8a6840;
+
+  --cat-a: #e8a23a;
+  --cat-b: #c0392b;
+  --cat-c: #3a9de8;
+  --cat-d: #7c3ae8;
+  --cat-e: #3ae87c;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  --radius: 2px;
+  --transition: 0.2s ease;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--board-dark);
+  color: var(--parchment);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--board-dark); }
+::-webkit-scrollbar-thumb { background: var(--board-mid); }
+
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+
+/* ═══════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════ */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 999;
+  background: rgba(30, 20, 8, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(200, 151, 58, 0.15);
+  padding: 0 2rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.nav-logo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: var(--parchment);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-logo span { color: var(--gold); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+}
+
+.nav-link {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--board-shadow);
+  padding: 0.35rem 0.7rem;
+  border: 1px solid transparent;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: var(--parchment);
+  border-color: rgba(200, 151, 58, 0.3);
+}
+
+.nav-link.docs {
+  color: var(--gold);
+  border-color: rgba(200, 151, 58, 0.3);
+}
+
+.nav-link.docs:hover {
+  background: rgba(200, 151, 58, 0.1);
+  border-color: var(--gold);
+}
+
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+}
+
+/* ═══════════════════════════════════════
+   HERO
+═══════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 2rem 4rem;
+  overflow: hidden;
+}
+
+.hero-board-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+.hero-board-cell {
+  border: 1px solid var(--gold);
+}
+
+.hero-board-cell.lit {
+  background: var(--gold);
+  animation: cellPulse var(--delay, 4s) ease-in-out infinite;
+}
+
+@keyframes cellPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.hero-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 40%, rgba(200,151,58,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(184,50,40,0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 820px;
+}
+
+.hero-pigeon {
+  font-size: 6rem;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+  animation: pigeonFloat 5s ease-in-out infinite;
+  filter: drop-shadow(0 0 40px rgba(200,151,58,0.25));
+}
+
+@keyframes pigeonFloat {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-14px) rotate(4deg); }
+}
+
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.hero-eyebrow::before, .hero-eyebrow::after {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 40px;
+  background: var(--gold);
+  opacity: 0.4;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(4.5rem, 12vw, 9rem);
+  line-height: 0.9;
+  color: var(--parchment);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.hero-title em {
+  display: block;
+  font-style: italic;
+  color: var(--gold);
+  font-size: 0.65em;
+}
+
+.hero-tagline {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: var(--board-shadow);
+  max-width: 520px;
+  margin: 1.5rem auto 2.5rem;
+  line-height: 1.55;
+}
+
+.hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.badge {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid;
+}
+
+.badge-gold { border-color: rgba(200,151,58,0.5); color: var(--gold); }
+.badge-grey { border-color: rgba(138,130,152,0.4); color: var(--pigeon-grey); }
+.badge-red  { border-color: rgba(184,50,40,0.5); color: var(--chaos-light); }
+
+.hero-cta {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.85rem 2rem;
+  border: 1px solid;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: var(--board-dark);
+  border-color: var(--gold);
+}
+
+.btn-primary:hover {
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--parchment);
+  border-color: rgba(242,234,216,0.3);
+}
+
+.btn-secondary:hover {
+  border-color: var(--parchment);
+  background: rgba(242,234,216,0.05);
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--board-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  animation: fadeUpDown 2s ease-in-out infinite;
+}
+
+.hero-scroll::after {
+  content: '↓';
+  font-size: 1rem;
+  color: var(--gold);
+  opacity: 0.6;
+}
+
+@keyframes fadeUpDown {
+  0%, 100% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
+  50% { opacity: 1; transform: translateX(-50%) translateY(4px); }
+}
+
+/* ═══════════════════════════════════════
+   SECTIONS
+═══════════════════════════════════════ */
+.section {
+  padding: 7rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.section-full {
+  padding: 7rem 2rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+  margin-bottom: 3.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(200,151,58,0.2);
+}
+
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  background: var(--gold);
+  color: var(--board-dark);
+  padding: 0.2rem 0.5rem;
+  font-weight: 500;
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 2.5rem 0 1rem;
+  letter-spacing: -0.01em;
+}
+
+h4 {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--pigeon-grey);
+  margin: 2rem 0 0.75rem;
+}
+
+p { margin-bottom: 1rem; font-weight: 300; color: var(--parchment2); }
+strong { font-weight: 500; color: var(--parchment); }
+ul, ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+li { margin-bottom: 0.4rem; font-weight: 300; color: var(--parchment2); }
+
+/* ═══════════════════════════════════════
+   ABOUT SECTION
+═══════════════════════════════════════ */
+.about-bg {
+  background: rgba(58, 40, 24, 0.3);
+  border-top: 1px solid rgba(200,151,58,0.1);
+  border-bottom: 1px solid rgba(200,151,58,0.1);
+}
+
+.pull-quote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  line-height: 1.4;
+  color: var(--parchment);
+  border-left: 4px solid var(--gold);
+  padding: 1rem 2rem;
+  margin: 2.5rem 0;
+}
+
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1px;
+  background: rgba(200,151,58,0.15);
+  border: 1px solid rgba(200,151,58,0.15);
+  margin: 2rem 0;
+}
+
+.pillar {
+  background: var(--board-dark);
+  padding: 1.75rem;
+  transition: background var(--transition);
+}
+
+.pillar:hover {
+  background: rgba(58,40,24,0.8);
+}
+
+.pillar-icon {
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.pillar-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
+.pillar-desc {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--board-shadow);
+  font-weight: 300;
+}
+
+/* ═══════════════════════════════════════
+   MODIFIER CARDS
+═══════════════════════════════════════ */
+.modifiers-bg {
+  background: #0d0d0f;
+  border-top: 1px solid rgba(200,151,58,0.1);
+  border-bottom: 1px solid rgba(200,151,58,0.1);
+}
+
+.cat-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.cat-tab {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid;
+  cursor: pointer;
+  transition: var(--transition);
+  background: transparent;
+  color: inherit;
+}
+
+.cat-tab:hover, .cat-tab.active { opacity: 1; }
+.cat-tab { opacity: 0.6; }
+.cat-tab.active { opacity: 1; }
+
+.modifier-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1px;
+  background: #2a2a3e;
+  border: 1px solid #2a2a3e;
+}
+
+.mod-card {
+  background: #13131a;
+  padding: 1.5rem;
+  position: relative;
+  transition: background var(--transition);
+}
+
+.mod-card:hover { background: #1a1a24; }
+
+.mod-card-stripe {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+.mod-id {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: #4a4760;
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.mod-ref {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  display: block;
+  margin-bottom: 0.35rem;
+  opacity: 0.7;
+}
+
+.mod-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.mod-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  color: #e8e6f0;
+}
+
+.mod-tier {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.45rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tier-s { background: #f0c040; color: #1a1000; }
+.tier-a { background: #c878f0; color: #1a001a; }
+.tier-b { background: #4090f0; color: #001030; }
+.tier-c { background: #50c878; color: #001a10; }
+
+.mod-type {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.mod-trigger {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid #2a2a3e;
+  color: #8a87a0;
+  margin-bottom: 0.75rem;
+}
+
+.mod-desc {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #e8e6f0;
+  margin-bottom: 1rem;
+  font-weight: 300;
+}
+
+.mod-flavor {
+  font-style: italic;
+  font-size: 0.78rem;
+  color: #4a4760;
+  border-left: 2px solid #2a2a3e;
+  padding-left: 0.75rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.mod-stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5rem;
+  border-top: 1px solid #2a2a3e;
+  padding-top: 0.875rem;
+}
+
+.mod-stat { text-align: center; }
+.mod-stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #4a4760;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+.mod-stat-value {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.cost-pos { color: #f0c040; }
+.cost-neg { color: #50c878; }
+
+.curse-pips {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+}
+
+.curse-pip {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #2a2a3e;
+}
+
+.curse-pip.on { background: var(--chaos); }
+
+/* ═══════════════════════════════════════
+   STORY SECTION
+═══════════════════════════════════════ */
+.story-bg {
+  background: rgba(30, 20, 8, 0.5);
+}
+
+.story-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+@media (max-width: 700px) {
+  .story-grid { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+.story-portrait {
+  background: var(--board-mid);
+  border: 2px solid rgba(200,151,58,0.2);
+  padding: 3rem 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.story-portrait::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(200,151,58,0.12);
+  pointer-events: none;
+}
+
+.story-portrait-emoji {
+  font-size: 5rem;
+  display: block;
+  margin-bottom: 1rem;
+  filter: grayscale(0.3);
+}
+
+.story-portrait-name {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.4rem;
+  color: var(--gold);
+  margin-bottom: 0.25rem;
+}
+
+.story-portrait-title {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--board-shadow);
+}
+
+.story-stat-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(200,151,58,0.15);
+}
+
+.story-stat-val {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--gold);
+  display: block;
+}
+
+.story-stat-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--board-shadow);
+}
+
+.dialogue-box {
+  background: rgba(58,40,24,0.5);
+  border: 1px solid rgba(200,151,58,0.2);
+  border-left: 3px solid var(--gold);
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--parchment2);
+}
+
+.dialogue-box .speaker {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+/* ═══════════════════════════════════════
+   TOWERS
+═══════════════════════════════════════ */
+.towers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1px;
+  background: rgba(200,151,58,0.12);
+  border: 1px solid rgba(200,151,58,0.12);
+  margin: 2rem 0;
+}
+
+.tower-card {
+  background: var(--board-dark);
+  padding: 1.5rem;
+  border-top: 3px solid transparent;
+  transition: background var(--transition);
+}
+
+.tower-card:hover { background: rgba(58,40,24,0.8); }
+.tower-card.launch { border-top-color: var(--pigeon-neck); }
+.tower-card.post   { border-top-color: var(--gold); }
+
+.tower-num {
+  font-family: var(--font-mono);
+  font-size: 2.5rem;
+  font-weight: 500;
+  color: rgba(200,151,58,0.15);
+  display: block;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.tower-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--parchment);
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
+}
+
+.tower-boss {
+  font-size: 0.78rem;
+  color: var(--board-shadow);
+  font-style: italic;
+}
+
+.tower-scope {
+  margin-top: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  display: inline-block;
+}
+
+.scope-launch { background: rgba(74,103,65,0.3); color: #90ee90; border: 1px solid rgba(74,103,65,0.4); }
+.scope-post   { background: rgba(122,90,0,0.3);  color: #ffd966; border: 1px solid rgba(122,90,0,0.4); }
+
+/* ═══════════════════════════════════════
+   GAME MODES
+═══════════════════════════════════════ */
+.modes-bg {
+  background: rgba(13, 9, 3, 0.6);
+  border-top: 1px solid rgba(200,151,58,0.1);
+  border-bottom: 1px solid rgba(200,151,58,0.1);
+}
+
+.modes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1px;
+  background: rgba(200,151,58,0.1);
+  border: 1px solid rgba(200,151,58,0.1);
+}
+
+.mode-card {
+  background: rgba(30,20,8,0.95);
+  padding: 1.5rem;
+  transition: background var(--transition);
+}
+
+.mode-card:hover { background: rgba(58,40,24,0.95); }
+
+.mode-icon {
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.mode-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--parchment);
+  margin-bottom: 0.5rem;
+}
+
+.mode-desc {
+  font-size: 0.82rem;
+  color: var(--board-shadow);
+  line-height: 1.55;
+  margin-bottom: 0.75rem;
+  font-weight: 300;
+}
+
+.mode-tag {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid rgba(200,151,58,0.3);
+  padding: 0.12rem 0.4rem;
+  display: inline-block;
+}
+
+/* ═══════════════════════════════════════
+   ROGUELIKE
+═══════════════════════════════════════ */
+.rogue-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+@media (max-width: 640px) { .rogue-two-col { grid-template-columns: 1fr; } }
+
+.rogue-box {
+  background: rgba(58,40,24,0.3);
+  border: 1px solid rgba(200,151,58,0.15);
+  padding: 1.5rem;
+}
+
+.rogue-box-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.rogue-box-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--parchment);
+  margin-bottom: 0.5rem;
+}
+
+.node-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.node-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(200,151,58,0.08);
+  font-size: 0.85rem;
+  color: var(--parchment2);
+}
+
+.node-list li:last-child { border-bottom: none; }
+
+.node-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  width: 1.5rem;
+  text-align: center;
+}
+
+.node-pct {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--board-shadow);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.madness-meter {
+  margin: 2rem 0;
+}
+
+.madness-bar {
+  height: 40px;
+  background: linear-gradient(to right,
+    #c8973a 0%,
+    #c87838 25%,
+    #a84828 50%,
+    #782868 75%,
+    #480858 100%
+  );
+  border: 1px solid rgba(255,255,255,0.05);
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.madness-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.4rem;
+}
+
+.madness-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--board-shadow);
+  flex: 1;
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════
+   TECH STACK
+═══════════════════════════════════════ */
+.tech-bg {
+  background: #080b10;
+  border-top: 1px solid rgba(0,144,255,0.1);
+  border-bottom: 1px solid rgba(0,144,255,0.1);
+  color: #c8d8e8;
+}
+
+.tech-bg p, .tech-bg li { color: #6a8aaa; }
+.tech-bg strong { color: #c8d8e8; }
+
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1px;
+  background: #1e2d40;
+  border: 1px solid #1e2d40;
+  margin: 2rem 0;
+}
+
+.stack-card {
+  background: #0d1117;
+  padding: 1.25rem;
+  transition: background 0.15s;
+}
+
+.stack-card:hover { background: #131920; }
+
+.stack-layer {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #2a4060;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+.stack-tech {
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  color: #0090ff;
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+}
+
+.stack-why {
+  font-size: 0.78rem;
+  color: #6a8aaa;
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+/* ═══════════════════════════════════════
+   ROADMAP
+═══════════════════════════════════════ */
+.timeline {
+  position: relative;
+  padding-left: 2.5rem;
+  margin: 2rem 0;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--gold), var(--chaos));
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 3rem;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.5s ease;
+}
+
+.timeline-item.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -2.9rem;
+  top: 0.3rem;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--board-dark);
+}
+
+.timeline-phase {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--chaos);
+  margin-bottom: 0.2rem;
+}
+
+.timeline-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--parchment);
+  margin-bottom: 0.6rem;
+}
+
+.timeline-desc {
+  font-size: 0.9rem;
+  color: var(--board-shadow);
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+  font-weight: 300;
+  max-width: 600px;
+}
+
+.tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid rgba(200,151,58,0.2);
+  color: var(--board-shadow);
+}
+
+/* ═══════════════════════════════════════
+   DESIGN DOCUMENTS
+═══════════════════════════════════════ */
+.docs-bg {
+  background: rgba(58,40,24,0.2);
+  border-top: 1px solid rgba(200,151,58,0.1);
+}
+
+.docs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.doc-card {
+  border: 1px solid rgba(200,151,58,0.2);
+  background: var(--board-dark);
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+.doc-card:nth-child(1)::before { background: var(--gold); }
+.doc-card:nth-child(2)::before { background: var(--chaos); }
+.doc-card:nth-child(3)::before { background: var(--cat-c); }
+.doc-card:nth-child(4)::before { background: var(--cat-e); }
+
+.doc-card:hover {
+  border-color: rgba(200,151,58,0.4);
+  background: rgba(58,40,24,0.8);
+  transform: translateY(-2px);
+}
+
+.doc-card-icon {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.doc-card-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--board-shadow);
+  margin-bottom: 0.4rem;
+  display: block;
+}
+
+.doc-card-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--parchment);
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.doc-card-desc {
+  font-size: 0.8rem;
+  color: var(--board-shadow);
+  line-height: 1.55;
+  font-weight: 300;
+  flex: 1;
+}
+
+.doc-card-link {
+  margin-top: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid rgba(200,151,58,0.3);
+  padding: 0.4rem 0.8rem;
+  display: inline-block;
+  transition: var(--transition);
+}
+
+.doc-card-link:hover {
+  background: rgba(200,151,58,0.1);
+  border-color: var(--gold);
+}
+
+.doc-card-meta {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.doc-meta-item {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--board-shadow);
+}
+
+.doc-meta-item span {
+  color: var(--parchment2);
+  display: block;
+  font-size: 0.72rem;
+}
+
+/* ═══════════════════════════════════════
+   RANKING
+═══════════════════════════════════════ */
+.ranks-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.rank-badge {
+  background: rgba(58,40,24,0.5);
+  border: 1px solid rgba(200,151,58,0.2);
+  padding: 0.75rem 1.25rem;
+  text-align: center;
+  min-width: 110px;
+  transition: var(--transition);
+}
+
+.rank-badge:hover {
+  border-color: var(--gold);
+  background: rgba(58,40,24,0.9);
+}
+
+.rank-icon { font-size: 1.5rem; display: block; margin-bottom: 0.3rem; }
+
+.rank-name {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.rank-elo {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--board-shadow);
+  letter-spacing: 0.06em;
+}
+
+/* ═══════════════════════════════════════
+   MONETIZATION CALLOUT
+═══════════════════════════════════════ */
+.iron-rule {
+  background: rgba(184,50,40,0.08);
+  border: 1px solid rgba(184,50,40,0.3);
+  border-left: 4px solid var(--chaos);
+  padding: 1.5rem 2rem;
+  margin: 2rem 0;
+}
+
+.iron-rule-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--chaos);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.iron-rule p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--parchment2);
+}
+
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+.footer {
+  background: #0a0705;
+  border-top: 1px solid rgba(200,151,58,0.1);
+  padding: 4rem 2rem 3rem;
+}
+
+.footer-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 3rem;
+}
+
+@media (max-width: 768px) {
+  .footer-inner { grid-template-columns: 1fr 1fr; gap: 2rem; }
+}
+
+@media (max-width: 480px) {
+  .footer-inner { grid-template-columns: 1fr; }
+}
+
+.footer-logo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: var(--parchment);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-logo span { color: var(--gold); }
+
+.footer-tagline {
+  font-size: 0.82rem;
+  color: var(--board-shadow);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+  font-weight: 300;
+}
+
+.footer-status {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--pigeon-neck);
+  border: 1px solid rgba(106,125,90,0.3);
+  padding: 0.25rem 0.6rem;
+  display: inline-block;
+}
+
+.footer-col-title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links li { margin-bottom: 0.5rem; }
+
+.footer-links a {
+  font-size: 0.85rem;
+  color: var(--board-shadow);
+  transition: color var(--transition);
+  font-weight: 300;
+}
+
+.footer-links a:hover { color: var(--parchment); }
+
+.footer-bottom {
+  max-width: 1000px;
+  margin: 3rem auto 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(200,151,58,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-bottom-text {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(138,104,64,0.5);
+}
+
+/* ═══════════════════════════════════════
+   FADE-IN ANIMATION
+═══════════════════════════════════════ */
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ═══════════════════════════════════════
+   UTILITY
+═══════════════════════════════════════ */
+.text-gold { color: var(--gold); }
+.text-chaos { color: var(--chaos-light); }
+.text-grey { color: var(--board-shadow); }
+.mono { font-family: var(--font-mono); }
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200,151,58,0.3), transparent);
+  margin: 2rem 0;
+}
+
+@media (max-width: 600px) {
+  .modifier-grid { grid-template-columns: 1fr; }
+  .towers-grid { grid-template-columns: 1fr 1fr; }
+  .modes-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="#hero">🐦 Pigeon <span>Chess</span></a>
+  <div class="nav-links">
+    <a class="nav-link" href="#about">The Game</a>
+    <a class="nav-link" href="#modifiers">Modifiers</a>
+    <a class="nav-link" href="#story">Story</a>
+    <a class="nav-link" href="#modes">Modes</a>
+    <a class="nav-link" href="#roguelike">Roguelike</a>
+    <a class="nav-link" href="#tech">Tech</a>
+    <a class="nav-link" href="#roadmap">Roadmap</a>
+    <a class="nav-link docs" href="#documents">Design Docs</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════ HERO -->
+<section class="hero" id="hero">
+  <!-- Animated 8×8 chess board grid -->
+  <div class="hero-board-grid" id="boardGrid"></div>
+  <div class="hero-glow"></div>
+
+  <div class="hero-inner">
+    <div class="hero-pigeon">🐦</div>
+    <div class="hero-eyebrow">Roguelike · Chess · Chaos</div>
+    <h1 class="hero-title">
+      Pigeon
+      <em>Chess</em>
+    </h1>
+    <p class="hero-tagline">
+      "A cursed board. A disgraced champion. An infinite flock of consequences."
+    </p>
+    <div class="hero-badges">
+      <span class="badge badge-gold">Web + Steam</span>
+      <span class="badge badge-grey">F2P + Battle Pass</span>
+      <span class="badge badge-grey">Solo / Tiny Team</span>
+      <span class="badge badge-red">Pre-Production</span>
+      <span class="badge badge-gold">GDD v0.1</span>
+      <span class="badge badge-gold">40 Modifiers</span>
+    </div>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#about">Explore the Game</a>
+      <a class="btn btn-secondary" href="#documents">Read the Docs</a>
+    </div>
+  </div>
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<!-- ═══════════════════════════════════════ ABOUT -->
+<div class="about-bg">
+  <div class="section" id="about">
+    <div class="section-header fade-in">
+      <span class="section-num">01</span>
+      <h2>The Game</h2>
+    </div>
+
+    <div class="pull-quote fade-in">
+      Chess is the most elegant game ever devised. Pigeon Chess is what happens when you let pigeons play it.
+    </div>
+
+    <p class="fade-in">Pigeon Chess is a <strong>web-based and Steam roguelike chess game</strong> where every match is shaped by a chaotic, community-driven modifier system. No two games are ever the same. Players bring skill, the pigeons bring entropy.</p>
+
+    <p class="fade-in">The game respects the strategic foundations of chess while systematically dismantling them — one absurd modifier at a time. It targets chess players who are bored, non-chess players who are curious, and anyone who has ever wanted to watch a bishop gain sentience and walk off the board.</p>
+
+    <h3 class="fade-in">Design Pillars</h3>
+    <div class="pillars-grid fade-in">
+      <div class="pillar">
+        <span class="pillar-icon">🎲</span>
+        <div class="pillar-name">Controlled Chaos</div>
+        <div class="pillar-desc">Every modifier must be legible at a glance, no matter how absurd. Chaos is the aesthetic. Clarity is the discipline.</div>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon">📈</span>
+        <div class="pillar-name">Skill Always Matters</div>
+        <div class="pillar-desc">Even in maximum chaos mode, a better chess player should win more often than not. Modifiers shift the odds; they don't eliminate agency.</div>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon">🐦</span>
+        <div class="pillar-name">The Flock is Alive</div>
+        <div class="pillar-desc">Pigeons are not a UI skin — they are characters. They have names. They have opinions. They land on squares when you don't want them to.</div>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon">🌍</span>
+        <div class="pillar-name">Community is the Content</div>
+        <div class="pillar-desc">Puzzles, cosmetics, modifier suggestions, and seasonal events are shaped by the player community. Systems are built to enable this from day one.</div>
+      </div>
+    </div>
+
+    <h3 class="fade-in">Target Audience</h3>
+    <div class="pillars-grid fade-in" style="grid-template-columns: repeat(auto-fill, minmax(180px,1fr));">
+      <div class="pillar">
+        <span class="pillar-icon">♟️</span>
+        <div class="pillar-name">Chess Casuals</div>
+        <div class="pillar-desc">800–1200 ELO players frustrated by rigid rules. Same game, finally weird.</div>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon">🎴</span>
+        <div class="pillar-name">Roguelike Fans</div>
+        <div class="pillar-desc">Slay the Spire &amp; Hades players. Deep meta-progression and modifier synergies.</div>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon">📺</span>
+        <div class="pillar-name">Chaos Enjoyers</div>
+        <div class="pillar-desc">Twitch viewers, meme culture, party gamers. Streamable and unpredictable.</div>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon">🏆</span>
+        <div class="pillar-name">Competitive Players</div>
+        <div class="pillar-desc">ELO-driven, tournament-minded players with a real skill ceiling.</div>
+      </div>
+      <div class="pillar">
+        <span class="pillar-icon">🧩</span>
+        <div class="pillar-name">Puzzle Solvers</div>
+        <div class="pillar-desc">Wordle, NYT Games hobbyists. Community puzzle platform built in.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ MODIFIERS -->
+<div class="modifiers-bg section-full" id="modifiers">
+  <div class="section" style="padding-top: 0; padding-bottom: 0;">
+    <div class="section-header fade-in">
+      <span class="section-num">02</span>
+      <h2>Modifier System</h2>
+    </div>
+
+    <p class="fade-in">Modifiers are the <strong>heart of Pigeon Chess</strong>. 40 modifiers across 5 categories, each with a point cost, tier, and Curse rating. Every modifier passes the <em>Laugh Test</em> (is the chaos fun?) and the <em>Rematch Test</em> (do players want to play again?).</p>
+
+    <div class="cat-tabs fade-in">
+      <button class="cat-tab active" style="border-color:var(--cat-a);color:var(--cat-a)" onclick="filterMods('a')">A · Board Mutations</button>
+      <button class="cat-tab" style="border-color:var(--cat-b);color:var(--cat-b)" onclick="filterMods('b')">B · Cursed</button>
+      <button class="cat-tab" style="border-color:var(--cat-c);color:var(--cat-c)" onclick="filterMods('c')">C · Active Abilities</button>
+      <button class="cat-tab" style="border-color:var(--cat-d);color:var(--cat-d)" onclick="filterMods('d')">D · Fog of War</button>
+      <button class="cat-tab" style="border-color:var(--cat-e);color:var(--cat-e)" onclick="filterMods('e')">E · Asymmetric Armies</button>
+    </div>
+
+    <div class="modifier-grid fade-in" id="modGrid">
+
+      <!-- CATEGORY A — BOARD MUTATIONS -->
+      <div class="mod-card" data-cat="a">
+        <div class="mod-card-stripe" style="background:var(--cat-a)"></div>
+        <span class="mod-id">MOD-A001</span>
+        <span class="mod-ref">≈ The Last of Us / Cordyceps meme</span>
+        <div class="mod-header">
+          <div class="mod-name">The Cordyceptic Spread</div>
+          <span class="mod-tier tier-s">Tier S</span>
+        </div>
+        <div class="mod-type" style="color:var(--cat-a)">▪ Board Mutation · Persistent · Mid-Match Trigger</div>
+        <span class="mod-trigger">TRIGGER: Every 5 turns</span>
+        <div class="mod-desc">One random empty tile becomes Infected. Pieces on Infected tiles lose 1 square of movement per turn stationary. A Bishop or Queen passing through clears it. Infected tiles spread — 25% chance to infect an adjacent tile each turn. The mushroom is patient.</div>
+        <div class="mod-flavor">"There is something growing on the board. Viktor has chosen not to investigate what it is."</div>
+        <div class="mod-stats-row">
+          <div class="mod-stat"><span class="mod-stat-label">Cost</span><span class="mod-stat-value cost-pos">4 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip on"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+      </div>
+
+      <div class="mod-card" data-cat="a">
+        <div class="mod-card-stripe" style="background:var(--cat-a)"></div>
+        <span class="mod-id">MOD-A002</span>
+        <span class="mod-ref">≈ "The Floor Is Lava" viral challenge</span>
+        <div class="mod-header">
+          <div class="mod-name">The Floor Is Lava</div>
+          <span class="mod-tier tier-a">Tier A</span>
+        </div>
+        <div class="mod-type" style="color:var(--cat-a)">▪ Board Mutation · Persistent · Rotating</div>
+        <span class="mod-trigger">TRIGGER: Match start + every 10 turns</span>
+        <div class="mod-desc">Four tiles are Lava. Any piece landing on Lava is immediately captured — including your own. Every 10 turns, each Lava tile rotates clockwise one square. The next position is shown one turn in advance. Everyone knows the floor is lava. Nobody is handling it well.</div>
+        <div class="mod-flavor">"The floor is lava. Viktor's knight is on the floor. Viktor is processing this."</div>
+        <div class="mod-stats-row">
+          <div class="mod-stat"><span class="mod-stat-label">Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip on"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+      </div>
+
+      <div class="mod-card" data-cat="a">
+        <div class="mod-card-stripe" style="background:var(--cat-a)"></div>
+        <span class="mod-id">MOD-A005</span>
+        <span class="mod-ref">≈ Fortnite Storm / Minecraft world border</span>
+        <div class="mod-header">
+          <div class="mod-name">The Storm Closes In</div>
+          <span class="mod-tier tier-a">Tier A</span>
+        </div>
+        <div class="mod-type" style="color:var(--cat-a)">▪ Board Mutation · Shrinking · Progressive</div>
+        <span class="mod-trigger">TRIGGER: Every 8 turns</span>
+        <div class="mod-desc">The outer ring of the board is consumed by the Storm every 8 turns. Pieces on Storm tiles are eliminated. The board shrinks from 8×8 toward 6×6 by turn 40. Get to the circle. Stay in the circle.</div>
+        <div class="mod-flavor">"The board is getting smaller. Viktor is getting calmer. These things are unrelated."</div>
+        <div class="mod-stats-row">
+          <div class="mod-stat"><span class="mod-stat-label">Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip on"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+      </div>
+
+      <!-- CATEGORY B — CURSED -->
+      <div class="mod-card" data-cat="b" style="display:none">
+        <div class="mod-card-stripe" style="background:var(--cat-b)"></div>
+        <span class="mod-id">MOD-B001</span>
+        <span class="mod-ref">≈ Elden Ring "YOU DIED" / Dark Souls chaos</span>
+        <div class="mod-header">
+          <div class="mod-name">YOU DIED (But A Piece Did)</div>
+          <span class="mod-tier tier-s">Tier S</span>
+        </div>
+        <div class="mod-type" style="color:var(--cat-b)">▪ Curse · Autonomous Piece · High Madness</div>
+        <span class="mod-trigger">TRIGGER: Every 7 turns</span>
+        <div class="mod-desc">Every 7 turns, one of YOUR pieces chooses its own legal move autonomously. You have no input. The piece has decided. It counts as your turn. The screen briefly flashes "A PIECE MOVED" in large red letters. +2 Feathers per match.</div>
+        <div class="mod-flavor">"A piece moved itself to h4. Viktor stared at the screen for a long time. Large red letters appeared. They were not helpful."</div>
+        <div class="mod-stats-row">
+          <div class="mod-stat"><span class="mod-stat-label">Cost</span><span class="mod-stat-value cost-neg">−3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip on"></div><div class="curse-pip on"></div><div class="curse-pip on"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">No Ranked</span></div>
+        </div>
+      </div>
+
+      <div class="mod-card" data-cat="b" style="display:none">
+        <div class="mod-card-stripe" style="background:var(--cat-b)"></div>
+        <span class="mod-id">MOD-B002</span>
+        <span class="mod-ref">≈ "Distracted Boyfriend" meme</span>
+        <div class="mod-header">
+          <div class="mod-name">Distracted Piece (Gerald)</div>
+          <span class="mod-tier tier-a">Tier A</span>
+        </div>
+        <div class="mod-type" style="color:var(--cat-b)">▪ Curse · Interference · Named NPC</div>
+        <span class="mod-trigger">TRIGGER: Start of each of your turns</span>
+        <div class="mod-desc">A pigeon named Gerald lands on one of your pieces, blocking it. You can spend your turn clicking Gerald off — freeing the piece but forfeiting your move. Gerald returns next turn. Gerald always returns. Gerald has a personal leaderboard tracking how many turns he has ruined.</div>
+        <div class="mod-flavor">"Gerald is looking at something else entirely. Viktor's rook is right there. Gerald does not care about Viktor's rook."</div>
+        <div class="mod-stats-row">
+          <div class="mod-stat"><span class="mod-stat-label">Cost</span><span class="mod-stat-value cost-neg">−2 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip on"></div><div class="curse-pip on"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+      </div>
+
+      <div class="mod-card" data-cat="b" style="display:none">
+        <div class="mod-card-stripe" style="background:var(--cat-b)"></div>
+        <span class="mod-id">MOD-B006</span>
+        <span class="mod-ref">≈ Among Us / "They were the Impostor"</span>
+        <div class="mod-header">
+          <div class="mod-name">They Were The Traitor</div>
+          <span class="mod-tier tier-s">Tier S</span>
+        </div>
+        <div class="mod-type" style="color:var(--cat-b)">▪ Curse · Piece Defection · Random</div>
+        <span class="mod-trigger">TRIGGER: Once, random turn after turn 10</span>
+        <div class="mod-desc">After turn 10, at a random point, one of your non-King pieces defects to the opponent. You are warned 1 turn in advance — the piece glows red. The ejection screen appears. It says who it was. It says how many remain. It does not say sorry.</div>
+        <div class="mod-flavor">"Queen was The Traitor. 7 pieces remain. Viktor stares at the screen. Viktor voted wrong."</div>
+        <div class="mod-stats-row">
+          <div class="mod-stat"><span class="mod-stat-label">Cost</span><span class="mod-stat-value cost-neg">−3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip on"></div><div class="curse-pip on"></div><div class="curse-pip on"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">No Ranked</span></div>
+        </div>
+      </div>
+
+      <!-- CATEGORY C — ACTIVE ABILITIES -->
+      <div class="mod-card" data-cat="c" style="display:none">
+        <div class="mod-card-stripe" style="background:var(--cat-c)"></div>
+        <span class="mod-id">MOD-C001</span>
+        <span class="mod-ref">≈ Presidential Executive Order meme</span>
+        <div class="mod-header">
+          <div class="mod-name">Royal Decree</div>
+          <span class="mod-tier tier-s">Tier S</span>
+        </div>
+        <div class="mod-type" style="color:var(--cat-c)">▪ Active Ability · King · Cooldown: 8 turns</div>
+        <span class="mod-trigger">TRIGGER: Player activation</span>
+        <div class="mod-desc">Activate: Your King declares a "No Fly Zone" on any row or column. No opponent pieces may enter that line for 3 turns. Pigeons are exempt. The King cannot enforce pigeon compliance.</div>
+        <div class="mod-flavor">"The King declared the h-file off-limits. Gerald immediately landed on h4. The King had no recourse."</div>
+        <div class="mod-stats-row">
+          <div class="mod-stat"><span class="mod-stat-label">Cost</span><span class="mod-stat-value cost-pos">4 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+      </div>
+
+      <div class="mod-card" data-cat="c" style="display:none">
+        <div class="mod-card-stripe" style="background:var(--cat-c)"></div>
+        <span class="mod-id">MOD-C002</span>
+        <span class="mod-ref">≈ Confession booth / Catholic meme culture</span>
+        <div class="mod-header">
+          <div class="mod-name">The Confession Bishop</div>
+          <span class="mod-tier tier-a">Tier A</span>
+        </div>
+        <div class="mod-type" style="color:var(--cat-c)">▪ Active Ability · Bishop · Cooldown: 5 turns</div>
+        <span class="mod-trigger">TRIGGER: Player activation</span>
+        <div class="mod-desc">Activate: Choose one opponent piece. That piece must reveal its intended next move to you before making it (for 2 turns). Opponent sees the confession icon. They know you know.</div>
+        <div class="mod-flavor">"The bishop heard the opponent's confession. The opponent confessed their knight was going to f6. Viktor does not feel absolved."</div>
+        <div class="mod-stats-row">
+          <div class="mod-stat"><span class="mod-stat-label">Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+      </div>
+
+      <div class="mod-card" data-cat="c" style="display:none">
+        <div class="mod-card-stripe" style="background:var(--cat-c)"></div>
+        <span class="mod-id">MOD-C003</span>
+        <span class="mod-ref">≈ Knight Bus / Horse Girl meme energy</span>
+        <div class="mod-header">
+          <div class="mod-name">Knight's Gambit (The Illegal Move)</div>
+          <span class="mod-tier tier-a">Tier A</span>
+        </div>
+        <div class="mod-type" style="color:var(--cat-c)">▪ Active Ability · Knight · Cooldown: 6 turns</div>
+        <span class="mod-trigger">TRIGGER: Player activation</span>
+        <div class="mod-desc">Activate: Your Knight may make ONE non-standard move this turn — moving like a rook for this turn only. The Knight is aware this is illegal and seems thrilled about it.</div>
+        <div class="mod-flavor">"The knight moved in a straight line. A hush fell over the board. The knight winked."</div>
+        <div class="mod-stats-row">
+          <div class="mod-stat"><span class="mod-stat-label">Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+      </div>
+
+      <!-- CATEGORY D — FOG OF WAR -->
+      <div class="mod-card" data-cat="d" style="display:none">
+        <div class="mod-card-stripe" style="background:var(--cat-d)"></div>
+        <span class="mod-id">MOD-D001</span>
+        <span class="mod-ref">≈ Subnautica deep dark / Alien darkness</span>
+        <div class="mod-header">
+          <div class="mod-name">Dark Board</div>
+          <span class="mod-tier tier-s">Tier S</span>
+        </div>
+        <div class="mod-type" style="color:var(--cat-d)">▪ Fog of War · Symmetric · Persistent</div>
+        <span class="mod-trigger">TRIGGER: Match start (permanent)</span>
+        <div class="mod-desc">You can only see squares within 2 squares of any of your own pieces. The rest of the board is hidden. Your opponent is in the dark too. Pigeons are always visible. They don't respect fog.</div>
+        <div class="mod-flavor">"The board went dark. Viktor could hear pieces moving. They sounded confident. That was alarming."</div>
+        <div class="mod-stats-row">
+          <div class="mod-stat"><span class="mod-stat-label">Cost</span><span class="mod-stat-value cost-pos">4 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip on"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+      </div>
+
+      <div class="mod-card" data-cat="d" style="display:none">
+        <div class="mod-card-stripe" style="background:var(--cat-d)"></div>
+        <span class="mod-id">MOD-D002</span>
+        <span class="mod-ref">≈ Ghostbusters / "I ain't afraid of no ghost"</span>
+        <div class="mod-header">
+          <div class="mod-name">Ghost Pieces</div>
+          <span class="mod-tier tier-a">Tier A</span>
+        </div>
+        <div class="mod-type" style="color:var(--cat-d)">▪ Fog of War · Deception · Symmetric</div>
+        <span class="mod-trigger">TRIGGER: Match start (permanent)</span>
+        <div class="mod-desc">Both players see phantom decoy pieces on the board — 2 fake pieces per side that appear real until moved through. Only you know which of your pieces are real. Hover doesn't help.</div>
+        <div class="mod-flavor">"Viktor moved through a ghost rook. It wasn't there. This raised questions about the other rook."</div>
+        <div class="mod-stats-row">
+          <div class="mod-stat"><span class="mod-stat-label">Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+      </div>
+
+      <!-- CATEGORY E — ASYMMETRIC ARMIES -->
+      <div class="mod-card" data-cat="e" style="display:none">
+        <div class="mod-card-stripe" style="background:var(--cat-e)"></div>
+        <span class="mod-id">MOD-E001</span>
+        <span class="mod-ref">≈ Hitchcock's "The Birds" / pigeon attack TikTok</span>
+        <div class="mod-header">
+          <div class="mod-name">The Flock Army</div>
+          <span class="mod-tier tier-s">Tier S</span>
+        </div>
+        <div class="mod-type" style="color:var(--cat-e)">▪ Asymmetric Army · Persistent · Announced</div>
+        <span class="mod-trigger">TRIGGER: Match start (permanent)</span>
+        <div class="mod-desc">One player replaces all knights with Pigeons — pieces that move like knights but also randomly hop to any empty square every 5 turns. Both players can see where the pigeon will land next. The pigeon announces it 2 turns in advance.</div>
+        <div class="mod-flavor">"The pigeon announced it was going to g6. Viktor prepared. The pigeon went anyway. Viktor was still not ready."</div>
+        <div class="mod-stats-row">
+          <div class="mod-stat"><span class="mod-stat-label">Cost</span><span class="mod-stat-value cost-pos">5 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+      </div>
+
+      <div class="mod-card" data-cat="e" style="display:none">
+        <div class="mod-card-stripe" style="background:var(--cat-e)"></div>
+        <span class="mod-id">MOD-E002</span>
+        <span class="mod-ref">≈ Braveheart / "They may take our lives" speech energy</span>
+        <div class="mod-header">
+          <div class="mod-name">The Peasant Revolt</div>
+          <span class="mod-tier tier-a">Tier A</span>
+        </div>
+        <div class="mod-type" style="color:var(--cat-e)">▪ Asymmetric Army · Start Condition</div>
+        <span class="mod-trigger">TRIGGER: Match start (permanent)</span>
+        <div class="mod-desc">One player starts with 12 pawns instead of the standard 8. No knights, no bishops. Just an overwhelming tide of extremely determined pawns. The other player keeps standard pieces.</div>
+        <div class="mod-flavor">"Viktor had twelve pawns and a dream. The dream was mostly just more pawns."</div>
+        <div class="mod-stats-row">
+          <div class="mod-stat"><span class="mod-stat-label">Cost</span><span class="mod-stat-value cost-pos">3 pts</span></div>
+          <div class="mod-stat"><span class="mod-stat-label">Curse</span><div class="curse-pips"><div class="curse-pip"></div><div class="curse-pip"></div><div class="curse-pip"></div></div></div>
+          <div class="mod-stat"><span class="mod-stat-label">Modes</span><span class="mod-stat-value" style="font-size:0.7rem">ALL</span></div>
+        </div>
+      </div>
+
+    </div><!-- /modifier-grid -->
+
+    <p class="fade-in" style="text-align:center; margin-top: 1.5rem; font-size: 0.85rem; color: var(--board-shadow);">
+      Showing sample modifiers. Full bible documents <strong>40 modifiers</strong> across all 5 categories. →
+      <a href="docs/pigeon-chess-modifier-bible-v02.html" class="text-gold" style="border-bottom: 1px solid rgba(200,151,58,0.3);">Read the full Modifier Bible</a>
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ STORY -->
+<div class="story-bg">
+  <div class="section" id="story">
+    <div class="section-header fade-in">
+      <span class="section-num">03</span>
+      <h2>Story & Narrative</h2>
+    </div>
+
+    <div class="story-grid fade-in">
+      <div>
+        <div class="story-portrait">
+          <span class="story-portrait-emoji">🧓</span>
+          <div class="story-portrait-name">Viktor Crumb</div>
+          <div class="story-portrait-title">Former World Chess Champion</div>
+          <div class="story-stat-row">
+            <div style="text-align:center">
+              <span class="story-stat-val">11</span>
+              <span class="story-stat-lbl">Years Undefeated</span>
+            </div>
+            <div style="text-align:center">
+              <span class="story-stat-val">1</span>
+              <span class="story-stat-lbl">Fateful Loss</span>
+            </div>
+            <div style="text-align:center">
+              <span class="story-stat-val">∞</span>
+              <span class="story-stat-lbl">Pigeons</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p>You are <strong>Viktor Crumb</strong>, once the world's most feared chess grandmaster. Undefeated for eleven years. Then, at the World Championship, a flock of pigeons descended on the board mid-match — and you made the wrong move. You lost. You were disgraced. The chess world cast you out.</p>
+        <p>Years later, you find a strange board in a flea market. It pulses. It coos. When you place a piece on it, the pigeons come. And they change everything.</p>
+
+        <div class="dialogue-box">
+          <span class="speaker">Sample Dialogue</span>
+          <em>Viktor:</em> "There is a pigeon sitting on my queen."<br><br>
+          <em>The Prodigy:</em> "I know. She's been there since last Tuesday. Her name is Margaret. She's ranked 1,400 ELO."<br><br>
+          <em>Viktor:</em> "That is not possible."<br><br>
+          <em>The Prodigy:</em> "Margaret, it's your turn."<br><br>
+          <em>[The pigeon moves a rook.]</em>
+        </div>
+
+        <p style="font-size: 0.85rem; color: var(--board-shadow);">Tone: <strong style="color:var(--parchment)">dry, deadpan, self-aware.</strong> Viktor takes chess desperately seriously. Everyone around him treats the chaos as completely normal. The humor is in the gap.</p>
+      </div>
+    </div>
+
+    <h3 class="fade-in">The Five Towers</h3>
+    <div class="towers-grid fade-in">
+      <div class="tower-card launch">
+        <span class="tower-num">1</span>
+        <div class="tower-name">The Beginner's Gauntlet</div>
+        <div class="tower-boss">Boss: The Prodigy — an 8-year-old who plays perfectly but hates birds</div>
+        <span class="tower-scope scope-launch">Launch</span>
+      </div>
+      <div class="tower-card launch">
+        <span class="tower-num">2</span>
+        <div class="tower-name">The Clocktower</div>
+        <div class="tower-boss">Boss: The Archivist — plays every game as if it's already been played</div>
+        <span class="tower-scope scope-launch">Launch</span>
+      </div>
+      <div class="tower-card launch">
+        <span class="tower-num">3</span>
+        <div class="tower-name">The Fungal Board</div>
+        <div class="tower-boss">Boss: The Groundskeeper — believes the board is a garden</div>
+        <span class="tower-scope scope-launch">Launch</span>
+      </div>
+      <div class="tower-card post">
+        <span class="tower-num">4</span>
+        <div class="tower-name">The Mirror Palace</div>
+        <div class="tower-boss">Boss: The Diplomat — every move is a negotiation</div>
+        <span class="tower-scope scope-post">Post-Launch</span>
+      </div>
+      <div class="tower-card post">
+        <span class="tower-num">5</span>
+        <div class="tower-name">The Pigeon Sanctum</div>
+        <div class="tower-boss">Boss: The Flock — a pigeon collective that plays as one</div>
+        <span class="tower-scope scope-post">Post-Launch</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ GAME MODES -->
+<div class="modes-bg section-full" id="modes">
+  <div class="section" style="padding-top:0; padding-bottom:0;">
+    <div class="section-header fade-in">
+      <span class="section-num">04</span>
+      <h2>Game Modes</h2>
+    </div>
+
+    <div class="modes-grid fade-in">
+      <div class="mode-card">
+        <span class="mode-icon">📖</span>
+        <div class="mode-name">Story Mode</div>
+        <div class="mode-desc">Viktor's campaign through the 5 Towers. Narrative, roguelike runs, boss fights.</div>
+        <span class="mode-tag">Launch</span>
+      </div>
+      <div class="mode-card">
+        <span class="mode-icon">♾️</span>
+        <div class="mode-name">Endless Roguelike</div>
+        <div class="mode-desc">Infinite gauntlet. No story. Just how deep can you go. Leaderboard-tracked.</div>
+        <span class="mode-tag">Launch</span>
+      </div>
+      <div class="mode-card">
+        <span class="mode-icon">🤖</span>
+        <div class="mode-name">VS Bots</div>
+        <div class="mode-desc">Practice mode. Sandbox modifier system. Difficulties: Chick / Pigeon / Magnus.</div>
+        <span class="mode-tag">Launch</span>
+      </div>
+      <div class="mode-card">
+        <span class="mode-icon">🤝</span>
+        <div class="mode-name">Casual Multiplayer</div>
+        <div class="mode-desc">Play with friends. No ELO impact. Shared modifier auction — 10pts each.</div>
+        <span class="mode-tag">Launch</span>
+      </div>
+      <div class="mode-card">
+        <span class="mode-icon">🏆</span>
+        <div class="mode-name">Ranked Multiplayer</div>
+        <div class="mode-desc">ELO-based ladder. Seasons. Competitive draft system. Limited modifier pool per season.</div>
+        <span class="mode-tag">Launch</span>
+      </div>
+      <div class="mode-card">
+        <span class="mode-icon">🧩</span>
+        <div class="mode-name">Puzzle Mode</div>
+        <div class="mode-desc">Community-made puzzles. Daily featured puzzle. Drag-and-drop creator tool.</div>
+        <span class="mode-tag">Launch</span>
+      </div>
+      <div class="mode-card">
+        <span class="mode-icon">🎪</span>
+        <div class="mode-name">Tournaments</div>
+        <div class="mode-desc">Scheduled community and official tournaments. Custom ruleset per tournament.</div>
+        <span class="mode-tag" style="border-color:rgba(200,151,58,0.3);color:var(--gold)">Post-Launch</span>
+      </div>
+      <div class="mode-card">
+        <span class="mode-icon">👁️</span>
+        <div class="mode-name">Spectator Mode</div>
+        <div class="mode-desc">Watch ranked and tournament matches live. Commentator UI overlay.</div>
+        <span class="mode-tag" style="border-color:rgba(200,151,58,0.3);color:var(--gold)">Post-Launch</span>
+      </div>
+    </div>
+
+    <!-- Ranking Tiers -->
+    <h3 class="fade-in" style="margin-top: 3rem;">The Pecking Order — Rank Tiers</h3>
+    <p class="fade-in" style="color: var(--board-shadow); font-size: 0.9rem;">Modified Glicko-2 ELO with a Chaos Coefficient to reduce volatility in high-modifier matches.</p>
+    <div class="ranks-row fade-in">
+      <div class="rank-badge"><span class="rank-icon">🥚</span><span class="rank-name">Egg</span><span class="rank-elo">0 – 499</span></div>
+      <div class="rank-badge"><span class="rank-icon">🐣</span><span class="rank-name">Hatchling</span><span class="rank-elo">500 – 799</span></div>
+      <div class="rank-badge"><span class="rank-icon">🐦</span><span class="rank-name">Fledgling</span><span class="rank-elo">800 – 1099</span></div>
+      <div class="rank-badge"><span class="rank-icon">🕊️</span><span class="rank-name">City Pigeon</span><span class="rank-elo">1100 – 1399</span></div>
+      <div class="rank-badge"><span class="rank-icon">🦅</span><span class="rank-name">Roof Hawk</span><span class="rank-elo">1400 – 1699</span></div>
+      <div class="rank-badge"><span class="rank-icon">🦉</span><span class="rank-name">Owlmaster</span><span class="rank-elo">1700 – 1999</span></div>
+      <div class="rank-badge"><span class="rank-icon">👑</span><span class="rank-name">Flock King</span><span class="rank-elo">2000+</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ ROGUELIKE -->
+<div class="section" id="roguelike">
+  <div class="section-header fade-in">
+    <span class="section-num">05</span>
+    <h2>Roguelike Meta-Progression</h2>
+  </div>
+
+  <p class="fade-in">Runs are structured as a <strong>branching node map</strong> — inspired by Slay the Spire — with matches, events, shops, and rest sites. Between matches, earn Feathers, visit The Roost to buy/sell modifiers, and find relics.</p>
+
+  <div class="rogue-two-col fade-in">
+    <div class="rogue-box">
+      <span class="rogue-box-label">Run Nodes</span>
+      <ul class="node-list">
+        <li><span class="node-icon">♟️</span> Match — vs AI or player<span class="node-pct">60%</span></li>
+        <li><span class="node-icon">🐦</span> The Flock Event — narrative choices<span class="node-pct">15%</span></li>
+        <li><span class="node-icon">🏪</span> The Roost — modifier shop<span class="node-pct">15%</span></li>
+        <li><span class="node-icon">🌿</span> The Perch — rest &amp; curse removal<span class="node-pct">10%</span></li>
+        <li><span class="node-icon">👑</span> Boss Match — end of Tower<span class="node-pct">×1</span></li>
+      </ul>
+    </div>
+    <div class="rogue-box">
+      <span class="rogue-box-label">Viktor's Redemption Tree</span>
+      <div style="margin-bottom: 0.75rem;">
+        <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--gold); margin-bottom: 0.3rem;">🗡️ The Tactician</div>
+        <div style="font-size: 0.82rem; color: var(--board-shadow);">Deeper synergies, more draft budget, advanced rule variants</div>
+      </div>
+      <div style="margin-bottom: 0.75rem;">
+        <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--pigeon-neck); margin-bottom: 0.3rem;">🛡️ The Survivor</div>
+        <div style="font-size: 0.82rem; color: var(--board-shadow);">More rest nodes, better relics, curse removal discounts</div>
+      </div>
+      <div>
+        <div style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--chaos-light); margin-bottom: 0.3rem;">🐦 The Flock Whisperer</div>
+        <div style="font-size: 0.82rem; color: var(--board-shadow);">Embraces chaos — higher curse modifiers, pigeon companions</div>
+      </div>
+    </div>
+  </div>
+
+  <h4 class="fade-in">The Madness Meter</h4>
+  <div class="madness-meter fade-in">
+    <div class="madness-bar"></div>
+    <div class="madness-labels">
+      <span class="madness-lbl">Composed</span>
+      <span class="madness-lbl">Unsettled</span>
+      <span class="madness-lbl">Unravelling</span>
+      <span class="madness-lbl">Lost</span>
+      <span class="madness-lbl">Full Flock</span>
+    </div>
+  </div>
+  <p class="fade-in" style="font-size: 0.85rem; color: var(--board-shadow);">As Madness fills, Viktor's dialogue becomes increasingly unhinged, hidden modifiers unlock, and the board begins exhibiting unexplained visual anomalies. Full Madness triggers the <strong style="color:var(--chaos-light)">"Full Flock"</strong> secret modifier.</p>
+
+  <div class="iron-rule fade-in" style="border-color: rgba(200,151,58,0.3); border-left-color: var(--gold); background: rgba(200,151,58,0.05); margin-top: 2rem;">
+    <span class="iron-rule-label" style="color: var(--gold);">⚖️ Iron Rule — Monetization</span>
+    <p>No modifier, relic, or gameplay advantage may ever be purchased with real money. The modifier unlock system is meta-progression earned through play only. Every purchasable item is cosmetic. Violating this rule destroys the competitive community.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ TECH -->
+<div class="tech-bg section-full" id="tech">
+  <div class="section" style="padding-top:0; padding-bottom:0;">
+    <div class="section-header fade-in" style="border-color: rgba(0,144,255,0.2);">
+      <span class="section-num" style="background: #0090ff; color: #080b10;">11</span>
+      <h2 style="color: #c8d8e8;">Technical Architecture</h2>
+    </div>
+
+    <p class="fade-in">Web-first, optimized for Steam via Tauri wrapper. A single codebase serves both platforms. All modifier logic is <strong>server-authoritative</strong> from day one — no client-side trust, no shortcuts on anti-cheat.</p>
+
+    <div class="stack-grid fade-in">
+      <div class="stack-card">
+        <span class="stack-layer">Frontend</span>
+        <div class="stack-tech">React 18 + TypeScript 5</div>
+        <div class="stack-why">Component model maps well to game UI. Strict TypeScript enforces game state typing from day one. Tauri supports React natively.</div>
+      </div>
+      <div class="stack-card">
+        <span class="stack-layer">Game Renderer</span>
+        <div class="stack-tech">Phaser 3</div>
+        <div class="stack-why">2D canvas rendering for board animations, pigeon landings, tile mutations, and particle effects. Battle-tested for browser games.</div>
+      </div>
+      <div class="stack-card">
+        <span class="stack-layer">Chess Engine</span>
+        <div class="stack-tech">chess.js (extended)</div>
+        <div class="stack-why">Battle-tested move validation, extended with modifier hooks. Server-authoritative — all validation happens server-side.</div>
+      </div>
+      <div class="stack-card">
+        <span class="stack-layer">Backend</span>
+        <div class="stack-tech">Node.js + Fastify</div>
+        <div class="stack-why">Real-time matchmaking, game state, ELO calculations. Fastify for performance over Express at scale.</div>
+      </div>
+      <div class="stack-card">
+        <span class="stack-layer">Real-Time</span>
+        <div class="stack-tech">Socket.IO</div>
+        <div class="stack-why">Move sync, chat, pigeon event broadcasts. Deterministic event stream enables replay system and anti-cheat review.</div>
+      </div>
+      <div class="stack-card">
+        <span class="stack-layer">Database</span>
+        <div class="stack-tech">PostgreSQL + Redis</div>
+        <div class="stack-why">Postgres for persistent data (users, matches, ELO). Redis for session state, matchmaking queues, and leaderboard caching.</div>
+      </div>
+      <div class="stack-card">
+        <span class="stack-layer">Auth</span>
+        <div class="stack-tech">Clerk / Auth0</div>
+        <div class="stack-why">OAuth (Google, Steam, Discord), JWT session management. Handles edge cases out of the box for a solo team.</div>
+      </div>
+      <div class="stack-card">
+        <span class="stack-layer">Steam Wrapper</span>
+        <div class="stack-tech">Tauri (Rust)</div>
+        <div class="stack-why">Lightweight Rust wrapper for Steam distribution. Significantly smaller bundle than Electron. Wraps the web app cleanly.</div>
+      </div>
+      <div class="stack-card">
+        <span class="stack-layer">Hosting</span>
+        <div class="stack-tech">Railway → AWS/GCP</div>
+        <div class="stack-why">Railway for MVP (low-cost, fast deploy). Migrate to AWS/GCP when scale demands it. Don't over-engineer early.</div>
+      </div>
+    </div>
+
+    <h3 style="color: #c8d8e8;" class="fade-in">Critical Systems — Build Order</h3>
+    <ol class="fade-in" style="color: #6a8aaa; font-size: 0.9rem;">
+      <li style="margin-bottom: 0.75rem; color: #6a8aaa;"><strong style="color: #c8d8e8;">Server-Authoritative Chess Engine</strong> — All move validation happens server-side. No client-side trust. Anti-cheat starts here.</li>
+      <li style="margin-bottom: 0.75rem; color: #6a8aaa;"><strong style="color: #c8d8e8;">Modifier State Machine</strong> — Each modifier is a discrete state object with hooks into the game loop (on_turn_start, on_piece_moved, on_capture, on_match_end).</li>
+      <li style="margin-bottom: 0.75rem; color: #6a8aaa;"><strong style="color: #c8d8e8;">Matchmaking Service</strong> — ELO-based pairing with modifier-awareness for casual modes.</li>
+      <li style="color: #6a8aaa;"><strong style="color: #c8d8e8;">Replay System</strong> — Every match recorded as a deterministic event stream. Essential for puzzles, anti-cheat review, and highlight sharing.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ ROADMAP -->
+<div class="section" id="roadmap">
+  <div class="section-header fade-in">
+    <span class="section-num">12</span>
+    <h2>Roadmap & Scope</h2>
+  </div>
+
+  <div class="iron-rule fade-in">
+    <span class="iron-rule-label">🎯 Solo/Tiny Team Reality Check</span>
+    <p>This is an ambitious game. Each phase is a shippable, playable product. A functional Phase 1 with 20 modifiers and 2 modes will teach you more than 2 years of solo development in isolation.</p>
+  </div>
+
+  <div class="timeline fade-in">
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase">Phase 0 — Months 1–2</div>
+      <div class="timeline-title">Prototype & Proof of Concept</div>
+      <div class="timeline-desc">Playable chess in the browser. No modifiers. No accounts. Just chess that works reliably. Validate the chess engine, board renderer, and real-time multiplayer sync. Do not skip this.</div>
+      <div class="tags-row">
+        <span class="tag">Chess Engine</span>
+        <span class="tag">Board Renderer</span>
+        <span class="tag">WebSocket Sync</span>
+        <span class="tag">Basic UI</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background: var(--cat-b);"></div>
+      <div class="timeline-phase">Phase 1 — Months 3–5</div>
+      <div class="timeline-title">MVP Launch — "The Cursed Board"</div>
+      <div class="timeline-desc">Launch with 20 modifiers (all 5 categories), VS Bots, Casual Multiplayer, and the first Story Tower. Basic accounts, basic ELO. No battle pass yet. Get players. Get feedback. Balance aggressively.</div>
+      <div class="tags-row">
+        <span class="tag">20 Modifiers</span>
+        <span class="tag">Story Tower 1</span>
+        <span class="tag">VS Bots</span>
+        <span class="tag">Casual MP</span>
+        <span class="tag">Basic ELO</span>
+        <span class="tag">Puzzle (10 built-in)</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background: var(--gold);"></div>
+      <div class="timeline-phase">Phase 2 — Months 6–8</div>
+      <div class="timeline-title">Ranked Season 1 + Battle Pass</div>
+      <div class="timeline-desc">Full ELO system, Season 1 modifier additions, Battle Pass Season 1, cosmetics store, community puzzle submission. Story Tower 2. Steam Early Access launch.</div>
+      <div class="tags-row">
+        <span class="tag">Ranked + ELO</span>
+        <span class="tag">Battle Pass</span>
+        <span class="tag">Cosmetics Store</span>
+        <span class="tag">Puzzle Creator</span>
+        <span class="tag">Tower 2</span>
+        <span class="tag">Steam EA</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background: var(--pigeon-neck);"></div>
+      <div class="timeline-phase">Phase 3 — Months 9–12</div>
+      <div class="timeline-title">Full Launch — "The Flock Arrives"</div>
+      <div class="timeline-desc">Towers 3–4, Endless Roguelike, full meta-progression tree, community cosmetics workshop, spectator mode. Full Steam launch. Community tournament tools.</div>
+      <div class="tags-row">
+        <span class="tag">Towers 3–4</span>
+        <span class="tag">Endless Mode</span>
+        <span class="tag">Meta-Progression</span>
+        <span class="tag">Community Workshop</span>
+        <span class="tag">Tournaments</span>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-dot" style="background: var(--cat-d);"></div>
+      <div class="timeline-phase">Phase 4 — Year 2+</div>
+      <div class="timeline-title">Tower 5 + Platform Expansion</div>
+      <div class="timeline-desc">The Pigeon Sanctum (Tower 5), chess rule variants, mobile platform evaluation, advanced anti-cheat, modding API, live events. The game is now community-sustained.</div>
+      <div class="tags-row">
+        <span class="tag">Tower 5</span>
+        <span class="tag">Chess Variants</span>
+        <span class="tag">Modding API</span>
+        <span class="tag">Mobile Eval</span>
+        <span class="tag">Live Events</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ DESIGN DOCUMENTS -->
+<div class="docs-bg section-full" id="documents">
+  <div class="section" style="padding-top:0; padding-bottom:0;">
+    <div class="section-header fade-in">
+      <span class="section-num">↗</span>
+      <h2>Design Documents</h2>
+    </div>
+
+    <p class="fade-in">All pre-production documentation for Pigeon Chess. Each document is a complete, self-contained reference for its domain.</p>
+
+    <div class="docs-grid fade-in">
+      <div class="doc-card">
+        <span class="doc-card-icon">📋</span>
+        <span class="doc-card-label">GDD · v0.1</span>
+        <div class="doc-card-title">Game Design Document</div>
+        <div class="doc-card-desc">The complete vision, design pillars, core loop, modifier system overview, game modes, monetization model, technical architecture, and 12-month roadmap.</div>
+        <div class="doc-card-meta">
+          <div class="doc-meta-item">Sections<span>12</span></div>
+          <div class="doc-meta-item">Pages<span>~40</span></div>
+          <div class="doc-meta-item">Status<span>Draft</span></div>
+        </div>
+        <a class="doc-card-link" href="docs/pigeon-chess-gdd.html" target="_blank">Open Document →</a>
+      </div>
+
+      <div class="doc-card">
+        <span class="doc-card-icon">⚙️</span>
+        <span class="doc-card-label">TDD · v0.1</span>
+        <div class="doc-card-title">Technical Design Document</div>
+        <div class="doc-card-desc">Stack decisions (locked), system architecture, chess engine design, modifier state machine, real-time layer, DB schema (14 tables), matchmaking, replay system, auth, and build order.</div>
+        <div class="doc-card-meta">
+          <div class="doc-meta-item">Sections<span>12</span></div>
+          <div class="doc-meta-item">DB Tables<span>14</span></div>
+          <div class="doc-meta-item">Status<span>Draft</span></div>
+        </div>
+        <a class="doc-card-link" href="docs/pigeon-chess-tdd.html" target="_blank">Open Document →</a>
+      </div>
+
+      <div class="doc-card">
+        <span class="doc-card-icon">🎨</span>
+        <span class="doc-card-label">Art Direction · v0.1</span>
+        <div class="doc-card-title">Art Direction Guide</div>
+        <div class="doc-card-desc">Master color palette, typography system (Playfair Display / DM Sans / DM Mono), board visual specs, piece design guidelines, UI component specs, animation library, and the Madness Meter visual language.</div>
+        <div class="doc-card-meta">
+          <div class="doc-meta-item">Colors<span>20+</span></div>
+          <div class="doc-meta-item">Typefaces<span>3</span></div>
+          <div class="doc-meta-item">Status<span>Draft</span></div>
+        </div>
+        <a class="doc-card-link" href="docs/pigeon-chess-art-direction.html" target="_blank">Open Document →</a>
+      </div>
+
+      <div class="doc-card">
+        <span class="doc-card-icon">🃏</span>
+        <span class="doc-card-label">Modifier Bible · v0.2</span>
+        <div class="doc-card-title">Modifier Design Bible</div>
+        <div class="doc-card-desc">All 40 modifiers across 5 categories with full mechanical descriptions, pop-culture flavor text, interaction notes, synergies, conflicts, balance flags, and the complete balance summary table.</div>
+        <div class="doc-card-meta">
+          <div class="doc-meta-item">Modifiers<span>40</span></div>
+          <div class="doc-meta-item">Categories<span>5</span></div>
+          <div class="doc-meta-item">Status<span>v0.2</span></div>
+        </div>
+        <a class="doc-card-link" href="docs/pigeon-chess-modifier-bible-v02.html" target="_blank">Open Document →</a>
+      </div>
+    </div>
+
+    <div class="dialogue-box fade-in" style="background: rgba(200,151,58,0.05); border-color: rgba(200,151,58,0.2); border-left-color: var(--gold); margin-top: 2rem;">
+      <span class="speaker" style="color: var(--board-shadow);">📁 File Setup</span>
+      Place the four HTML document files in a <code style="font-family: var(--font-mono); color: var(--gold); font-size: 0.85em;">docs/</code> folder alongside this <code style="font-family: var(--font-mono); color: var(--gold); font-size: 0.85em;">index.html</code> for the document links to work. Documents are standalone — they can also be opened directly from disk.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">🐦 Pigeon <span>Chess</span></div>
+      <p class="footer-tagline">A cursed board. A disgraced champion. An infinite flock of consequences.</p>
+      <span class="footer-status">● Pre-Production · GDD v0.1</span>
+    </div>
+
+    <div>
+      <span class="footer-col-title">The Game</span>
+      <ul class="footer-links">
+        <li><a href="#about">Vision & Pillars</a></li>
+        <li><a href="#story">Story — Viktor Crumb</a></li>
+        <li><a href="#modifiers">Modifier System</a></li>
+        <li><a href="#modes">Game Modes</a></li>
+        <li><a href="#roguelike">Roguelike Meta</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <span class="footer-col-title">Technical</span>
+      <ul class="footer-links">
+        <li><a href="#tech">Tech Stack</a></li>
+        <li><a href="#roadmap">Roadmap</a></li>
+        <li><a href="docs/pigeon-chess-tdd.html" target="_blank">TDD Document</a></li>
+        <li><a href="docs/pigeon-chess-art-direction.html" target="_blank">Art Direction</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <span class="footer-col-title">Documents</span>
+      <ul class="footer-links">
+        <li><a href="docs/pigeon-chess-gdd.html" target="_blank">GDD v0.1</a></li>
+        <li><a href="docs/pigeon-chess-tdd.html" target="_blank">TDD v0.1</a></li>
+        <li><a href="docs/pigeon-chess-art-direction.html" target="_blank">Art Direction v0.1</a></li>
+        <li><a href="docs/pigeon-chess-modifier-bible-v02.html" target="_blank">Modifier Bible v0.2</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span class="footer-bottom-text">Pigeon Chess · Pre-Production · Confidential · GDD v0.1</span>
+    <span class="footer-bottom-text">Next: TDD · Art Direction Guide · Modifier Balance Spreadsheet</span>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════ SCRIPTS -->
+<script>
+/* ── Build animated chess board grid ── */
+(function() {
+  const grid = document.getElementById('boardGrid');
+  if (!grid) return;
+  const litSquares = new Set([10, 17, 23, 28, 35, 36, 44, 52, 53, 58]);
+  for (let i = 0; i < 64; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'hero-board-cell' + (litSquares.has(i) ? ' lit' : '');
+    if (litSquares.has(i)) {
+      cell.style.setProperty('--delay', (2 + Math.random() * 4) + 's');
+      cell.style.animationDelay = (Math.random() * 3) + 's';
+    }
+    grid.appendChild(cell);
+  }
+})();
+
+/* ── Modifier tab filter ── */
+function filterMods(cat) {
+  const allCards = document.querySelectorAll('#modGrid .mod-card');
+  const allTabs = document.querySelectorAll('.cat-tab');
+
+  allCards.forEach(card => {
+    card.style.display = card.dataset.cat === cat ? 'block' : 'none';
+  });
+
+  allTabs.forEach(tab => {
+    tab.classList.toggle('active', tab.textContent.trim().toLowerCase().startsWith(cat));
+  });
+}
+
+/* ── Intersection observer for fade-in animations ── */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      // For timeline items, stagger the animation
+      if (entry.target.classList.contains('timeline-item')) {
+        const siblings = entry.target.parentElement.querySelectorAll('.timeline-item');
+        let delay = 0;
+        siblings.forEach(sib => {
+          if (sib === entry.target) {
+            sib.style.transitionDelay = delay + 'ms';
+          }
+          delay += 100;
+        });
+      }
+    }
+  });
+}, {
+  threshold: 0.1,
+  rootMargin: '0px 0px -60px 0px'
+});
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+document.querySelectorAll('.timeline-item').forEach(el => observer.observe(el));
+
+/* ── Active nav link highlight on scroll ── */
+const sections = document.querySelectorAll('[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === '#' + id) {
+          link.style.color = 'var(--parchment)';
+        } else if (!link.classList.contains('docs')) {
+          link.style.color = '';
+        }
+      });
+    }
+  });
+}, { threshold: 0.4 });
+
+sections.forEach(s => navObserver.observe(s));
+
+/* ── Smooth scroll for all anchor links ── */
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>
