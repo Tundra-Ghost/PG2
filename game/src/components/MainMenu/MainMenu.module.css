@@ -1,0 +1,370 @@
+/* ═══════════════════════════════════════════════════
+   MAIN MENU  — Pigeon Chess
+   Aesthetic: "Deadpan Grandeur"
+   Ref: Art Direction v1 — board background @ 30% opacity,
+        logo + nav options, Playfair Display hero
+═══════════════════════════════════════════════════ */
+
+/* ── Root: full-screen dark stage ───────────────── */
+.root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #110d07; /* warmer than pure black — "base tone" */
+}
+
+/* Chess board grid — 30% opacity per Art Direction */
+.root::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-conic-gradient(
+    rgba(200, 151, 58, 0.18) 0% 25%,
+    transparent 0% 50%
+  );
+  background-size: 72px 72px;
+  background-position: center center;
+  opacity: 0.30;
+  pointer-events: none;
+}
+
+/* Vignette — pulls focus inward */
+.root::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 90% 80% at 50% 45%,
+    transparent 20%,
+    rgba(10, 6, 2, 0.82) 100%
+  );
+  pointer-events: none;
+}
+
+/* ── Scrollable layer ───────────────────────────── */
+.scroll {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  /* Subtle scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 151, 58, 0.25) transparent;
+}
+
+/* ── Content column ─────────────────────────────── */
+.content {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  animation: fadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Hero / Logo ────────────────────────────────── */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+}
+
+/* Floating pigeon — Art Direction: translateY(-12px) rotation 4deg @ 50%, 5s cycle */
+.pigeonWrap {
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.pigeonIcon {
+  display: inline-block;
+  font-size: 3.75rem;
+  filter: drop-shadow(0 0 40px rgba(200, 151, 58, 0.30));
+  animation: pigeonFloat 5s ease-in-out infinite;
+}
+
+@keyframes pigeonFloat {
+  0%, 100% { transform: translateY(0)      rotate(0deg); }
+  50%       { transform: translateY(-12px) rotate(4deg); }
+}
+
+/* Title — Playfair Display 900, hero scale, NO all-caps (Art Direction rule) */
+.title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2.75rem, 9vw, 5rem);
+  line-height: 1;
+  color: var(--ui-gold);
+  text-shadow:
+    0 0 60px rgba(200, 151, 58, 0.25),
+    0 3px 8px rgba(0, 0, 0, 0.9);
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+/* Tagline — DM Mono micro, flanked by decorative lines */
+.tagLine {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.tagDash {
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: rgba(200, 151, 58, 0.40);
+  flex-shrink: 0;
+}
+
+.tagText {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(200, 151, 58, 0.50);
+  white-space: nowrap;
+}
+
+/* ── Viktor Crumb Quote ─────────────────────────── */
+/* Art Direction: Playfair Display Italic 400, 16–20px, flavor/dialogue */
+.quoteBlock {
+  margin: 0;
+  padding: 1.1rem 1.5rem;
+  background: rgba(200, 151, 58, 0.035);
+  border: 1px solid rgba(200, 151, 58, 0.12);
+  text-align: center;
+}
+
+.quoteText {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+  color: rgba(242, 234, 216, 0.70);
+  line-height: 1.6;
+  margin: 0 0 0.6rem;
+}
+
+.quoteAttr {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(200, 151, 58, 0.50);
+}
+
+/* ── Sections ───────────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sectionLabel {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(200, 151, 58, 0.40);
+  padding: 0 0 0.5rem 0;
+  border-bottom: 1px solid rgba(200, 151, 58, 0.10);
+  margin-bottom: 0;
+}
+
+.menuList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Menu Items ─────────────────────────────────── */
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  padding: 0.85rem 1.1rem 0.85rem 0.9rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(200, 151, 58, 0.08);
+  border-left: 3px solid transparent;
+  color: var(--ui-parchment);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-left-color 0.18s ease,
+    transform 0.12s ease;
+  font-family: inherit;
+  outline: none;
+}
+
+.menuItem:focus-visible {
+  border-left-color: var(--ui-gold);
+  background: rgba(200, 151, 58, 0.06);
+}
+
+/* Primary CTA (New Run) — slightly elevated */
+.menuItemPrimary {
+  background: rgba(200, 151, 58, 0.045);
+  border-left-color: rgba(200, 151, 58, 0.35);
+}
+
+.menuItemPrimary:hover {
+  background: rgba(200, 151, 58, 0.10);
+  border-left-color: var(--ui-gold);
+  transform: translateX(2px);
+}
+
+.menuItem:hover:not(:disabled):not(.menuItemPrimary) {
+  background: rgba(200, 151, 58, 0.06);
+  border-left-color: var(--ui-gold);
+  transform: translateX(2px);
+}
+
+.menuItem:active:not(:disabled) {
+  transform: translateX(2px) scale(0.995);
+  background: rgba(200, 151, 58, 0.12);
+}
+
+/* Locked state */
+.menuItemLocked {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none; /* prevent hover flicker */
+}
+
+/* Secondary section items — slightly smaller */
+.menuItemSecondary .itemLabel {
+  font-size: 0.9rem;
+}
+
+/* ── Item internals ─────────────────────────────── */
+.itemArrow {
+  font-size: 0.7rem;
+  color: var(--ui-gold);
+  flex-shrink: 0;
+  width: 0.9rem;
+  text-align: center;
+  transition: transform 0.18s ease;
+}
+
+.menuItem:hover:not(:disabled) .itemArrow {
+  transform: translateX(3px);
+}
+
+.itemBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+/* Label — DM Sans 500 (UI labels per Art Direction) */
+.itemLabel {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--ui-parchment);
+  line-height: 1.1;
+  transition: color 0.18s ease;
+}
+
+.menuItem:hover:not(:disabled) .itemLabel {
+  color: #fff;
+}
+
+/* Sub text — DM Mono micro */
+.itemSub {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(200, 151, 58, 0.45);
+}
+
+/* Badge */
+.badge {
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(200, 151, 58, 0.60);
+  border: 1px solid rgba(200, 151, 58, 0.30);
+  padding: 0.2rem 0.45rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ── Footer ─────────────────────────────────────── */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(200, 151, 58, 0.08);
+  flex-wrap: wrap;
+}
+
+/* Back link — DM Sans 300, secondary style per Art Direction */
+.backLink {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: rgba(200, 151, 58, 0.45);
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+
+.backLink:hover {
+  color: var(--ui-gold);
+  text-decoration: underline;
+}
+
+/* Version — DM Mono micro */
+.versionBlock {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.versionText {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.10em;
+  color: rgba(200, 151, 58, 0.28);
+}
+
+.versionDot {
+  font-size: 0.52rem;
+  color: rgba(200, 151, 58, 0.18);
+}
+
+/* ── Responsive adjustments ─────────────────────── */
+@media (max-width: 480px) {
+  .scroll { padding: 1.75rem 1rem; }
+  .content { gap: 1.5rem; }
+  .title { font-size: 2.5rem; }
+  .tagText { font-size: 0.55rem; letter-spacing: 0.18em; }
+  .quoteBlock { padding: 0.9rem 1rem; }
+  .footer { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+}

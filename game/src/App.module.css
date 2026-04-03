@@ -26,6 +26,24 @@
   letter-spacing: 0.06em;
 }
 
+.menuBtn {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: rgba(200, 151, 58, 0.55);
+  background: transparent;
+  border: 1px solid rgba(200, 151, 58, 0.20);
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: color 0.18s, border-color 0.18s;
+  margin-right: 0.25rem;
+}
+
+.menuBtn:hover {
+  color: var(--ui-gold);
+  border-color: rgba(200, 151, 58, 0.50);
+}
+
 .phase {
   font-family: var(--font-mono);
   font-size: 0.6rem;

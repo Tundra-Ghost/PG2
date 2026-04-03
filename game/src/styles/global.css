@@ -1,24 +1,39 @@
 :root {
-  --board-light-sq: #f0d9b5;
-  --board-dark-sq:  #b58863;
-  --board-frame:    #2d1f0e;
-  --board-border:   #c8a84b;
+  /* Board squares */
+  --board-light-sq: #c8a870;
+  --board-dark-sq:  #1e1408;
+  --board-frame:    #100a04;
+  --board-border:   #c8973a;
 
-  --sq-selected:  rgba(255, 200, 0, 0.55);
-  --sq-legal-dot: rgba(0, 0, 0, 0.18);
-  --sq-check:     rgba(192, 57, 43, 0.65);
+  /* Square highlights */
+  --sq-selected:  rgba(200, 151, 58, 0.40);
+  --sq-legal-dot: rgba(200, 151, 58, 0.60);
+  --sq-check:     rgba(184, 50, 40, 0.65);
   --sq-last-move: rgba(155, 199, 0, 0.35);
 
-  --ui-bg:        #f5f0e8;
-  --ui-bg-dark:   #2d1f0e;
-  --ui-ink:       #1a1410;
-  --ui-gold:      #c8a84b;
-  --ui-chaos:     #c0392b;
-  --ui-parchment: #ede6d6;
+  /* UI palette — matches Art Direction spec */
+  --ui-bg:        #f2ead8;   /* parchment */
+  --ui-bg-dark:   #1a1208;   /* base tone */
+  --ui-ink:       #18120a;
+  --ui-ink-soft:  #2e2318;
+  --ui-gold:      #c8973a;
+  --ui-gold-light:#e8c870;
+  --ui-gold-pale: #f5e8c0;
+  --ui-chaos:     #b83228;
+  --ui-parchment: #f2ead8;
+  --ui-parchment2:#e8ddc4;
+  --ui-cursed:    #5a2850;
 
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-body:    'Crimson Pro', Georgia, serif;
-  --font-mono:    'JetBrains Mono', monospace;
+  /* Pigeon brand palette */
+  --pigeon-grey:  #8a8298;
+  --pigeon-neck:  #6a7d5a;
+  --pigeon-chest: #b09090;
+  --pigeon-wing:  #5a5068;
+
+  /* Typography — Art Direction: Playfair Display / DM Sans / DM Mono */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'DM Mono', 'Courier New', monospace;
 }
 
 *, *::before, *::after {
