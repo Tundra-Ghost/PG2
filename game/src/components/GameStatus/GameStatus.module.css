@@ -1,0 +1,133 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(0, 0, 0, 0.25);
+  border-top: 1px solid rgba(200, 168, 75, 0.2);
+}
+
+.turnIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dotWhite {
+  background: #f8f5ee;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
+.dotBlack {
+  background: #1a1008;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+}
+
+.turnText {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--ui-gold);
+  letter-spacing: 0.05em;
+}
+
+.moveNum {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: rgba(200, 168, 75, 0.5);
+  letter-spacing: 0.1em;
+}
+
+/* ── Overlay ── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  /* extend upward to cover the board */
+  top: calc(-100vh);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  backdrop-filter: blur(3px);
+}
+
+.overlayCard {
+  background: var(--ui-bg-dark);
+  border: 2px solid var(--ui-gold);
+  padding: 3rem 4rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+.overlayEmoji {
+  font-size: 3.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.overlayHeadline {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  color: var(--ui-gold);
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.overlaySub {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: rgba(237, 230, 214, 0.7);
+  margin-bottom: 0.5rem;
+}
+
+.newGameBtn {
+  margin-top: 1rem;
+  background: var(--ui-gold);
+  color: var(--ui-bg-dark);
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+  padding: 0.65rem 2.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.newGameBtn:hover {
+  background: #e0bc5a;
+  transform: translateY(-1px);
+}
+
+.newGameBtnSmall {
+  background: transparent;
+  border: 1px solid rgba(200, 168, 75, 0.35);
+  color: rgba(200, 168, 75, 0.7);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  padding: 0.35rem 0.9rem;
+  transition: all 0.15s;
+}
+
+.newGameBtnSmall:hover {
+  border-color: var(--ui-gold);
+  color: var(--ui-gold);
+}
