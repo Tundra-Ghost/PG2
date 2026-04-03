@@ -3,6 +3,7 @@ import type { GameState } from './engine/types';
 import { chessEngine } from './engine/ChessEngine';
 import Board from './components/Board/Board';
 import GameStatus from './components/GameStatus/GameStatus';
+import MoveHistory from './components/MoveHistory/MoveHistory';
 import MainMenu from './components/MainMenu/MainMenu';
 import DraftScreen from './components/DraftScreen/DraftScreen';
 import styles from './App.module.css';
@@ -17,18 +18,14 @@ export default function App() {
 
   function handleMenuPlay(mode: 'run' | 'quick') {
     if (mode === 'run') {
-      // New Run → modifier draft first
       setScreen('draft');
     } else {
-      // Quick Play → skip draft, go straight to board
       setGameState(chessEngine.getInitialState());
       setScreen('game');
     }
   }
 
   function handleStartMatch(_selectedIds: string[]) {
-    // Phase 0: modifiers are selected but not yet applied to the engine.
-    // Just start a standard game — modifier effects come in a later phase.
     setGameState(chessEngine.getInitialState());
     setScreen('game');
   }
@@ -40,8 +37,6 @@ export default function App() {
   function handleBackToMenu() {
     setScreen('menu');
   }
-
-  // ── Screens ─────────────────────────────────────────────────────────────────
 
   if (screen === 'menu') {
     return <MainMenu onPlay={handleMenuPlay} />;
@@ -69,8 +64,14 @@ export default function App() {
 
       <main className={styles.main}>
         <div className={styles.gameArea}>
-          <Board state={gameState} onStateChange={setGameState} />
-          <GameStatus state={gameState} onNewGame={handleNewGame} />
+          {/* Board + status bar */}
+          <div className={styles.boardColumn}>
+            <Board state={gameState} onStateChange={setGameState} />
+            <GameStatus state={gameState} onNewGame={handleNewGame} />
+          </div>
+
+          {/* Move history panel */}
+          <MoveHistory state={gameState} />
         </div>
       </main>
     </div>

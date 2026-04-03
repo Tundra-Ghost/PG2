@@ -63,11 +63,18 @@
   padding: 1.5rem;
 }
 
+/* Board + history side by side, per Art Direction "Board 70% + side panels 15%" */
 .gameArea {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0;
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.6);
+}
+
+/* Board + status bar stacked vertically */
+.boardColumn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
-  /* board + status panel together */
-  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.6);
 }

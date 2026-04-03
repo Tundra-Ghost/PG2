@@ -6,17 +6,25 @@ interface GameStatusProps {
   onNewGame: () => void;
 }
 
-function getStatusMessage(state: GameState): { headline: string; sub: string } | null {
+const DRAW_LABELS: Record<string, string> = {
+  stalemate:   'by stalemate',
+  '50-move':   '50-move rule',
+  threefold:   'threefold repetition',
+  insufficient: 'insufficient material',
+};
+
+function getStatusMessage(state: GameState): { emoji: string; headline: string; sub: string } | null {
   if (state.status === 'checkmate') {
     const winner: Color = state.turn === 'white' ? 'black' : 'white';
     return {
+      emoji: winner === 'white' ? '♔' : '♚',
       headline: `${winner.toUpperCase()} WINS`,
       sub: 'by checkmate',
     };
   }
   if (state.status === 'draw') {
-    const reason = state.flags.halfMoveClock >= 100 ? '50-move rule' : 'stalemate';
-    return { headline: 'DRAW', sub: reason };
+    const label = DRAW_LABELS[state.drawReason ?? 'stalemate'] ?? 'draw';
+    return { emoji: '🕊️', headline: 'DRAW', sub: label };
   }
   return null;
 }
@@ -48,7 +56,7 @@ export default function GameStatus({ state, onNewGame }: GameStatusProps) {
       {isOver && (
         <div className={styles.overlay}>
           <div className={styles.overlayCard}>
-            <div className={styles.overlayEmoji}>🐦</div>
+            <div className={styles.overlayEmoji}>{msg!.emoji}</div>
             <div className={styles.overlayHeadline}>{msg!.headline}</div>
             <div className={styles.overlaySub}>{msg!.sub}</div>
             <button className={styles.newGameBtn} onClick={onNewGame}>

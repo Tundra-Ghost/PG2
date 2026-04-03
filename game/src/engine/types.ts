@@ -70,6 +70,8 @@ export interface MoveRecord {
   notation: string;
 }
 
+export type DrawReason = 'stalemate' | '50-move' | 'threefold' | 'insufficient';
+
 export interface GameState {
   id: string;
   pieces: Map<Square, Piece>;
@@ -80,7 +82,10 @@ export interface GameState {
   modifierState: Record<ModifierID, unknown>;
   moveHistory: MoveRecord[];
   status: 'draft' | 'active' | 'checkmate' | 'draw' | 'abandoned';
+  drawReason?: DrawReason;
   flags: GameFlags;
+  /** FEN-like position keys → occurrence count, used for threefold repetition. */
+  positionHistory: Record<string, number>;
   madnessMeter: number;               // 0–100, reserved for modifier system
   tempoTokens: Record<Color, number>; // reserved: MOD-C007
   mercTokens: Record<Color, number>;  // reserved: MOD-E008

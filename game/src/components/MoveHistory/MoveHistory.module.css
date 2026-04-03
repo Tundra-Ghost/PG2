@@ -1,0 +1,125 @@
+/* ═══════════════════════════════════════════════
+   MOVE HISTORY PANEL
+   Art Direction: DM Mono for notation, dark panel
+═══════════════════════════════════════════════ */
+
+.panel {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.25);
+  border-left: 1px solid rgba(200, 151, 58, 0.10);
+  overflow: hidden;
+}
+
+/* ── Header ──────────────────────────────────── */
+.header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid rgba(200, 151, 58, 0.10);
+  background: rgba(0, 0, 0, 0.20);
+}
+
+.headerTitle {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(200, 151, 58, 0.50);
+}
+
+.moveCount {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.10em;
+  color: rgba(200, 151, 58, 0.30);
+}
+
+/* ── Scrollable list ─────────────────────────── */
+.list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.35rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 151, 58, 0.18) transparent;
+}
+
+.empty {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.75rem;
+  color: rgba(242, 234, 216, 0.25);
+  text-align: center;
+  padding: 1.5rem 0.5rem;
+  margin: 0;
+}
+
+/* ── Move rows ───────────────────────────────── */
+.row {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr 1fr;
+  align-items: center;
+  gap: 0;
+  padding: 0.08rem 0.35rem;
+  transition: background 0.1s;
+}
+
+.row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Move number */
+.num {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: rgba(200, 151, 58, 0.28);
+  letter-spacing: 0.04em;
+  text-align: right;
+  padding-right: 0.3rem;
+  user-select: none;
+}
+
+/* Move notation */
+.move {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  padding: 0.18rem 0.3rem;
+  color: rgba(242, 234, 216, 0.60);
+  border-radius: 2px;
+  transition: color 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.white { color: rgba(242, 234, 216, 0.65); }
+.black { color: rgba(200, 151, 58, 0.55); }
+
+/* Latest move highlight */
+.latest {
+  color: #fff !important;
+  background: rgba(200, 151, 58, 0.12);
+  font-weight: 500;
+}
+
+/* ── Result row ──────────────────────────────── */
+.resultRow {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0.5rem 0.35rem;
+  margin-top: 0.25rem;
+  border-top: 1px solid rgba(200, 151, 58, 0.10);
+}
+
+.result {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--ui-gold);
+}

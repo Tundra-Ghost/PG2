@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { Color, GameState, Move, Piece, Square, ValidationResult } from './types';
 import { getLegalMovesForPiece, isInCheck as isInCheckGen, isSquareAttacked } from './moveGenerator';
-import { applyMove as applyMoveFull, applyMoveInternal, buildMove, cloneState, isCheckmate as isCheckmateGL, isStalemate as isStalemateGL } from './gameLoop';
+import { applyMove as applyMoveFull, applyMoveInternal, buildMove, cloneState, isCheckmate as isCheckmateGL, isPromotionMove, isStalemate as isStalemateGL } from './gameLoop';
 import { validateMove } from './moveValidator';
 
 export interface IChessEngine {
@@ -12,6 +12,7 @@ export interface IChessEngine {
   isInCheck(state: GameState, color: Color): boolean;
   isCheckmate(state: GameState, color: Color): boolean;
   isStalemate(state: GameState, color: Color): boolean;
+  isPromotionMove(state: GameState, from: Square, to: Square): boolean;
 }
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
@@ -61,6 +62,7 @@ class ChessEngineImpl implements IChessEngine {
       modifierState: {},
       moveHistory: [],
       status: 'active',
+      positionHistory: {},
       flags: {
         enPassantSquare: null,
         castlingRights: {
@@ -128,6 +130,10 @@ class ChessEngineImpl implements IChessEngine {
 
   isStalemate(state: GameState, color: Color): boolean {
     return isStalemateGL(state, color);
+  }
+
+  isPromotionMove(state: GameState, from: Square, to: Square): boolean {
+    return isPromotionMove(state, from, to);
   }
 }
 
