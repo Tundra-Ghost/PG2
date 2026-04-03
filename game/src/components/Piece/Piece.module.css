@@ -1,0 +1,21 @@
+.piece {
+  font-size: clamp(28px, 4.5vmin, 52px);
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  transition: transform 0.08s ease;
+}
+
+.white {
+  color: #fffff0;
+  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.55);
+}
+
+.black {
+  color: #1a1008;
+  -webkit-text-stroke: 0.5px rgba(255, 255, 255, 0.12);
+}
