@@ -7,12 +7,14 @@ import GameStatus from './components/GameStatus/GameStatus';
 import MoveHistory from './components/MoveHistory/MoveHistory';
 import MainMenu from './components/MainMenu/MainMenu';
 import DraftScreen from './components/DraftScreen/DraftScreen';
+import BotSelect from './components/BotSelect/BotSelect';
+import type { BotId } from './components/BotSelect/BotSelect';
 import styles from './App.module.css';
 
 // Register all modifier definitions (side-effect import)
 import './modifiers/index';
 
-type Screen = 'menu' | 'draft' | 'game';
+type Screen = 'menu' | 'botselect' | 'draft' | 'game';
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('menu');
@@ -44,11 +46,16 @@ export default function App() {
       setVsBot(false);
       setScreen('draft');
     } else {
-      setVsBot(true);
-      const state = chessEngine.beginTurn(chessEngine.getInitialState());
-      setGameState(state);
-      setScreen('game');
+      setScreen('botselect');
     }
+  }
+
+  function handleBotSelect(_botId: BotId) {
+    // All bots currently route through Chick — swap implementation per botId later
+    setVsBot(true);
+    const state = chessEngine.beginTurn(chessEngine.getInitialState());
+    setGameState(state);
+    setScreen('game');
   }
 
   function handleStartMatch(selectedIds: string[]) {
@@ -71,6 +78,15 @@ export default function App() {
 
   if (screen === 'menu') {
     return <MainMenu onPlay={handleMenuPlay} />;
+  }
+
+  if (screen === 'botselect') {
+    return (
+      <BotSelect
+        onSelect={handleBotSelect}
+        onBack={() => setScreen('menu')}
+      />
+    );
   }
 
   if (screen === 'draft') {
