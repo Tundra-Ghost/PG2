@@ -1,0 +1,64 @@
+.frame {
+  background: var(--board-frame);
+  border: 3px solid var(--board-border);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.7),
+    0 2px 8px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(200, 168, 75, 0.15);
+  display: inline-flex;
+  flex-direction: column;
+  user-select: none;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: min(80vmin, 560px);
+  height: min(80vmin, 560px);
+}
+
+/* ── Coordinate labels ── */
+.coordRowTop,
+.coordRowBottom {
+  display: flex;
+  align-items: center;
+}
+
+.middleRow {
+  display: flex;
+  align-items: stretch;
+}
+
+.coordCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 22px;
+  flex-shrink: 0;
+}
+
+.coordLabel {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--board-border);
+  text-align: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+
+.coordCorner {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.coordRowTop .coordLabel,
+.coordRowBottom .coordLabel {
+  flex: 1;
+  height: 22px;
+}

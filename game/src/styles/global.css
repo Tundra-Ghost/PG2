@@ -1,0 +1,59 @@
+:root {
+  --board-light-sq: #f0d9b5;
+  --board-dark-sq:  #b58863;
+  --board-frame:    #2d1f0e;
+  --board-border:   #c8a84b;
+
+  --sq-selected:  rgba(255, 200, 0, 0.55);
+  --sq-legal-dot: rgba(0, 0, 0, 0.18);
+  --sq-check:     rgba(192, 57, 43, 0.65);
+  --sq-last-move: rgba(155, 199, 0, 0.35);
+
+  --ui-bg:        #f5f0e8;
+  --ui-bg-dark:   #2d1f0e;
+  --ui-ink:       #1a1410;
+  --ui-gold:      #c8a84b;
+  --ui-chaos:     #c0392b;
+  --ui-parchment: #ede6d6;
+
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body:    'Crimson Pro', Georgia, serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: var(--ui-bg-dark);
+  color: var(--ui-parchment);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-display);
+  border: none;
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--ui-gold);
+  outline-offset: 2px;
+}
