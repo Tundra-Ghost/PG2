@@ -1,12 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { GameState } from './engine/types';
 import { chessEngine } from './engine/ChessEngine';
+import { getChickBotMove } from './engine/bot';
 import Board from './components/Board/Board';
 import GameStatus from './components/GameStatus/GameStatus';
 import MoveHistory from './components/MoveHistory/MoveHistory';
 import MainMenu from './components/MainMenu/MainMenu';
 import DraftScreen from './components/DraftScreen/DraftScreen';
 import styles from './App.module.css';
+
+// Register all modifier definitions (side-effect import)
+import './modifiers/index';
 
 type Screen = 'menu' | 'draft' | 'game';
 
@@ -15,23 +19,50 @@ export default function App() {
   const [gameState, setGameState] = useState<GameState>(() =>
     chessEngine.getInitialState(),
   );
+  const [vsBot, setVsBot] = useState(false);
+
+  // Chick bot: fires when it's black's turn and vsBot is active
+  useEffect(() => {
+    if (!vsBot) return;
+    if (gameState.status !== 'active') return;
+    if (gameState.turn !== 'black') return;
+
+    const timer = setTimeout(() => {
+      const move = getChickBotMove(gameState, 'black');
+      if (move) {
+        setGameState(prev =>
+          prev.status === 'active' ? chessEngine.applyMove(prev, move) : prev,
+        );
+      }
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [vsBot, gameState]);
 
   function handleMenuPlay(mode: 'run' | 'quick') {
     if (mode === 'run') {
+      setVsBot(false);
       setScreen('draft');
     } else {
-      setGameState(chessEngine.getInitialState());
+      setVsBot(true);
+      const state = chessEngine.beginTurn(chessEngine.getInitialState());
+      setGameState(state);
       setScreen('game');
     }
   }
 
-  function handleStartMatch(_selectedIds: string[]) {
-    setGameState(chessEngine.getInitialState());
+  function handleStartMatch(selectedIds: string[]) {
+    setVsBot(false);
+    let state = chessEngine.getInitialState();
+    state = chessEngine.activateModifiers(state, selectedIds);
+    state = chessEngine.beginTurn(state);
+    setGameState(state);
     setScreen('game');
   }
 
   function handleNewGame() {
-    setGameState(chessEngine.getInitialState());
+    const state = chessEngine.beginTurn(chessEngine.getInitialState());
+    setGameState(state);
   }
 
   function handleBackToMenu() {

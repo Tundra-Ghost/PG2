@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { Color, DrawReason, GameState, Move, Piece, PieceType, Square } from './types';
 import { getLegalMovesForPiece, isInCheck, isSquareAttacked } from './moveGenerator';
+import { modifierRegistry } from '../modifiers/registry';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -122,6 +123,9 @@ export function cloneState(state: GameState): GameState {
     },
     tempoTokens: { ...state.tempoTokens },
     mercTokens: { ...state.mercTokens },
+    // PRNG state is shallow-copied — it's just a number
+    prngSeed: state.prngSeed,
+    prngState: state.prngState,
   };
 }
 
@@ -382,6 +386,35 @@ export function applyMove(state: GameState, move: Move): GameState {
   // Apply physical move
   let next = applyMoveInternal(state, move);
 
+  // ── Modifier hooks: onCapture ───────────────────────────────────────────────
+  const isCapture = pieceCaptured !== undefined;
+  if (isCapture) {
+    for (const inst of state.activeModifiers) {
+      const def = modifierRegistry.get(inst.id);
+      if (def?.onCapture) {
+        next = def.onCapture(next, move, pieceCaptured!);
+      }
+    }
+  }
+
+  // ── Modifier hooks: onPromotion ─────────────────────────────────────────────
+  if (move.promotion) {
+    for (const inst of state.activeModifiers) {
+      const def = modifierRegistry.get(inst.id);
+      if (def?.onPromotion) {
+        next = def.onPromotion(next, move);
+      }
+    }
+  }
+
+  // ── Modifier hooks: onPostMove ──────────────────────────────────────────────
+  for (const inst of state.activeModifiers) {
+    const def = modifierRegistry.get(inst.id);
+    if (def?.onPostMove) {
+      next = def.onPostMove(next, move);
+    }
+  }
+
   // Switch turn & counters
   const nextColor: Color = state.turn === 'white' ? 'black' : 'white';
   next.turn = nextColor;
@@ -396,7 +429,6 @@ export function applyMove(state: GameState, move: Move): GameState {
   next.positionHistory = { ...state.positionHistory, [key]: posCount };
 
   // ── Game-end detection ──────────────────────────────────────────────────────
-  // Determine draw reason (if any) before setting status so notation gets # vs +
   let drawReason: DrawReason | undefined;
 
   if (isCheckmate(next, nextColor)) {
@@ -416,8 +448,20 @@ export function applyMove(state: GameState, move: Move): GameState {
   }
   if (drawReason) next.drawReason = drawReason;
 
+  // ── Modifier hooks: onTurnEnd (player who just moved) ──────────────────────
+  for (const inst of state.activeModifiers) {
+    const def = modifierRegistry.get(inst.id);
+    if (def?.onTurnEnd) {
+      next = def.onTurnEnd(next);
+    }
+  }
+
+  // ── Modifier hooks: onTurnStart (next player) — only if game still active ──
+  if (next.status === 'active') {
+    next = beginTurn(next);
+  }
+
   // ── Build notation AFTER result state is known (check/# suffix) ─────────────
-  const isCapture = pieceCaptured !== undefined;
   const notation = buildNotation(state, move, isCapture, next);
 
   // Record move
@@ -426,5 +470,40 @@ export function applyMove(state: GameState, move: Move): GameState {
     { move, pieceMoved, pieceCaptured, notation },
   ];
 
+  return next;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// beginTurn  (fires onTurnStart for current player — call before player input)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function beginTurn(state: GameState): GameState {
+  let next = cloneState(state);
+  for (const inst of state.activeModifiers) {
+    const def = modifierRegistry.get(inst.id);
+    if (def?.onTurnStart) {
+      next = def.onTurnStart(next);
+    }
+  }
+  return next;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// activateModifiers  (call after draft, before first beginTurn)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function activateModifiers(state: GameState, ids: string[]): GameState {
+  let next = cloneState(state);
+  for (const id of ids) {
+    const def = modifierRegistry.get(id);
+    if (!def) continue;
+    next.activeModifiers = [
+      ...next.activeModifiers,
+      { id: def.id, name: def.name, activeFor: def.activeFor },
+    ];
+    if (def.onActivate) {
+      next = def.onActivate(next);
+    }
+  }
   return next;
 }

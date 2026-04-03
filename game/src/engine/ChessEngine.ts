@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { Color, GameState, Move, Piece, Square, ValidationResult } from './types';
 import { getLegalMovesForPiece, isInCheck as isInCheckGen, isSquareAttacked } from './moveGenerator';
-import { applyMove as applyMoveFull, applyMoveInternal, buildMove, cloneState, isCheckmate as isCheckmateGL, isPromotionMove, isStalemate as isStalemateGL } from './gameLoop';
+import { applyMove as applyMoveFull, applyMoveInternal, activateModifiers as activateModifiersGL, beginTurn as beginTurnGL, buildMove, cloneState, isCheckmate as isCheckmateGL, isPromotionMove, isStalemate as isStalemateGL } from './gameLoop';
 import { validateMove } from './moveValidator';
 
 export interface IChessEngine {
@@ -13,6 +13,8 @@ export interface IChessEngine {
   isCheckmate(state: GameState, color: Color): boolean;
   isStalemate(state: GameState, color: Color): boolean;
   isPromotionMove(state: GameState, from: Square, to: Square): boolean;
+  beginTurn(state: GameState): GameState;
+  activateModifiers(state: GameState, ids: string[]): GameState;
 }
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
@@ -63,6 +65,8 @@ class ChessEngineImpl implements IChessEngine {
       moveHistory: [],
       status: 'active',
       positionHistory: {},
+      prngSeed: Date.now() | 0,
+      prngState: Date.now() | 0,
       flags: {
         enPassantSquare: null,
         castlingRights: {
@@ -134,6 +138,14 @@ class ChessEngineImpl implements IChessEngine {
 
   isPromotionMove(state: GameState, from: Square, to: Square): boolean {
     return isPromotionMove(state, from, to);
+  }
+
+  beginTurn(state: GameState): GameState {
+    return beginTurnGL(state);
+  }
+
+  activateModifiers(state: GameState, ids: string[]): GameState {
+    return activateModifiersGL(state, ids);
   }
 }
 

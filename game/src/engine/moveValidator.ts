@@ -1,6 +1,7 @@
 import type { GameState, Move, ValidationResult } from './types';
 import { getLegalMovesForPiece, isInCheck, isSquareAttacked } from './moveGenerator';
 import { applyMoveInternal, cloneState } from './gameLoop';
+import { modifierRegistry } from '../modifiers/registry';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -17,13 +18,17 @@ function toSquare(f: number, r: number): string {
   return `${FILES[f]}${RANKS[r]}`;
 }
 
-// Phase 1: modifier hooks wired here
-function runPreMoveHooks(_state: GameState, _move: Move): { blocked: boolean; reason?: string } {
-  // TODO: Phase 1 — iterate activeModifiers, call onPreMove hooks
+function runPreMoveHooks(state: GameState, move: Move): { blocked: boolean; reason?: string } {
+  for (const inst of state.activeModifiers) {
+    const def = modifierRegistry.get(inst.id);
+    if (def?.onPreMoveValidate) {
+      const result = def.onPreMoveValidate(state, move);
+      if (result.blocked) return result;
+    }
+  }
   return { blocked: false };
 }
 
-// Phase 1: tile effects wired here
 function checkTileEffects(_state: GameState, _move: Move): { blocked: boolean; reason?: string } {
   // TODO: Phase 1 — check lava, frozen, swamp, void tile states
   return { blocked: false };

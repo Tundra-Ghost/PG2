@@ -86,6 +86,9 @@ export interface GameState {
   flags: GameFlags;
   /** FEN-like position keys → occurrence count, used for threefold repetition. */
   positionHistory: Record<string, number>;
+  /** Seeded PRNG — seed set at game start, state advances with every random draw. */
+  prngSeed: number;
+  prngState: number;
   madnessMeter: number;               // 0–100, reserved for modifier system
   tempoTokens: Record<Color, number>; // reserved: MOD-C007
   mercTokens: Record<Color, number>;  // reserved: MOD-E008
