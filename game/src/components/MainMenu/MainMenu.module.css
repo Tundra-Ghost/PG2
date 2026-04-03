@@ -242,6 +242,11 @@
   background: rgba(200, 151, 58, 0.12);
 }
 
+/* Smaller secondary items (Explore section) */
+.menuItemSmall .itemLabel {
+  font-size: 0.9rem;
+}
+
 /* Locked state */
 .menuItemLocked {
   opacity: 0.35;

@@ -4,9 +4,10 @@ import { chessEngine } from './engine/ChessEngine';
 import Board from './components/Board/Board';
 import GameStatus from './components/GameStatus/GameStatus';
 import MainMenu from './components/MainMenu/MainMenu';
+import DraftScreen from './components/DraftScreen/DraftScreen';
 import styles from './App.module.css';
 
-type Screen = 'menu' | 'game';
+type Screen = 'menu' | 'draft' | 'game';
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('menu');
@@ -14,7 +15,20 @@ export default function App() {
     chessEngine.getInitialState(),
   );
 
-  function handlePlay(_mode: 'run' | 'quick') {
+  function handleMenuPlay(mode: 'run' | 'quick') {
+    if (mode === 'run') {
+      // New Run → modifier draft first
+      setScreen('draft');
+    } else {
+      // Quick Play → skip draft, go straight to board
+      setGameState(chessEngine.getInitialState());
+      setScreen('game');
+    }
+  }
+
+  function handleStartMatch(_selectedIds: string[]) {
+    // Phase 0: modifiers are selected but not yet applied to the engine.
+    // Just start a standard game — modifier effects come in a later phase.
     setGameState(chessEngine.getInitialState());
     setScreen('game');
   }
@@ -27,8 +41,19 @@ export default function App() {
     setScreen('menu');
   }
 
+  // ── Screens ─────────────────────────────────────────────────────────────────
+
   if (screen === 'menu') {
-    return <MainMenu onPlay={handlePlay} />;
+    return <MainMenu onPlay={handleMenuPlay} />;
+  }
+
+  if (screen === 'draft') {
+    return (
+      <DraftScreen
+        onStartMatch={handleStartMatch}
+        onBack={() => setScreen('menu')}
+      />
+    );
   }
 
   return (
