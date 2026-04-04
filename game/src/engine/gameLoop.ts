@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import type {
   Color,
+  DraftModifierPick,
   DrawReason,
   GameEvent,
   GameState,
@@ -565,9 +566,19 @@ export function passTurn(state: GameState): GameState {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function activateModifiers(state: GameState, ids: string[]): GameState {
+  return activateDraftModifiers(
+    state,
+    ids.map(id => ({ id, sourceColor: null })),
+  );
+}
+
+export function activateDraftModifiers(
+  state: GameState,
+  picks: DraftModifierPick[],
+): GameState {
   let next = cloneState(state);
-  for (const id of ids) {
-    const def = modifierRegistry.get(id);
+  for (const pick of picks) {
+    const def = modifierRegistry.get(pick.id);
     if (!def) continue;
     next.activeModifiers = [
       ...next.activeModifiers,
@@ -575,7 +586,7 @@ export function activateModifiers(state: GameState, ids: string[]): GameState {
         id: def.id,
         name: def.name,
         activeFor: def.activeFor,
-        sourceColor: def.activeFor === 'both' ? null : def.activeFor,
+        sourceColor: pick.sourceColor,
       },
     ];
     if (def.onActivate) {

@@ -1,7 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { Color, GameState, Move, Piece, Square, ValidationResult } from './types';
+import type {
+  Color,
+  DraftModifierPick,
+  GameState,
+  Move,
+  Piece,
+  Square,
+  ValidationResult,
+} from './types';
 import { getLegalMovesForPiece, isInCheck as isInCheckGen, isSquareAttacked } from './moveGenerator';
-import { activateModifiers as activateModifiersGL, applyMove as applyMoveFull, applyMoveInternal, beginTurn as beginTurnGL, buildMove, cloneState, isCheckmate as isCheckmateGL, isPromotionMove, isStalemate as isStalemateGL, passTurn as passTurnGL } from './gameLoop';
+import { activateDraftModifiers as activateDraftModifiersGL, activateModifiers as activateModifiersGL, applyMove as applyMoveFull, applyMoveInternal, beginTurn as beginTurnGL, buildMove, cloneState, isCheckmate as isCheckmateGL, isPromotionMove, isStalemate as isStalemateGL, passTurn as passTurnGL } from './gameLoop';
 import { validateMove } from './moveValidator';
 
 export interface IChessEngine {
@@ -15,6 +23,7 @@ export interface IChessEngine {
   isPromotionMove(state: GameState, from: Square, to: Square): boolean;
   beginTurn(state: GameState): GameState;
   activateModifiers(state: GameState, ids: string[]): GameState;
+  activateDraftModifiers(state: GameState, picks: DraftModifierPick[]): GameState;
   passTurn(state: GameState): GameState;
 }
 
@@ -148,6 +157,10 @@ class ChessEngineImpl implements IChessEngine {
 
   activateModifiers(state: GameState, ids: string[]): GameState {
     return activateModifiersGL(state, ids);
+  }
+
+  activateDraftModifiers(state: GameState, picks: DraftModifierPick[]): GameState {
+    return activateDraftModifiersGL(state, picks);
   }
 
   passTurn(state: GameState): GameState {

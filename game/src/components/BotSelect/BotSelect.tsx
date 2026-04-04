@@ -8,7 +8,7 @@ interface BotSelectProps {
   subtitle?: string;
 }
 
-const BOTS: {
+export const BOTS: {
   id: BotId;
   icon: string;
   name: string;

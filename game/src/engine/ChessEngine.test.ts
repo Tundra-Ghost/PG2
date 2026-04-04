@@ -203,4 +203,21 @@ describe('ChessEngine TDD baseline', () => {
       message: 'white rook on a4 burned up on lava.',
     });
   });
+
+  it('preserves draft ownership on activated modifiers', () => {
+    const state = chessEngine.activateDraftModifiers(
+      chessEngine.getInitialState(),
+      [
+        { id: 'MOD-A002', sourceColor: 'white' },
+        { id: 'MOD-B002', sourceColor: 'black' },
+      ],
+    );
+
+    expect(state.activeModifiers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 'MOD-A002', sourceColor: 'white' }),
+        expect.objectContaining({ id: 'MOD-B002', sourceColor: 'black' }),
+      ]),
+    );
+  });
 });

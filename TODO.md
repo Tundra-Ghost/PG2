@@ -13,6 +13,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - In-game history now supports modifier event messages in addition to SAN move notation
 - Prototype app and landing page now have an explicit mobile-responsive baseline
 - In-match UI now separates the primary play surface from the modifier rail and supports collapsible modifier browsing
+- New Run now follows bot select → owned draft → match start, with Chick generating a random modifier draft
 
 ## Priority 1: Stabilize The Prototype Core
 
@@ -42,6 +43,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 ## Priority 4: Expand Playable Surface Area
 
 - [ ] Add more bot tiers beyond `Chick`
+- [x] Route New Run through bot select before draft and show bot-owned draft picks
 - [ ] Build `VS Bots` as a complete menu-to-match flow
 - [ ] Expose a read-only Modifier Vault sourced from the modifier bible/data set
 - [ ] Track run state if Story Mode is meant to be more than a one-match draft
@@ -53,6 +55,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] GDD UI: add short event banners for autonomous or curse-driven actions so modifier outcomes never feel silent
 - [x] GDD UI: route modifier-trigger messages into the in-game history feed
 - [x] GDD UI: separate match log from modifier browsing so the board surface reads more clearly
+- [x] GDD UI: show modifier hover and long-press tooltips for affected pieces and tiles
 - [ ] GDD UI: add a shared icon set for modifier categories, settings controls, and board hazards
 - [ ] GDD SFX: add distinct one-shot sounds for lava death, Gerald interference, freeze block, pacifist refusal, and berserker chain
 - [ ] GDD SFX: add subtle UI sounds for draft select/deselect, disabled-card hover, modal open/close, and settings toggles

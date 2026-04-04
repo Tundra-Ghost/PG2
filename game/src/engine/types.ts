@@ -64,6 +64,11 @@ export interface ModifierInstance {
   sourceColor?: Color | null;
 }
 
+export interface DraftModifierPick {
+  id: ModifierID;
+  sourceColor: Color | null;
+}
+
 export interface BerserkerChainEvent {
   counter: number;
   from: Square;

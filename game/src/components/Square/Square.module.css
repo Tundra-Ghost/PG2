@@ -121,3 +121,39 @@
     opacity: 1;
   }
 }
+
+.tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  z-index: 5;
+  min-width: 150px;
+  max-width: 220px;
+  padding: 0.45rem 0.55rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  background: rgba(8, 10, 14, 0.96);
+  border: 1px solid rgba(200, 151, 58, 0.24);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.36);
+  pointer-events: none;
+}
+
+.tooltipLine {
+  font-family: var(--font-body);
+  font-size: 0.64rem;
+  line-height: 1.3;
+  color: rgba(242, 234, 216, 0.86);
+}
+
+@media (max-width: 720px) {
+  .tooltip {
+    max-width: 180px;
+    padding: 0.4rem 0.45rem;
+  }
+
+  .tooltipLine {
+    font-size: 0.58rem;
+  }
+}

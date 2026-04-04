@@ -228,6 +228,10 @@
   filter: grayscale(0.92);
 }
 
+.cardClaimed {
+  opacity: 0.52;
+}
+
 /* Category stripe — 3px top per Art Direction */
 .cardStripe {
   height: 3px;
@@ -535,6 +539,18 @@
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--ui-gold);
+}
+
+.opponentBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.opponentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* Selected list */

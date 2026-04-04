@@ -2,25 +2,30 @@ import { useEffect, useRef, useState } from 'react';
 import type { BerserkerChainEvent, GameState } from './engine/types';
 import { chessEngine } from './engine/ChessEngine';
 import { getChickBotMove } from './engine/bot';
-import { unlockBgm, playMenuBgm, playGameBgm } from './sound';
+import { unlockBgm, playGameBgm, playMenuBgm } from './sound';
 import type { AppSettings } from './settings';
-import { loadSettings, applySettings } from './settings';
+import { applySettings, loadSettings } from './settings';
 import Board from './components/Board/Board';
+import BotSelect, { BOTS, type BotId } from './components/BotSelect/BotSelect';
+import DraftScreen from './components/DraftScreen/DraftScreen';
 import GameStatus from './components/GameStatus/GameStatus';
+import MainMenu from './components/MainMenu/MainMenu';
 import ModifierPanel from './components/ModifierPanel/ModifierPanel';
 import MoveHistory from './components/MoveHistory/MoveHistory';
-import MainMenu from './components/MainMenu/MainMenu';
-import DraftScreen from './components/DraftScreen/DraftScreen';
-import BotSelect from './components/BotSelect/BotSelect';
-import type { BotId } from './components/BotSelect/BotSelect';
 import SettingsScreen from './components/Settings/Settings';
 import styles from './App.module.css';
+import { ALL_MODIFIERS } from './modifiers/data';
+import { modifierRegistry } from './modifiers/registry';
 
-// Register all modifier definitions (side-effect import)
 import './modifiers/index';
 
 type Screen = 'menu' | 'botselect' | 'draft' | 'game' | 'settings';
+type BotSelectMode = 'run' | 'quick' | null;
+
 const BERSERKER_ID = 'MOD-E006';
+const DRAFT_BUDGET = 8;
+const DRAFT_MAX_COUNT = 5;
+const DRAFT_MAX_PER_CATEGORY = 2;
 
 function getBerserkerEvent(state: GameState): BerserkerChainEvent | null {
   const value = state.modifierState[BERSERKER_ID];
@@ -36,6 +41,28 @@ function getBerserkerEvent(state: GameState): BerserkerChainEvent | null {
   return null;
 }
 
+function buildChickDraft(): string[] {
+  const implementedIds = new Set(modifierRegistry.getAll().map(mod => mod.id));
+  const implementedCards = ALL_MODIFIERS.filter(mod => implementedIds.has(mod.id));
+  const shuffled = [...implementedCards].sort(() => Math.random() - 0.5);
+
+  const picks: string[] = [];
+  const categoryCounts: Record<string, number> = {};
+  let totalCost = 0;
+
+  for (const mod of shuffled) {
+    if (picks.length >= DRAFT_MAX_COUNT) break;
+    if ((categoryCounts[mod.category] ?? 0) >= DRAFT_MAX_PER_CATEGORY) continue;
+    if (totalCost + mod.cost > DRAFT_BUDGET) continue;
+
+    picks.push(mod.id);
+    totalCost += mod.cost;
+    categoryCounts[mod.category] = (categoryCounts[mod.category] ?? 0) + 1;
+  }
+
+  return picks;
+}
+
 export default function App() {
   const [screen, setScreen] = useState<Screen>('menu');
   const [prevScreen, setPrevScreen] = useState<Screen>('menu');
@@ -44,17 +71,17 @@ export default function App() {
   );
   const [vsBot, setVsBot] = useState(false);
   const [selectedBot, setSelectedBot] = useState<BotId | null>(null);
-  const [pendingRunModifiers, setPendingRunModifiers] = useState<string[] | null>(null);
+  const [botSelectMode, setBotSelectMode] = useState<BotSelectMode>(null);
+  const [pendingBotModifierIds, setPendingBotModifierIds] = useState<string[]>([]);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [modifierPanelCollapsed, setModifierPanelCollapsed] = useState(false);
   const seenBerserkerEvent = useRef(0);
   const [settings, setSettings] = useState<AppSettings>(() => {
-    const s = loadSettings();
-    applySettings(s); // sync sound + CSS classes at startup
-    return s;
+    const loaded = loadSettings();
+    applySettings(loaded);
+    return loaded;
   });
 
-  // BGM: switch track when screen changes
   useEffect(() => {
     if (screen === 'game') {
       playGameBgm();
@@ -63,7 +90,6 @@ export default function App() {
     }
   }, [screen]);
 
-  // Chick bot: fires when it's black's turn and vsBot is active
   useEffect(() => {
     if (!vsBot) return;
     if (selectedBot !== 'chick') return;
@@ -108,33 +134,37 @@ export default function App() {
   }
 
   function handleMenuPlay(mode: 'run' | 'quick') {
-    if (mode === 'run') {
-      setVsBot(false);
-      setSelectedBot(null);
-      setPendingRunModifiers(null);
-      setScreen('draft');
-    } else {
-      setPendingRunModifiers(null);
-      setScreen('botselect');
-    }
+    setVsBot(false);
+    setSelectedBot(null);
+    setPendingBotModifierIds([]);
+    setBotSelectMode(mode);
+    setScreen('botselect');
   }
 
   function handleBotSelect(botId: BotId) {
     setSelectedBot(botId);
     setVsBot(true);
-    let state = chessEngine.getInitialState();
-    if (pendingRunModifiers) {
-      state = chessEngine.activateModifiers(state, pendingRunModifiers);
+
+    if (botSelectMode === 'run') {
+      setPendingBotModifierIds(botId === 'chick' ? buildChickDraft() : []);
+      setScreen('draft');
+      return;
     }
-    state = chessEngine.beginTurn(state);
+
+    const state = chessEngine.beginTurn(chessEngine.getInitialState());
     setGameState(state);
-    setPendingRunModifiers(null);
     setScreen('game');
   }
 
-  function handleStartMatch(selectedIds: string[]) {
-    setPendingRunModifiers(selectedIds);
-    setScreen('botselect');
+  function handleStartMatch(playerModifierIds: string[]) {
+    let state = chessEngine.getInitialState();
+    state = chessEngine.activateDraftModifiers(state, [
+      ...playerModifierIds.map(id => ({ id, sourceColor: 'white' as const })),
+      ...pendingBotModifierIds.map(id => ({ id, sourceColor: 'black' as const })),
+    ]);
+    state = chessEngine.beginTurn(state);
+    setGameState(state);
+    setScreen('game');
   }
 
   function handleNewGame() {
@@ -146,14 +176,12 @@ export default function App() {
     setScreen('menu');
   }
 
-  function handleSettingsSave(s: AppSettings) {
-    setSettings(s);
+  function handleSettingsSave(nextSettings: AppSettings) {
+    setSettings(nextSettings);
   }
 
-  // Unlock BGM on any first click anywhere in the app (browser autoplay policy)
   const handleUnlock = () => unlockBgm();
 
-  // Settings renders as an overlay on top of the current screen
   const settingsOverlay = screen === 'settings' ? (
     <SettingsScreen
       settings={settings}
@@ -174,15 +202,15 @@ export default function App() {
   }
 
   if (baseScreen === 'botselect') {
-    const botSelectSubtitle = pendingRunModifiers
-      ? 'New Run · Drafted modifiers active · Choose bot opponent'
+    const botSelectSubtitle = botSelectMode === 'run'
+      ? 'New Run · Choose bot opponent before drafting modifiers'
       : 'Quick Play · Standard chess · No modifiers';
 
     return (
       <div onClick={handleUnlock}>
         <BotSelect
           onSelect={handleBotSelect}
-          onBack={() => setScreen(pendingRunModifiers ? 'draft' : 'menu')}
+          onBack={() => setScreen('menu')}
           subtitle={botSelectSubtitle}
         />
         {settingsOverlay}
@@ -191,11 +219,15 @@ export default function App() {
   }
 
   if (baseScreen === 'draft') {
+    const opponentName = BOTS.find(bot => bot.id === selectedBot)?.name ?? 'Opponent';
+
     return (
       <div onClick={handleUnlock}>
         <DraftScreen
           onStartMatch={handleStartMatch}
-          onBack={() => setScreen('menu')}
+          onBack={() => setScreen('botselect')}
+          opponentName={opponentName}
+          opponentModifierIds={pendingBotModifierIds}
         />
         {settingsOverlay}
       </div>
@@ -234,6 +266,7 @@ export default function App() {
             />
             <MoveHistory state={gameState} />
           </div>
+
           <div
             className={`${styles.sideColumn} ${
               modifierPanelCollapsed ? styles.sideColumnCollapsed : ''
@@ -242,9 +275,7 @@ export default function App() {
             <ModifierPanel
               state={gameState}
               collapsed={modifierPanelCollapsed}
-              onToggleCollapsed={() =>
-                setModifierPanelCollapsed(prev => !prev)
-              }
+              onToggleCollapsed={() => setModifierPanelCollapsed(prev => !prev)}
             />
           </div>
         </div>

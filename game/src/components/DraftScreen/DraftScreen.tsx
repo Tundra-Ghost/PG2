@@ -18,6 +18,8 @@ const MAX_PER_CATEGORY = 2;
 interface DraftScreenProps {
   onStartMatch: (selectedIds: string[]) => void;
   onBack: () => void;
+  opponentName?: string;
+  opponentModifierIds?: string[];
 }
 
 type CategoryFilter = 'ALL' | ModifierCategory;
@@ -50,7 +52,12 @@ function CursePips({ level }: { level: 0 | 1 | 2 | 3 }) {
   );
 }
 
-export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) {
+export default function DraftScreen({
+  onStartMatch,
+  onBack,
+  opponentName = 'Opponent',
+  opponentModifierIds = [],
+}: DraftScreenProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('ALL');
@@ -59,6 +66,13 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
   const implementedIds = useMemo(
     () => new Set(modifierRegistry.getAll().map(mod => mod.id)),
     [],
+  );
+  const opponentClaimedSharedIds = useMemo(
+    () =>
+      new Set(
+        opponentModifierIds.filter(id => modifierRegistry.get(id)?.activeFor === 'both'),
+      ),
+    [opponentModifierIds],
   );
 
   // ── Selection math ──────────────────────────────────────────────────────────
@@ -86,6 +100,7 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
   function canSelect(mod: ModifierCard): boolean {
     if (selectedIds.includes(mod.id)) return true; // already selected → can deselect
     if (!implementedIds.has(mod.id)) return false;
+    if (opponentClaimedSharedIds.has(mod.id)) return false;
     if (selected.length >= MAX_COUNT) return false;
     if (totalCost + mod.cost > BUDGET) return false;
     const counts = categoryCounts();
@@ -199,13 +214,14 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
             const isSelected = selectedIds.includes(mod.id);
             const selectable = canSelect(mod);
             const isImplemented = implementedIds.has(mod.id);
+            const claimedByOpponent = opponentClaimedSharedIds.has(mod.id);
             const catColor = CATEGORY_COLORS[mod.category];
             const isExpanded = expandedId === mod.id;
 
             return (
               <div
                 key={mod.id}
-                className={`${styles.card} ${isSelected ? styles.cardSelected : ''} ${!selectable && !isSelected ? styles.cardDisabled : ''} ${!isImplemented ? styles.cardUnimplemented : ''}`}
+                className={`${styles.card} ${isSelected ? styles.cardSelected : ''} ${!selectable && !isSelected ? styles.cardDisabled : ''} ${!isImplemented ? styles.cardUnimplemented : ''} ${claimedByOpponent ? styles.cardClaimed : ''}`}
                 style={isSelected ? { '--cat-color': catColor } as React.CSSProperties : undefined}
                 onClick={() => toggleMod(mod)}
               >
@@ -219,6 +235,9 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
                   {/* Top row: ID + tier + cost */}
                   <div className={styles.cardMeta}>
                     <span className={styles.cardId}>{mod.id}</span>
+                    {claimedByOpponent && (
+                      <span className={styles.devBadge}>{opponentName.toUpperCase()} PICKED</span>
+                    )}
                     {!isImplemented && (
                       <span className={styles.devBadge}>NOT IMPLEMENTED</span>
                     )}
@@ -250,6 +269,11 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
                   {!isImplemented && (
                     <p className={styles.implementationHint}>
                       Disabled for testing until the runtime behavior exists.
+                    </p>
+                  )}
+                  {claimedByOpponent && (
+                    <p className={styles.implementationHint}>
+                      Shared modifier already claimed by {opponentName}.
                     </p>
                   )}
 
@@ -366,6 +390,36 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
                 </button>
               </div>
             ))}
+          </div>
+
+          <div className={styles.opponentBlock}>
+            <div className={styles.opponentHeader}>
+              <span className={styles.countLabel}>{opponentName} Draft</span>
+              <span className={styles.countValue}>
+                {opponentModifierIds.length} / {MAX_COUNT}
+              </span>
+            </div>
+            <div className={styles.selectedList}>
+              {opponentModifierIds.length === 0 && (
+                <p className={styles.emptySelected}>
+                  {opponentName} has no modifiers.
+                </p>
+              )}
+              {ALL_MODIFIERS.filter(mod => opponentModifierIds.includes(mod.id)).map(mod => (
+                <div key={mod.id} className={styles.selectedItem}>
+                  <div
+                    className={styles.selectedDot}
+                    style={{ background: CATEGORY_COLORS[mod.category] }}
+                  />
+                  <span className={styles.selectedName}>{mod.name}</span>
+                  <span
+                    className={`${styles.selectedCost} ${mod.cost < 0 ? styles.costNegative : ''}`}
+                  >
+                    {getCostDisplay(mod.cost)}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Constraints hint */}
