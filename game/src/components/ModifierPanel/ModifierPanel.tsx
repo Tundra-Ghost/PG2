@@ -95,7 +95,7 @@ function Section({
         <div className={styles.modList}>
           {mods.map(mod => (
             <article
-              key={`${mod.activeFor}-${mod.id}`}
+              key={`${mod.activeFor}-${mod.sourceColor ?? 'shared'}-${mod.id}`}
               className={styles.modCard}
               style={
                 mod.color

@@ -12,6 +12,7 @@ import GameStatus from './components/GameStatus/GameStatus';
 import MainMenu from './components/MainMenu/MainMenu';
 import ModifierPanel from './components/ModifierPanel/ModifierPanel';
 import MoveHistory from './components/MoveHistory/MoveHistory';
+import PlayerBanner from './components/PlayerBanner/PlayerBanner';
 import SettingsScreen from './components/Settings/Settings';
 import styles from './App.module.css';
 import { ALL_MODIFIERS } from './modifiers/data';
@@ -181,6 +182,15 @@ export default function App() {
   }
 
   const handleUnlock = () => unlockBgm();
+  const selectedBotMeta = selectedBot
+    ? (BOTS.find(bot => bot.id === selectedBot) ?? null)
+    : null;
+  const opponentName = selectedBotMeta?.name ?? 'Opponent';
+  const opponentTagline = selectedBotMeta?.tagline ?? 'Awaiting challenger';
+  const moveCountLabel =
+    gameState.moveHistory.length > 0
+      ? `Move ${gameState.flags.fullMoveNumber}`
+      : 'Opening position';
 
   const settingsOverlay = screen === 'settings' ? (
     <SettingsScreen
@@ -219,8 +229,6 @@ export default function App() {
   }
 
   if (baseScreen === 'draft') {
-    const opponentName = BOTS.find(bot => bot.id === selectedBot)?.name ?? 'Opponent';
-
     return (
       <div onClick={handleUnlock}>
         <DraftScreen
@@ -249,50 +257,69 @@ export default function App() {
       </header>
 
       <main className={styles.main}>
-        <div className={styles.gameArea}>
-          <div className={styles.boardColumn}>
-            <Board
-              state={gameState}
-              onStateChange={setGameState}
-              onInfo={setInfoMessage}
-              showLegalMoves={settings.showLegalMoves}
-              autoQueen={settings.autoQueen}
-              showCoordinates={settings.showCoordinates}
+        <section className={styles.matchHud}>
+          <div className={styles.bannerRow}>
+            <PlayerBanner
+              role="Player"
+              name="You"
+              subtitle={moveCountLabel}
+              badge={gameState.turn === 'white' ? 'To Move' : 'Waiting'}
+              portraitLabel="P"
             />
-            <GameStatus
-              state={gameState}
-              onNewGame={handleNewGame}
-              infoMessage={infoMessage}
-            />
-            <MoveHistory
-              state={gameState}
-              whiteLabel="You"
-              blackLabel={
-                vsBot
-                  ? (BOTS.find(bot => bot.id === selectedBot)?.name ?? 'Opponent')
-                  : 'Black'
-              }
+            <PlayerBanner
+              role={vsBot ? 'AI' : 'Opponent'}
+              name={opponentName}
+              subtitle={opponentTagline}
+              badge={gameState.turn === 'black' ? 'To Move' : 'Standing By'}
+              portraitLabel={selectedBotMeta?.icon ?? 'O'}
+              align="right"
             />
           </div>
 
-          <div
-            className={`${styles.sideColumn} ${
-              modifierPanelCollapsed ? styles.sideColumnCollapsed : ''
-            }`}
-          >
-            <ModifierPanel
-              state={gameState}
-              collapsed={modifierPanelCollapsed}
-              playerLabel="Your Draft"
-              opponentLabel={
-                selectedBot
-                  ? `${BOTS.find(bot => bot.id === selectedBot)?.name ?? 'Opponent'} Draft`
-                  : 'Opponent Draft'
-              }
-              onToggleCollapsed={() => setModifierPanelCollapsed(prev => !prev)}
-            />
+          <div className={styles.stageRow}>
+            <div className={styles.boardStage}>
+              <div className={styles.boardShell}>
+                <Board
+                  state={gameState}
+                  onStateChange={setGameState}
+                  onInfo={setInfoMessage}
+                  showLegalMoves={settings.showLegalMoves}
+                  autoQueen={settings.autoQueen}
+                  showCoordinates={settings.showCoordinates}
+                />
+              </div>
+              <GameStatus
+                state={gameState}
+                onNewGame={handleNewGame}
+                infoMessage={infoMessage}
+              />
+            </div>
           </div>
-        </div>
+
+          <div className={styles.bottomDock}>
+            <div className={styles.logDock}>
+              <MoveHistory
+                state={gameState}
+                whiteLabel="You"
+                blackLabel={vsBot ? opponentName : 'Black'}
+              />
+            </div>
+
+            <div
+              className={`${styles.modifierDock} ${
+                modifierPanelCollapsed ? styles.modifierDockCollapsed : ''
+              }`}
+            >
+              <ModifierPanel
+                state={gameState}
+                collapsed={modifierPanelCollapsed}
+                playerLabel="Your Draft"
+                opponentLabel={selectedBot ? `${opponentName} Draft` : 'Opponent Draft'}
+                onToggleCollapsed={() => setModifierPanelCollapsed(prev => !prev)}
+              />
+            </div>
+          </div>
+        </section>
       </main>
 
       {settingsOverlay}

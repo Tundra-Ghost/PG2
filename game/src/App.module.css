@@ -32,7 +32,7 @@
   letter-spacing: 0.14em;
   color: rgba(200, 151, 58, 0.55);
   background: transparent;
-  border: 1px solid rgba(200, 151, 58, 0.20);
+  border: 1px solid rgba(200, 151, 58, 0.2);
   padding: 0.3rem 0.7rem;
   cursor: pointer;
   transition: color 0.18s, border-color 0.18s;
@@ -41,7 +41,7 @@
 
 .menuBtn:hover {
   color: var(--ui-gold);
-  border-color: rgba(200, 151, 58, 0.50);
+  border-color: rgba(200, 151, 58, 0.5);
 }
 
 .settingsBtn {
@@ -62,7 +62,7 @@
 
 .settingsBtn:hover {
   color: var(--ui-gold);
-  border-color: rgba(200, 151, 58, 0.50);
+  border-color: rgba(200, 151, 58, 0.5);
 }
 
 .phase {
@@ -79,58 +79,90 @@
 .main {
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem 2rem;
 }
 
-/* Board + history side by side, per Art Direction "Board 70% + side panels 15%" */
-.gameArea {
+.matchHud {
+  width: min(100%, 1120px);
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.bannerRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
 
-/* Board + status bar stacked vertically */
-.boardColumn {
+.stageRow {
+  display: flex;
+  justify-content: center;
+}
+
+.boardStage {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.9rem;
-  width: min(100%, 610px);
+  gap: 0.75rem;
+  width: min(100%, 740px);
 }
 
-.sideColumn {
+.boardShell {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  width: 240px;
-  flex-shrink: 0;
-  min-height: 100%;
+  justify-content: center;
+  padding: 1.1rem;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top, rgba(200, 151, 58, 0.12), transparent 44%),
+    linear-gradient(180deg, rgba(33, 23, 16, 0.92), rgba(17, 13, 9, 0.98));
+  border: 1px solid rgba(200, 151, 58, 0.16);
+  box-shadow:
+    0 24px 52px rgba(0, 0, 0, 0.32),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02);
 }
 
-.sideColumnCollapsed {
-  width: 56px;
+.bottomDock {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.85fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.logDock {
+  min-width: 0;
+}
+
+.modifierDock {
+  min-width: 0;
+}
+
+.modifierDockCollapsed {
+  justify-self: end;
 }
 
 @media (max-width: 1120px) {
   .main {
     padding: 1rem;
-    align-items: flex-start;
   }
 
-  .gameArea {
+  .matchHud {
     width: 100%;
-    flex-direction: column;
-    align-items: center;
   }
 
-  .sideColumn {
-    width: min(100%, 640px);
+  .boardStage {
+    width: 100%;
   }
 
-  .sideColumnCollapsed {
-    width: min(100%, 640px);
+  .bottomDock {
+    grid-template-columns: 1fr;
+  }
+
+  .modifierDockCollapsed {
+    justify-self: stretch;
   }
 }
 
@@ -172,15 +204,24 @@
     padding: 0.75rem;
   }
 
-  .gameArea {
+  .matchHud {
     gap: 0.75rem;
-    box-shadow: none;
   }
 
-  .boardColumn,
-  .sideColumn {
+  .bannerRow {
+    grid-template-columns: 1fr;
+  }
+
+  .boardStage,
+  .logDock,
+  .modifierDock {
     width: 100%;
     max-width: 100%;
+  }
+
+  .boardShell {
+    padding: 0.7rem;
+    border-radius: 22px;
   }
 }
 
@@ -210,7 +251,8 @@
     padding: 0.5rem;
   }
 
-  .sideColumn {
-    gap: 0.65rem;
+  .boardShell {
+    padding: 0.45rem;
+    border-radius: 18px;
   }
 }

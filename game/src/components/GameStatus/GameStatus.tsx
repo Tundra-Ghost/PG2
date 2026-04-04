@@ -50,12 +50,19 @@ export default function GameStatus({ state, onNewGame, infoMessage }: GameStatus
                 Move {state.flags.fullMoveNumber}
               </span>
             )}
-            {infoMessage && (
-              <span className={styles.infoPill}>{infoMessage}</span>
-            )}
           </>
         )}
       </div>
+
+      {!isOver && (
+        <div className={styles.centerStatus}>
+          {infoMessage ? (
+            <span className={styles.infoPill}>{infoMessage}</span>
+          ) : (
+            <span className={styles.idlePill}>Board live. Modifiers armed.</span>
+          )}
+        </div>
+      )}
 
       {isOver && (
         <div className={styles.overlay}>

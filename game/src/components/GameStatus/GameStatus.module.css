@@ -4,15 +4,29 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.75rem 1.25rem;
-  background: rgba(0, 0, 0, 0.25);
-  border-top: 1px solid rgba(200, 168, 75, 0.2);
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background:
+    linear-gradient(180deg, rgba(32, 23, 14, 0.96), rgba(17, 12, 8, 0.96));
+  border: 1px solid rgba(200, 168, 75, 0.18);
+  border-radius: 18px;
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02);
 }
 
 .turnIndicator {
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  min-width: 0;
+}
+
+.centerStatus {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
 }
 
 .dot {
@@ -58,11 +72,17 @@
   padding: 0.2rem 0.45rem;
 }
 
-/* ── Overlay ── */
+.idlePill {
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(200, 168, 75, 0.48);
+}
+
 .overlay {
   position: absolute;
   inset: 0;
-  /* extend upward to cover the board */
   top: calc(-100vh);
   bottom: 0;
   left: 0;
@@ -153,6 +173,10 @@
   .turnIndicator {
     flex-wrap: wrap;
     row-gap: 0.45rem;
+  }
+
+  .centerStatus {
+    justify-content: flex-start;
   }
 
   .turnText {

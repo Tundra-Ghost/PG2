@@ -58,6 +58,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] GDD UI: route modifier-trigger messages into the in-game history feed
 - [x] GDD UI: separate match log from modifier browsing so the board surface reads more clearly
 - [x] GDD UI: show modifier hover and long-press tooltips for affected pieces and tiles
+- [x] GDD UI: restructure the in-match HUD into top banners, a framed board stage, and bottom dock panels
 - [ ] GDD UI: add a shared icon set for modifier categories, settings controls, and board hazards
 - [ ] GDD SFX: add distinct one-shot sounds for lava death, Gerald interference, freeze block, pacifist refusal, and berserker chain
 - [ ] GDD SFX: add subtle UI sounds for draft select/deselect, disabled-card hover, modal open/close, and settings toggles

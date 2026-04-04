@@ -1,16 +1,16 @@
 .panel {
-  width: 240px;
+  width: 100%;
+  height: 100%;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   background:
-    radial-gradient(circle at top, rgba(200, 151, 58, 0.08), transparent 46%),
-    linear-gradient(180deg, rgba(20, 15, 11, 0.94), rgba(11, 12, 16, 0.9));
-  border: 1px solid rgba(200, 151, 58, 0.14);
-  border-radius: 14px;
+    linear-gradient(180deg, rgba(250, 234, 195, 0.96), rgba(225, 183, 120, 0.92));
+  border: 2px solid rgba(84, 48, 18, 0.72);
+  border-radius: 18px;
   box-shadow:
-    0 12px 36px rgba(0, 0, 0, 0.28),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+    0 16px 32px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 2px rgba(255, 246, 224, 0.28);
   overflow: hidden;
   transition: width 0.2s ease, min-width 0.2s ease;
 }
@@ -27,8 +27,8 @@
   justify-content: space-between;
   gap: 0.5rem;
   padding: 0.7rem 0.9rem;
-  border-bottom: 1px solid rgba(200, 151, 58, 0.12);
-  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 2px solid rgba(84, 48, 18, 0.14);
+  background: rgba(255, 247, 228, 0.48);
 }
 
 .headerCopy {
@@ -39,18 +39,17 @@
 }
 
 .headerTitle {
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(200, 151, 58, 0.5);
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  color: rgba(58, 30, 11, 0.92);
+  letter-spacing: 0.02em;
 }
 
 .headerSub {
   font-family: var(--font-mono);
   font-size: 0.55rem;
   letter-spacing: 0.08em;
-  color: rgba(200, 151, 58, 0.3);
+  color: rgba(84, 48, 18, 0.42);
 }
 
 .collapseBtn {
@@ -58,8 +57,8 @@
   height: 26px;
   flex-shrink: 0;
   border: 1px solid rgba(200, 151, 58, 0.18);
-  background: rgba(200, 151, 58, 0.06);
-  color: rgba(200, 151, 58, 0.7);
+  background: rgba(84, 48, 18, 0.05);
+  color: rgba(84, 48, 18, 0.7);
   font-family: var(--font-mono);
   font-size: 0.72rem;
   cursor: pointer;
@@ -68,8 +67,8 @@
 
 .collapseBtn:hover {
   border-color: rgba(200, 151, 58, 0.45);
-  color: var(--ui-gold);
-  background: rgba(200, 151, 58, 0.12);
+  color: rgba(58, 30, 11, 0.92);
+  background: rgba(84, 48, 18, 0.12);
 }
 
 .body {
@@ -92,7 +91,7 @@
 .collapsedCount {
   font-family: var(--font-display);
   font-size: 1.6rem;
-  color: var(--ui-gold);
+  color: rgba(92, 37, 10, 0.88);
   line-height: 1;
 }
 
@@ -103,7 +102,7 @@
   font-size: 0.5rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(200, 151, 58, 0.42);
+  color: rgba(84, 48, 18, 0.42);
 }
 
 .collapsedBreakdown {
@@ -117,7 +116,7 @@
   font-family: var(--font-mono);
   font-size: 0.44rem;
   letter-spacing: 0.12em;
-  color: rgba(242, 234, 216, 0.46);
+  color: rgba(84, 48, 18, 0.56);
 }
 
 .section {
@@ -136,7 +135,7 @@
   font-size: 0.56rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(242, 234, 216, 0.55);
+  color: rgba(84, 48, 18, 0.56);
 }
 
 .sectionCount {
@@ -144,9 +143,9 @@
   text-align: center;
   font-family: var(--font-mono);
   font-size: 0.58rem;
-  color: rgba(200, 151, 58, 0.55);
-  border: 1px solid rgba(200, 151, 58, 0.16);
-  background: rgba(200, 151, 58, 0.08);
+  color: rgba(84, 48, 18, 0.65);
+  border: 1px solid rgba(84, 48, 18, 0.14);
+  background: rgba(255, 248, 231, 0.58);
   padding: 0.08rem 0.25rem;
 }
 
@@ -154,7 +153,7 @@
   font-family: var(--font-body);
   font-size: 0.74rem;
   font-style: italic;
-  color: rgba(242, 234, 216, 0.24);
+  color: rgba(84, 48, 18, 0.42);
   padding: 0.45rem 0.3rem 0.25rem;
 }
 
@@ -168,11 +167,12 @@
   --accent-color: rgba(200, 151, 58, 0.22);
   position: relative;
   padding: 0.48rem 0.55rem;
-  border: 1px solid rgba(200, 151, 58, 0.08);
+  border: 1px solid rgba(84, 48, 18, 0.12);
   border-left: 3px solid var(--accent-color);
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--accent-color) 16%, transparent) 0%, transparent 36%),
-    rgba(255, 255, 255, 0.02);
+    rgba(255, 249, 235, 0.42);
+  border-radius: 10px;
 }
 
 .modTopRow {
@@ -192,7 +192,7 @@
   font-family: var(--font-body);
   font-size: 0.82rem;
   line-height: 1.2;
-  color: rgba(242, 234, 216, 0.88);
+  color: rgba(58, 30, 11, 0.9);
 }
 
 .typeLine {
@@ -200,7 +200,7 @@
   font-size: 0.53rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(242, 234, 216, 0.34);
+  color: rgba(84, 48, 18, 0.4);
 }
 
 .categoryBadgeWrap {
@@ -225,7 +225,7 @@
   font-size: 0.5rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(242, 234, 216, 0.32);
+  color: rgba(84, 48, 18, 0.36);
 }
 
 .description {
@@ -233,7 +233,7 @@
   font-family: var(--font-body);
   font-size: 0.72rem;
   line-height: 1.35;
-  color: rgba(242, 234, 216, 0.64);
+  color: rgba(58, 30, 11, 0.74);
 }
 
 .modMeta {
@@ -244,22 +244,21 @@
   font-family: var(--font-mono);
   font-size: 0.56rem;
   letter-spacing: 0.07em;
-  color: rgba(200, 151, 58, 0.42);
+  color: rgba(84, 48, 18, 0.46);
 }
 
 .modId {
-  color: rgba(200, 151, 58, 0.58);
+  color: rgba(92, 37, 10, 0.6);
 }
 
 .dot {
-  color: rgba(200, 151, 58, 0.22);
+  color: rgba(84, 48, 18, 0.22);
 }
 
 @media (max-width: 1120px) {
   .panel {
     width: 100%;
     min-width: 0;
-    border-top: 1px solid rgba(200, 151, 58, 0.1);
   }
 
   .panelCollapsed {
