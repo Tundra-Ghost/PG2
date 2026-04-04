@@ -64,6 +64,13 @@ export interface ModifierInstance {
   sourceColor?: Color | null;
 }
 
+export interface BerserkerChainEvent {
+  counter: number;
+  from: Square;
+  to: Square;
+  capturedType: PieceType | null;
+}
+
 export interface MoveRecord {
   move: Move;
   pieceMoved: Piece;

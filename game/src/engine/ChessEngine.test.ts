@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { chessEngine } from './ChessEngine';
-import type { Color, GameState, Move, Piece, PieceType, Square } from './types';
+import type {
+  BerserkerChainEvent,
+  Color,
+  GameState,
+  Move,
+  Piece,
+  PieceType,
+  Square,
+} from './types';
+import '../modifiers/index';
 
 function makePiece(
   type: PieceType,
@@ -134,5 +143,32 @@ describe('ChessEngine TDD baseline', () => {
 
     expect(state.status).toBe('checkmate');
     expect(chessEngine.isCheckmate(state, 'white')).toBe(true);
+  });
+
+  it('records berserker chain captures for UI feedback', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'h1'),
+      makePiece('king', 'black', 'h8'),
+      { ...makePiece('rook', 'white', 'a1'), isBerserker: true },
+      makePiece('knight', 'black', 'a4'),
+      makePiece('queen', 'black', 'a8'),
+    ]);
+
+    state.activeModifiers = [
+      { id: 'MOD-E006', name: 'Berserker', activeFor: 'both', sourceColor: null },
+    ];
+
+    const next = chessEngine.applyMove(state, move('a1', 'a4', 'white'));
+    const event = next.modifierState['MOD-E006'] as BerserkerChainEvent;
+
+    expect(next.pieces.get('a8')?.isBerserker).toBe(true);
+    expect(next.pieces.has('a4')).toBe(false);
+    expect(next.pieces.has('a8')).toBe(true);
+    expect(event).toMatchObject({
+      counter: 1,
+      from: 'a4',
+      to: 'a8',
+      capturedType: 'queen',
+    });
   });
 });

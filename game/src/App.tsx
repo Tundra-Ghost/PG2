@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import type { GameState } from './engine/types';
+import { useEffect, useRef, useState } from 'react';
+import type { BerserkerChainEvent, GameState } from './engine/types';
 import { chessEngine } from './engine/ChessEngine';
 import { getChickBotMove } from './engine/bot';
 import { unlockBgm, playMenuBgm, playGameBgm } from './sound';
@@ -20,6 +20,21 @@ import styles from './App.module.css';
 import './modifiers/index';
 
 type Screen = 'menu' | 'botselect' | 'draft' | 'game' | 'settings';
+const BERSERKER_ID = 'MOD-E006';
+
+function getBerserkerEvent(state: GameState): BerserkerChainEvent | null {
+  const value = state.modifierState[BERSERKER_ID];
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    'counter' in value &&
+    'from' in value &&
+    'to' in value
+  ) {
+    return value as BerserkerChainEvent;
+  }
+  return null;
+}
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('menu');
@@ -31,6 +46,7 @@ export default function App() {
   const [selectedBot, setSelectedBot] = useState<BotId | null>(null);
   const [pendingRunModifiers, setPendingRunModifiers] = useState<string[] | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const seenBerserkerEvent = useRef(0);
   const [settings, setSettings] = useState<AppSettings>(() => {
     const s = loadSettings();
     applySettings(s); // sync sound + CSS classes at startup
@@ -70,6 +86,20 @@ export default function App() {
     const timer = setTimeout(() => setInfoMessage(null), 2200);
     return () => clearTimeout(timer);
   }, [infoMessage]);
+
+  useEffect(() => {
+    if (gameState.moveHistory.length === 0 && gameState.turnNumber === 1) {
+      seenBerserkerEvent.current = 0;
+      return;
+    }
+
+    const event = getBerserkerEvent(gameState);
+    if (!event || event.counter <= seenBerserkerEvent.current) return;
+
+    const pieceLabel = event.capturedType ? ` ${event.capturedType}` : '';
+    setInfoMessage(`BOY. chained into${pieceLabel} on ${event.to}.`);
+    seenBerserkerEvent.current = event.counter;
+  }, [gameState]);
 
   function goToSettings() {
     setPrevScreen(screen);

@@ -117,7 +117,9 @@ TDD direction implies engine-first validation.
 
 Current repo:
 
-- No dedicated test runner or first-party tests found
+- Vitest is installed in `game/`
+- Baseline engine tests cover opening movement, wrong-turn rejection, en passant, castling-through-check rejection, promotion detection, and Fool's Mate
+- Draw-rule and modifier coverage are still incomplete
 
 This is the most immediate execution risk.
 
@@ -131,6 +133,7 @@ Current repo:
 
 - 5 registered runtime definitions
 - A broader card catalog exists in data, but most cards are not implemented as behavior
+- The current shipped-modifier audit is focused on closing the gap between "has runtime logic" and "is visibly testable in the prototype"
 
 ### Gap 4: Feature ordering
 

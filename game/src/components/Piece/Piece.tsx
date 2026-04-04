@@ -48,14 +48,24 @@ export default function Piece({ piece }: PieceProps) {
 
   return (
     <span
-      className={`${styles.piece} ${styles[color]}`}
+      className={[
+        styles.piece,
+        styles[color],
+        isBerserker ? styles.berserker : '',
+      ].filter(Boolean).join(' ')}
       aria-label={markerLabel ? `${color} ${type}, ${markerLabel}` : `${color} ${type}`}
     >
       <span className={styles.symbol}>{symbol}</span>
       {markers.length > 0 && (
         <span className={styles.markerStack} aria-hidden="true">
           {markers.map(marker => (
-            <span key={marker} className={styles.marker}>
+            <span
+              key={marker}
+              className={[
+                styles.marker,
+                marker === 'B' ? styles.markerBerserker : '',
+              ].filter(Boolean).join(' ')}
+            >
               {marker}
             </span>
           ))}

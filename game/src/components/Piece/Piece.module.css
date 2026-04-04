@@ -10,6 +10,10 @@
   transition: transform 0.08s ease;
 }
 
+.berserker .symbol {
+  filter: drop-shadow(0 0 7px rgba(214, 74, 44, 0.55));
+}
+
 .symbol {
   display: flex;
   align-items: center;
@@ -72,4 +76,14 @@
   background: rgba(245, 232, 192, 0.95);
   border: 1px solid rgba(24, 18, 10, 0.5);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.markerBerserker {
+  color: #fff2de;
+  background: linear-gradient(180deg, rgba(164, 44, 18, 0.98), rgba(96, 21, 10, 0.98));
+  border-color: rgba(255, 190, 150, 0.8);
+  box-shadow:
+    0 0 0 1px rgba(42, 10, 4, 0.45),
+    0 1px 3px rgba(0, 0, 0, 0.5),
+    0 0 8px rgba(214, 74, 44, 0.5);
 }

@@ -1,5 +1,10 @@
 import type { ModifierDefinition } from '../types';
-import type { GameState, Piece, Square } from '../../engine/types';
+import type {
+  BerserkerChainEvent,
+  GameState,
+  Piece,
+  Square,
+} from '../../engine/types';
 import { prngPickIndex } from '../../engine/prng';
 import { cloneState, applyMoveInternal, buildMove } from '../../engine/gameLoop';
 import { getLegalMovesForPiece } from '../../engine/moveGenerator';
@@ -15,6 +20,18 @@ function findBerserker(state: GameState): Piece | undefined {
     if (p.isBerserker) return p;
   }
   return undefined;
+}
+
+function getEventCounter(value: unknown): number {
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    'counter' in value &&
+    typeof (value as { counter?: unknown }).counter === 'number'
+  ) {
+    return (value as { counter: number }).counter;
+  }
+  return 0;
 }
 
 /** Find the highest-value capture available from a given square. */
@@ -74,8 +91,18 @@ export const berserkerDef: ModifierDefinition = {
     const chainTo = getBestCaptureTarget(state, move.to);
     if (!chainTo) return state;
 
+    const chainedTarget = state.pieces.get(chainTo);
     const chainMove = buildMove(state, move.to, chainTo);
-    return applyMoveInternal(state, chainMove);
+    const next = applyMoveInternal(state, chainMove);
+    const previousCounter = getEventCounter(next.modifierState[ID]);
+    const event: BerserkerChainEvent = {
+      counter: previousCounter + 1,
+      from: move.to,
+      to: chainTo,
+      capturedType: chainedTarget?.type ?? null,
+    };
+    next.modifierState[ID] = event;
+    return next;
   },
 
   // Ensure berserker flag survives promotion (if berserker pawn promotes)

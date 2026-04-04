@@ -8,7 +8,8 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Architecture is client-side today
 - TDD target architecture is server-authoritative shared game-core
 - 5 modifier definitions are registered, while the modifier bible defines 40 cards
-- Vitest is now installed in `game/` and the first engine test suite has been added
+- Vitest is now installed in `game/` and baseline engine tests are passing
+- Modifier audit is in progress to make currently shipped cards visible and testable in play
 
 ## Priority 1: Stabilize The Prototype Core
 
@@ -24,6 +25,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] Add tests for the 5 currently registered modifiers
 - [ ] Verify the existing 5 modifiers match their modifier-bible intent
 - [ ] Separate shipped modifiers from design-only modifiers in the UI/data layer
+- [ ] Track implementation status per shipped modifier: engine logic, board visuals, interaction feedback, tests
 - [ ] Build an implementation checklist for the remaining 35 modifiers by category
 
 ## Priority 3: Close TDD/GDD Gaps
@@ -39,6 +41,16 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] Build `VS Bots` as a complete menu-to-match flow
 - [ ] Expose a read-only Modifier Vault sourced from the modifier bible/data set
 - [ ] Track run state if Story Mode is meant to be more than a one-match draft
+
+## Priority 4A: UI, VFX, And SFX Readability
+
+- [ ] GDD UI: replace temporary letter badges with authored icon badges for Gerald, lava, freeze, pacifist, and berserker states
+- [ ] GDD UI: animate modifier triggers on board and pieces: lava burn, Gerald fly-off, freeze thaw, berserker chain, pacifist refusal
+- [ ] GDD UI: add short event banners for autonomous or curse-driven actions so modifier outcomes never feel silent
+- [ ] GDD UI: add a shared icon set for modifier categories, settings controls, and board hazards
+- [ ] GDD SFX: add distinct one-shot sounds for lava death, Gerald interference, freeze block, pacifist refusal, and berserker chain
+- [ ] GDD SFX: add subtle UI sounds for draft select/deselect, disabled-card hover, modal open/close, and settings toggles
+- [ ] GDD polish: review current emoji and placeholder symbols in the app shell against the art-direction doc and replace where needed
 
 ## Priority 5: Product Hygiene
 
