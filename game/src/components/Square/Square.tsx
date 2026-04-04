@@ -55,7 +55,7 @@ export default function Square({
 
       {piece && (
         <div className={styles.pieceLayer}>
-          <PieceComponent type={piece.type} color={piece.color} />
+          <PieceComponent piece={piece} />
         </div>
       )}
       {isLegalTarget && (

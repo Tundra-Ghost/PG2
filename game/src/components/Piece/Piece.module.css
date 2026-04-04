@@ -1,4 +1,5 @@
 .piece {
+  position: relative;
   font-size: clamp(28px, 4.5vmin, 52px);
   line-height: 1;
   user-select: none;
@@ -7,6 +8,12 @@
   align-items: center;
   justify-content: center;
   transition: transform 0.08s ease;
+}
+
+.symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .white {
@@ -39,4 +46,30 @@
   text-shadow:
     0 0 5px rgba(255, 255, 255, 0.4),
     0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.markerStack {
+  position: absolute;
+  top: -2px;
+  right: -8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.marker {
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.42em;
+  line-height: 1;
+  color: #18120a;
+  background: rgba(245, 232, 192, 0.95);
+  border: 1px solid rgba(24, 18, 10, 0.5);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
