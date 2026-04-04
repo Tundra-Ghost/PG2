@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { GameState } from './engine/types';
 import { chessEngine } from './engine/ChessEngine';
 import { getChickBotMove } from './engine/bot';
+import { unlockBgm, playMenuBgm, playGameBgm } from './sound';
 import Board from './components/Board/Board';
 import GameStatus from './components/GameStatus/GameStatus';
 import MoveHistory from './components/MoveHistory/MoveHistory';
@@ -22,6 +23,15 @@ export default function App() {
     chessEngine.getInitialState(),
   );
   const [vsBot, setVsBot] = useState(false);
+
+  // BGM: switch track when screen changes
+  useEffect(() => {
+    if (screen === 'menu' || screen === 'botselect' || screen === 'draft') {
+      playMenuBgm();
+    } else if (screen === 'game') {
+      playGameBgm();
+    }
+  }, [screen]);
 
   // Chick bot: fires when it's black's turn and vsBot is active
   useEffect(() => {
@@ -76,30 +86,37 @@ export default function App() {
     setScreen('menu');
   }
 
+  // Unlock BGM on any first click anywhere in the app (browser autoplay policy)
+  const handleUnlock = () => unlockBgm();
+
   if (screen === 'menu') {
-    return <MainMenu onPlay={handleMenuPlay} />;
+    return <div onClick={handleUnlock}><MainMenu onPlay={handleMenuPlay} /></div>;
   }
 
   if (screen === 'botselect') {
     return (
-      <BotSelect
-        onSelect={handleBotSelect}
-        onBack={() => setScreen('menu')}
-      />
+      <div onClick={handleUnlock}>
+        <BotSelect
+          onSelect={handleBotSelect}
+          onBack={() => setScreen('menu')}
+        />
+      </div>
     );
   }
 
   if (screen === 'draft') {
     return (
-      <DraftScreen
-        onStartMatch={handleStartMatch}
-        onBack={() => setScreen('menu')}
-      />
+      <div onClick={handleUnlock}>
+        <DraftScreen
+          onStartMatch={handleStartMatch}
+          onBack={() => setScreen('menu')}
+        />
+      </div>
     );
   }
 
   return (
-    <div className={styles.app}>
+    <div className={styles.app} onClick={handleUnlock}>
       <header className={styles.header}>
         <button className={styles.menuBtn} onClick={handleBackToMenu}>
           ← Menu

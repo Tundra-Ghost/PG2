@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import type { GameState, PieceType, Square } from '../../engine/types';
 import { chessEngine } from '../../engine/ChessEngine';
 import { buildMove } from '../../engine/gameLoop';
+import { playCapture, playCastle, playMove } from '../../sound';
 import SquareComponent from '../Square/Square';
 import PromotionModal from '../PromotionModal/PromotionModal';
 import styles from './Board.module.css';
@@ -46,6 +47,12 @@ export default function Board({ state, onStateChange }: BoardProps) {
     }
   }
 
+  function sfxForMove(s: GameState, from: Square, to: Square, isCastle: boolean) {
+    if (isCastle) { playCastle(); return; }
+    if (s.pieces.has(to) || s.flags.enPassantSquare === to) { playCapture(); return; }
+    playMove();
+  }
+
   // Called when user picks a piece in the PromotionModal
   const handlePromotionChoice = useCallback(
     (type: PieceType) => {
@@ -54,6 +61,7 @@ export default function Board({ state, onStateChange }: BoardProps) {
       move.promotion = type;
       const validation = chessEngine.validateMove(state, move);
       if (validation.valid) {
+        playCapture(); // promotions often capture; use capture sfx
         onStateChange(chessEngine.applyMove(state, move));
       }
       setPendingPromotion(null);
@@ -104,6 +112,7 @@ export default function Board({ state, onStateChange }: BoardProps) {
         const move = buildMove(state, selected, square);
         const validation = chessEngine.validateMove(state, move);
         if (validation.valid) {
+          sfxForMove(state, selected, square, !!move.isCastle);
           onStateChange(chessEngine.applyMove(state, move));
         }
         setSelected(null);
