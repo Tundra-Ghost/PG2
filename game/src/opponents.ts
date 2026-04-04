@@ -6,6 +6,7 @@ export interface OpponentProfile {
   kind: 'bot' | 'npc';
   icon: string;
   portraitSlotLabel: string;
+  dialogueTheme: 'player' | 'chick' | 'measured' | 'grandmaster' | 'npc';
   name: string;
   tagline: string;
   description: string;
@@ -20,6 +21,7 @@ export const BOTS: OpponentProfile[] = [
     kind: 'bot',
     icon: '🐣',
     portraitSlotLabel: 'Chick Portrait',
+    dialogueTheme: 'chick',
     name: 'Chick',
     tagline: 'Depth-1 · Material Evaluation',
     description: 'Grabs whatever looks tastiest. No plans. No remorse. Perfect for testing modifiers.',
@@ -32,6 +34,7 @@ export const BOTS: OpponentProfile[] = [
     kind: 'bot',
     icon: '🐦',
     portraitSlotLabel: 'Pigeon Portrait',
+    dialogueTheme: 'measured',
     name: 'Pigeon',
     tagline: 'Depth-3 · Positional Heuristics',
     description: 'Knows when to strut and when to scatter. Reads the board two moves ahead.',
@@ -44,6 +47,7 @@ export const BOTS: OpponentProfile[] = [
     kind: 'bot',
     icon: '🦅',
     portraitSlotLabel: 'Magnus Portrait',
+    dialogueTheme: 'grandmaster',
     name: 'Magnus Jr.',
     tagline: 'Deep Search · Endgame Tables',
     description:

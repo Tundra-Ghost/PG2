@@ -25,6 +25,7 @@ interface FeedEntry {
   avatarIcon?: string | null;
   portraitSrc?: string | null;
   portraitSlotLabel?: string;
+  dialogueTheme?: 'player' | 'chick' | 'measured' | 'grandmaster' | 'npc';
   animated?: boolean;
 }
 
@@ -153,6 +154,7 @@ export default function MoveHistory({
         avatarIcon: chat.avatarIcon,
         portraitSrc: chat.portraitSrc,
         portraitSlotLabel: chat.portraitSlotLabel,
+        dialogueTheme: chat.dialogueTheme,
         animated: true,
       });
     }
@@ -220,7 +222,7 @@ export default function MoveHistory({
               <div
                 className={`${styles.dialogueCard} ${
                   entry.emphasis === 'player' ? styles.dialogueCardPlayer : styles.dialogueCardOpponent
-                }`}
+                } ${styles[`theme${(entry.dialogueTheme ?? 'npc').charAt(0).toUpperCase()}${(entry.dialogueTheme ?? 'npc').slice(1)}`]}`}
               >
                 <div className={styles.dialogueHeader}>
                   <span className={styles.dialogueNameplate}>{entry.actor}</span>

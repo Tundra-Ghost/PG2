@@ -52,6 +52,7 @@ export interface MatchChatEntry {
   avatarIcon?: string | null;
   portraitSrc?: string | null;
   portraitSlotLabel?: string;
+  dialogueTheme?: 'player' | 'chick' | 'measured' | 'grandmaster' | 'npc';
 }
 
 const BERSERKER_ID = 'MOD-E006';
@@ -210,6 +211,7 @@ export default function App() {
         avatarLabel: currentOpponentName.slice(0, 1).toUpperCase(),
         avatarIcon: currentOpponentIcon,
         portraitSlotLabel: currentSpeaker?.portraitSlotLabel ?? `${currentOpponentName} Portrait`,
+        dialogueTheme: currentSpeaker?.dialogueTheme ?? 'npc',
       },
     ]);
   }, [gameState, screen, selectedBot, vsBot]);
@@ -387,6 +389,7 @@ export default function App() {
         avatarLabel: playerName.slice(0, 1).toUpperCase(),
         portraitSrc: playerProfile?.avatarDataUrl ?? null,
         portraitSlotLabel: `${playerName} Portrait`,
+        dialogueTheme: 'player',
       },
     ]);
   }

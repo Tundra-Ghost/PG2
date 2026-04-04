@@ -167,6 +167,7 @@ export function getSpeakerProfile(speakerId: OpponentId): OpponentProfile {
     kind: 'npc',
     icon: '!',
     portraitSlotLabel: 'NPC Portrait',
+    dialogueTheme: 'npc',
     name: speakerId.replace(/^npc:/, '').replace(/[-_]/g, ' '),
     tagline: 'Local NPC',
     description: 'Prototype non-player character.',

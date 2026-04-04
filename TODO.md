@@ -73,6 +73,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] GDD UI: merge local chat and move history into one in-match feed with typewriter-style bot/player delivery
 - [x] GDD UI: restore explicit bot icon presence in the match HUD/feed so dialogue reads as authored speaker output
 - [x] GDD UI: move opponent identity and reaction metadata into shared data modules instead of component-local constants
+- [x] GDD UI: add per-speaker dialogue frame themes so player, Chick, and future speakers can read as distinct voices
 - [x] GDD UI: show modifier hover and long-press tooltips for affected pieces and tiles
 - [x] GDD UI: restructure the in-match HUD into top banners, a framed board stage, and bottom dock panels
 - [x] GDD UI: restructure the main menu into a hub layout that scales consistently across desktop resolutions
