@@ -11,6 +11,8 @@ interface ModifierPanelProps {
   state: GameState;
   collapsed?: boolean;
   onToggleCollapsed?: () => void;
+  playerLabel?: string;
+  opponentLabel?: string;
 }
 
 interface ModifierDisplay extends ModifierInstance {
@@ -155,9 +157,14 @@ export default function ModifierPanel({
   state,
   collapsed = false,
   onToggleCollapsed,
+  playerLabel = 'Your Draft',
+  opponentLabel = 'Opponent Draft',
 }: ModifierPanelProps) {
   const buckets = bucketModifiers(state.activeModifiers);
   const total = state.activeModifiers.length;
+  const ownedCount = buckets.white.length;
+  const sharedCount = buckets.both.length;
+  const opponentCount = buckets.black.length;
 
   return (
     <aside
@@ -168,7 +175,9 @@ export default function ModifierPanel({
           <span className={styles.headerTitle}>Active Modifiers</span>
           {!collapsed && (
             <span className={styles.headerSub}>
-              {total > 0 ? `${total} active` : 'Standard rules'}
+              {total > 0
+                ? `${ownedCount} yours · ${sharedCount} shared · ${opponentCount} theirs`
+                : 'Standard rules'}
             </span>
           )}
         </div>
@@ -187,23 +196,30 @@ export default function ModifierPanel({
         <div className={styles.collapsedBody}>
           <span className={styles.collapsedCount}>{total}</span>
           <span className={styles.collapsedLabel}>mods</span>
+          {total > 0 && (
+            <div className={styles.collapsedBreakdown}>
+              <span className={styles.collapsedBreakdownLine}>Y {ownedCount}</span>
+              <span className={styles.collapsedBreakdownLine}>S {sharedCount}</span>
+              <span className={styles.collapsedBreakdownLine}>T {opponentCount}</span>
+            </div>
+          )}
         </div>
       ) : (
         <div className={styles.body}>
           <Section
-            title="White"
+            title={playerLabel}
             mods={buckets.white}
-            emptyLabel="No white-only modifiers."
+            emptyLabel="No player-owned modifiers."
           />
           <Section
-            title="Shared"
+            title="Shared Effects"
             mods={buckets.both}
             emptyLabel="No shared modifiers."
           />
           <Section
-            title="Black"
+            title={opponentLabel}
             mods={buckets.black}
-            emptyLabel="No black-only modifiers."
+            emptyLabel="No opponent-owned modifiers."
           />
         </div>
       )}

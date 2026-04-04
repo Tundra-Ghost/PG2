@@ -275,6 +275,12 @@ export default function App() {
             <ModifierPanel
               state={gameState}
               collapsed={modifierPanelCollapsed}
+              playerLabel="Your Draft"
+              opponentLabel={
+                selectedBot
+                  ? `${BOTS.find(bot => bot.id === selectedBot)?.name ?? 'Opponent'} Draft`
+                  : 'Opponent Draft'
+              }
               onToggleCollapsed={() => setModifierPanelCollapsed(prev => !prev)}
             />
           </div>
