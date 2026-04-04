@@ -15,8 +15,16 @@ import MoveHistory from './components/MoveHistory/MoveHistory';
 import PlayerBanner from './components/PlayerBanner/PlayerBanner';
 import ProfileSetup from './components/ProfileSetup/ProfileSetup';
 import SettingsScreen from './components/Settings/Settings';
-import type { LocalProfile } from './profile';
-import { loadProfile, recordProfileRun, recordProfileWin } from './profile';
+import {
+  createProfile,
+  getProfileLevel,
+  getSelectedTitle,
+  loadProfile,
+  recordProfileMatchCompletion,
+  recordProfileMatchStart,
+  type LocalProfile,
+  type MatchMode,
+} from './profile';
 import styles from './App.module.css';
 import { ALL_MODIFIERS } from './modifiers/data';
 import { modifierRegistry } from './modifiers/registry';
@@ -25,6 +33,13 @@ import './modifiers/index';
 
 type Screen = 'menu' | 'botselect' | 'draft' | 'game' | 'settings' | 'profile';
 type BotSelectMode = 'run' | 'quick' | null;
+
+interface ProfileViewerState {
+  profile: LocalProfile;
+  editable: boolean;
+  heading: string;
+  subtitle: string;
+}
 
 const BERSERKER_ID = 'MOD-E006';
 const DRAFT_BUDGET = 8;
@@ -67,22 +82,59 @@ function buildChickDraft(): string[] {
   return picks;
 }
 
+function buildBotProfile(botId: BotId | null): LocalProfile | null {
+  const bot = botId ? (BOTS.find(entry => entry.id === botId) ?? null) : null;
+  if (!bot) return null;
+
+  const base = createProfile({
+    displayName: bot.name,
+    motto: bot.description,
+    region: 'Local Bot Pool',
+    country: 'Prototype',
+    avatarDataUrl: null,
+    selectedTitleId: bot.id === 'chick' ? 'title_bread_bandit' : 'title_rookery_scout',
+  });
+
+  return {
+    ...base,
+    elo: 1200,
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: new Date().toISOString(),
+    stats: {
+      modes: {
+        story: { gamesPlayed: 0, wins: 0, losses: 0, draws: 0 },
+        quick: {
+          gamesPlayed: bot.difficulty * 6,
+          wins: bot.difficulty * 2,
+          losses: bot.difficulty * 3,
+          draws: bot.difficulty,
+        },
+        online: { gamesPlayed: 0, wins: 0, losses: 0, draws: 0 },
+      },
+    },
+    unlockedAchievements: {
+      ach_first_flight: '2026-01-02T00:00:00.000Z',
+    },
+  };
+}
+
 export default function App() {
   const [screen, setScreen] = useState<Screen>('menu');
   const [prevScreen, setPrevScreen] = useState<Screen>('menu');
-  const [gameState, setGameState] = useState<GameState>(() =>
-    chessEngine.getInitialState(),
-  );
+  const [gameState, setGameState] = useState<GameState>(() => chessEngine.getInitialState());
   const [vsBot, setVsBot] = useState(false);
   const [selectedBot, setSelectedBot] = useState<BotId | null>(null);
   const [botSelectMode, setBotSelectMode] = useState<BotSelectMode>(null);
   const [pendingBotModifierIds, setPendingBotModifierIds] = useState<string[]>([]);
   const [activePlayerModifierIds, setActivePlayerModifierIds] = useState<string[]>([]);
+  const [currentMatchMode, setCurrentMatchMode] = useState<MatchMode>('quick');
+  const [currentMatchStartedAt, setCurrentMatchStartedAt] = useState<string>(new Date().toISOString());
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [modifierPanelCollapsed, setModifierPanelCollapsed] = useState(false);
+  const [profileViewer, setProfileViewer] = useState<ProfileViewerState | null>(null);
   const seenBerserkerEvent = useRef(0);
-  const recordedRunIds = useRef<Set<string>>(new Set());
-  const recordedWinIds = useRef<Set<string>>(new Set());
+  const recordedStartIds = useRef<Set<string>>(new Set());
+  const recordedCompletionIds = useRef<Set<string>>(new Set());
   const [settings, setSettings] = useState<AppSettings>(() => {
     const loaded = loadSettings();
     applySettings(loaded);
@@ -107,9 +159,7 @@ export default function App() {
     const timer = setTimeout(() => {
       const move = getChickBotMove(gameState, 'black');
       if (move) {
-        setGameState(prev =>
-          prev.status === 'active' ? chessEngine.applyMove(prev, move) : prev,
-        );
+        setGameState(prev => (prev.status === 'active' ? chessEngine.applyMove(prev, move) : prev));
       }
     }, 350);
 
@@ -139,23 +189,73 @@ export default function App() {
   useEffect(() => {
     if (screen !== 'game') return;
     if (!profile) return;
-    if (recordedRunIds.current.has(gameState.id)) return;
+    if (recordedStartIds.current.has(gameState.id)) return;
 
-    const nextProfile = recordProfileRun(profile, activePlayerModifierIds);
-    recordedRunIds.current.add(gameState.id);
+    const nextProfile = recordProfileMatchStart(profile, currentMatchMode);
+    recordedStartIds.current.add(gameState.id);
     setProfile(nextProfile);
-  }, [screen, profile, gameState.id, activePlayerModifierIds]);
+  }, [screen, profile, gameState.id, currentMatchMode]);
 
   useEffect(() => {
     if (!profile) return;
-    if (gameState.status !== 'checkmate') return;
-    if (gameState.turn !== 'black') return;
-    if (recordedWinIds.current.has(gameState.id)) return;
+    if (gameState.status !== 'checkmate' && gameState.status !== 'draw') return;
+    if (recordedCompletionIds.current.has(gameState.id)) return;
 
-    const nextProfile = recordProfileWin(profile);
-    recordedWinIds.current.add(gameState.id);
+    const result =
+      gameState.status === 'draw'
+        ? 'draw'
+        : gameState.turn === 'black'
+          ? 'win'
+          : 'loss';
+
+    const nextProfile = recordProfileMatchCompletion(profile, {
+      matchId: gameState.id,
+      playedAt: currentMatchStartedAt,
+      mode: currentMatchMode,
+      opponentName: selectedBot ? (BOTS.find(bot => bot.id === selectedBot)?.name ?? 'Opponent') : 'Opponent',
+      opponentType: vsBot ? 'bot' : 'player',
+      result,
+      outcome: gameState.status === 'draw' ? 'draw' : 'checkmate',
+      moveCount: gameState.moveHistory.length,
+      draftedModifierIds: activePlayerModifierIds,
+    });
+
+    recordedCompletionIds.current.add(gameState.id);
     setProfile(nextProfile);
-  }, [profile, gameState.status, gameState.turn, gameState.id]);
+  }, [
+    profile,
+    gameState.status,
+    gameState.turn,
+    gameState.id,
+    gameState.moveHistory.length,
+    currentMatchStartedAt,
+    currentMatchMode,
+    selectedBot,
+    vsBot,
+    activePlayerModifierIds,
+  ]);
+
+  function commitAbandonmentIfNeeded() {
+    if (!profile) return;
+    if (gameState.status !== 'active') return;
+    if (gameState.moveHistory.length === 0) return;
+    if (recordedCompletionIds.current.has(gameState.id)) return;
+
+    const nextProfile = recordProfileMatchCompletion(profile, {
+      matchId: gameState.id,
+      playedAt: currentMatchStartedAt,
+      mode: currentMatchMode,
+      opponentName: selectedBot ? (BOTS.find(bot => bot.id === selectedBot)?.name ?? 'Opponent') : 'Opponent',
+      opponentType: vsBot ? 'bot' : 'player',
+      result: 'loss',
+      outcome: 'abandoned',
+      moveCount: gameState.moveHistory.length,
+      draftedModifierIds: activePlayerModifierIds,
+    });
+
+    recordedCompletionIds.current.add(gameState.id);
+    setProfile(nextProfile);
+  }
 
   function goToSettings() {
     setPrevScreen(screen);
@@ -172,6 +272,7 @@ export default function App() {
     setPendingBotModifierIds([]);
     setActivePlayerModifierIds([]);
     setBotSelectMode(mode);
+    setCurrentMatchMode(mode === 'run' ? 'story' : 'quick');
     setScreen('botselect');
   }
 
@@ -187,6 +288,8 @@ export default function App() {
 
     const state = chessEngine.beginTurn(chessEngine.getInitialState());
     setActivePlayerModifierIds([]);
+    setCurrentMatchMode('quick');
+    setCurrentMatchStartedAt(new Date().toISOString());
     setGameState(state);
     setScreen('game');
   }
@@ -199,17 +302,22 @@ export default function App() {
     ]);
     state = chessEngine.beginTurn(state);
     setActivePlayerModifierIds(playerModifierIds);
+    setCurrentMatchMode('story');
+    setCurrentMatchStartedAt(new Date().toISOString());
     setGameState(state);
     setScreen('game');
   }
 
   function handleNewGame() {
+    commitAbandonmentIfNeeded();
     const state = chessEngine.beginTurn(chessEngine.getInitialState());
     setActivePlayerModifierIds([]);
+    setCurrentMatchStartedAt(new Date().toISOString());
     setGameState(state);
   }
 
   function handleBackToMenu() {
+    if (screen === 'game') commitAbandonmentIfNeeded();
     setScreen('menu');
   }
 
@@ -218,23 +326,33 @@ export default function App() {
   }
 
   const handleUnlock = () => unlockBgm();
-  const selectedBotMeta = selectedBot
-    ? (BOTS.find(bot => bot.id === selectedBot) ?? null)
-    : null;
+  const selectedBotMeta = selectedBot ? (BOTS.find(bot => bot.id === selectedBot) ?? null) : null;
   const opponentName = selectedBotMeta?.name ?? 'Opponent';
   const opponentTagline = selectedBotMeta?.tagline ?? 'Awaiting challenger';
-  const moveCountLabel =
-    gameState.moveHistory.length > 0
-      ? `Move ${gameState.flags.fullMoveNumber}`
-      : 'Opening position';
-  const playerName = profile?.displayName ?? 'Player';
-  const playerMotto = profile?.motto || moveCountLabel;
+  const moveCountLabel = gameState.moveHistory.length > 0 ? `Move ${gameState.flags.fullMoveNumber}` : 'Opening position';
+  const botProfile = buildBotProfile(selectedBot);
+  const playerProfile = profile;
+  const playerName = playerProfile?.displayName ?? 'Player';
+  const playerTitle = playerProfile ? getSelectedTitle(playerProfile).name : 'Street Pigeon';
+  const playerLevel = playerProfile ? getProfileLevel(playerProfile) : 1;
+  const opponentLevel = botProfile ? getProfileLevel(botProfile) : 1;
+  const opponentTitle = botProfile ? getSelectedTitle(botProfile).name : 'Street Pigeon';
 
   const settingsOverlay = screen === 'settings' ? (
     <SettingsScreen
       settings={settings}
       onSave={handleSettingsSave}
       onBack={() => setScreen(prevScreen)}
+    />
+  ) : null;
+
+  const viewedProfileOverlay = profileViewer ? (
+    <ProfileSetup
+      profile={profileViewer.profile}
+      editable={profileViewer.editable}
+      heading={profileViewer.heading}
+      subtitle={profileViewer.subtitle}
+      onBack={() => setProfileViewer(null)}
     />
   ) : null;
 
@@ -259,6 +377,7 @@ export default function App() {
       <div onClick={handleUnlock}>
         <ProfileSetup
           profile={profile}
+          editable
           onSave={nextProfile => {
             setProfile(nextProfile);
             setScreen('menu');
@@ -271,9 +390,10 @@ export default function App() {
   }
 
   if (baseScreen === 'botselect') {
-    const botSelectSubtitle = botSelectMode === 'run'
-      ? 'New Run · Choose bot opponent before drafting modifiers'
-      : 'Quick Play · Standard chess · No modifiers';
+    const botSelectSubtitle =
+      botSelectMode === 'run'
+        ? 'New Run · Choose bot opponent before drafting modifiers'
+        : 'Quick Play · Standard chess · No modifiers';
 
     return (
       <div onClick={handleUnlock}>
@@ -305,13 +425,12 @@ export default function App() {
     <div className={styles.app} onClick={handleUnlock}>
       <header className={styles.header}>
         <button className={styles.menuBtn} onClick={handleBackToMenu}>
-          ← Menu
+          Menu
         </button>
-        <span className={styles.logo}>🐦</span>
         <span className={styles.title}>Pigeon Chess</span>
         <span className={styles.phase}>Phase 0</span>
         <button className={styles.settingsBtn} onClick={goToSettings}>
-          ⚙
+          Settings
         </button>
       </header>
 
@@ -321,17 +440,38 @@ export default function App() {
             <PlayerBanner
               role="Player"
               name={playerName}
-              subtitle={playerMotto}
+              metaLine={`${playerTitle} · Lv ${playerLevel} · ELO ${playerProfile?.elo ?? 1200}`}
+              subtitle={playerProfile?.motto || moveCountLabel}
               badge={gameState.turn === 'white' ? 'To Move' : 'Waiting'}
               portraitLabel={playerName.slice(0, 1).toUpperCase()}
+              portraitSrc={playerProfile?.avatarDataUrl ?? null}
+              onClick={() => {
+                if (!playerProfile) return;
+                setProfileViewer({
+                  profile: playerProfile,
+                  editable: false,
+                  heading: `${playerName} Profile`,
+                  subtitle: 'Read-only in-match profile view.',
+                });
+              }}
             />
             <PlayerBanner
               role={vsBot ? 'AI' : 'Opponent'}
               name={opponentName}
-              subtitle={opponentTagline}
+              metaLine={`${opponentTitle} · Lv ${opponentLevel} · ELO ${botProfile?.elo ?? 1200}`}
+              subtitle={botProfile?.motto || opponentTagline}
               badge={gameState.turn === 'black' ? 'To Move' : 'Standing By'}
-              portraitLabel={selectedBotMeta?.icon ?? 'O'}
+              portraitLabel={selectedBotMeta?.name.slice(0, 1).toUpperCase() ?? 'O'}
               align="right"
+              onClick={() => {
+                if (!botProfile) return;
+                setProfileViewer({
+                  profile: botProfile,
+                  editable: false,
+                  heading: `${opponentName} Dossier`,
+                  subtitle: 'Prototype opponent profile view. Online profile exchange is reserved for future server-backed play.',
+                });
+              }}
             />
           </div>
 
@@ -359,7 +499,7 @@ export default function App() {
             <div className={styles.logDock}>
               <MoveHistory
                 state={gameState}
-                whiteLabel="You"
+                whiteLabel={playerName}
                 blackLabel={vsBot ? opponentName : 'Black'}
               />
             </div>
@@ -382,6 +522,7 @@ export default function App() {
       </main>
 
       {settingsOverlay}
+      {viewedProfileOverlay}
     </div>
   );
 }

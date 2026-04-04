@@ -85,6 +85,14 @@
     linear-gradient(180deg, rgba(230, 201, 141, 0.9), rgba(176, 128, 71, 0.5));
 }
 
+.profilePortraitImage {
+  width: 100%;
+  min-height: 86px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 2px solid rgba(84, 48, 18, 0.16);
+}
+
 .profileBody {
   min-width: 0;
   display: flex;
@@ -656,6 +664,11 @@
   }
 
   .profilePortrait {
+    min-height: 70px;
+    border-radius: 12px;
+  }
+
+  .profilePortraitImage {
     min-height: 70px;
     border-radius: 12px;
   }

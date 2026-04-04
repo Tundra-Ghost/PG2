@@ -1,4 +1,9 @@
-import type { LocalProfile } from '../../profile';
+import {
+  getFavoriteModifiers,
+  getProfileLevel,
+  getSelectedTitle,
+  type LocalProfile,
+} from '../../profile';
 import { ALL_MODIFIERS } from '../../modifiers/data';
 import styles from './MainMenu.module.css';
 
@@ -87,27 +92,15 @@ const JOURNEY_STEPS = [
 ];
 
 const STAGE_ART_SLOTS: ArtSlot[] = [
-  {
-    label: 'Park Backdrop',
-    note: 'Wide environment art',
-    className: 'slotBackdrop',
-  },
-  {
-    label: 'Hero Character',
-    note: 'Main illustrated figure',
-    className: 'slotCharacter',
-  },
-  {
-    label: 'Board Table',
-    note: 'Chessboard prop cluster',
-    className: 'slotBoardProp',
-  },
-  {
-    label: 'Bench / Side Prop',
-    note: 'Secondary supporting prop',
-    className: 'slotSideProp',
-  },
+  { label: 'Park Backdrop', note: 'Wide environment art', className: 'slotBackdrop' },
+  { label: 'Hero Character', note: 'Main illustrated figure', className: 'slotCharacter' },
+  { label: 'Board Table', note: 'Chessboard prop cluster', className: 'slotBoardProp' },
+  { label: 'Bench / Side Prop', note: 'Secondary supporting prop', className: 'slotSideProp' },
 ];
+
+function getModifierName(id: string): string {
+  return ALL_MODIFIERS.find(mod => mod.id === id)?.name ?? id;
+}
 
 export default function MainMenu({
   onPlay,
@@ -115,13 +108,10 @@ export default function MainMenu({
   onProfile,
   profile,
 }: MainMenuProps) {
-  const favoriteModifierName = profile?.stats.favoriteModifierId
-    ? (ALL_MODIFIERS.find(mod => mod.id === profile.stats.favoriteModifierId)?.name ?? 'Unknown')
-    : 'None yet';
-
-  const profileSummary = profile
-    ? `${profile.stats.runsPlayed} runs · ${profile.stats.wins} wins`
-    : 'No profile yet';
+  const profileLevel = profile ? getProfileLevel(profile) : 1;
+  const selectedTitle = profile ? getSelectedTitle(profile).name : 'Street Pigeon';
+  const favoriteModifierId = profile ? getFavoriteModifiers(profile, 'all')[0] ?? null : null;
+  const favoriteModifierName = favoriteModifierId ? getModifierName(favoriteModifierId) : 'None yet';
 
   const leftRail = LEFT_RAIL.map(item => ({
     ...item,
@@ -135,10 +125,7 @@ export default function MainMenu({
 
   const rightRail = RIGHT_RAIL.map(item => ({
     ...item,
-    action:
-      item.label === 'Settings'
-        ? onSettings
-        : undefined,
+    action: item.label === 'Settings' ? onSettings : undefined,
   }));
 
   return (
@@ -147,17 +134,26 @@ export default function MainMenu({
         <div className={styles.shell}>
           <header className={styles.topBar}>
             <button className={styles.profileBanner} onClick={onProfile}>
-              <span className={styles.profilePortrait} aria-hidden="true">
-                {profile?.displayName?.slice(0, 1).toUpperCase() ?? 'P'}
-              </span>
+              {profile?.avatarDataUrl ? (
+                <img
+                  src={profile.avatarDataUrl}
+                  alt={`${profile.displayName} avatar`}
+                  className={styles.profilePortraitImage}
+                />
+              ) : (
+                <span className={styles.profilePortrait} aria-hidden="true">
+                  {profile?.displayName?.slice(0, 1).toUpperCase() ?? 'P'}
+                </span>
+              )}
+
               <span className={styles.profileBody}>
                 <span className={styles.profileTitle}>
                   {profile?.displayName ?? 'Create Profile'}
                 </span>
-                <span className={styles.profileMeta}>{profileSummary}</span>
-                <span className={styles.profileFlavor}>
-                  {profile?.motto || 'Local profile stored on this device.'}
+                <span className={styles.profileMeta}>
+                  Level {profileLevel} · ELO {profile?.elo ?? 1200}
                 </span>
+                <span className={styles.profileFlavor}>{selectedTitle}</span>
               </span>
             </button>
 
@@ -167,8 +163,8 @@ export default function MainMenu({
                 <span className={styles.utilityLabel}>Live Mods</span>
               </div>
               <div className={styles.utilityChip}>
-                <span className={styles.utilityValue}>{profile?.stats.wins ?? 0}</span>
-                <span className={styles.utilityLabel}>Wins</span>
+                <span className={styles.utilityValue}>{profile?.elo ?? 1200}</span>
+                <span className={styles.utilityLabel}>ELO</span>
               </div>
               <button className={styles.utilityBtn} onClick={onSettings}>
                 Settings
@@ -200,15 +196,13 @@ export default function MainMenu({
                 <div className={styles.sceneTrees} />
                 <div className={styles.sceneSlots} aria-hidden="true">
                   {STAGE_ART_SLOTS.map(slot => (
-                    <div
-                      key={slot.label}
-                      className={`${styles.artSlot} ${styles[slot.className]}`}
-                    >
+                    <div key={slot.label} className={`${styles.artSlot} ${styles[slot.className]}`}>
                       <span className={styles.artSlotLabel}>{slot.label}</span>
                       <span className={styles.artSlotNote}>{slot.note}</span>
                     </div>
                   ))}
                 </div>
+
                 <div className={styles.sceneBoard}>
                   <div className={styles.boardHeader}>
                     <span className={styles.boardHeaderLabel}>Current Build</span>
