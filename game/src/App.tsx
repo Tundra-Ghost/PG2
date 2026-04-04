@@ -28,6 +28,8 @@ export default function App() {
     chessEngine.getInitialState(),
   );
   const [vsBot, setVsBot] = useState(false);
+  const [selectedBot, setSelectedBot] = useState<BotId | null>(null);
+  const [pendingRunModifiers, setPendingRunModifiers] = useState<string[] | null>(null);
   const [settings, setSettings] = useState<AppSettings>(() => {
     const s = loadSettings();
     applySettings(s); // sync sound + CSS classes at startup
@@ -46,6 +48,7 @@ export default function App() {
   // Chick bot: fires when it's black's turn and vsBot is active
   useEffect(() => {
     if (!vsBot) return;
+    if (selectedBot !== 'chick') return;
     if (gameState.status !== 'active') return;
     if (gameState.turn !== 'black') return;
 
@@ -59,7 +62,7 @@ export default function App() {
     }, 350);
 
     return () => clearTimeout(timer);
-  }, [vsBot, gameState]);
+  }, [vsBot, selectedBot, gameState]);
 
   function goToSettings() {
     setPrevScreen(screen);
@@ -69,26 +72,31 @@ export default function App() {
   function handleMenuPlay(mode: 'run' | 'quick') {
     if (mode === 'run') {
       setVsBot(false);
+      setSelectedBot(null);
+      setPendingRunModifiers(null);
       setScreen('draft');
     } else {
+      setPendingRunModifiers(null);
       setScreen('botselect');
     }
   }
 
-  function handleBotSelect(_botId: BotId) {
+  function handleBotSelect(botId: BotId) {
+    setSelectedBot(botId);
     setVsBot(true);
-    const state = chessEngine.beginTurn(chessEngine.getInitialState());
+    let state = chessEngine.getInitialState();
+    if (pendingRunModifiers) {
+      state = chessEngine.activateModifiers(state, pendingRunModifiers);
+    }
+    state = chessEngine.beginTurn(state);
     setGameState(state);
+    setPendingRunModifiers(null);
     setScreen('game');
   }
 
   function handleStartMatch(selectedIds: string[]) {
-    setVsBot(false);
-    let state = chessEngine.getInitialState();
-    state = chessEngine.activateModifiers(state, selectedIds);
-    state = chessEngine.beginTurn(state);
-    setGameState(state);
-    setScreen('game');
+    setPendingRunModifiers(selectedIds);
+    setScreen('botselect');
   }
 
   function handleNewGame() {
@@ -128,11 +136,16 @@ export default function App() {
   }
 
   if (baseScreen === 'botselect') {
+    const botSelectSubtitle = pendingRunModifiers
+      ? 'New Run · Drafted modifiers active · Choose bot opponent'
+      : 'Quick Play · Standard chess · No modifiers';
+
     return (
       <div onClick={handleUnlock}>
         <BotSelect
           onSelect={handleBotSelect}
-          onBack={() => setScreen('menu')}
+          onBack={() => setScreen(pendingRunModifiers ? 'draft' : 'menu')}
+          subtitle={botSelectSubtitle}
         />
         {settingsOverlay}
       </div>

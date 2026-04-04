@@ -5,6 +5,7 @@ export type BotId = 'chick' | 'pigeon' | 'magnus';
 interface BotSelectProps {
   onSelect: (botId: BotId) => void;
   onBack: () => void;
+  subtitle?: string;
 }
 
 const BOTS: {
@@ -56,17 +57,20 @@ function DifficultyPips({ level, max = 3 }: { level: number; max?: number }) {
   );
 }
 
-export default function BotSelect({ onSelect, onBack }: BotSelectProps) {
+export default function BotSelect({
+  onSelect,
+  onBack,
+  subtitle = 'Quick Play · Standard chess · No modifiers',
+}: BotSelectProps) {
   return (
     <div className={styles.root}>
       <div className={styles.scroll}>
         <div className={styles.content}>
-
           <header className={styles.header}>
             <button className={styles.backBtn} onClick={onBack}>← Back</button>
             <div className={styles.heading}>
               <h2 className={styles.title}>Choose Opponent</h2>
-              <p className={styles.sub}>Quick Play · Standard chess · No modifiers</p>
+              <p className={styles.sub}>{subtitle}</p>
             </div>
           </header>
 
@@ -99,7 +103,6 @@ export default function BotSelect({ onSelect, onBack }: BotSelectProps) {
               </li>
             ))}
           </ul>
-
         </div>
       </div>
     </div>
