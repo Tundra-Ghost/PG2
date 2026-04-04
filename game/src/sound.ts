@@ -4,6 +4,13 @@
  * BGM respects browser autoplay policy by deferring to the first user gesture.
  */
 
+// BASE_URL is '/' in dev, './' in production (matches vite.config base: './')
+// This ensures audio paths work whether served from root or a subdirectory.
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, ''); // strip trailing slash
+function soundPath(file: string): string {
+  return `${BASE}/sounds/${file}`;
+}
+
 type SoundOptions = {
   sfxEnabled: boolean;
   bgmEnabled: boolean;
@@ -34,17 +41,16 @@ function getSfx(path: string): HTMLAudioElement {
 function playSfx(path: string) {
   if (!opts.sfxEnabled) return;
   const src = getSfx(path);
-  // Clone so overlapping hits don't cut each other off
-  const clone = src.cloneNode() as HTMLAudioElement;
+  // Use new Audio(src) rather than cloneNode — more reliable cross-browser
+  const clone = new Audio(src.src);
   clone.volume = opts.sfxVolume;
-  clone.play().catch(() => { /* swallow autoplay errors */ });
+  clone.play().catch(() => { /* swallow — user hasn't interacted yet */ });
 }
 
 // ── BGM ────────────────────────────────────────────────────────────────────
 
 let bgmEl: HTMLAudioElement | null = null;
 let currentBgmPath: string | null = null;
-// Queue a BGM path before the first gesture unlocks autoplay
 let pendingBgm: string | null = null;
 
 function applyBgmSettings() {
@@ -55,6 +61,7 @@ function applyBgmSettings() {
 
 function startBgm(path: string) {
   if (!opts.bgmEnabled) return;
+  // Already playing this track — nothing to do
   if (currentBgmPath === path && bgmEl && !bgmEl.paused) return;
 
   if (bgmEl) {
@@ -68,7 +75,7 @@ function startBgm(path: string) {
   currentBgmPath = path;
 
   bgmEl.play().catch(() => {
-    // Autoplay blocked — store as pending, play on next user gesture
+    // Browser blocked autoplay — queue for first user gesture
     pendingBgm = path;
   });
 }
@@ -84,13 +91,14 @@ function stopBgm() {
 }
 
 /**
- * Call once on the first user interaction (click/keydown) to unblock BGM.
- * App.tsx attaches this to the root div's onClick.
+ * Call once on the first user interaction to unblock BGM.
+ * App.tsx attaches this to every screen's root onClick.
  */
 export function unlockBgm() {
   if (!pendingBgm) return;
-  startBgm(pendingBgm);
+  const path = pendingBgm;
   pendingBgm = null;
+  startBgm(path);
 }
 
 // ── Public API ─────────────────────────────────────────────────────────────
@@ -106,12 +114,12 @@ export function getSoundOptions(): Readonly<SoundOptions> {
 }
 
 // SFX
-export function playMove()    { playSfx('/sounds/move.mp3'); }
-export function playCapture() { playSfx('/sounds/capture.mp3'); }
-export function playCastle()  { playSfx('/sounds/castle.mp3'); }
-export function playClick()   { playSfx('/sounds/button-click.mp3'); }
+export function playMove()    { playSfx(soundPath('move.mp3')); }
+export function playCapture() { playSfx(soundPath('capture.mp3')); }
+export function playCastle()  { playSfx(soundPath('castle.mp3')); }
+export function playClick()   { playSfx(soundPath('button-click.mp3')); }
 
 // BGM
-export function playMenuBgm() { startBgm('/sounds/bgm-menu.mp3'); }
-export function playGameBgm() { startBgm('/sounds/bgm-game.mp3'); }
+export function playMenuBgm() { startBgm(soundPath('bgm-menu.mp3')); }
+export function playGameBgm() { startBgm(soundPath('bgm-game.mp3')); }
 export { stopBgm };
