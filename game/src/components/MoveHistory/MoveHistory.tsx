@@ -52,7 +52,7 @@ export default function MoveHistory({ state }: MoveHistoryProps) {
   return (
     <aside className={styles.panel}>
       <header className={styles.header}>
-        <span className={styles.headerTitle}>Move History</span>
+        <span className={styles.headerTitle}>Match Log</span>
         <span className={styles.moveCount}>
           {flags.fullMoveNumber > 1 || (moveHistory.length > 0)
             ? `Move ${flags.fullMoveNumber}`
@@ -62,7 +62,7 @@ export default function MoveHistory({ state }: MoveHistoryProps) {
 
       <div className={styles.list}>
         {pairs.length === 0 && (
-          <p className={styles.empty}>No moves yet.</p>
+          <p className={styles.empty}>No moves yet. Modifier events will land here.</p>
         )}
 
         {pairs.map(pair => (

@@ -46,6 +46,7 @@ export default function App() {
   const [selectedBot, setSelectedBot] = useState<BotId | null>(null);
   const [pendingRunModifiers, setPendingRunModifiers] = useState<string[] | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [modifierPanelCollapsed, setModifierPanelCollapsed] = useState(false);
   const seenBerserkerEvent = useRef(0);
   const [settings, setSettings] = useState<AppSettings>(() => {
     const s = loadSettings();
@@ -231,10 +232,20 @@ export default function App() {
               onNewGame={handleNewGame}
               infoMessage={infoMessage}
             />
-          </div>
-          <div className={styles.sideColumn}>
-            <ModifierPanel state={gameState} />
             <MoveHistory state={gameState} />
+          </div>
+          <div
+            className={`${styles.sideColumn} ${
+              modifierPanelCollapsed ? styles.sideColumnCollapsed : ''
+            }`}
+          >
+            <ModifierPanel
+              state={gameState}
+              collapsed={modifierPanelCollapsed}
+              onToggleCollapsed={() =>
+                setModifierPanelCollapsed(prev => !prev)
+              }
+            />
           </div>
         </div>
       </main>

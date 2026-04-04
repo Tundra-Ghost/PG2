@@ -12,6 +12,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Modifier audit is in progress to make currently shipped cards visible and testable in play
 - In-game history now supports modifier event messages in addition to SAN move notation
 - Prototype app and landing page now have an explicit mobile-responsive baseline
+- In-match UI now separates the primary play surface from the modifier rail and supports collapsible modifier browsing
 
 ## Priority 1: Stabilize The Prototype Core
 
@@ -27,6 +28,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] Add tests for the 5 currently registered modifiers
 - [ ] Verify the existing 5 modifiers match their modifier-bible intent
 - [ ] Separate shipped modifiers from design-only modifiers in the UI/data layer
+- [x] Add a draft filter to hide unavailable modifiers during modifier testing
 - [ ] Track implementation status per shipped modifier: engine logic, board visuals, interaction feedback, tests
 - [ ] Build an implementation checklist for the remaining 35 modifiers by category
 
@@ -50,6 +52,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] GDD UI: animate modifier triggers on board and pieces: lava burn, Gerald fly-off, freeze thaw, berserker chain, pacifist refusal
 - [ ] GDD UI: add short event banners for autonomous or curse-driven actions so modifier outcomes never feel silent
 - [x] GDD UI: route modifier-trigger messages into the in-game history feed
+- [x] GDD UI: separate match log from modifier browsing so the board surface reads more clearly
 - [ ] GDD UI: add a shared icon set for modifier categories, settings controls, and board hazards
 - [ ] GDD SFX: add distinct one-shot sounds for lava death, Gerald interference, freeze block, pacifist refusal, and berserker chain
 - [ ] GDD SFX: add subtle UI sounds for draft select/deselect, disabled-card hover, modal open/close, and settings toggles

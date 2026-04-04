@@ -9,6 +9,8 @@ import styles from './ModifierPanel.module.css';
 
 interface ModifierPanelProps {
   state: GameState;
+  collapsed?: boolean;
+  onToggleCollapsed?: () => void;
 }
 
 interface ModifierDisplay extends ModifierInstance {
@@ -149,37 +151,62 @@ function Section({
   );
 }
 
-export default function ModifierPanel({ state }: ModifierPanelProps) {
+export default function ModifierPanel({
+  state,
+  collapsed = false,
+  onToggleCollapsed,
+}: ModifierPanelProps) {
   const buckets = bucketModifiers(state.activeModifiers);
+  const total = state.activeModifiers.length;
 
   return (
-    <aside className={styles.panel}>
+    <aside
+      className={`${styles.panel} ${collapsed ? styles.panelCollapsed : ''}`}
+    >
       <header className={styles.header}>
-        <span className={styles.headerTitle}>Active Modifiers</span>
-        <span className={styles.headerSub}>
-          {state.activeModifiers.length > 0
-            ? `${state.activeModifiers.length} active`
-            : 'Standard rules'}
-        </span>
+        <div className={styles.headerCopy}>
+          <span className={styles.headerTitle}>Active Modifiers</span>
+          {!collapsed && (
+            <span className={styles.headerSub}>
+              {total > 0 ? `${total} active` : 'Standard rules'}
+            </span>
+          )}
+        </div>
+        <button
+          type="button"
+          className={styles.collapseBtn}
+          onClick={onToggleCollapsed}
+          aria-expanded={!collapsed}
+          aria-label={collapsed ? 'Expand modifier panel' : 'Collapse modifier panel'}
+        >
+          {collapsed ? '←' : '→'}
+        </button>
       </header>
 
-      <div className={styles.body}>
-        <Section
-          title="White"
-          mods={buckets.white}
-          emptyLabel="No white-only modifiers."
-        />
-        <Section
-          title="Shared"
-          mods={buckets.both}
-          emptyLabel="No shared modifiers."
-        />
-        <Section
-          title="Black"
-          mods={buckets.black}
-          emptyLabel="No black-only modifiers."
-        />
-      </div>
+      {collapsed ? (
+        <div className={styles.collapsedBody}>
+          <span className={styles.collapsedCount}>{total}</span>
+          <span className={styles.collapsedLabel}>mods</span>
+        </div>
+      ) : (
+        <div className={styles.body}>
+          <Section
+            title="White"
+            mods={buckets.white}
+            emptyLabel="No white-only modifiers."
+          />
+          <Section
+            title="Shared"
+            mods={buckets.both}
+            emptyLabel="No shared modifiers."
+          />
+          <Section
+            title="Black"
+            mods={buckets.black}
+            emptyLabel="No black-only modifiers."
+          />
+        </div>
+      )}
     </aside>
   );
 }

@@ -12,6 +12,12 @@
     0 12px 36px rgba(0, 0, 0, 0.28),
     inset 0 0 0 1px rgba(255, 255, 255, 0.02);
   overflow: hidden;
+  transition: width 0.2s ease, min-width 0.2s ease;
+}
+
+.panelCollapsed {
+  width: 56px;
+  min-width: 56px;
 }
 
 .header {
@@ -23,6 +29,13 @@
   padding: 0.7rem 0.9rem;
   border-bottom: 1px solid rgba(200, 151, 58, 0.12);
   background: rgba(0, 0, 0, 0.2);
+}
+
+.headerCopy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
 }
 
 .headerTitle {
@@ -40,11 +53,57 @@
   color: rgba(200, 151, 58, 0.3);
 }
 
+.collapseBtn {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border: 1px solid rgba(200, 151, 58, 0.18);
+  background: rgba(200, 151, 58, 0.06);
+  color: rgba(200, 151, 58, 0.7);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+}
+
+.collapseBtn:hover {
+  border-color: rgba(200, 151, 58, 0.45);
+  color: var(--ui-gold);
+  background: rgba(200, 151, 58, 0.12);
+}
+
 .body {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
   padding: 0.5rem 0.35rem 0.55rem;
+}
+
+.collapsedBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.8rem 0.2rem;
+}
+
+.collapsedCount {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--ui-gold);
+  line-height: 1;
+}
+
+.collapsedLabel {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(200, 151, 58, 0.42);
 }
 
 .section {
@@ -185,7 +244,12 @@
 @media (max-width: 1120px) {
   .panel {
     width: 100%;
+    min-width: 0;
     border-top: 1px solid rgba(200, 151, 58, 0.1);
+  }
+
+  .panelCollapsed {
+    width: 100%;
   }
 }
 

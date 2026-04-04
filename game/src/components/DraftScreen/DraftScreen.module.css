@@ -112,6 +112,30 @@
   color: var(--ui-gold);
 }
 
+.filterToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(200, 151, 58, 0.48);
+  cursor: pointer;
+}
+
+.filterToggle input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--ui-gold);
+  cursor: pointer;
+}
+
+.filterToggleLabel {
+  line-height: 1;
+}
+
 /* Category chips */
 .chips {
   display: flex;

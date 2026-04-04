@@ -55,6 +55,7 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('ALL');
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [hideUnavailable, setHideUnavailable] = useState(true);
   const implementedIds = useMemo(
     () => new Set(modifierRegistry.getAll().map(mod => mod.id)),
     [],
@@ -103,6 +104,9 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
   // ── Filtering ───────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
     let list = ALL_MODIFIERS;
+    if (hideUnavailable) {
+      list = list.filter(m => implementedIds.has(m.id));
+    }
     if (activeCategory !== 'ALL') {
       list = list.filter(m => m.category === activeCategory);
     }
@@ -116,7 +120,7 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
       );
     }
     return list;
-  }, [activeCategory, query]);
+  }, [activeCategory, hideUnavailable, implementedIds, query]);
 
   // ── Budget bar width ─────────────────────────────────────────────────────────
   const barPct = Math.min(100, Math.max(0, (totalCost / BUDGET) * 100));
@@ -153,6 +157,15 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
               </button>
             )}
           </div>
+
+          <label className={styles.filterToggle}>
+            <input
+              type="checkbox"
+              checked={hideUnavailable}
+              onChange={e => setHideUnavailable(e.target.checked)}
+            />
+            <span className={styles.filterToggleLabel}>Hide unavailable modifiers</span>
+          </label>
 
           {/* Category chips */}
           <div className={styles.chips} role="group" aria-label="Category filter">
