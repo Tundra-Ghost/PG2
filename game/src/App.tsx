@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { BerserkerChainEvent, GameState } from './engine/types';
 import { chessEngine } from './engine/ChessEngine';
 import { getChickBotMove } from './engine/bot';
@@ -15,6 +15,7 @@ import MainMenu from './components/MainMenu/MainMenu';
 import ModifierPanel from './components/ModifierPanel/ModifierPanel';
 import MoveHistory from './components/MoveHistory/MoveHistory';
 import PlayerBanner from './components/PlayerBanner/PlayerBanner';
+import DialogueBox from './components/DialogueBox/DialogueBox';
 import ProfileSetup from './components/ProfileSetup/ProfileSetup';
 import SettingsScreen from './components/Settings/Settings';
 import {
@@ -54,6 +55,7 @@ export interface MatchChatEntry {
   portraitSlotLabel?: string;
   dialogueTheme?: 'player' | 'chick' | 'measured' | 'grandmaster' | 'npc';
   dialogueExpression?: 'neutral' | 'shocked' | 'smug' | 'frustrated';
+  shownInDialogue?: boolean;
 }
 
 const BERSERKER_ID = 'MOD-E006';
@@ -135,10 +137,34 @@ export default function App() {
   const [modifierPanelCollapsed, setModifierPanelCollapsed] = useState(false);
   const [profileViewer, setProfileViewer] = useState<ProfileViewerState | null>(null);
   const [chatEntries, setChatEntries] = useState<MatchChatEntry[]>([]);
+  const [dialogueQueue, setDialogueQueue] = useState<MatchChatEntry[]>([]);
+  const [pendingDialogue, setPendingDialogue] = useState<MatchChatEntry | null>(null);
+  // Stable ref so handleDialogueDismiss never changes identity (avoids resetting DialogueBox timers)
+  const pendingDialogueRef = useRef<MatchChatEntry | null>(null);
+  useEffect(() => {
+    pendingDialogueRef.current = pendingDialogue;
+  }, [pendingDialogue]);
   const seenBerserkerEvent = useRef(0);
   const recordedStartIds = useRef<Set<string>>(new Set());
   const recordedCompletionIds = useRef<Set<string>>(new Set());
   const lastReactedMoveId = useRef<string | null>(null);
+  // Pop the next queued entry into the DialogueBox when the previous one is dismissed
+  useEffect(() => {
+    if (pendingDialogue !== null) return;
+    if (dialogueQueue.length === 0) return;
+    const [next, ...rest] = dialogueQueue;
+    setPendingDialogue(next);
+    setDialogueQueue(rest);
+  }, [pendingDialogue, dialogueQueue]);
+
+  // Stable dismiss — reads entry from ref so it never changes identity across renders
+  const handleDialogueDismiss = useCallback(() => {
+    const entry = pendingDialogueRef.current;
+    if (!entry) return;
+    setChatEntries(prev => [...prev, { ...entry, shownInDialogue: true }]);
+    setPendingDialogue(null);
+  }, []);
+
   const [settings, setSettings] = useState<AppSettings>(() => {
     const loaded = loadSettings();
     applySettings(loaded);
@@ -200,7 +226,7 @@ export default function App() {
     lastReactedMoveId.current = moveKey;
     if (!reaction) return;
 
-    setChatEntries(prev => [
+    setDialogueQueue(prev => [
       ...prev,
       {
         id: `chat-${moveKey}`,
@@ -339,6 +365,8 @@ export default function App() {
     const state = chessEngine.beginTurn(chessEngine.getInitialState());
     setActivePlayerModifierIds([]);
     setChatEntries([]);
+    setDialogueQueue([]);
+    setPendingDialogue(null);
     lastReactedMoveId.current = null;
     setCurrentMatchMode('quick');
     setCurrentMatchStartedAt(new Date().toISOString());
@@ -358,6 +386,8 @@ export default function App() {
     setCurrentMatchMode('story');
     setCurrentMatchStartedAt(new Date().toISOString());
     setChatEntries([]);
+    setDialogueQueue([]);
+    setPendingDialogue(null);
     lastReactedMoveId.current = null;
     setGameState(state);
     setScreen('game');
@@ -371,6 +401,8 @@ export default function App() {
     setPendingBotModifierIds([]);
     setCurrentMatchStartedAt(new Date().toISOString());
     setChatEntries([]);
+    setDialogueQueue([]);
+    setPendingDialogue(null);
     lastReactedMoveId.current = null;
     setGameState(state);
   }
@@ -379,7 +411,7 @@ export default function App() {
     const trimmed = text.trim();
     if (!trimmed) return;
 
-    setChatEntries(prev => [
+    setDialogueQueue(prev => [
       ...prev,
       {
         id: `chat-player-${Date.now()}`,
@@ -634,6 +666,10 @@ export default function App() {
           </div>
         </section>
       </main>
+
+      {pendingDialogue && (
+        <DialogueBox entry={pendingDialogue} onDismiss={handleDialogueDismiss} />
+      )}
 
       {settingsOverlay}
       {viewedProfileOverlay}

@@ -200,6 +200,20 @@
   transform: rotate(1deg);
 }
 
+.dialogueInlineAvatar {
+  font-size: 1.25rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.dialogueInlineAvatarImg {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
 .dialogueHeader {
   display: flex;
   align-items: center;
@@ -225,92 +239,9 @@
 }
 
 .dialogueBody {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 88px;
-  gap: 0.55rem;
-  align-items: end;
-}
-
-.dialogueCardPlayer .dialogueBody {
-  grid-template-columns: 88px minmax(0, 1fr);
-}
-
-.dialogueCardPlayer .dialogueBubble {
-  order: 2;
-}
-
-.dialogueCardPlayer .dialoguePortraitFrame {
-  order: 1;
-}
-
-.dialogueBubble {
   min-width: 0;
 }
 
-.dialoguePortraitFrame {
-  align-self: stretch;
-  min-height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 18px 18px 8px 18px;
-  border: 1px solid rgba(84, 48, 18, 0.18);
-  background:
-    radial-gradient(circle at 35% 22%, rgba(255, 255, 255, 0.4), transparent 35%),
-    linear-gradient(180deg, var(--portrait-bg-start, rgba(227, 205, 167, 0.92)), var(--portrait-bg-end, rgba(183, 143, 89, 0.88)));
-  box-shadow:
-    0 8px 20px rgba(0, 0, 0, 0.18),
-    inset 0 0 0 1px rgba(255, 246, 224, 0.28);
-}
-
-.dialoguePortraitImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 17px 17px 7px 17px;
-}
-
-.dialoguePortraitPlaceholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  padding: 0.45rem;
-}
-
-.dialoguePortraitSlotLabel {
-  font-family: var(--font-mono);
-  font-size: 0.42rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(72, 40, 18, 0.56);
-}
-
-.dialogueExpressionLabel {
-  font-family: var(--font-mono);
-  font-size: 0.42rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(72, 40, 18, 0.74);
-}
-
-.dialoguePortraitIcon,
-.dialoguePortraitLabel {
-  color: rgba(72, 40, 18, 0.94);
-}
-
-.dialoguePortraitIcon {
-  font-size: 2.25rem;
-  line-height: 1;
-}
-
-.dialoguePortraitLabel {
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-}
 
 .entryActor {
   font-family: var(--font-mono);
@@ -441,21 +372,6 @@
     font-size: 0.84rem;
   }
 
-  .dialogueBody,
-  .dialogueCardPlayer .dialogueBody {
-    grid-template-columns: 1fr;
-  }
-
-  .dialogueCardPlayer .dialogueBubble,
-  .dialogueCardPlayer .dialoguePortraitFrame {
-    order: initial;
-  }
-
-  .dialoguePortraitFrame {
-    min-height: 58px;
-    justify-content: flex-start;
-    padding-inline: 0.9rem;
-  }
 }
 
 @media (max-width: 480px) {
@@ -468,7 +384,4 @@
     font-size: 0.8rem;
   }
 
-  .dialoguePortraitIcon {
-    font-size: 1.8rem;
-  }
 }

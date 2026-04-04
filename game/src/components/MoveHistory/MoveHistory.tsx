@@ -157,7 +157,7 @@ export default function MoveHistory({
         portraitSlotLabel: chat.portraitSlotLabel,
         dialogueTheme: chat.dialogueTheme,
         dialogueExpression: chat.dialogueExpression,
-        animated: true,
+        animated: !chat.shownInDialogue,
       });
     }
 
@@ -229,51 +229,31 @@ export default function MoveHistory({
                 }`}
               >
                 <div className={styles.dialogueHeader}>
+                  {entry.avatarIcon ? (
+                    <span className={styles.dialogueInlineAvatar} aria-hidden="true">
+                      {entry.avatarIcon}
+                    </span>
+                  ) : entry.portraitSrc ? (
+                    <img
+                      src={entry.portraitSrc}
+                      alt=""
+                      className={styles.dialogueInlineAvatarImg}
+                    />
+                  ) : null}
                   <span className={styles.dialogueNameplate}>{entry.actor}</span>
                   {entry.detail ? <span className={styles.entryDetail}>{entry.detail}</span> : null}
                 </div>
                 <div className={styles.dialogueBody}>
-                  <div className={styles.dialogueBubble}>
-                    {entry.animated ? (
-                      <TypewriterBubble
-                        text={entry.text}
-                        className={`${styles.bubble} ${styles.bubbleChat} ${styles.bubbleDialogue}`}
-                      />
-                    ) : (
-                      <div className={`${styles.bubble} ${styles.bubbleChat} ${styles.bubbleDialogue}`}>
-                        {entry.text}
-                      </div>
-                    )}
-                  </div>
-                  <div className={styles.dialoguePortraitFrame} aria-hidden="true">
-                    {entry.portraitSrc ? (
-                      <img
-                        src={entry.portraitSrc}
-                        alt=""
-                        className={styles.dialoguePortraitImage}
-                      />
-                    ) : entry.avatarIcon ? (
-                      <div className={styles.dialoguePortraitPlaceholder}>
-                        <span className={styles.dialoguePortraitSlotLabel}>
-                          {entry.portraitSlotLabel ?? 'Portrait Slot'}
-                        </span>
-                        <span className={styles.dialoguePortraitIcon}>{entry.avatarIcon}</span>
-                        <span className={styles.dialogueExpressionLabel}>
-                          {entry.dialogueExpression ?? 'neutral'}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className={styles.dialoguePortraitPlaceholder}>
-                        <span className={styles.dialoguePortraitSlotLabel}>
-                          {entry.portraitSlotLabel ?? 'Portrait Slot'}
-                        </span>
-                        <span className={styles.dialoguePortraitLabel}>{entry.avatarLabel ?? '?'}</span>
-                        <span className={styles.dialogueExpressionLabel}>
-                          {entry.dialogueExpression ?? 'neutral'}
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                  {entry.animated ? (
+                    <TypewriterBubble
+                      text={entry.text}
+                      className={`${styles.bubble} ${styles.bubbleChat} ${styles.bubbleDialogue}`}
+                    />
+                  ) : (
+                    <div className={`${styles.bubble} ${styles.bubbleChat} ${styles.bubbleDialogue}`}>
+                      {entry.text}
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (

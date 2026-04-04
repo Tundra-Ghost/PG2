@@ -1,0 +1,278 @@
+/* ---- Root (fixed overlay) ---- */
+
+.root {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 80;
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem;
+  pointer-events: none;
+}
+
+.rootEnter {
+  animation: dlgSlideIn 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.rootExit {
+  animation: dlgSlideOut 0.28s ease-in forwards;
+}
+
+@keyframes dlgSlideIn {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes dlgSlideOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+/* ---- Box ---- */
+
+.box {
+  width: 100%;
+  max-width: 1120px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1rem 1.4rem 0.9rem;
+  background:
+    radial-gradient(ellipse at 4% 0%, rgba(255, 246, 210, 0.055) 0%, transparent 45%),
+    linear-gradient(180deg, rgba(22, 14, 7, 0.98) 0%, rgba(12, 8, 3, 0.99) 100%);
+  border-top: 2px solid rgba(200, 151, 58, 0.52);
+  border-left: 1px solid rgba(200, 151, 58, 0.28);
+  border-right: 1px solid rgba(200, 151, 58, 0.28);
+  border-radius: 16px 16px 0 0;
+  cursor: pointer;
+  text-align: left;
+  pointer-events: all;
+  position: relative;
+  box-shadow:
+    0 -14px 48px rgba(0, 0, 0, 0.58),
+    0 -2px 14px rgba(200, 151, 58, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+  /* Default theme (npc) */
+  --dlg-accent: rgba(200, 151, 58, 0.95);
+  --dlg-nameplate-bg: linear-gradient(90deg, rgba(92, 52, 16, 0.9), rgba(54, 30, 8, 0.9));
+}
+
+/* Player dialogue: right-align the nameplate row */
+.boxPlayer {
+  align-items: flex-end;
+}
+
+/* ---- Themes ---- */
+
+.themePlayer {
+  --dlg-accent: rgba(130, 185, 235, 0.92);
+  --dlg-nameplate-bg: linear-gradient(90deg, rgba(24, 54, 100, 0.9), rgba(14, 34, 68, 0.9));
+}
+
+.themeChick {
+  --dlg-accent: rgba(228, 186, 70, 0.95);
+  --dlg-nameplate-bg: linear-gradient(90deg, rgba(106, 62, 16, 0.9), rgba(68, 38, 8, 0.9));
+}
+
+.themeMeasured {
+  --dlg-accent: rgba(96, 190, 172, 0.92);
+  --dlg-nameplate-bg: linear-gradient(90deg, rgba(20, 72, 66, 0.9), rgba(10, 46, 42, 0.9));
+}
+
+.themeGrandmaster {
+  --dlg-accent: rgba(178, 138, 232, 0.92);
+  --dlg-nameplate-bg: linear-gradient(90deg, rgba(66, 30, 96, 0.9), rgba(40, 16, 62, 0.9));
+}
+
+.themeNpc {
+  --dlg-accent: rgba(200, 151, 58, 0.95);
+  --dlg-nameplate-bg: linear-gradient(90deg, rgba(92, 52, 16, 0.9), rgba(54, 30, 8, 0.9));
+}
+
+/* ---- Nameplate row (avatar + name label) ---- */
+
+.nameplateRow {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.nameplateRowPlayer {
+  flex-direction: row-reverse;
+}
+
+/* ---- Avatar ---- */
+
+.avatar {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.expressionShocked {
+  transform: translateY(-4px) scale(1.1);
+}
+
+.expressionSmug {
+  transform: rotate(-6deg) translateY(-2px);
+}
+
+.expressionFrustrated {
+  transform: rotate(5deg);
+}
+
+.avatarEmoji {
+  font-size: 2rem;
+  line-height: 1;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+}
+
+.avatarInitial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: var(--dlg-nameplate-bg);
+  border: 1px solid rgba(200, 151, 58, 0.28);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: var(--dlg-accent);
+}
+
+.avatarImg {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(200, 151, 58, 0.28);
+}
+
+/* ---- Nameplate label ---- */
+
+.nameplate {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.9rem 0.18rem 0.65rem;
+  border-radius: 2px 999px 999px 2px;
+  background: var(--dlg-nameplate-bg);
+  border: 1px solid rgba(200, 151, 58, 0.26);
+  color: var(--dlg-accent);
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* ---- Text ---- */
+
+.textArea {
+  padding-left: 2.55rem; /* align text under the nameplate (past avatar width) */
+  min-height: 2.8rem;
+}
+
+.boxPlayer .textArea {
+  padding-left: 0;
+  padding-right: 2.55rem;
+  text-align: right;
+}
+
+.text {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.55;
+  color: rgba(245, 228, 196, 0.95);
+}
+
+.cursor {
+  display: inline-block;
+  color: var(--dlg-accent);
+  animation: blink 0.75s steps(1) infinite;
+  margin-left: 1px;
+  font-size: 0.9em;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---- Hint ---- */
+
+.hint {
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(200, 151, 58, 0.36);
+  align-self: flex-end;
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 720px) {
+  .root {
+    padding: 0 0.5rem;
+  }
+
+  .box {
+    padding: 0.85rem 1rem 0.75rem;
+  }
+
+  .text {
+    font-size: 0.9rem;
+  }
+
+  .nameplate {
+    font-size: 0.74rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .root {
+    padding: 0;
+  }
+
+  .box {
+    padding: 0.75rem 0.85rem 0.65rem;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .avatarEmoji {
+    font-size: 1.7rem;
+  }
+
+  .text {
+    font-size: 0.84rem;
+  }
+
+  .nameplate {
+    font-size: 0.68rem;
+  }
+
+  .textArea {
+    padding-left: 2.2rem;
+  }
+}
