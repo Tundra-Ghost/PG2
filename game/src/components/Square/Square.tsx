@@ -1,4 +1,4 @@
-import type { Color, Piece as PieceType, Square as SquareType } from '../../engine/types';
+import type { Piece as PieceType, Square as SquareType, TileEffectType } from '../../engine/types';
 import PieceComponent from '../Piece/Piece';
 import styles from './Square.module.css';
 
@@ -10,6 +10,7 @@ interface SquareProps {
   isLegalTarget: boolean;
   isInCheck: boolean;
   isLastMove: boolean;
+  tileEffects: TileEffectType[];
   onClick: (square: SquareType) => void;
 }
 
@@ -21,9 +22,11 @@ export default function Square({
   isLegalTarget,
   isInCheck,
   isLastMove,
+  tileEffects,
   onClick,
 }: SquareProps) {
   const colorClass = isLight ? styles.light : styles.dark;
+  const hasLava = tileEffects.includes('lava');
 
   const overlayClass = isInCheck
     ? styles.check
@@ -39,10 +42,22 @@ export default function Square({
       onClick={() => onClick(square)}
       data-square={square}
       role="button"
-      aria-label={square}
+      aria-label={hasLava ? `${square}, lava` : square}
+      title={hasLava ? `${square}: Lava tile` : square}
       tabIndex={-1}
     >
-      {piece && <PieceComponent type={piece.type} color={piece.color} />}
+      {hasLava && (
+        <div className={styles.tileEffectLayer} aria-hidden="true">
+          <div className={styles.lavaGlow} />
+          <div className={styles.lavaIcon}>▲</div>
+        </div>
+      )}
+
+      {piece && (
+        <div className={styles.pieceLayer}>
+          <PieceComponent type={piece.type} color={piece.color} />
+        </div>
+      )}
       {isLegalTarget && (
         <div className={piece ? styles.captureDot : styles.legalDot} />
       )}

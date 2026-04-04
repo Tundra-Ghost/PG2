@@ -181,6 +181,8 @@ export default function Board({
               FILES.map((file, fileIdx) => {
                 const square = `${file}${rank}` as Square;
                 const piece  = state.pieces.get(square);
+                const tileEffects =
+                  state.tiles.get(square)?.effects.map(effect => effect.type) ?? [];
                 return (
                   <SquareComponent
                     key={square}
@@ -191,6 +193,7 @@ export default function Board({
                     isLegalTarget={showLegalMoves && legalMoves.includes(square)}
                     isInCheck={checkSquare === square}
                     isLastMove={square === lastFrom || square === lastTo}
+                    tileEffects={tileEffects}
                     onClick={handleSquareClick}
                   />
                 );
