@@ -10,6 +10,7 @@ import styles from './Board.module.css';
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
 const GERALD_ID = 'MOD-B002';
+const WINTER_ID = 'MOD-A004';
 
 interface BoardProps {
   state: GameState;
@@ -22,6 +23,11 @@ interface BoardProps {
 
 function isLightSquare(file: number, rank: number): boolean {
   return (file + rank) % 2 !== 0;
+}
+
+function isFrozenZone(square: Square): boolean {
+  const rank = square[1];
+  return rank === '1' || rank === '2' || rank === '7' || rank === '8';
 }
 
 interface PendingPromotion {
@@ -40,6 +46,7 @@ export default function Board({
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null);
+  const winterActive = state.activeModifiers.some(mod => mod.id === WINTER_ID);
 
   const lastMove = state.moveHistory[state.moveHistory.length - 1];
   const lastFrom = lastMove?.move.from;
@@ -100,6 +107,9 @@ export default function Board({
             setLegalMoves([]);
             return;
           }
+          if ((clickedPiece.cooldowns[WINTER_ID] ?? 0) > 0) {
+            onInfo?.('That piece is frozen this turn.');
+          }
           setSelected(square);
           setLegalMoves(chessEngine.getLegalMoves(state, square));
         }
@@ -132,6 +142,8 @@ export default function Board({
             if (validation.valid) {
               sfxForMove(state, selected, square, false);
               onStateChange(chessEngine.applyMove(state, move));
+            } else if (validation.reason) {
+              onInfo?.(validation.reason);
             }
             setSelected(null);
             setLegalMoves([]);
@@ -146,6 +158,8 @@ export default function Board({
         if (validation.valid) {
           sfxForMove(state, selected, square, !!move.isCastle);
           onStateChange(chessEngine.applyMove(state, move));
+        } else if (validation.reason) {
+          onInfo?.(validation.reason);
         }
         setSelected(null);
         setLegalMoves([]);
@@ -193,6 +207,7 @@ export default function Board({
                 const piece  = state.pieces.get(square);
                 const tileEffects =
                   state.tiles.get(square)?.effects.map(effect => effect.type) ?? [];
+                const frozenZone = winterActive && isFrozenZone(square);
                 return (
                   <SquareComponent
                     key={square}
@@ -204,6 +219,7 @@ export default function Board({
                     isInCheck={checkSquare === square}
                     isLastMove={square === lastFrom || square === lastTo}
                     tileEffects={tileEffects}
+                    isFrozenZone={frozenZone}
                     onClick={handleSquareClick}
                   />
                 );

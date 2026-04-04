@@ -11,6 +11,7 @@ interface SquareProps {
   isInCheck: boolean;
   isLastMove: boolean;
   tileEffects: TileEffectType[];
+  isFrozenZone: boolean;
   onClick: (square: SquareType) => void;
 }
 
@@ -23,6 +24,7 @@ export default function Square({
   isInCheck,
   isLastMove,
   tileEffects,
+  isFrozenZone,
   onClick,
 }: SquareProps) {
   const colorClass = isLight ? styles.light : styles.dark;
@@ -42,10 +44,29 @@ export default function Square({
       onClick={() => onClick(square)}
       data-square={square}
       role="button"
-      aria-label={hasLava ? `${square}, lava` : square}
-      title={hasLava ? `${square}: Lava tile` : square}
+      aria-label={
+        hasLava
+          ? `${square}, lava`
+          : isFrozenZone
+            ? `${square}, frozen zone`
+            : square
+      }
+      title={
+        hasLava
+          ? `${square}: Lava tile`
+          : isFrozenZone
+            ? `${square}: Frozen zone`
+            : square
+      }
       tabIndex={-1}
     >
+      {isFrozenZone && (
+        <div className={styles.tileEffectLayer} aria-hidden="true">
+          <div className={styles.frozenGlow} />
+          <div className={styles.frozenIcon}>❄</div>
+        </div>
+      )}
+
       {hasLava && (
         <div className={styles.tileEffectLayer} aria-hidden="true">
           <div className={styles.lavaGlow} />
