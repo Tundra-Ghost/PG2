@@ -11,6 +11,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Vitest is now installed in `game/` and baseline engine tests are passing
 - Modifier audit is in progress to make currently shipped cards visible and testable in play
 - In-game history now supports modifier event messages in addition to SAN move notation
+- In-game history now supports modifier events, local match chat, and simple bot reaction lines in one merged feed
 - Prototype app and landing page now have an explicit mobile-responsive baseline
 - In-match UI now separates the primary play surface from the modifier rail and supports collapsible modifier browsing
 - New Run now follows bot select -> alternating draft -> match start, with owned vs shared modifier rules enforced during draft
@@ -36,6 +37,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Add a draft filter to hide unavailable modifiers during modifier testing
 - [ ] Track implementation status per shipped modifier: engine logic, board visuals, interaction feedback, tests
 - [ ] Build an implementation checklist for the remaining 35 modifiers by category
+- [x] Slow down Gerald and lava cadence to improve readability in the shipped prototype
 
 ## Priority 3: Close TDD/GDD Gaps
 
@@ -66,6 +68,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] GDD UI: add short event banners for autonomous or curse-driven actions so modifier outcomes never feel silent
 - [x] GDD UI: route modifier-trigger messages into the in-game history feed
 - [x] GDD UI: separate match log from modifier browsing so the board surface reads more clearly
+- [x] GDD UI: merge local chat and move history into one in-match feed with typewriter-style bot/player delivery
 - [x] GDD UI: show modifier hover and long-press tooltips for affected pieces and tiles
 - [x] GDD UI: restructure the in-match HUD into top banners, a framed board stage, and bottom dock panels
 - [x] GDD UI: restructure the main menu into a hub layout that scales consistently across desktop resolutions

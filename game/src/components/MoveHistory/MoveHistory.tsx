@@ -1,11 +1,68 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { GameEvent, GameState } from '../../engine/types';
+import { playClick } from '../../sound';
+import type { MatchChatEntry } from '../../App';
 import styles from './MoveHistory.module.css';
 
 interface MoveHistoryProps {
   state: GameState;
   whiteLabel?: string;
   blackLabel?: string;
+  chatEntries?: MatchChatEntry[];
+  onSendChat?: (text: string) => void;
+  playerAvatarLabel?: string;
+}
+
+interface FeedEntry {
+  key: string;
+  kind: 'move' | 'event' | 'chat';
+  actor: string;
+  text: string;
+  detail?: string;
+  emphasis: 'player' | 'opponent';
+  order: number;
+  avatarLabel?: string;
+  animated?: boolean;
+}
+
+function TypewriterBubble({
+  text,
+  className,
+}: {
+  text: string;
+  className: string;
+}) {
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    setVisibleCount(0);
+    setRevealed(false);
+  }, [text]);
+
+  useEffect(() => {
+    if (revealed || visibleCount >= text.length) return;
+    const timer = setTimeout(() => setVisibleCount(count => count + 1), 16);
+    return () => clearTimeout(timer);
+  }, [revealed, text.length, visibleCount]);
+
+  const done = revealed || visibleCount >= text.length;
+  const displayText = done ? text : text.slice(0, visibleCount);
+
+  return (
+    <button
+      type="button"
+      className={`${className} ${styles.typewriterButton}`}
+      onClick={() => {
+        if (done) return;
+        playClick();
+        setRevealed(true);
+      }}
+    >
+      {displayText}
+      {!done && <span className={styles.cursor}>|</span>}
+    </button>
+  );
 }
 
 function formatActorMove(label: string, notation: string): string {
@@ -28,58 +85,84 @@ export default function MoveHistory({
   state,
   whiteLabel = 'White',
   blackLabel = 'Black',
+  chatEntries = [],
+  onSendChat,
+  playerAvatarLabel = 'P',
 }: MoveHistoryProps) {
   const { moveHistory, eventHistory, status, turn, flags } = state;
+  const [draftChat, setDraftChat] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, [moveHistory.length, eventHistory.length]);
+  }, [moveHistory.length, eventHistory.length, chatEntries.length]);
 
-  const eventsByPly = new Map<number, GameEvent[]>();
+  const entries = useMemo(() => {
+    const eventsByPly = new Map<number, GameEvent[]>();
+    for (const event of eventHistory) {
+      const existing = eventsByPly.get(event.ply) ?? [];
+      existing.push(event);
+      eventsByPly.set(event.ply, existing);
+    }
 
-  for (const event of eventHistory) {
-    const existing = eventsByPly.get(event.ply) ?? [];
-    existing.push(event);
-    eventsByPly.set(event.ply, existing);
-  }
+    const feedEntries: FeedEntry[] = [];
 
-  const entries: Array<{
-    key: string;
-    kind: 'move' | 'event';
-    actor: string;
-    text: string;
-    detail?: string;
-    emphasis: 'player' | 'opponent';
-  }> = [];
+    moveHistory.forEach((move, index) => {
+      const ply = index + 1;
+      const actor = move.pieceMoved.color === 'white' ? whiteLabel : blackLabel;
+      const emphasis = move.pieceMoved.color === 'white' ? 'player' : 'opponent';
 
-  moveHistory.forEach((move, index) => {
-    const ply = index + 1;
-    const actor = move.pieceMoved.color === 'white' ? whiteLabel : blackLabel;
-    const emphasis = move.pieceMoved.color === 'white' ? 'player' : 'opponent';
+      feedEntries.push({
+        key: `move-${ply}`,
+        kind: 'move',
+        actor,
+        text: formatActorMove(actor, move.notation),
+        detail: `Ply ${ply}`,
+        emphasis,
+        order: ply * 100,
+        avatarLabel: actor.slice(0, 1).toUpperCase(),
+      });
 
-    entries.push({
-      key: `move-${ply}`,
-      kind: 'move',
-      actor,
-      text: formatActorMove(actor, move.notation),
-      detail: `Ply ${ply}`,
-      emphasis,
+      for (const [eventIndex, event] of (eventsByPly.get(ply) ?? []).entries()) {
+        feedEntries.push({
+          key: event.id,
+          kind: 'event',
+          actor: event.title,
+          text: formatEventMessage(event.message, whiteLabel, blackLabel),
+          detail: actor,
+          emphasis,
+          order: ply * 100 + eventIndex + 1,
+          avatarLabel: event.title.slice(0, 1).toUpperCase(),
+        });
+      }
     });
 
-    for (const event of eventsByPly.get(ply) ?? []) {
-      entries.push({
-        key: event.id,
-        kind: 'event',
-        actor: event.title,
-        text: formatEventMessage(event.message, whiteLabel, blackLabel),
-        detail: actor,
-        emphasis,
+    for (const chat of chatEntries) {
+      feedEntries.push({
+        key: chat.id,
+        kind: 'chat',
+        actor: chat.author,
+        text: chat.text,
+        detail: chat.source === 'player' ? 'You' : 'Bot',
+        emphasis: chat.source === 'player' ? 'player' : 'opponent',
+        order: chat.order,
+        avatarLabel: chat.avatarLabel,
+        animated: true,
       });
     }
-  });
+
+    return feedEntries.sort((a, b) => a.order - b.order);
+  }, [blackLabel, chatEntries, eventHistory, moveHistory, whiteLabel]);
 
   const gameOver = status === 'checkmate' || status === 'draw';
+
+  function handleSend() {
+    const trimmed = draftChat.trim();
+    if (!trimmed || !onSendChat) return;
+    playClick();
+    onSendChat(trimmed);
+    setDraftChat('');
+  }
 
   return (
     <aside className={styles.panel}>
@@ -90,10 +173,33 @@ export default function MoveHistory({
         </span>
       </header>
 
+      {onSendChat ? (
+        <div className={styles.composer}>
+          <div className={styles.composerAvatar}>{playerAvatarLabel}</div>
+          <input
+            className={styles.composerInput}
+            type="text"
+            value={draftChat}
+            maxLength={120}
+            placeholder="Say something..."
+            onChange={e => setDraftChat(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+          />
+          <button className={styles.composerBtn} type="button" onClick={handleSend}>
+            Send
+          </button>
+        </div>
+      ) : null}
+
       <div className={styles.list}>
         {entries.length === 0 && (
           <p className={styles.empty}>
-            No moves yet. Modifier events will appear here as the match develops.
+            No moves yet. Chat, moves, and modifier events will appear here as the match develops.
           </p>
         )}
 
@@ -105,16 +211,30 @@ export default function MoveHistory({
             }`}
           >
             <div className={styles.entryMeta}>
+              <span className={styles.entryAvatar}>{entry.avatarLabel ?? '?'}</span>
               <span className={styles.entryActor}>{entry.actor}</span>
               {entry.detail ? <span className={styles.entryDetail}>{entry.detail}</span> : null}
             </div>
-            <div
-              className={`${styles.bubble} ${
-                entry.kind === 'event' ? styles.bubbleEvent : styles.bubbleMove
-              }`}
-            >
-              {entry.text}
-            </div>
+            {entry.animated ? (
+              <TypewriterBubble
+                text={entry.text}
+                className={`${styles.bubble} ${
+                  entry.kind === 'chat' ? styles.bubbleChat : styles.bubbleMove
+                }`}
+              />
+            ) : (
+              <div
+                className={`${styles.bubble} ${
+                  entry.kind === 'event'
+                    ? styles.bubbleEvent
+                    : entry.kind === 'chat'
+                      ? styles.bubbleChat
+                      : styles.bubbleMove
+                }`}
+              >
+                {entry.text}
+              </div>
+            )}
           </div>
         ))}
 

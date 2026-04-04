@@ -3,6 +3,7 @@ import { prngPickIndex } from '../../engine/prng';
 import { cloneState } from '../../engine/gameLoop';
 
 const ID = 'MOD-B002';
+const DISTRACTION_DURATION = 2;
 
 export const geraldDef: ModifierDefinition = {
   id: ID,
@@ -19,6 +20,11 @@ export const geraldDef: ModifierDefinition = {
     );
     if (!geraldAffectsCurrentPlayer) return state;
 
+    const alreadyBlocked = Array.from(state.pieces.values()).some(
+      piece => piece.color === state.turn && (piece.cooldowns[ID] ?? 0) > 0,
+    );
+    if (alreadyBlocked) return state;
+
     // Pick one random non-king piece belonging to the current player and lock it.
     const candidates = Array.from(state.pieces.values()).filter(
       p => p.color === state.turn && p.type !== 'king',
@@ -34,7 +40,7 @@ export const geraldDef: ModifierDefinition = {
     if (piece) {
       next.pieces.set(target.square, {
         ...piece,
-        cooldowns: { ...piece.cooldowns, [ID]: 1 },
+        cooldowns: { ...piece.cooldowns, [ID]: DISTRACTION_DURATION },
       });
     }
     return next;
@@ -43,20 +49,23 @@ export const geraldDef: ModifierDefinition = {
   onPreMoveValidate(state, move) {
     const piece = state.pieces.get(move.from);
     if (piece && (piece.cooldowns[ID] ?? 0) > 0) {
-      return { blocked: true, reason: "Gerald has blocked that piece this turn." };
+      return { blocked: true, reason: 'Gerald is still distracting that piece.' };
     }
     return { blocked: false };
   },
 
   onTurnEnd(state) {
-    // Clear all Gerald cooldowns at end of turn.
+    // Decrement Gerald only for the side whose turn just ended.
     const next = cloneState(state);
     for (const [sq, piece] of next.pieces) {
-      if ((piece.cooldowns[ID] ?? 0) > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { [ID]: _removed, ...rest } = piece.cooldowns;
-        next.pieces.set(sq, { ...piece, cooldowns: rest });
-      }
+      if (piece.color !== state.turn) continue;
+      const cooldown = piece.cooldowns[ID] ?? 0;
+      if (cooldown <= 0) continue;
+
+      const nextCooldowns = { ...piece.cooldowns };
+      if (cooldown <= 1) delete nextCooldowns[ID];
+      else nextCooldowns[ID] = cooldown - 1;
+      next.pieces.set(sq, { ...piece, cooldowns: nextCooldowns });
     }
     return next;
   },

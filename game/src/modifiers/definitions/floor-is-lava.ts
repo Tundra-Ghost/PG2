@@ -5,7 +5,7 @@ import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 
 const ID = 'MOD-A002';
 const LAVA_COUNT = 4;
-const ROTATION_INTERVAL = 10;
+const ROTATION_INTERVAL = 3;
 
 const ALL_SQUARES: Square[] = (() => {
   const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -15,9 +15,12 @@ const ALL_SQUARES: Square[] = (() => {
   return result;
 })();
 
-function placeLava(state: GameState, count: number): GameState {
+function placeLava(state: GameState, count: number, blockedSquares: Square[] = []): GameState {
   const next = cloneState(state);
-  const available = ALL_SQUARES.filter(sq => !next.pieces.has(sq));
+  const blocked = new Set(blockedSquares);
+  const preferred = ALL_SQUARES.filter(sq => !next.pieces.has(sq) && !blocked.has(sq));
+  const fallback = ALL_SQUARES.filter(sq => !next.pieces.has(sq) && blocked.has(sq));
+  const available = [...preferred, ...fallback];
   let prngState = next.prngState;
 
   for (let i = 0; i < count && available.length > 0; i++) {
@@ -62,8 +65,11 @@ export const floorIsLavaDef: ModifierDefinition = {
   },
 
   onTurnStart(state) {
-    if (state.turnNumber > 1 && (state.turnNumber - 1) % ROTATION_INTERVAL === 0) {
-      return placeLava(clearAllLava(state), LAVA_COUNT);
+    if (state.turnNumber > 1 && state.turnNumber % ROTATION_INTERVAL === 0) {
+      const previousLavaSquares = Array.from(state.tiles.entries())
+        .filter(([, tile]) => tile.effects.some(effect => effect.type === 'lava'))
+        .map(([square]) => square);
+      return placeLava(clearAllLava(state), LAVA_COUNT, previousLavaSquares);
     }
     return state;
   },

@@ -267,4 +267,54 @@ describe('ChessEngine TDD baseline', () => {
     );
     expect(blackBlockedPieces).toHaveLength(1);
   });
+
+  it('keeps Gerald on the same piece for two turns before rerolling', () => {
+    let state = chessEngine.activateDraftModifiers(
+      makeEmptyState([
+        makePiece('king', 'white', 'e1'),
+        makePiece('rook', 'white', 'a1'),
+        makePiece('bishop', 'white', 'c1'),
+        makePiece('king', 'black', 'e8'),
+      ]),
+      [{ id: 'MOD-B002', sourceColor: 'white' }],
+    );
+
+    state.prngState = 1;
+    state = chessEngine.beginTurn(state);
+
+    const firstBlocked = Array.from(state.pieces.values()).find(
+      piece => piece.color === 'white' && (piece.cooldowns['MOD-B002'] ?? 0) > 0,
+    );
+    expect(firstBlocked).toBeDefined();
+    expect(firstBlocked?.cooldowns['MOD-B002']).toBe(2);
+
+    state = chessEngine.passTurn(state);
+    state = chessEngine.passTurn(state);
+
+    const secondBlocked = Array.from(state.pieces.values()).find(
+      piece => piece.color === 'white' && (piece.cooldowns['MOD-B002'] ?? 0) > 0,
+    );
+    expect(secondBlocked?.id).toBe(firstBlocked?.id);
+    expect(secondBlocked?.cooldowns['MOD-B002']).toBe(1);
+  });
+
+  it('rotates lava every three turns', () => {
+    let state = chessEngine.activateDraftModifiers(
+      makeEmptyState([
+        makePiece('king', 'white', 'e1'),
+        makePiece('king', 'black', 'e8'),
+      ]),
+      [{ id: 'MOD-A002', sourceColor: 'white' }],
+    );
+
+    state.prngState = 7;
+    const initialLavaSquares = Array.from(state.tiles.keys()).sort();
+
+    state.turnNumber = 3;
+    state = chessEngine.beginTurn(state);
+
+    const rotatedLavaSquares = Array.from(state.tiles.keys()).sort();
+    expect(rotatedLavaSquares).not.toEqual(initialLavaSquares);
+    expect(rotatedLavaSquares).toHaveLength(4);
+  });
 });

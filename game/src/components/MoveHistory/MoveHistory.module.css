@@ -25,6 +25,56 @@
   background: rgba(255, 247, 228, 0.48);
 }
 
+.composer {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  align-items: center;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid rgba(84, 48, 18, 0.12);
+  background: rgba(255, 247, 228, 0.42);
+}
+
+.composerAvatar,
+.entryAvatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 999px;
+  background: rgba(92, 37, 10, 0.14);
+  border: 1px solid rgba(84, 48, 18, 0.18);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: rgba(84, 48, 18, 0.72);
+}
+
+.composerInput {
+  min-width: 0;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid rgba(84, 48, 18, 0.18);
+  border-radius: 12px;
+  background: rgba(255, 252, 244, 0.72);
+  color: rgba(58, 30, 11, 0.92);
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+}
+
+.composerBtn {
+  padding: 0.6rem 0.85rem;
+  border: 1px solid rgba(84, 48, 18, 0.22);
+  border-radius: 12px;
+  background: rgba(92, 37, 10, 0.9);
+  color: rgba(255, 247, 228, 0.94);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
 .headerTitle {
   font-family: var(--font-display);
   font-size: 1rem;
@@ -98,6 +148,13 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
+.typewriterButton {
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid rgba(84, 48, 18, 0.14);
+  width: 100%;
+}
+
 .bubbleMove {
   background: rgba(255, 248, 231, 0.68);
   color: rgba(58, 30, 11, 0.92);
@@ -107,6 +164,18 @@
   background: rgba(147, 68, 22, 0.1);
   color: rgba(92, 37, 10, 0.95);
   border-color: rgba(147, 68, 22, 0.22);
+}
+
+.bubbleChat {
+  background: rgba(92, 37, 10, 0.14);
+  color: rgba(69, 27, 7, 0.96);
+  border-color: rgba(92, 37, 10, 0.24);
+}
+
+.cursor {
+  display: inline-block;
+  margin-left: 1px;
+  color: rgba(92, 37, 10, 0.72);
 }
 
 .empty {
@@ -144,6 +213,14 @@
 @media (max-width: 720px) {
   .header {
     padding: 0.65rem 0.8rem;
+  }
+
+  .composer {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .composerAvatar {
+    display: none;
   }
 
   .list {

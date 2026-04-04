@@ -39,7 +39,57 @@ interface ProfileViewerState {
   subtitle: string;
 }
 
+export interface MatchChatEntry {
+  id: string;
+  order: number;
+  ply: number;
+  author: string;
+  text: string;
+  source: 'player' | 'bot';
+  avatarLabel: string;
+}
+
 const BERSERKER_ID = 'MOD-E006';
+
+const CHICK_RESPONSES = {
+  lostPiece: [
+    'Hey. That was one of my pieces.',
+    'I was using that bird.',
+    'Rude. Extremely rude.',
+  ],
+  wonPiece: [
+    'Mine now.',
+    'I meant to do that.',
+    'That looked expensive.',
+  ],
+  lostQueen: [
+    'That was the important one.',
+    'I have made a strategic mistake.',
+    'The large bird was not supposed to die.',
+  ],
+  playerCheckmate: [
+    'I would like a rematch with fewer consequences.',
+    'This result feels editorialized.',
+  ],
+  botCheckmate: [
+    'Calculated. More or less.',
+    'I am the rooftop now.',
+  ],
+};
+
+function pickLine(lines: string[], seed: number): string {
+  return lines[seed % lines.length] ?? lines[0] ?? '';
+}
+
+function getDerivedFeedOrder(state: GameState, chatEntries: MatchChatEntry[]): number {
+  const moveOrder = state.moveHistory.length * 100;
+  const eventOrder = state.eventHistory.reduce(
+    (max, event) => Math.max(max, event.ply * 100 + 50),
+    0,
+  );
+  const chatOrder = chatEntries.reduce((max, entry) => Math.max(max, entry.order), 0);
+  return Math.max(moveOrder, eventOrder, chatOrder);
+}
 
 function getBerserkerEvent(state: GameState): BerserkerChainEvent | null {
   const value = state.modifierState[BERSERKER_ID];
@@ -107,9 +157,11 @@ export default function App() {
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [modifierPanelCollapsed, setModifierPanelCollapsed] = useState(false);
   const [profileViewer, setProfileViewer] = useState<ProfileViewerState | null>(null);
+  const [chatEntries, setChatEntries] = useState<MatchChatEntry[]>([]);
   const seenBerserkerEvent = useRef(0);
   const recordedStartIds = useRef<Set<string>>(new Set());
   const recordedCompletionIds = useRef<Set<string>>(new Set());
+  const lastReactedMoveId = useRef<string | null>(null);
   const [settings, setSettings] = useState<AppSettings>(() => {
     const loaded = loadSettings();
     applySettings(loaded);
@@ -146,6 +198,52 @@ export default function App() {
     const timer = setTimeout(() => setInfoMessage(null), 2200);
     return () => clearTimeout(timer);
   }, [infoMessage]);
+
+  useEffect(() => {
+    if (!vsBot || selectedBot !== 'chick') return;
+    if (screen !== 'game') return;
+
+    const latestMove = gameState.moveHistory[gameState.moveHistory.length - 1];
+    if (!latestMove) return;
+    const moveKey = `${gameState.id}:${gameState.moveHistory.length}`;
+    if (lastReactedMoveId.current === moveKey) return;
+
+    const currentOpponentName =
+      selectedBot ? (BOTS.find(bot => bot.id === selectedBot)?.name ?? 'Opponent') : 'Opponent';
+
+    let response: string | null = null;
+    const moveIndex = gameState.moveHistory.length - 1;
+    const playerMoved = latestMove.pieceMoved.color === 'white';
+    const captured = latestMove.pieceCaptured;
+
+    if (gameState.status === 'checkmate') {
+      response = playerMoved
+        ? pickLine(CHICK_RESPONSES.playerCheckmate, moveIndex)
+        : pickLine(CHICK_RESPONSES.botCheckmate, moveIndex);
+    } else if (playerMoved && captured?.color === 'black' && captured.type === 'queen') {
+      response = pickLine(CHICK_RESPONSES.lostQueen, moveIndex);
+    } else if (playerMoved && captured?.color === 'black') {
+      response = pickLine(CHICK_RESPONSES.lostPiece, moveIndex);
+    } else if (!playerMoved && captured?.color === 'white') {
+      response = pickLine(CHICK_RESPONSES.wonPiece, moveIndex);
+    }
+
+    lastReactedMoveId.current = moveKey;
+    if (!response) return;
+
+    setChatEntries(prev => [
+      ...prev,
+      {
+        id: `chat-${moveKey}`,
+        order: getDerivedFeedOrder(gameState, prev) + 1,
+        ply: gameState.moveHistory.length,
+        author: currentOpponentName,
+        text: response,
+        source: 'bot',
+        avatarLabel: currentOpponentName.slice(0, 1).toUpperCase(),
+      },
+    ]);
+  }, [gameState, screen, selectedBot, vsBot]);
 
   useEffect(() => {
     if (gameState.moveHistory.length === 0 && gameState.turnNumber === 1) {
@@ -267,6 +365,8 @@ export default function App() {
 
     const state = chessEngine.beginTurn(chessEngine.getInitialState());
     setActivePlayerModifierIds([]);
+    setChatEntries([]);
+    lastReactedMoveId.current = null;
     setCurrentMatchMode('quick');
     setCurrentMatchStartedAt(new Date().toISOString());
     setGameState(state);
@@ -284,6 +384,8 @@ export default function App() {
     setActivePlayerModifierIds(playerModifierIds);
     setCurrentMatchMode('story');
     setCurrentMatchStartedAt(new Date().toISOString());
+    setChatEntries([]);
+    lastReactedMoveId.current = null;
     setGameState(state);
     setScreen('game');
   }
@@ -295,7 +397,27 @@ export default function App() {
     setActivePlayerModifierIds([]);
     setPendingBotModifierIds([]);
     setCurrentMatchStartedAt(new Date().toISOString());
+    setChatEntries([]);
+    lastReactedMoveId.current = null;
     setGameState(state);
+  }
+
+  function handleSendChat(text: string) {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    setChatEntries(prev => [
+      ...prev,
+      {
+        id: `chat-player-${Date.now()}`,
+        order: getDerivedFeedOrder(gameState, prev) + 1,
+        ply: Math.max(0, gameState.moveHistory.length),
+        author: playerName,
+        text: trimmed,
+        source: 'player',
+        avatarLabel: playerName.slice(0, 1).toUpperCase(),
+      },
+    ]);
   }
 
   function handleBackToMenu() {
@@ -513,6 +635,9 @@ export default function App() {
                 state={gameState}
                 whiteLabel={playerName}
                 blackLabel={vsBot ? opponentName : 'Black'}
+                chatEntries={chatEntries}
+                onSendChat={gameState.status === 'active' ? handleSendChat : undefined}
+                playerAvatarLabel={playerName.slice(0, 1).toUpperCase()}
               />
             </div>
 
