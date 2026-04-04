@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { GameState, MoveRecord } from '../../engine/types';
+import type { GameEvent, GameState, MoveRecord } from '../../engine/types';
 import styles from './MoveHistory.module.css';
 
 interface MoveHistoryProps {
@@ -10,6 +10,11 @@ interface MovePair {
   number: number;
   white: MoveRecord;
   black?: MoveRecord;
+}
+
+interface PairEvents {
+  white: GameEvent[];
+  black: GameEvent[];
 }
 
 function buildMovePairs(history: MoveRecord[]): MovePair[] {
@@ -25,17 +30,24 @@ function buildMovePairs(history: MoveRecord[]): MovePair[] {
 }
 
 export default function MoveHistory({ state }: MoveHistoryProps) {
-  const { moveHistory, status, turn, flags } = state;
+  const { moveHistory, eventHistory, status, turn, flags } = state;
   const bottomRef = useRef<HTMLDivElement>(null);
   const lastMove = moveHistory[moveHistory.length - 1];
 
   // Auto-scroll to latest move
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, [moveHistory.length]);
+  }, [moveHistory.length, eventHistory.length]);
 
   const pairs = buildMovePairs(moveHistory);
   const gameOver = status === 'checkmate' || status === 'draw';
+  const eventsByPly = new Map<number, GameEvent[]>();
+
+  for (const event of eventHistory) {
+    const existing = eventsByPly.get(event.ply) ?? [];
+    existing.push(event);
+    eventsByPly.set(event.ply, existing);
+  }
 
   return (
     <aside className={styles.panel}>
@@ -54,25 +66,58 @@ export default function MoveHistory({ state }: MoveHistoryProps) {
         )}
 
         {pairs.map(pair => (
-          <div key={pair.number} className={styles.row}>
-            <span className={styles.num}>{pair.number}.</span>
+          (() => {
+            const whitePly = (pair.number - 1) * 2 + 1;
+            const blackPly = whitePly + 1;
+            const pairEvents: PairEvents = {
+              white: eventsByPly.get(whitePly) ?? [],
+              black: eventsByPly.get(blackPly) ?? [],
+            };
 
-            <span
-              className={`${styles.move} ${styles.white} ${
-                lastMove === pair.white ? styles.latest : ''
-              }`}
-            >
-              {pair.white.notation}
-            </span>
+            return (
+              <div key={pair.number} className={styles.entry}>
+                <div className={styles.row}>
+                  <span className={styles.num}>{pair.number}.</span>
 
-            <span
-              className={`${styles.move} ${styles.black} ${
-                pair.black && lastMove === pair.black ? styles.latest : ''
-              }`}
-            >
-              {pair.black?.notation ?? ''}
-            </span>
-          </div>
+                  <span
+                    className={`${styles.move} ${styles.white} ${
+                      lastMove === pair.white ? styles.latest : ''
+                    }`}
+                  >
+                    {pair.white.notation}
+                  </span>
+
+                  <span
+                    className={`${styles.move} ${styles.black} ${
+                      pair.black && lastMove === pair.black ? styles.latest : ''
+                    }`}
+                  >
+                    {pair.black?.notation ?? ''}
+                  </span>
+                </div>
+
+                {pairEvents.white.map(event => (
+                  <div key={event.id} className={styles.eventRow}>
+                    <span className={styles.eventSpacer} />
+                    <div className={styles.eventCard}>
+                      <span className={styles.eventTag}>{event.title}</span>
+                      <span className={styles.eventText}>{event.message}</span>
+                    </div>
+                  </div>
+                ))}
+
+                {pairEvents.black.map(event => (
+                  <div key={event.id} className={styles.eventRow}>
+                    <span className={styles.eventSpacer} />
+                    <div className={`${styles.eventCard} ${styles.eventCardAlt}`}>
+                      <span className={styles.eventTag}>{event.title}</span>
+                      <span className={styles.eventText}>{event.message}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()
         ))}
 
         {/* Status footer row */}

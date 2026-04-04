@@ -64,6 +64,7 @@ class ChessEngineImpl implements IChessEngine {
       activeModifiers: [],
       modifierState: {},
       moveHistory: [],
+      eventHistory: [],
       status: 'active',
       positionHistory: {},
       prngSeed: Date.now() | 0,

@@ -3,8 +3,14 @@
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  background: rgba(0, 0, 0, 0.25);
-  border-left: 1px solid rgba(200, 151, 58, 0.1);
+  background:
+    radial-gradient(circle at top, rgba(200, 151, 58, 0.08), transparent 46%),
+    linear-gradient(180deg, rgba(20, 15, 11, 0.94), rgba(11, 12, 16, 0.9));
+  border: 1px solid rgba(200, 151, 58, 0.14);
+  border-radius: 14px;
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02);
   overflow: hidden;
 }
 
@@ -14,8 +20,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  padding: 0.6rem 0.85rem;
-  border-bottom: 1px solid rgba(200, 151, 58, 0.1);
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid rgba(200, 151, 58, 0.12);
   background: rgba(0, 0, 0, 0.2);
 }
 
@@ -37,12 +43,12 @@
 .body {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  padding: 0.45rem 0;
+  gap: 0.4rem;
+  padding: 0.5rem 0.35rem 0.55rem;
 }
 
 .section {
-  padding: 0 0.55rem 0.45rem;
+  padding: 0 0.25rem 0.1rem;
 }
 
 .sectionHeader {
@@ -179,7 +185,6 @@
 @media (max-width: 1120px) {
   .panel {
     width: 100%;
-    border-left: none;
     border-top: 1px solid rgba(200, 151, 58, 0.1);
   }
 }

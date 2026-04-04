@@ -1,5 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { Color, DrawReason, GameState, Move, Piece, PieceType, Square } from './types';
+import type {
+  Color,
+  DrawReason,
+  GameEvent,
+  GameState,
+  Move,
+  Piece,
+  PieceType,
+  Square,
+} from './types';
 import { getLegalMovesForPiece, isInCheck, isSquareAttacked } from './moveGenerator';
 import { modifierRegistry } from '../modifiers/registry';
 
@@ -113,6 +122,7 @@ export function cloneState(state: GameState): GameState {
     activeModifiers: [...state.activeModifiers],
     modifierState: { ...state.modifierState },
     moveHistory: [...state.moveHistory],
+    eventHistory: [...state.eventHistory],
     positionHistory: { ...state.positionHistory },
     flags: {
       ...state.flags,
@@ -127,6 +137,21 @@ export function cloneState(state: GameState): GameState {
     prngSeed: state.prngSeed,
     prngState: state.prngState,
   };
+}
+
+export function appendGameEvent(
+  state: GameState,
+  event: Omit<GameEvent, 'id'>,
+): GameState {
+  const next = cloneState(state);
+  next.eventHistory = [
+    ...next.eventHistory,
+    {
+      ...event,
+      id: uuidv4(),
+    },
+  ];
+  return next;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

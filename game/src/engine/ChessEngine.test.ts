@@ -33,6 +33,7 @@ function makeEmptyState(pieces: Piece[]): GameState {
   state.activeModifiers = [];
   state.modifierState = {};
   state.moveHistory = [];
+  state.eventHistory = [];
   state.positionHistory = {};
   state.turn = 'white';
   state.turnNumber = 1;
@@ -169,6 +170,37 @@ describe('ChessEngine TDD baseline', () => {
       from: 'a4',
       to: 'a8',
       capturedType: 'queen',
+    });
+    expect(next.eventHistory[next.eventHistory.length - 1]).toMatchObject({
+      ply: 1,
+      modifierId: 'MOD-E006',
+      title: 'Berserker',
+    });
+  });
+
+  it('records lava deaths in event history', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'h1'),
+      makePiece('king', 'black', 'h8'),
+      makePiece('rook', 'white', 'a1'),
+    ]);
+
+    state.activeModifiers = [
+      { id: 'MOD-A002', name: 'Floor is Lava', activeFor: 'both', sourceColor: null },
+    ];
+    state.tiles.set('a4', {
+      square: 'a4',
+      effects: [{ type: 'lava', turnsRemaining: -1 }],
+    });
+
+    const next = chessEngine.applyMove(state, move('a1', 'a4', 'white'));
+
+    expect(next.pieces.has('a4')).toBe(false);
+    expect(next.eventHistory[next.eventHistory.length - 1]).toMatchObject({
+      ply: 1,
+      modifierId: 'MOD-A002',
+      title: 'Lava',
+      message: 'white rook on a4 burned up on lava.',
     });
   });
 });

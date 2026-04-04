@@ -10,6 +10,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - 5 modifier definitions are registered, while the modifier bible defines 40 cards
 - Vitest is now installed in `game/` and baseline engine tests are passing
 - Modifier audit is in progress to make currently shipped cards visible and testable in play
+- In-game history now supports modifier event messages in addition to SAN move notation
 
 ## Priority 1: Stabilize The Prototype Core
 
@@ -47,6 +48,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] GDD UI: replace temporary letter badges with authored icon badges for Gerald, lava, freeze, pacifist, and berserker states
 - [ ] GDD UI: animate modifier triggers on board and pieces: lava burn, Gerald fly-off, freeze thaw, berserker chain, pacifist refusal
 - [ ] GDD UI: add short event banners for autonomous or curse-driven actions so modifier outcomes never feel silent
+- [x] GDD UI: route modifier-trigger messages into the in-game history feed
 - [ ] GDD UI: add a shared icon set for modifier categories, settings controls, and board hazards
 - [ ] GDD SFX: add distinct one-shot sounds for lava death, Gerald interference, freeze block, pacifist refusal, and berserker chain
 - [ ] GDD SFX: add subtle UI sounds for draft select/deselect, disabled-card hover, modal open/close, and settings toggles

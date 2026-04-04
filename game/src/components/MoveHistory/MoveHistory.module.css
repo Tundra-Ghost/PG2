@@ -8,8 +8,13 @@
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  background: rgba(0, 0, 0, 0.25);
-  border-left: 1px solid rgba(200, 151, 58, 0.10);
+  background:
+    linear-gradient(180deg, rgba(8, 10, 14, 0.94), rgba(10, 8, 6, 0.9));
+  border: 1px solid rgba(200, 151, 58, 0.14);
+  border-radius: 14px;
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02);
   overflow: hidden;
 }
 
@@ -19,9 +24,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.6rem 0.85rem;
-  border-bottom: 1px solid rgba(200, 151, 58, 0.10);
-  background: rgba(0, 0, 0, 0.20);
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid rgba(200, 151, 58, 0.12);
+  background: rgba(0, 0, 0, 0.22);
 }
 
 .headerTitle {
@@ -43,9 +48,14 @@
 .list {
   flex: 1;
   overflow-y: auto;
-  padding: 0.35rem 0;
+  padding: 0.45rem 0.35rem 0.4rem;
   scrollbar-width: thin;
   scrollbar-color: rgba(200, 151, 58, 0.18) transparent;
+}
+
+.entry {
+  display: flex;
+  flex-direction: column;
 }
 
 .empty {
@@ -64,8 +74,9 @@
   grid-template-columns: 1.6rem 1fr 1fr;
   align-items: center;
   gap: 0;
-  padding: 0.08rem 0.35rem;
+  padding: 0.08rem 0.15rem;
   transition: background 0.1s;
+  border-radius: 8px;
 }
 
 .row:hover {
@@ -124,9 +135,51 @@
   color: var(--ui-gold);
 }
 
+.eventRow {
+  display: grid;
+  grid-template-columns: 1.6rem 1fr;
+  gap: 0.45rem;
+  padding: 0 0.15rem 0.28rem;
+}
+
+.eventSpacer {
+  display: block;
+}
+
+.eventCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding: 0.42rem 0.5rem;
+  margin-left: 0.3rem;
+  border-left: 2px solid rgba(227, 116, 56, 0.45);
+  background: rgba(227, 116, 56, 0.09);
+  border-radius: 0 8px 8px 0;
+}
+
+.eventCardAlt {
+  border-left-color: rgba(200, 151, 58, 0.4);
+  background: rgba(200, 151, 58, 0.08);
+}
+
+.eventTag {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.53rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 200, 150, 0.72);
+}
+
+.eventText {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  line-height: 1.35;
+  color: rgba(242, 234, 216, 0.68);
+}
+
 @media (max-width: 1120px) {
   .panel {
-    border-left: none;
     border-top: 1px solid rgba(200, 151, 58, 0.10);
   }
 }

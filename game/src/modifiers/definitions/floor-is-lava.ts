@@ -1,7 +1,7 @@
 import type { ModifierDefinition } from '../types';
 import type { GameState, Square } from '../../engine/types';
 import { prngPickIndex } from '../../engine/prng';
-import { cloneState } from '../../engine/gameLoop';
+import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 
 const ID = 'MOD-A002';
 const LAVA_COUNT = 4;
@@ -70,13 +70,26 @@ export const floorIsLavaDef: ModifierDefinition = {
   onPostMove(state, _move) {
     // Capture any non-king piece standing on a lava square after the move
     const next = cloneState(state);
+    const lavaVictims: string[] = [];
     for (const [sq, tile] of next.tiles) {
       if (!tile.effects.some(e => e.type === 'lava')) continue;
       const piece = next.pieces.get(sq);
       if (piece && piece.type !== 'king') {
+        lavaVictims.push(`${piece.color} ${piece.type} on ${sq}`);
         next.pieces.delete(sq);
       }
     }
-    return next;
+    if (lavaVictims.length === 0) return next;
+
+    return appendGameEvent(next, {
+      ply: state.moveHistory.length + 1,
+      type: 'modifier',
+      modifierId: ID,
+      title: 'Lava',
+      message:
+        lavaVictims.length === 1
+          ? `${lavaVictims[0]} burned up on lava.`
+          : `${lavaVictims.join(', ')} burned up on lava.`,
+    });
   },
 };

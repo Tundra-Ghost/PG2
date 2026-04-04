@@ -6,7 +6,12 @@ import type {
   Square,
 } from '../../engine/types';
 import { prngPickIndex } from '../../engine/prng';
-import { cloneState, applyMoveInternal, buildMove } from '../../engine/gameLoop';
+import {
+  appendGameEvent,
+  cloneState,
+  applyMoveInternal,
+  buildMove,
+} from '../../engine/gameLoop';
 import { getLegalMovesForPiece } from '../../engine/moveGenerator';
 
 const ID = 'MOD-E006';
@@ -102,7 +107,15 @@ export const berserkerDef: ModifierDefinition = {
       capturedType: chainedTarget?.type ?? null,
     };
     next.modifierState[ID] = event;
-    return next;
+    return appendGameEvent(next, {
+      ply: state.moveHistory.length + 1,
+      type: 'modifier',
+      modifierId: ID,
+      title: 'Berserker',
+      message: chainedTarget
+        ? `${berserkerNow.color} berserker chained from ${move.to} to ${chainTo}, capturing ${chainedTarget.color} ${chainedTarget.type}.`
+        : `${berserkerNow.color} berserker chained from ${move.to} to ${chainTo}.`,
+    });
   },
 
   // Ensure berserker flag survives promotion (if berserker pawn promotes)

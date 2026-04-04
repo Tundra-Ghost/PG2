@@ -71,6 +71,15 @@ export interface BerserkerChainEvent {
   capturedType: PieceType | null;
 }
 
+export interface GameEvent {
+  id: string;
+  ply: number;
+  type: 'modifier';
+  modifierId: ModifierID;
+  title: string;
+  message: string;
+}
+
 export interface MoveRecord {
   move: Move;
   pieceMoved: Piece;
@@ -89,6 +98,7 @@ export interface GameState {
   activeModifiers: ModifierInstance[];
   modifierState: Record<ModifierID, unknown>;
   moveHistory: MoveRecord[];
+  eventHistory: GameEvent[];
   status: 'draft' | 'active' | 'checkmate' | 'draw' | 'abandoned';
   drawReason?: DrawReason;
   flags: GameFlags;
