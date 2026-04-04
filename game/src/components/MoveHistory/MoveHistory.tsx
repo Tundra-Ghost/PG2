@@ -212,36 +212,59 @@ export default function MoveHistory({
               entry.emphasis === 'player' ? styles.entryPlayer : styles.entryOpponent
             }`}
           >
-            <div className={styles.entryMeta}>
-              {entry.avatarIcon ? (
-                <span className={styles.entryAvatar} aria-hidden="true">
-                  {entry.avatarIcon}
-                </span>
-              ) : (
-                <span className={styles.entryAvatar}>{entry.avatarLabel ?? '?'}</span>
-              )}
-              <span className={styles.entryActor}>{entry.actor}</span>
-              {entry.detail ? <span className={styles.entryDetail}>{entry.detail}</span> : null}
-            </div>
-            {entry.animated ? (
-              <TypewriterBubble
-                text={entry.text}
-                className={`${styles.bubble} ${
-                  entry.kind === 'chat' ? styles.bubbleChat : styles.bubbleMove
-                }`}
-              />
-            ) : (
+            {entry.kind === 'chat' ? (
               <div
-                className={`${styles.bubble} ${
-                  entry.kind === 'event'
-                    ? styles.bubbleEvent
-                    : entry.kind === 'chat'
-                      ? styles.bubbleChat
-                      : styles.bubbleMove
+                className={`${styles.dialogueCard} ${
+                  entry.emphasis === 'player' ? styles.dialogueCardPlayer : styles.dialogueCardOpponent
                 }`}
               >
-                {entry.text}
+                <div className={styles.dialogueHeader}>
+                  <span className={styles.dialogueNameplate}>{entry.actor}</span>
+                  {entry.detail ? <span className={styles.entryDetail}>{entry.detail}</span> : null}
+                </div>
+                <div className={styles.dialogueBody}>
+                  <div className={styles.dialogueBubble}>
+                    {entry.animated ? (
+                      <TypewriterBubble
+                        text={entry.text}
+                        className={`${styles.bubble} ${styles.bubbleChat} ${styles.bubbleDialogue}`}
+                      />
+                    ) : (
+                      <div className={`${styles.bubble} ${styles.bubbleChat} ${styles.bubbleDialogue}`}>
+                        {entry.text}
+                      </div>
+                    )}
+                  </div>
+                  <div className={styles.dialoguePortraitFrame} aria-hidden="true">
+                    {entry.avatarIcon ? (
+                      <span className={styles.dialoguePortraitIcon}>{entry.avatarIcon}</span>
+                    ) : (
+                      <span className={styles.dialoguePortraitLabel}>{entry.avatarLabel ?? '?'}</span>
+                    )}
+                  </div>
+                </div>
               </div>
+            ) : (
+              <>
+                <div className={styles.entryMeta}>
+                  {entry.avatarIcon ? (
+                    <span className={styles.entryAvatar} aria-hidden="true">
+                      {entry.avatarIcon}
+                    </span>
+                  ) : (
+                    <span className={styles.entryAvatar}>{entry.avatarLabel ?? '?'}</span>
+                  )}
+                  <span className={styles.entryActor}>{entry.actor}</span>
+                  {entry.detail ? <span className={styles.entryDetail}>{entry.detail}</span> : null}
+                </div>
+                <div
+                  className={`${styles.bubble} ${
+                    entry.kind === 'event' ? styles.bubbleEvent : styles.bubbleMove
+                  }`}
+                >
+                  {entry.text}
+                </div>
+              </>
             )}
           </div>
         ))}

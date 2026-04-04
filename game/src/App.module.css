@@ -127,13 +127,14 @@
 
 .bottomDock {
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.85fr);
+  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.8fr);
   gap: 1rem;
   align-items: stretch;
 }
 
 .logDock {
   min-width: 0;
+  min-height: clamp(360px, 42vh, 620px);
 }
 
 .modifierDock {
