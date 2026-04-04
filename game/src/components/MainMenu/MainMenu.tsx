@@ -9,6 +9,71 @@ interface MainMenuProps {
   profile: LocalProfile | null;
 }
 
+interface MenuCard {
+  label: string;
+  sub: string;
+  action?: () => void;
+  status?: 'live' | 'soon';
+  accent?: 'gold' | 'stone' | 'ember';
+}
+
+const LEFT_RAIL: MenuCard[] = [
+  {
+    label: 'Story Mode',
+    sub: 'New Run · Five Towers · Modifier Draft',
+    status: 'live',
+    accent: 'gold',
+  },
+  {
+    label: 'Quick Play',
+    sub: 'Standard board · No draft · Fast testing',
+    status: 'live',
+    accent: 'stone',
+  },
+  {
+    label: 'Collection',
+    sub: 'Pieces, boards, modifiers, and long-term unlocks',
+    status: 'soon',
+    accent: 'stone',
+  },
+];
+
+const RIGHT_RAIL: MenuCard[] = [
+  {
+    label: 'Online',
+    sub: 'Ranked, casual, and direct challenges',
+    status: 'soon',
+    accent: 'ember',
+  },
+  {
+    label: 'The Roost',
+    sub: 'Run history, profile records, and long-form stats',
+    status: 'soon',
+    accent: 'stone',
+  },
+  {
+    label: 'Settings',
+    sub: 'Audio, display, gameplay, and accessibility',
+    status: 'live',
+    accent: 'stone',
+  },
+];
+
+const JOURNEY_STEPS = [
+  {
+    title: '1. Set Your Flight',
+    body: 'Create a local profile, choose your opponent, and set the run tone before the board ever opens.',
+  },
+  {
+    title: '2. Draft The Chaos',
+    body: 'Pick your modifier package, let Chick grab its own nonsense, and enter the match with visible ownership.',
+  },
+  {
+    title: '3. Land And Challenge',
+    body: 'Track outcomes, modifier events, and local progression while the prototype stays fully device-side.',
+  },
+];
+
 export default function MainMenu({
   onPlay,
   onSettings,
@@ -19,176 +84,164 @@ export default function MainMenu({
     ? (ALL_MODIFIERS.find(mod => mod.id === profile.stats.favoriteModifierId)?.name ?? 'Unknown')
     : 'None yet';
 
+  const profileSummary = profile
+    ? `${profile.stats.runsPlayed} runs · ${profile.stats.wins} wins`
+    : 'No profile yet';
+
+  const leftRail = LEFT_RAIL.map(item => ({
+    ...item,
+    action:
+      item.label === 'Story Mode'
+        ? () => onPlay('run')
+        : item.label === 'Quick Play'
+          ? () => onPlay('quick')
+          : undefined,
+  }));
+
+  const rightRail = RIGHT_RAIL.map(item => ({
+    ...item,
+    action:
+      item.label === 'Settings'
+        ? onSettings
+        : undefined,
+  }));
+
   return (
     <div className={styles.root}>
       <div className={styles.scroll}>
-        <div className={styles.content}>
-          <header className={styles.hero}>
-            <div className={styles.pigeonWrap}>
-              <span className={styles.pigeonIcon} aria-hidden="true">P</span>
+        <div className={styles.shell}>
+          <header className={styles.topBar}>
+            <button className={styles.profileBanner} onClick={onProfile}>
+              <span className={styles.profilePortrait} aria-hidden="true">
+                {profile?.displayName?.slice(0, 1).toUpperCase() ?? 'P'}
+              </span>
+              <span className={styles.profileBody}>
+                <span className={styles.profileTitle}>
+                  {profile?.displayName ?? 'Create Profile'}
+                </span>
+                <span className={styles.profileMeta}>{profileSummary}</span>
+                <span className={styles.profileFlavor}>
+                  {profile?.motto || 'Local profile stored on this device.'}
+                </span>
+              </span>
+            </button>
+
+            <div className={styles.utilityBar}>
+              <div className={styles.utilityChip}>
+                <span className={styles.utilityValue}>5</span>
+                <span className={styles.utilityLabel}>Live Mods</span>
+              </div>
+              <div className={styles.utilityChip}>
+                <span className={styles.utilityValue}>{profile?.stats.wins ?? 0}</span>
+                <span className={styles.utilityLabel}>Wins</span>
+              </div>
+              <button className={styles.utilityBtn} onClick={onSettings}>
+                Settings
+              </button>
             </div>
-            <h1 className={styles.title}>Pigeon Chess</h1>
-            <p className={styles.tagLine}>
-              <span className={styles.tagDash} />
-              <span className={styles.tagText}>A Roguelike Chess Experience</span>
-              <span className={styles.tagDash} />
-            </p>
           </header>
 
-          <figure className={styles.quoteBlock}>
-            <blockquote className={styles.quoteText}>
-              "The board remembers nothing. The pigeon remembers everything."
-            </blockquote>
-            <figcaption className={styles.quoteAttr}>- Viktor Crumb · Match 1, Move 4</figcaption>
-          </figure>
+          <main className={styles.hubGrid}>
+            <aside className={styles.rail} aria-label="Primary modes">
+              {leftRail.map(item => (
+                <button
+                  key={item.label}
+                  className={`${styles.railCard} ${styles[`accent${item.accent === 'stone' ? 'Stone' : item.accent === 'ember' ? 'Ember' : 'Gold'}`]} ${item.status === 'soon' ? styles.railCardLocked : ''}`}
+                  onClick={item.action}
+                  disabled={item.status === 'soon'}
+                >
+                  <span className={styles.railCardLabel}>{item.label}</span>
+                  <span className={styles.railCardSub}>{item.sub}</span>
+                  <span className={styles.railCardState}>
+                    {item.status === 'soon' ? 'Soon' : 'Live'}
+                  </span>
+                </button>
+              ))}
+            </aside>
 
-          <section className={styles.liveCard} aria-label="Current build status">
-            <div className={styles.liveHeader}>
-              <span className={styles.liveLabel}>Current Slice</span>
-              <span className={styles.liveBadge}>Phase 0</span>
-            </div>
-            <p className={styles.liveText}>
-              Local prototype with draftable modifiers, one bot path, and the shipped modifier set wired for testing.
-            </p>
-            <div className={styles.liveStats}>
-              <span className={styles.liveStat}>New Run</span>
-              <span className={styles.liveStat}>Quick Play</span>
-              <span className={styles.liveStat}>5 live mods</span>
-            </div>
-          </section>
-
-          <section className={styles.profileCard} aria-label="Local profile">
-            <div className={styles.profileTop}>
-              <div className={styles.profileCopy}>
-                <span className={styles.profileLabel}>Local Profile</span>
-                <span className={styles.profileName}>
-                  {profile?.displayName ?? 'No profile created'}
-                </span>
-                <span className={styles.profileMotto}>
-                  {profile?.motto || 'Create a local identity for this device-based prototype.'}
-                </span>
-                {profile ? (
-                  <div className={styles.profileStats}>
-                    <span className={styles.profileStat}>Runs {profile.stats.runsPlayed}</span>
-                    <span className={styles.profileStat}>Wins {profile.stats.wins}</span>
-                    <span className={styles.profileStat}>Favorite {favoriteModifierName}</span>
+            <section className={styles.centerStage} aria-label="Main menu stage">
+              <div className={styles.sceneFrame}>
+                <div className={styles.sceneSky} />
+                <div className={styles.sceneTrees} />
+                <div className={styles.sceneBoard}>
+                  <div className={styles.boardHeader}>
+                    <span className={styles.boardHeaderLabel}>Current Build</span>
+                    <span className={styles.boardHeaderValue}>Phase 0 Prototype</span>
                   </div>
-                ) : null}
+
+                  <div className={styles.stageCopy}>
+                    <span className={styles.stageKicker}>Pigeon Chess</span>
+                    <h1 className={styles.stageTitle}>Play Game</h1>
+                    <p className={styles.stageSub}>
+                      A local-first roguelike chess prototype with draftable modifiers, bot selection, readable curses, and persistent local identity.
+                    </p>
+                  </div>
+
+                  <div className={styles.stageActions}>
+                    <button className={styles.primaryAction} onClick={() => onPlay('run')}>
+                      Start Story Run
+                    </button>
+                    <button className={styles.secondaryAction} onClick={() => onPlay('quick')}>
+                      Quick Skirmish
+                    </button>
+                  </div>
+
+                  <div className={styles.stageFooter}>
+                    <div className={styles.stageStat}>
+                      <span className={styles.stageStatLabel}>Favorite Modifier</span>
+                      <span className={styles.stageStatValue}>{favoriteModifierName}</span>
+                    </div>
+                    <div className={styles.stageStat}>
+                      <span className={styles.stageStatLabel}>Profile Status</span>
+                      <span className={styles.stageStatValue}>
+                        {profile ? 'Configured' : 'Awaiting setup'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <button className={styles.profileBtn} onClick={onProfile}>
-                {profile ? 'Edit Profile' : 'Create Profile'}
-              </button>
-            </div>
+            </section>
+
+            <aside className={styles.rail} aria-label="Secondary modes">
+              {rightRail.map(item => (
+                <button
+                  key={item.label}
+                  className={`${styles.railCard} ${styles[`accent${item.accent === 'stone' ? 'Stone' : item.accent === 'ember' ? 'Ember' : 'Gold'}`]} ${item.status === 'soon' ? styles.railCardLocked : ''}`}
+                  onClick={item.action}
+                  disabled={item.status === 'soon'}
+                >
+                  <span className={styles.railCardLabel}>{item.label}</span>
+                  <span className={styles.railCardSub}>{item.sub}</span>
+                  <span className={styles.railCardState}>
+                    {item.status === 'soon' ? 'Soon' : 'Live'}
+                  </span>
+                </button>
+              ))}
+            </aside>
+          </main>
+
+          <section className={styles.journeyBand} aria-label="Run structure">
+            {JOURNEY_STEPS.map(step => (
+              <article key={step.title} className={styles.stepCard}>
+                <div className={styles.stepArt} aria-hidden="true" />
+                <span className={styles.stepTitle}>{step.title}</span>
+                <p className={styles.stepBody}>{step.body}</p>
+              </article>
+            ))}
           </section>
-
-          <nav className={styles.section} aria-label="Play modes">
-            <div className={styles.sectionTop}>
-              <p className={styles.sectionLabel}>Play</p>
-              <span className={styles.sectionNote}>Live now</span>
-            </div>
-
-            <button
-              className={`${styles.menuItem} ${styles.menuItemPrimary}`}
-              onClick={() => onPlay('run')}
-            >
-              <span className={styles.itemArrow} aria-hidden="true">▶</span>
-              <span className={styles.itemBody}>
-                <span className={styles.itemLabel}>New Run</span>
-                <span className={styles.itemSub}>Story Mode · Five Towers · Modifier Draft</span>
-              </span>
-            </button>
-
-            <button className={styles.menuItem} onClick={() => onPlay('quick')}>
-              <span className={styles.itemArrow} aria-hidden="true">▶</span>
-              <span className={styles.itemBody}>
-                <span className={styles.itemLabel}>Quick Play</span>
-                <span className={styles.itemSub}>Standard chess · No modifiers · No draft</span>
-              </span>
-            </button>
-          </nav>
-
-          <nav className={styles.section} aria-label="Online modes">
-            <div className={styles.sectionTop}>
-              <p className={styles.sectionLabel}>Online</p>
-              <span className={styles.sectionNote}>Roadmap</span>
-            </div>
-
-            {[
-              { label: 'VS Bots', sub: 'Chick · Pigeon · Magnus difficulty' },
-              { label: 'Ranked', sub: 'ELO ladder · Modifier pick / ban' },
-              { label: 'Casual', sub: 'Open lobby · Open modifier pool' },
-            ].map(({ label, sub }) => (
-              <button
-                key={label}
-                className={`${styles.menuItem} ${styles.menuItemLocked}`}
-                disabled
-              >
-                <span className={styles.itemArrow} aria-hidden="true">◆</span>
-                <span className={styles.itemBody}>
-                  <span className={styles.itemLabel}>{label}</span>
-                  <span className={styles.itemSub}>{sub}</span>
-                </span>
-                <span className={styles.badge}>SOON</span>
-              </button>
-            ))}
-          </nav>
-
-          <nav className={styles.section} aria-label="Collections">
-            <div className={styles.sectionTop}>
-              <p className={styles.sectionLabel}>Explore</p>
-              <span className={styles.sectionNote}>Tools</span>
-            </div>
-
-            {[
-              { label: 'Modifier Vault', sub: '40 modifiers · 5 categories · Full Bible' },
-              { label: 'The Roost', sub: 'Run history · Hall of Feathers · Stats' },
-            ].map(({ label, sub }) => (
-              <button
-                key={label}
-                className={`${styles.menuItem} ${styles.menuItemLocked} ${styles.menuItemSmall}`}
-                disabled
-              >
-                <span className={styles.itemArrow} aria-hidden="true">◆</span>
-                <span className={styles.itemBody}>
-                  <span className={styles.itemLabel}>{label}</span>
-                  <span className={styles.itemSub}>{sub}</span>
-                </span>
-                <span className={styles.badge}>SOON</span>
-              </button>
-            ))}
-
-            <button
-              className={`${styles.menuItem} ${styles.menuItemSmall}`}
-              onClick={onProfile}
-            >
-              <span className={styles.itemArrow} aria-hidden="true">▶</span>
-              <span className={styles.itemBody}>
-                <span className={styles.itemLabel}>Profile</span>
-                <span className={styles.itemSub}>Local save data · Name · Motto</span>
-              </span>
-            </button>
-
-            <button
-              className={`${styles.menuItem} ${styles.menuItemSmall}`}
-              onClick={onSettings}
-            >
-              <span className={styles.itemArrow} aria-hidden="true">▶</span>
-              <span className={styles.itemBody}>
-                <span className={styles.itemLabel}>Settings</span>
-                <span className={styles.itemSub}>Audio · Display · Gameplay · Accessibility</span>
-              </span>
-            </button>
-          </nav>
 
           <footer className={styles.footer}>
-            <a href="../../" className={styles.backLink}>← Back to site</a>
-            <div className={styles.versionBlock}>
-              <span className={styles.versionText}>v0.1.0</span>
-              <span className={styles.versionDot}>·</span>
-              <span className={styles.versionText}>Phase 0</span>
-              <span className={styles.versionDot}>·</span>
-              <span className={styles.versionText}>Viktor Crumb&apos;s Domain</span>
+            <div className={styles.footerBlock}>
+              <span className={styles.footerLabel}>Prototype Scope</span>
+              <span className={styles.footerText}>
+                Local-first menu hub designed for consistent desktop scaling while preserving mobile fallback.
+              </span>
             </div>
+            <div className={styles.footerBlock}>
+              <span className={styles.footerLabel}>Version</span>
+              <span className={styles.footerText}>v0.1.0 · Phase 0 · Viktor Crumb&apos;s Domain</span>
+            </div>
+            <a href="../../" className={styles.backLink}>Back to site</a>
           </footer>
         </div>
       </div>
