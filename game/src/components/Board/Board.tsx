@@ -11,6 +11,7 @@ const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
 const GERALD_ID = 'MOD-B002';
 const WINTER_ID = 'MOD-A004';
+const OBJECTOR_ID = 'MOD-B007';
 
 interface BoardProps {
   state: GameState;
@@ -33,6 +34,17 @@ function isFrozenZone(square: Square): boolean {
 interface PendingPromotion {
   from: Square;
   to: Square;
+}
+
+function getDisplayLegalMoves(state: GameState, from: Square): Square[] {
+  const legalMoves = chessEngine.getLegalMoves(state, from);
+  return legalMoves.filter(to => {
+    const move = buildMove(state, from, to);
+    if (chessEngine.isPromotionMove(state, from, to)) {
+      move.promotion = 'queen';
+    }
+    return chessEngine.validateMove(state, move).valid;
+  });
 }
 
 export default function Board({
@@ -110,16 +122,22 @@ export default function Board({
           if ((clickedPiece.cooldowns[WINTER_ID] ?? 0) > 0) {
             onInfo?.('That piece is frozen this turn.');
           }
+          if (clickedPiece.isPacifist) {
+            onInfo?.('This piece refuses to capture.');
+          }
           setSelected(square);
-          setLegalMoves(chessEngine.getLegalMoves(state, square));
+          setLegalMoves(getDisplayLegalMoves(state, square));
         }
         return;
       }
 
       // Re-select own piece
       if (clickedPiece && clickedPiece.color === state.turn && square !== selected) {
+        if (clickedPiece.isPacifist) {
+          onInfo?.('This piece refuses to capture.');
+        }
         setSelected(square);
-        setLegalMoves(chessEngine.getLegalMoves(state, square));
+        setLegalMoves(getDisplayLegalMoves(state, square));
         return;
       }
 
