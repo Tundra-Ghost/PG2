@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/game/dist/', // absolute path matching GitHub Pages deployment location
+  base: '/PG2/game/dist/', // GitHub Pages: tundra-ghost.github.io/PG2/game/dist/
 });
