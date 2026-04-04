@@ -106,44 +106,46 @@ export default function App() {
   // Unlock BGM on any first click anywhere in the app (browser autoplay policy)
   const handleUnlock = () => unlockBgm();
 
-  if (screen === 'settings') {
-    return (
-      <div onClick={handleUnlock}>
-        <SettingsScreen
-          settings={settings}
-          onSave={handleSettingsSave}
-          onBack={() => setScreen(prevScreen)}
-        />
-      </div>
-    );
-  }
+  // Settings renders as an overlay on top of the current screen
+  const settingsOverlay = screen === 'settings' ? (
+    <SettingsScreen
+      settings={settings}
+      onSave={handleSettingsSave}
+      onBack={() => setScreen(prevScreen)}
+    />
+  ) : null;
 
-  if (screen === 'menu') {
+  const baseScreen = screen === 'settings' ? prevScreen : screen;
+
+  if (baseScreen === 'menu') {
     return (
       <div onClick={handleUnlock}>
         <MainMenu onPlay={handleMenuPlay} onSettings={goToSettings} />
+        {settingsOverlay}
       </div>
     );
   }
 
-  if (screen === 'botselect') {
+  if (baseScreen === 'botselect') {
     return (
       <div onClick={handleUnlock}>
         <BotSelect
           onSelect={handleBotSelect}
           onBack={() => setScreen('menu')}
         />
+        {settingsOverlay}
       </div>
     );
   }
 
-  if (screen === 'draft') {
+  if (baseScreen === 'draft') {
     return (
       <div onClick={handleUnlock}>
         <DraftScreen
           onStartMatch={handleStartMatch}
           onBack={() => setScreen('menu')}
         />
+        {settingsOverlay}
       </div>
     );
   }
@@ -177,6 +179,8 @@ export default function App() {
           <MoveHistory state={gameState} />
         </div>
       </main>
+
+      {settingsOverlay}
     </div>
   );
 }
