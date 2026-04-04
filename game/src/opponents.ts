@@ -15,6 +15,8 @@ export interface OpponentProfile {
   reactionPersonaId: string;
 }
 
+export type DialogueExpression = 'neutral' | 'shocked' | 'smug' | 'frustrated';
+
 export const BOTS: OpponentProfile[] = [
   {
     id: 'chick',

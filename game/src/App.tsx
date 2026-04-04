@@ -53,6 +53,7 @@ export interface MatchChatEntry {
   portraitSrc?: string | null;
   portraitSlotLabel?: string;
   dialogueTheme?: 'player' | 'chick' | 'measured' | 'grandmaster' | 'npc';
+  dialogueExpression?: 'neutral' | 'shocked' | 'smug' | 'frustrated';
 }
 
 const BERSERKER_ID = 'MOD-E006';
@@ -189,7 +190,7 @@ export default function App() {
     const currentOpponentIcon = currentSpeaker?.icon ?? null;
 
     const moveIndex = gameState.moveHistory.length - 1;
-    const response = getBotReaction({
+    const reaction = getBotReaction({
       speakerId: selectedBot,
       moveRecord: latestMove,
       moveIndex,
@@ -197,7 +198,7 @@ export default function App() {
     });
 
     lastReactedMoveId.current = moveKey;
-    if (!response) return;
+    if (!reaction) return;
 
     setChatEntries(prev => [
       ...prev,
@@ -206,12 +207,13 @@ export default function App() {
         order: getDerivedFeedOrder(gameState, prev) + 1,
         ply: gameState.moveHistory.length,
         author: currentOpponentName,
-        text: response,
+        text: reaction.text,
         source: 'bot',
         avatarLabel: currentOpponentName.slice(0, 1).toUpperCase(),
         avatarIcon: currentOpponentIcon,
         portraitSlotLabel: currentSpeaker?.portraitSlotLabel ?? `${currentOpponentName} Portrait`,
         dialogueTheme: currentSpeaker?.dialogueTheme ?? 'npc',
+        dialogueExpression: reaction.expression,
       },
     ]);
   }, [gameState, screen, selectedBot, vsBot]);
@@ -390,6 +392,7 @@ export default function App() {
         portraitSrc: playerProfile?.avatarDataUrl ?? null,
         portraitSlotLabel: `${playerName} Portrait`,
         dialogueTheme: 'player',
+        dialogueExpression: 'neutral',
       },
     ]);
   }

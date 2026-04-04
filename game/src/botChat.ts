@@ -1,11 +1,23 @@
 import type { MoveRecord, PieceType } from './engine/types';
-import { BOTS, getBotProfile, type BotId, type OpponentId, type OpponentProfile } from './opponents';
+import {
+  BOTS,
+  getBotProfile,
+  type BotId,
+  type DialogueExpression,
+  type OpponentId,
+  type OpponentProfile,
+} from './opponents';
 
 export interface BotReactionInput {
   speakerId: OpponentId;
   moveRecord: MoveRecord;
   moveIndex: number;
   gameStatus: 'active' | 'checkmate' | 'draw' | 'abandoned' | 'draft';
+}
+
+export interface BotReactionOutput {
+  text: string;
+  expression: DialogueExpression;
 }
 
 type ReactionEventKey =
@@ -20,89 +32,124 @@ type ReactionEventKey =
   | 'won_minor'
   | 'won_pawn';
 
-type ReactionPersona = Partial<Record<ReactionEventKey, string[]>>;
+type ReactionRule = {
+  lines: string[];
+  expression: DialogueExpression;
+};
+
+type ReactionPersona = Partial<Record<ReactionEventKey, ReactionRule>>;
 
 const CHICK_PERSONA: ReactionPersona = {
-  match_lost: [
-    'I would like a rematch with fewer consequences.',
-    'This result feels editorialized.',
-  ],
-  match_won: [
-    'Calculated. More or less.',
-    'I am the rooftop now.',
-  ],
-  lost_queen: [
-    'That was the important one.',
-    'I have made a strategic mistake.',
-    'The large bird was not supposed to die.',
-  ],
-  lost_major: [
-    'Hey. That was one of my serious pieces.',
-    'That one had a union contract.',
-  ],
-  lost_minor: [
-    'I was using that bird.',
-    'Rude. Extremely rude.',
-  ],
-  lost_pawn: [
-    'Acceptable losses. Probably.',
-    'That chick was a volunteer.',
-  ],
-  won_queen: [
-    'That looked expensive.',
-    'I have captured the large bird.',
-  ],
-  won_major: [
-    'Mine now.',
-    'I meant to do that.',
-  ],
-  won_minor: [
-    'A tidy little theft.',
-    'I like how this is developing.',
-  ],
-  won_pawn: [
-    'Small snack acquired.',
-    'Free crumb.',
-  ],
+  match_lost: {
+    lines: [
+      'I would like a rematch with fewer consequences.',
+      'This result feels editorialized.',
+    ],
+    expression: 'frustrated',
+  },
+  match_won: {
+    lines: [
+      'Calculated. More or less.',
+      'I am the rooftop now.',
+    ],
+    expression: 'smug',
+  },
+  lost_queen: {
+    lines: [
+      'That was the important one.',
+      'I have made a strategic mistake.',
+      'The large bird was not supposed to die.',
+    ],
+    expression: 'shocked',
+  },
+  lost_major: {
+    lines: [
+      'Hey. That was one of my serious pieces.',
+      'That one had a union contract.',
+    ],
+    expression: 'frustrated',
+  },
+  lost_minor: {
+    lines: [
+      'I was using that bird.',
+      'Rude. Extremely rude.',
+    ],
+    expression: 'frustrated',
+  },
+  lost_pawn: {
+    lines: [
+      'Acceptable losses. Probably.',
+      'That chick was a volunteer.',
+    ],
+    expression: 'neutral',
+  },
+  won_queen: {
+    lines: [
+      'That looked expensive.',
+      'I have captured the large bird.',
+    ],
+    expression: 'smug',
+  },
+  won_major: {
+    lines: [
+      'Mine now.',
+      'I meant to do that.',
+    ],
+    expression: 'smug',
+  },
+  won_minor: {
+    lines: [
+      'A tidy little theft.',
+      'I like how this is developing.',
+    ],
+    expression: 'smug',
+  },
+  won_pawn: {
+    lines: [
+      'Small snack acquired.',
+      'Free crumb.',
+    ],
+    expression: 'neutral',
+  },
 };
 
 const MEASURED_PERSONA: ReactionPersona = {
-  match_lost: ['Well played.'],
-  match_won: ['Position converted.'],
-  lost_queen: ['That was decisive.'],
-  lost_major: ['That exchange hurts.'],
-  lost_minor: ['Not ideal.'],
-  lost_pawn: ['A pawn slips away.'],
-  won_queen: ['A critical gain.'],
-  won_major: ['Material advantage secured.'],
-  won_minor: ['Pressure rewarded.'],
-  won_pawn: ['Incremental progress.'],
+  match_lost: { lines: ['Well played.'], expression: 'frustrated' },
+  match_won: { lines: ['Position converted.'], expression: 'smug' },
+  lost_queen: { lines: ['That was decisive.'], expression: 'shocked' },
+  lost_major: { lines: ['That exchange hurts.'], expression: 'frustrated' },
+  lost_minor: { lines: ['Not ideal.'], expression: 'frustrated' },
+  lost_pawn: { lines: ['A pawn slips away.'], expression: 'neutral' },
+  won_queen: { lines: ['A critical gain.'], expression: 'smug' },
+  won_major: { lines: ['Material advantage secured.'], expression: 'smug' },
+  won_minor: { lines: ['Pressure rewarded.'], expression: 'neutral' },
+  won_pawn: { lines: ['Incremental progress.'], expression: 'neutral' },
 };
 
 const GRANDMASTER_PERSONA: ReactionPersona = {
-  match_lost: ['I will revise the line.'],
-  match_won: ['That was forced several moves ago.'],
-  lost_queen: ['A catastrophic oversight.'],
-  lost_major: ['That breaks the position.'],
-  lost_minor: ['A tactical concession.'],
-  lost_pawn: ['A small but relevant loss.'],
-  won_queen: ['The evaluation has shifted sharply.'],
-  won_major: ['The position is collapsing for you.'],
-  won_minor: ['A precise extraction.'],
-  won_pawn: ['Space and material, both improving.'],
+  match_lost: { lines: ['I will revise the line.'], expression: 'frustrated' },
+  match_won: { lines: ['That was forced several moves ago.'], expression: 'smug' },
+  lost_queen: { lines: ['A catastrophic oversight.'], expression: 'shocked' },
+  lost_major: { lines: ['That breaks the position.'], expression: 'frustrated' },
+  lost_minor: { lines: ['A tactical concession.'], expression: 'frustrated' },
+  lost_pawn: { lines: ['A small but relevant loss.'], expression: 'neutral' },
+  won_queen: { lines: ['The evaluation has shifted sharply.'], expression: 'smug' },
+  won_major: { lines: ['The position is collapsing for you.'], expression: 'smug' },
+  won_minor: { lines: ['A precise extraction.'], expression: 'neutral' },
+  won_pawn: { lines: ['Space and material, both improving.'], expression: 'neutral' },
 };
 
 const DEFAULT_PERSONA: ReactionPersona = {
-  match_lost: ['You got me this time.'],
-  match_won: ['Match concluded in my favor.'],
-  lost_queen: ['That was not the plan.'],
-  lost_major: ['That was a setback.'],
-  lost_minor: ['That piece mattered.'],
-  lost_pawn: ['A small loss.'],
-  won_queen: ['A major swing.'],
-  won_major: ['Advantage acquired.'],
-  won_minor: ['Pressure paid off.'],
-  won_pawn: ['A small gain.'],
+  match_lost: { lines: ['You got me this time.'], expression: 'frustrated' },
+  match_won: { lines: ['Match concluded in my favor.'], expression: 'smug' },
+  lost_queen: { lines: ['That was not the plan.'], expression: 'shocked' },
+  lost_major: { lines: ['That was a setback.'], expression: 'frustrated' },
+  lost_minor: { lines: ['That piece mattered.'], expression: 'frustrated' },
+  lost_pawn: { lines: ['A small loss.'], expression: 'neutral' },
+  won_queen: { lines: ['A major swing.'], expression: 'smug' },
+  won_major: { lines: ['Advantage acquired.'], expression: 'smug' },
+  won_minor: { lines: ['Pressure paid off.'], expression: 'neutral' },
+  won_pawn: { lines: ['A small gain.'], expression: 'neutral' },
 };
 
 const PERSONAS: Record<string, ReactionPersona> = {
@@ -177,14 +224,17 @@ export function getSpeakerProfile(speakerId: OpponentId): OpponentProfile {
   };
 }
 
-export function getBotReaction(input: BotReactionInput): string | null {
+export function getBotReaction(input: BotReactionInput): BotReactionOutput | null {
   const eventKey = deriveReactionEvent(input);
   if (!eventKey) return null;
 
   const speaker = getSpeakerProfile(input.speakerId);
   const persona = PERSONAS[speaker.reactionPersonaId] ?? PERSONAS.default;
-  const lines = persona[eventKey] ?? PERSONAS.default[eventKey] ?? [];
-  return pickLine(lines, input.moveIndex);
+  const rule = persona[eventKey] ?? PERSONAS.default[eventKey];
+  if (!rule) return null;
+  const text = pickLine(rule.lines, input.moveIndex);
+  if (!text) return null;
+  return { text, expression: rule.expression };
 }
 
 export function getBotSpeaker(botId: BotId | null): OpponentProfile | null {

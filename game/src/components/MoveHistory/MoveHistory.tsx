@@ -26,6 +26,7 @@ interface FeedEntry {
   portraitSrc?: string | null;
   portraitSlotLabel?: string;
   dialogueTheme?: 'player' | 'chick' | 'measured' | 'grandmaster' | 'npc';
+  dialogueExpression?: 'neutral' | 'shocked' | 'smug' | 'frustrated';
   animated?: boolean;
 }
 
@@ -155,6 +156,7 @@ export default function MoveHistory({
         portraitSrc: chat.portraitSrc,
         portraitSlotLabel: chat.portraitSlotLabel,
         dialogueTheme: chat.dialogueTheme,
+        dialogueExpression: chat.dialogueExpression,
         animated: true,
       });
     }
@@ -222,7 +224,9 @@ export default function MoveHistory({
               <div
                 className={`${styles.dialogueCard} ${
                   entry.emphasis === 'player' ? styles.dialogueCardPlayer : styles.dialogueCardOpponent
-                } ${styles[`theme${(entry.dialogueTheme ?? 'npc').charAt(0).toUpperCase()}${(entry.dialogueTheme ?? 'npc').slice(1)}`]}`}
+                } ${styles[`theme${(entry.dialogueTheme ?? 'npc').charAt(0).toUpperCase()}${(entry.dialogueTheme ?? 'npc').slice(1)}`]} ${
+                  styles[`expression${(entry.dialogueExpression ?? 'neutral').charAt(0).toUpperCase()}${(entry.dialogueExpression ?? 'neutral').slice(1)}`]
+                }`}
               >
                 <div className={styles.dialogueHeader}>
                   <span className={styles.dialogueNameplate}>{entry.actor}</span>
@@ -254,6 +258,9 @@ export default function MoveHistory({
                           {entry.portraitSlotLabel ?? 'Portrait Slot'}
                         </span>
                         <span className={styles.dialoguePortraitIcon}>{entry.avatarIcon}</span>
+                        <span className={styles.dialogueExpressionLabel}>
+                          {entry.dialogueExpression ?? 'neutral'}
+                        </span>
                       </div>
                     ) : (
                       <div className={styles.dialoguePortraitPlaceholder}>
@@ -261,6 +268,9 @@ export default function MoveHistory({
                           {entry.portraitSlotLabel ?? 'Portrait Slot'}
                         </span>
                         <span className={styles.dialoguePortraitLabel}>{entry.avatarLabel ?? '?'}</span>
+                        <span className={styles.dialogueExpressionLabel}>
+                          {entry.dialogueExpression ?? 'neutral'}
+                        </span>
                       </div>
                     )}
                   </div>

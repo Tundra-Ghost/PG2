@@ -41,7 +41,10 @@ describe('botChat', () => {
       gameStatus: 'active',
     });
 
-    expect(reaction).toBe('That was the important one.');
+    expect(reaction).toEqual({
+      text: 'That was the important one.',
+      expression: 'shocked',
+    });
   });
 
   it('returns a measured reaction for future bot personas', () => {
@@ -55,7 +58,10 @@ describe('botChat', () => {
       gameStatus: 'active',
     });
 
-    expect(reaction).toBe('That exchange hurts.');
+    expect(reaction).toEqual({
+      text: 'That exchange hurts.',
+      expression: 'frustrated',
+    });
   });
 
   it('returns a default npc profile for unknown speakers', () => {
@@ -64,6 +70,7 @@ describe('botChat', () => {
     expect(speaker.kind).toBe('npc');
     expect(speaker.name).toBe('gerald');
     expect(speaker.reactionPersonaId).toBe('default');
+    expect(speaker.dialogueTheme).toBe('npc');
   });
 
   it('returns no reaction for a quiet move', () => {
