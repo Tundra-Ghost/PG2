@@ -141,3 +141,67 @@
   border-color: var(--ui-gold);
   color: var(--ui-gold);
 }
+
+@media (max-width: 720px) {
+  .wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.75rem 0.9rem;
+  }
+
+  .turnIndicator {
+    flex-wrap: wrap;
+    row-gap: 0.45rem;
+  }
+
+  .turnText {
+    font-size: 0.98rem;
+  }
+
+  .infoPill {
+    width: 100%;
+    text-align: center;
+  }
+
+  .newGameBtnSmall {
+    width: 100%;
+  }
+
+  .overlayCard {
+    width: min(92vw, 420px);
+    padding: 2rem 1.5rem;
+  }
+
+  .overlayHeadline {
+    font-size: 2.4rem;
+  }
+
+  .overlaySub {
+    font-size: 0.95rem;
+  }
+
+  .newGameBtn {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: 0.7rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 0.7rem 0.75rem;
+  }
+
+  .moveNum {
+    width: 100%;
+  }
+
+  .overlayEmoji {
+    font-size: 2.6rem;
+  }
+
+  .overlayHeadline {
+    font-size: 2rem;
+  }
+}

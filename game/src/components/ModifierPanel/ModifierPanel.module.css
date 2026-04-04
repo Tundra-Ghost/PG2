@@ -188,3 +188,37 @@
     border-top: 1px solid rgba(200, 151, 58, 0.1);
   }
 }
+
+@media (max-width: 720px) {
+  .body {
+    gap: 0.6rem;
+    padding: 0.5rem 0.45rem 0.6rem;
+  }
+
+  .section {
+    padding: 0;
+  }
+
+  .sectionHeader {
+    padding: 0.2rem 0.2rem 0.35rem;
+  }
+
+  .modCard {
+    padding: 0.42rem 0.48rem;
+  }
+
+  .modName {
+    font-size: 0.76rem;
+  }
+
+  .description {
+    font-size: 0.66rem;
+    line-height: 1.28;
+  }
+
+  .modMeta {
+    flex-wrap: wrap;
+    row-gap: 0.15rem;
+    font-size: 0.52rem;
+  }
+}

@@ -11,6 +11,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Vitest is now installed in `game/` and baseline engine tests are passing
 - Modifier audit is in progress to make currently shipped cards visible and testable in play
 - In-game history now supports modifier event messages in addition to SAN move notation
+- Prototype app and landing page now have an explicit mobile-responsive baseline
 
 ## Priority 1: Stabilize The Prototype Core
 
@@ -53,6 +54,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] GDD SFX: add distinct one-shot sounds for lava death, Gerald interference, freeze block, pacifist refusal, and berserker chain
 - [ ] GDD SFX: add subtle UI sounds for draft select/deselect, disabled-card hover, modal open/close, and settings toggles
 - [ ] GDD polish: review current emoji and placeholder symbols in the app shell against the art-direction doc and replace where needed
+- [x] GDD UI: establish a mobile-responsive baseline for the landing page and playable prototype
 
 ## Priority 5: Product Hygiene
 

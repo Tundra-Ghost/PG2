@@ -124,3 +124,84 @@
     width: min(100%, 640px);
   }
 }
+
+@media (max-width: 720px) {
+  .header {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    row-gap: 0.6rem;
+    padding: 0.8rem 1rem;
+  }
+
+  .menuBtn {
+    order: 1;
+    margin-right: 0;
+  }
+
+  .logo {
+    order: 2;
+  }
+
+  .title {
+    order: 3;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 1.2rem;
+  }
+
+  .settingsBtn {
+    order: 4;
+    margin-left: 0;
+  }
+
+  .phase {
+    order: 5;
+    margin-left: 0;
+  }
+
+  .main {
+    padding: 0.75rem;
+  }
+
+  .gameArea {
+    gap: 0.75rem;
+    box-shadow: none;
+  }
+
+  .boardColumn,
+  .sideColumn {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    gap: 0.45rem;
+    padding: 0.7rem 0.75rem;
+  }
+
+  .logo {
+    font-size: 1.15rem;
+  }
+
+  .title {
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+  }
+
+  .menuBtn,
+  .settingsBtn,
+  .phase {
+    transform: scale(0.96);
+    transform-origin: center;
+  }
+
+  .main {
+    padding: 0.5rem;
+  }
+
+  .sideColumn {
+    gap: 0.65rem;
+  }
+}

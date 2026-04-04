@@ -62,3 +62,57 @@
   flex: 1;
   height: 22px;
 }
+
+@media (max-width: 720px) {
+  .frame {
+    border-width: 2px;
+  }
+
+  .board {
+    width: min(calc(100vw - 1.5rem), 560px);
+    height: min(calc(100vw - 1.5rem), 560px);
+  }
+
+  .coordCol {
+    width: 18px;
+  }
+
+  .coordCorner {
+    width: 18px;
+    height: 18px;
+  }
+
+  .coordRowTop .coordLabel,
+  .coordRowBottom .coordLabel {
+    height: 18px;
+  }
+
+  .coordLabel {
+    font-size: 0.54rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .board {
+    width: min(calc(100vw - 1rem), 560px);
+    height: min(calc(100vw - 1rem), 560px);
+  }
+
+  .coordCol {
+    width: 15px;
+  }
+
+  .coordCorner {
+    width: 15px;
+    height: 15px;
+  }
+
+  .coordRowTop .coordLabel,
+  .coordRowBottom .coordLabel {
+    height: 15px;
+  }
+
+  .coordLabel {
+    font-size: 0.48rem;
+  }
+}
