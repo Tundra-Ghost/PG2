@@ -11,6 +11,7 @@ export const geraldDef: ModifierDefinition = {
   pointCost: -1,
   curseRating: 1,
   activeFor: 'both',
+  draftScope: 'owned',
 
   onTurnStart(state) {
     const geraldAffectsCurrentPlayer = state.activeModifiers.some(

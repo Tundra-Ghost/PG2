@@ -11,6 +11,7 @@ export const conscientiousObjectorDef: ModifierDefinition = {
   pointCost: -1,
   curseRating: 1,
   activeFor: 'both',
+  draftScope: 'owned',
 
   onActivate(state) {
     const owner = [...state.activeModifiers]

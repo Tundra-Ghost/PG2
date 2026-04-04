@@ -67,11 +67,19 @@ export const berserkerDef: ModifierDefinition = {
   pointCost: 3,
   curseRating: 0,
   activeFor: 'both',
+  draftScope: 'owned',
 
   onActivate(state) {
+    const owner = [...state.activeModifiers]
+      .reverse()
+      .find(mod => mod.id === ID)?.sourceColor ?? null;
+
     // Designate a random non-king, non-pawn piece as the Berserker.
     const candidates = Array.from(state.pieces.values()).filter(
-      p => p.type !== 'king' && p.type !== 'pawn',
+      p =>
+        p.type !== 'king' &&
+        p.type !== 'pawn' &&
+        (owner === null || p.color === owner),
     );
     if (candidates.length === 0) return state;
 

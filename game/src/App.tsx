@@ -26,12 +26,10 @@ import {
   type MatchMode,
 } from './profile';
 import styles from './App.module.css';
-import { ALL_MODIFIERS } from './modifiers/data';
-import { modifierRegistry } from './modifiers/registry';
 
 import './modifiers/index';
 
-type Screen = 'menu' | 'botselect' | 'draft' | 'game' | 'settings' | 'profile';
+type Screen = 'menu' | 'botselect' | 'draft' | 'game' | 'settings' | 'profile' | 'roost';
 type BotSelectMode = 'run' | 'quick' | null;
 
 interface ProfileViewerState {
@@ -42,9 +40,6 @@ interface ProfileViewerState {
 }
 
 const BERSERKER_ID = 'MOD-E006';
-const DRAFT_BUDGET = 8;
-const DRAFT_MAX_COUNT = 5;
-const DRAFT_MAX_PER_CATEGORY = 2;
 
 function getBerserkerEvent(state: GameState): BerserkerChainEvent | null {
   const value = state.modifierState[BERSERKER_ID];
@@ -58,28 +53,6 @@ function getBerserkerEvent(state: GameState): BerserkerChainEvent | null {
     return value as BerserkerChainEvent;
   }
   return null;
-}
-
-function buildChickDraft(): string[] {
-  const implementedIds = new Set(modifierRegistry.getAll().map(mod => mod.id));
-  const implementedCards = ALL_MODIFIERS.filter(mod => implementedIds.has(mod.id));
-  const shuffled = [...implementedCards].sort(() => Math.random() - 0.5);
-
-  const picks: string[] = [];
-  const categoryCounts: Record<string, number> = {};
-  let totalCost = 0;
-
-  for (const mod of shuffled) {
-    if (picks.length >= DRAFT_MAX_COUNT) break;
-    if ((categoryCounts[mod.category] ?? 0) >= DRAFT_MAX_PER_CATEGORY) continue;
-    if (totalCost + mod.cost > DRAFT_BUDGET) continue;
-
-    picks.push(mod.id);
-    totalCost += mod.cost;
-    categoryCounts[mod.category] = (categoryCounts[mod.category] ?? 0) + 1;
-  }
-
-  return picks;
 }
 
 function buildBotProfile(botId: BotId | null): LocalProfile | null {
@@ -125,10 +98,12 @@ export default function App() {
   const [vsBot, setVsBot] = useState(false);
   const [selectedBot, setSelectedBot] = useState<BotId | null>(null);
   const [botSelectMode, setBotSelectMode] = useState<BotSelectMode>(null);
-  const [pendingBotModifierIds, setPendingBotModifierIds] = useState<string[]>([]);
   const [activePlayerModifierIds, setActivePlayerModifierIds] = useState<string[]>([]);
+  const [pendingBotModifierIds, setPendingBotModifierIds] = useState<string[]>([]);
   const [currentMatchMode, setCurrentMatchMode] = useState<MatchMode>('quick');
-  const [currentMatchStartedAt, setCurrentMatchStartedAt] = useState<string>(new Date().toISOString());
+  const [currentMatchStartedAt, setCurrentMatchStartedAt] = useState<string>(
+    new Date().toISOString(),
+  );
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [modifierPanelCollapsed, setModifierPanelCollapsed] = useState(false);
   const [profileViewer, setProfileViewer] = useState<ProfileViewerState | null>(null);
@@ -182,7 +157,7 @@ export default function App() {
     if (!event || event.counter <= seenBerserkerEvent.current) return;
 
     const pieceLabel = event.capturedType ? ` ${event.capturedType}` : '';
-    setInfoMessage(`BOY. chained into${pieceLabel} on ${event.to}.`);
+    setInfoMessage(`BOY chained into${pieceLabel} on ${event.to}.`);
     seenBerserkerEvent.current = event.counter;
   }, [gameState]);
 
@@ -202,11 +177,7 @@ export default function App() {
     if (recordedCompletionIds.current.has(gameState.id)) return;
 
     const result =
-      gameState.status === 'draw'
-        ? 'draw'
-        : gameState.turn === 'black'
-          ? 'win'
-          : 'loss';
+      gameState.status === 'draw' ? 'draw' : gameState.turn === 'black' ? 'win' : 'loss';
 
     const nextProfile = recordProfileMatchCompletion(profile, {
       matchId: gameState.id,
@@ -266,6 +237,10 @@ export default function App() {
     setScreen('profile');
   }
 
+  function goToRoost() {
+    setScreen('roost');
+  }
+
   function handleMenuPlay(mode: 'run' | 'quick') {
     setVsBot(false);
     setSelectedBot(null);
@@ -281,7 +256,7 @@ export default function App() {
     setVsBot(true);
 
     if (botSelectMode === 'run') {
-      setPendingBotModifierIds(botId === 'chick' ? buildChickDraft() : []);
+      setPendingBotModifierIds([]);
       setScreen('draft');
       return;
     }
@@ -294,13 +269,14 @@ export default function App() {
     setScreen('game');
   }
 
-  function handleStartMatch(playerModifierIds: string[]) {
+  function handleStartMatch(playerModifierIds: string[], opponentModifierIds: string[]) {
     let state = chessEngine.getInitialState();
     state = chessEngine.activateDraftModifiers(state, [
       ...playerModifierIds.map(id => ({ id, sourceColor: 'white' as const })),
-      ...pendingBotModifierIds.map(id => ({ id, sourceColor: 'black' as const })),
+      ...opponentModifierIds.map(id => ({ id, sourceColor: 'black' as const })),
     ]);
     state = chessEngine.beginTurn(state);
+    setPendingBotModifierIds(opponentModifierIds);
     setActivePlayerModifierIds(playerModifierIds);
     setCurrentMatchMode('story');
     setCurrentMatchStartedAt(new Date().toISOString());
@@ -312,6 +288,7 @@ export default function App() {
     commitAbandonmentIfNeeded();
     const state = chessEngine.beginTurn(chessEngine.getInitialState());
     setActivePlayerModifierIds([]);
+    setPendingBotModifierIds([]);
     setCurrentMatchStartedAt(new Date().toISOString());
     setGameState(state);
   }
@@ -329,7 +306,8 @@ export default function App() {
   const selectedBotMeta = selectedBot ? (BOTS.find(bot => bot.id === selectedBot) ?? null) : null;
   const opponentName = selectedBotMeta?.name ?? 'Opponent';
   const opponentTagline = selectedBotMeta?.tagline ?? 'Awaiting challenger';
-  const moveCountLabel = gameState.moveHistory.length > 0 ? `Move ${gameState.flags.fullMoveNumber}` : 'Opening position';
+  const moveCountLabel =
+    gameState.moveHistory.length > 0 ? `Move ${gameState.flags.fullMoveNumber}` : 'Opening position';
   const botProfile = buildBotProfile(selectedBot);
   const playerProfile = profile;
   const playerName = playerProfile?.displayName ?? 'Player';
@@ -338,13 +316,14 @@ export default function App() {
   const opponentLevel = botProfile ? getProfileLevel(botProfile) : 1;
   const opponentTitle = botProfile ? getSelectedTitle(botProfile).name : 'Street Pigeon';
 
-  const settingsOverlay = screen === 'settings' ? (
-    <SettingsScreen
-      settings={settings}
-      onSave={handleSettingsSave}
-      onBack={() => setScreen(prevScreen)}
-    />
-  ) : null;
+  const settingsOverlay =
+    screen === 'settings' ? (
+      <SettingsScreen
+        settings={settings}
+        onSave={handleSettingsSave}
+        onBack={() => setScreen(prevScreen)}
+      />
+    ) : null;
 
   const viewedProfileOverlay = profileViewer ? (
     <ProfileSetup
@@ -365,6 +344,7 @@ export default function App() {
           onPlay={handleMenuPlay}
           onSettings={goToSettings}
           onProfile={goToProfile}
+          onRoost={goToRoost}
           profile={profile}
         />
         {settingsOverlay}
@@ -389,11 +369,36 @@ export default function App() {
     );
   }
 
+  if (baseScreen === 'roost') {
+    return (
+      <div onClick={handleUnlock}>
+        <ProfileSetup
+          profile={
+            profile ??
+            createProfile({
+              displayName: 'Player',
+              motto: '',
+              region: 'North America',
+              country: '',
+              avatarDataUrl: null,
+              selectedTitleId: 'title_street_pigeon',
+            })
+          }
+          editable={false}
+          heading="The Roost"
+          subtitle="Local records, titles, achievements, and offline history for the current serverless prototype. Online sections remain placeholder scaffolding."
+          onBack={() => setScreen('menu')}
+        />
+        {settingsOverlay}
+      </div>
+    );
+  }
+
   if (baseScreen === 'botselect') {
     const botSelectSubtitle =
       botSelectMode === 'run'
-        ? 'New Run · Choose bot opponent before drafting modifiers'
-        : 'Quick Play · Standard chess · No modifiers';
+        ? 'New Run - Choose bot opponent before drafting modifiers'
+        : 'Quick Play - Standard chess - No modifiers';
 
     return (
       <div onClick={handleUnlock}>
@@ -440,7 +445,7 @@ export default function App() {
             <PlayerBanner
               role="Player"
               name={playerName}
-              metaLine={`${playerTitle} · Lv ${playerLevel} · ELO ${playerProfile?.elo ?? 1200}`}
+              metaLine={`${playerTitle} - Lv ${playerLevel} - ELO ${playerProfile?.elo ?? 1200}`}
               subtitle={playerProfile?.motto || moveCountLabel}
               badge={gameState.turn === 'white' ? 'To Move' : 'Waiting'}
               portraitLabel={playerName.slice(0, 1).toUpperCase()}
@@ -458,7 +463,7 @@ export default function App() {
             <PlayerBanner
               role={vsBot ? 'AI' : 'Opponent'}
               name={opponentName}
-              metaLine={`${opponentTitle} · Lv ${opponentLevel} · ELO ${botProfile?.elo ?? 1200}`}
+              metaLine={`${opponentTitle} - Lv ${opponentLevel} - ELO ${botProfile?.elo ?? 1200}`}
               subtitle={botProfile?.motto || opponentTagline}
               badge={gameState.turn === 'black' ? 'To Move' : 'Standing By'}
               portraitLabel={selectedBotMeta?.name.slice(0, 1).toUpperCase() ?? 'O'}
@@ -469,7 +474,8 @@ export default function App() {
                   profile: botProfile,
                   editable: false,
                   heading: `${opponentName} Dossier`,
-                  subtitle: 'Prototype opponent profile view. Online profile exchange is reserved for future server-backed play.',
+                  subtitle:
+                    'Prototype opponent profile view. Online profile exchange is reserved for future server-backed play.',
                 });
               }}
             />

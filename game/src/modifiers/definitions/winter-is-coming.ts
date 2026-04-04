@@ -15,6 +15,7 @@ export const winterIsComingDef: ModifierDefinition = {
   pointCost: 2,
   curseRating: 0,
   activeFor: 'both',
+  draftScope: 'shared',
 
   onPostMove(state, move) {
     const piece = state.pieces.get(move.to);

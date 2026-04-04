@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ALL_MODIFIERS,
   CATEGORY_COLORS,
@@ -7,36 +7,37 @@ import {
   type ModifierCategory,
 } from '../../modifiers/data';
 import { modifierRegistry } from '../../modifiers/registry';
+import { isSharedDraftModifier } from '../../modifiers/scope';
 import '../../modifiers/index';
 import styles from './DraftScreen.module.css';
 
-// Story Mode budget per GDD: 8pt
 const BUDGET = 8;
 const MAX_COUNT = 5;
 const MAX_PER_CATEGORY = 2;
 
 interface DraftScreenProps {
-  onStartMatch: (selectedIds: string[]) => void;
+  onStartMatch: (playerSelectedIds: string[], opponentSelectedIds: string[]) => void;
   onBack: () => void;
   opponentName?: string;
   opponentModifierIds?: string[];
 }
 
 type CategoryFilter = 'ALL' | ModifierCategory;
+type DraftTurn = 'player' | 'opponent' | 'done';
 
 const CATEGORY_FILTERS: { key: CategoryFilter; label: string }[] = [
   { key: 'ALL', label: 'All' },
-  { key: 'A', label: 'A · Board' },
-  { key: 'B', label: 'B · Cursed' },
-  { key: 'C', label: 'C · Abilities' },
-  { key: 'D', label: 'D · Fog' },
-  { key: 'E', label: 'E · Army' },
+  { key: 'A', label: 'A - Board' },
+  { key: 'B', label: 'B - Cursed' },
+  { key: 'C', label: 'C - Abilities' },
+  { key: 'D', label: 'D - Fog' },
+  { key: 'E', label: 'E - Army' },
 ];
 
 function getCostDisplay(cost: number) {
   if (cost === 0) return '0 pts';
   if (cost > 0) return `+${cost} pts`;
-  return `${cost} pts`; // negative shows its own minus sign
+  return `${cost} pts`;
 }
 
 function CursePips({ level }: { level: 0 | 1 | 2 | 3 }) {
@@ -52,119 +53,189 @@ function CursePips({ level }: { level: 0 | 1 | 2 | 3 }) {
   );
 }
 
+function getSelectedCards(ids: string[]) {
+  return ALL_MODIFIERS.filter(mod => ids.includes(mod.id));
+}
+
+function getCategoryCounts(cards: ModifierCard[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const card of cards) {
+    counts[card.category] = (counts[card.category] ?? 0) + 1;
+  }
+  return counts;
+}
+
+function getValidOptions(
+  ownIds: string[],
+  otherIds: string[],
+  implementedIds: Set<string>,
+): ModifierCard[] {
+  const ownCards = getSelectedCards(ownIds);
+  const ownCounts = getCategoryCounts(ownCards);
+  const totalCost = ownCards.reduce((sum, card) => sum + card.cost, 0);
+
+  return ALL_MODIFIERS.filter(card => {
+    if (!implementedIds.has(card.id)) return false;
+    if (ownIds.includes(card.id)) return false;
+    if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return false;
+    if (ownCards.length >= MAX_COUNT) return false;
+    if (totalCost + card.cost > BUDGET) return false;
+    if ((ownCounts[card.category] ?? 0) >= MAX_PER_CATEGORY) return false;
+    return true;
+  });
+}
+
+function pickRandomCard(cards: ModifierCard[]): ModifierCard | null {
+  if (cards.length === 0) return null;
+  return cards[Math.floor(Math.random() * cards.length)] ?? null;
+}
+
 export default function DraftScreen({
   onStartMatch,
   onBack,
   opponentName = 'Opponent',
   opponentModifierIds = [],
 }: DraftScreenProps) {
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [playerSelectedIds, setPlayerSelectedIds] = useState<string[]>([]);
+  const [botSelectedIds, setBotSelectedIds] = useState<string[]>(opponentModifierIds);
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('ALL');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [hideUnavailable, setHideUnavailable] = useState(true);
-  const implementedIds = useMemo(
-    () => new Set(modifierRegistry.getAll().map(mod => mod.id)),
-    [],
-  );
-  const opponentClaimedSharedIds = useMemo(
-    () =>
-      new Set(
-        ALL_MODIFIERS
-          .filter(
-            mod =>
-              opponentModifierIds.includes(mod.id) &&
-              modifierRegistry.get(mod.id)?.activeFor === 'both' &&
-              mod.category !== 'B',
-          )
-          .map(mod => mod.id),
-      ),
-    [opponentModifierIds],
+  const [draftTurn, setDraftTurn] = useState<DraftTurn>('player');
+  const implementedIds = useMemo(() => new Set(modifierRegistry.getAll().map(mod => mod.id)), []);
+
+  const playerSelected = useMemo(() => getSelectedCards(playerSelectedIds), [playerSelectedIds]);
+  const botSelected = useMemo(() => getSelectedCards(botSelectedIds), [botSelectedIds]);
+
+  const playerTotalCost = useMemo(
+    () => playerSelected.reduce((sum, card) => sum + card.cost, 0),
+    [playerSelected],
   );
 
-  // ── Selection math ──────────────────────────────────────────────────────────
-  const selected = useMemo(
-    () => ALL_MODIFIERS.filter(m => selectedIds.includes(m.id)),
-    [selectedIds],
+  const remaining = BUDGET - playerTotalCost;
+  const playerValidOptions = useMemo(
+    () => getValidOptions(playerSelectedIds, botSelectedIds, implementedIds),
+    [playerSelectedIds, botSelectedIds, implementedIds],
   );
-
-  const totalCost = useMemo(
-    () => selected.reduce((sum, m) => sum + m.cost, 0),
-    [selected],
+  const botValidOptions = useMemo(
+    () => getValidOptions(botSelectedIds, playerSelectedIds, implementedIds),
+    [botSelectedIds, playerSelectedIds, implementedIds],
   );
+  const draftFinished = draftTurn === 'done';
 
-  const remaining = BUDGET - totalCost;
-  const overBudget = totalCost > BUDGET;
+  useEffect(() => {
+    if (draftTurn !== 'opponent') return;
 
-  function categoryCounts(): Record<string, number> {
-    const counts: Record<string, number> = {};
-    for (const m of selected) {
-      counts[m.category] = (counts[m.category] ?? 0) + 1;
+    const timer = setTimeout(() => {
+      const botPick = pickRandomCard(botValidOptions);
+      const nextBotIds = botPick ? [...botSelectedIds, botPick.id] : botSelectedIds;
+      if (botPick) {
+        setBotSelectedIds(nextBotIds);
+      }
+
+      const nextPlayerOptions = getValidOptions(playerSelectedIds, nextBotIds, implementedIds);
+      const nextBotOptions = getValidOptions(nextBotIds, playerSelectedIds, implementedIds);
+
+      if (nextPlayerOptions.length === 0 && nextBotOptions.length === 0) {
+        setDraftTurn('done');
+      } else {
+        setDraftTurn('player');
+      }
+    }, 450);
+
+    return () => clearTimeout(timer);
+  }, [draftTurn, botValidOptions, botSelectedIds, implementedIds, playerSelectedIds]);
+
+  useEffect(() => {
+    if (draftTurn !== 'player') return;
+    if (playerValidOptions.length > 0) return;
+
+    if (botValidOptions.length > 0) {
+      setDraftTurn('opponent');
+    } else {
+      setDraftTurn('done');
     }
-    return counts;
-  }
+  }, [draftTurn, playerValidOptions, botValidOptions]);
 
-  function canSelect(mod: ModifierCard): boolean {
-    if (selectedIds.includes(mod.id)) return true; // already selected → can deselect
-    if (!implementedIds.has(mod.id)) return false;
-    if (opponentClaimedSharedIds.has(mod.id)) return false;
-    if (selected.length >= MAX_COUNT) return false;
-    if (totalCost + mod.cost > BUDGET) return false;
-    const counts = categoryCounts();
-    if ((counts[mod.category] ?? 0) >= MAX_PER_CATEGORY) return false;
-    return true;
-  }
-
-  function toggleMod(mod: ModifierCard) {
-    if (selectedIds.includes(mod.id)) {
-      setSelectedIds(prev => prev.filter(id => id !== mod.id));
-    } else if (canSelect(mod)) {
-      setSelectedIds(prev => [...prev, mod.id]);
-    }
-  }
-
-  // ── Filtering ───────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
     let list = ALL_MODIFIERS;
     if (hideUnavailable) {
-      list = list.filter(m => implementedIds.has(m.id));
+      list = list.filter(card => implementedIds.has(card.id));
     }
     if (activeCategory !== 'ALL') {
-      list = list.filter(m => m.category === activeCategory);
+      list = list.filter(card => card.category === activeCategory);
     }
     if (query.trim()) {
-      const q = query.toLowerCase();
+      const needle = query.toLowerCase();
       list = list.filter(
-        m =>
-          m.name.toLowerCase().includes(q) ||
-          m.id.toLowerCase().includes(q) ||
-          m.typeLine.toLowerCase().includes(q),
+        card =>
+          card.name.toLowerCase().includes(needle) ||
+          card.id.toLowerCase().includes(needle) ||
+          card.typeLine.toLowerCase().includes(needle),
       );
     }
     return list;
   }, [activeCategory, hideUnavailable, implementedIds, query]);
 
-  // ── Budget bar width ─────────────────────────────────────────────────────────
-  const barPct = Math.min(100, Math.max(0, (totalCost / BUDGET) * 100));
+  const barPct = Math.min(100, Math.max(0, (playerTotalCost / BUDGET) * 100));
+
+  function isCardSelectable(card: ModifierCard): boolean {
+    if (draftTurn !== 'player') return false;
+    return playerValidOptions.some(option => option.id === card.id);
+  }
+
+  function handlePlayerPick(card: ModifierCard) {
+    if (!isCardSelectable(card)) return;
+
+    const nextPlayerIds = [...playerSelectedIds, card.id];
+    const nextBotOptions = getValidOptions(botSelectedIds, nextPlayerIds, implementedIds);
+    setPlayerSelectedIds(nextPlayerIds);
+
+    if (nextBotOptions.length === 0) {
+      const nextPlayerOptions = getValidOptions(nextPlayerIds, botSelectedIds, implementedIds);
+      setDraftTurn(nextPlayerOptions.length === 0 ? 'done' : 'player');
+      return;
+    }
+
+    setDraftTurn('opponent');
+  }
+
+  function handleFinishDraft() {
+    onStartMatch(playerSelectedIds, botSelectedIds);
+  }
+
+  function getStatusCopy(): string {
+    if (draftTurn === 'done') {
+      return 'Draft complete. Start when ready.';
+    }
+    if (draftTurn === 'opponent') {
+      return `${opponentName} is making a pick.`;
+    }
+    if (playerValidOptions.length === 0) {
+      return 'No valid picks remain for you.';
+    }
+    return 'Your pick. Draft one modifier, then the opponent responds.';
+  }
 
   return (
     <div className={styles.root}>
-      {/* ── Left: Modifier browser ──────────────────────────────────────────── */}
       <div className={styles.browser}>
-
         <header className={styles.browserHeader}>
           <div className={styles.browserTitle}>
             <h2 className={styles.heading}>Select Modifiers</h2>
-            <span className={styles.headingSub}>New Run · Story Mode · 8pt budget</span>
+            <span className={styles.headingSub}>Alternating draft - 8pt budget</span>
+            <span className={styles.turnPill}>{getStatusCopy()}</span>
           </div>
 
-          {/* Search */}
           <div className={styles.searchWrap}>
-            <span className={styles.searchIcon} aria-hidden="true">⌕</span>
+            <span className={styles.searchIcon} aria-hidden="true">
+              ?
+            </span>
             <input
               className={styles.searchInput}
               type="text"
-              placeholder="Search modifiers…"
+              placeholder="Search modifiers..."
               value={query}
               onChange={e => setQuery(e.target.value)}
               aria-label="Search modifiers"
@@ -175,7 +246,7 @@ export default function DraftScreen({
                 onClick={() => setQuery('')}
                 aria-label="Clear search"
               >
-                ×
+                x
               </button>
             )}
           </div>
@@ -189,7 +260,6 @@ export default function DraftScreen({
             <span className={styles.filterToggleLabel}>Hide unavailable modifiers</span>
           </label>
 
-          {/* Category chips */}
           <div className={styles.chips} role="group" aria-label="Category filter">
             {CATEGORY_FILTERS.map(({ key, label }) => (
               <button
@@ -212,112 +282,103 @@ export default function DraftScreen({
           </div>
         </header>
 
-        {/* Card grid */}
         <div className={styles.grid}>
-          {filtered.length === 0 && (
-            <p className={styles.empty}>No modifiers match your search.</p>
-          )}
-          {filtered.map(mod => {
-            const isSelected = selectedIds.includes(mod.id);
-            const selectable = canSelect(mod);
-            const isImplemented = implementedIds.has(mod.id);
-            const claimedByOpponent = opponentClaimedSharedIds.has(mod.id);
-            const catColor = CATEGORY_COLORS[mod.category];
-            const isExpanded = expandedId === mod.id;
+          {filtered.length === 0 && <p className={styles.empty}>No modifiers match your search.</p>}
+          {filtered.map(card => {
+            const selectable = isCardSelectable(card);
+            const isImplemented = implementedIds.has(card.id);
+            const selectedByPlayer = playerSelectedIds.includes(card.id);
+            const selectedByOpponent = botSelectedIds.includes(card.id);
+            const isSharedLocked = isSharedDraftModifier(card.id) && selectedByOpponent;
+            const isExpanded = expandedId === card.id;
+            const catColor = CATEGORY_COLORS[card.category];
 
             return (
               <div
-                key={mod.id}
-                className={`${styles.card} ${isSelected ? styles.cardSelected : ''} ${!selectable && !isSelected ? styles.cardDisabled : ''} ${!isImplemented ? styles.cardUnimplemented : ''} ${claimedByOpponent ? styles.cardClaimed : ''}`}
-                style={isSelected ? { '--cat-color': catColor } as React.CSSProperties : undefined}
-                onClick={() => toggleMod(mod)}
+                key={card.id}
+                className={`${styles.card} ${
+                  selectedByPlayer ? styles.cardSelected : ''
+                } ${!selectable && !selectedByPlayer ? styles.cardDisabled : ''} ${
+                  !isImplemented ? styles.cardUnimplemented : ''
+                } ${isSharedLocked ? styles.cardClaimed : ''}`}
+                style={
+                  selectedByPlayer
+                    ? ({ '--cat-color': catColor } as React.CSSProperties)
+                    : undefined
+                }
+                onClick={() => handlePlayerPick(card)}
               >
-                {/* Category stripe */}
-                <div
-                  className={styles.cardStripe}
-                  style={{ background: catColor }}
-                />
+                <div className={styles.cardStripe} style={{ background: catColor }} />
 
                 <div className={styles.cardBody}>
-                  {/* Top row: ID + tier + cost */}
                   <div className={styles.cardMeta}>
-                    <span className={styles.cardId}>{mod.id}</span>
-                    {claimedByOpponent && (
-                      <span className={styles.devBadge}>{opponentName.toUpperCase()} PICKED</span>
+                    <span className={styles.cardId}>{card.id}</span>
+                    {selectedByPlayer && <span className={styles.devBadge}>YOUR PICK</span>}
+                    {selectedByOpponent && (
+                      <span className={styles.devBadge}>{opponentName.toUpperCase()} PICK</span>
                     )}
-                    {!isImplemented && (
-                      <span className={styles.devBadge}>NOT IMPLEMENTED</span>
-                    )}
-                    <span
-                      className={`${styles.tier} ${styles[`tier${mod.tier}`]}`}
-                    >
-                      {mod.tier}
+                    {!isImplemented && <span className={styles.devBadge}>NOT IMPLEMENTED</span>}
+                    <span className={`${styles.tier} ${styles[`tier${card.tier}`]}`}>
+                      {card.tier}
                     </span>
                     <span
-                      className={`${styles.cost} ${mod.cost < 0 ? styles.costNegative : mod.cost === 0 ? styles.costZero : ''}`}
+                      className={`${styles.cost} ${
+                        card.cost < 0
+                          ? styles.costNegative
+                          : card.cost === 0
+                            ? styles.costZero
+                            : ''
+                      }`}
                     >
-                      {getCostDisplay(mod.cost)}
+                      {getCostDisplay(card.cost)}
                     </span>
                   </div>
 
-                  {/* Name */}
-                  <h3 className={styles.cardName}>{mod.name}</h3>
-
-                  {/* Type line */}
-                  <p
-                    className={styles.cardType}
-                    style={{ color: catColor }}
-                  >
-                    {mod.typeLine}
+                  <h3 className={styles.cardName}>{card.name}</h3>
+                  <p className={styles.cardType} style={{ color: catColor }}>
+                    {card.typeLine}
                   </p>
+                  <p className={styles.cardDesc}>{card.description}</p>
 
-                  {/* Description */}
-                  <p className={styles.cardDesc}>{mod.description}</p>
                   {!isImplemented && (
                     <p className={styles.implementationHint}>
                       Disabled for testing until the runtime behavior exists.
                     </p>
                   )}
-                  {claimedByOpponent && (
+                  {isSharedLocked && (
                     <p className={styles.implementationHint}>
                       Shared modifier already claimed by {opponentName}.
                     </p>
                   )}
+                  {selectedByOpponent && !isSharedLocked && (
+                    <p className={styles.implementationHint}>
+                      Owned modifier. Both sides may draft this independently.
+                    </p>
+                  )}
 
-                  {/* Flavor — toggle expanded */}
                   <button
                     className={styles.flavorToggle}
                     onClick={e => {
                       e.stopPropagation();
-                      setExpandedId(isExpanded ? null : mod.id);
+                      setExpandedId(isExpanded ? null : card.id);
                     }}
                     aria-expanded={isExpanded}
                   >
-                    {isExpanded ? 'Hide flavor ▲' : 'Flavor text ▼'}
+                    {isExpanded ? 'Hide flavor ^' : 'Flavor text v'}
                   </button>
-                  {isExpanded && (
-                    <p className={styles.cardFlavor}>{mod.flavor}</p>
-                  )}
+                  {isExpanded && <p className={styles.cardFlavor}>{card.flavor}</p>}
 
-                  {/* Bottom row: category label + curse pips */}
                   <div className={styles.cardFooter}>
-                    <span
-                      className={styles.categoryLabel}
-                      style={{ color: catColor }}
-                    >
-                      {CATEGORY_NAMES[mod.category]}
+                    <span className={styles.categoryLabel} style={{ color: catColor }}>
+                      {CATEGORY_NAMES[card.category]}
                     </span>
-                    <CursePips level={mod.curseLevel} />
+                    <CursePips level={card.curseLevel} />
                   </div>
                 </div>
 
-                {/* Selected checkmark */}
-                {isSelected && (
-                  <div
-                    className={styles.selectedBadge}
-                    style={{ background: catColor }}
-                  >
-                    ✓
+                {selectedByPlayer && (
+                  <div className={styles.selectedBadge} style={{ background: catColor }}>
+                    +
                   </div>
                 )}
               </div>
@@ -326,142 +387,113 @@ export default function DraftScreen({
         </div>
       </div>
 
-      {/* ── Right: Selection panel ──────────────────────────────────────────── */}
       <aside className={styles.panel}>
         <div className={styles.panelInner}>
+          <h2 className={styles.panelHeading}>Draft Summary</h2>
 
-          <h2 className={styles.panelHeading}>Build Summary</h2>
-
-          {/* Budget bar */}
           <div className={styles.budgetSection}>
             <div className={styles.budgetRow}>
-              <span className={styles.budgetLabel}>Budget</span>
-              <span className={`${styles.budgetValue} ${overBudget ? styles.budgetOver : ''}`}>
-                {totalCost} / {BUDGET} pts
+              <span className={styles.budgetLabel}>Your Budget</span>
+              <span className={styles.budgetValue}>
+                {playerTotalCost} / {BUDGET} pts
               </span>
             </div>
             <div className={styles.budgetTrack}>
-              <div
-                className={`${styles.budgetFill} ${overBudget ? styles.budgetFillOver : ''}`}
-                style={{ width: `${barPct}%` }}
-              />
+              <div className={styles.budgetFill} style={{ width: `${barPct}%` }} />
             </div>
-            {remaining > 0 && (
-              <p className={styles.budgetHint}>{remaining} pts remaining</p>
-            )}
-            {remaining === 0 && !overBudget && (
-              <p className={styles.budgetHint}>Budget full</p>
-            )}
-            {overBudget && (
-              <p className={`${styles.budgetHint} ${styles.budgetHintOver}`}>
-                Over budget by {totalCost - BUDGET} pts
-              </p>
-            )}
+            <p className={styles.budgetHint}>
+              {remaining > 0 ? `${remaining} pts remaining` : 'Budget full'}
+            </p>
           </div>
 
-          {/* Count */}
           <div className={styles.countRow}>
-            <span className={styles.countLabel}>Modifiers</span>
+            <span className={styles.countLabel}>Draft Turn</span>
             <span className={styles.countValue}>
-              {selected.length} / {MAX_COUNT}
+              {draftTurn === 'player' ? 'You' : draftTurn === 'opponent' ? opponentName : 'Done'}
             </span>
           </div>
 
-          {/* Selected list */}
           <div className={styles.selectedList}>
-            {selected.length === 0 && (
+            {playerSelected.length === 0 ? (
               <p className={styles.emptySelected}>
-                No modifiers selected.
-                <br />
-                <span>Click a card to add it to your build.</span>
+                No player picks yet.
+                <span>Choose the first modifier to open the draft.</span>
               </p>
+            ) : (
+              playerSelected.map(card => (
+                <div key={card.id} className={styles.selectedItem}>
+                  <div
+                    className={styles.selectedDot}
+                    style={{ background: CATEGORY_COLORS[card.category] }}
+                  />
+                  <span className={styles.selectedName}>{card.name}</span>
+                  <span
+                    className={`${styles.selectedCost} ${
+                      card.cost < 0 ? styles.costNegative : ''
+                    }`}
+                  >
+                    {getCostDisplay(card.cost)}
+                  </span>
+                </div>
+              ))
             )}
-            {selected.map(mod => (
-              <div key={mod.id} className={styles.selectedItem}>
-                <div
-                  className={styles.selectedDot}
-                  style={{ background: CATEGORY_COLORS[mod.category] }}
-                />
-                <span className={styles.selectedName}>{mod.name}</span>
-                <span
-                  className={`${styles.selectedCost} ${mod.cost < 0 ? styles.costNegative : ''}`}
-                >
-                  {getCostDisplay(mod.cost)}
-                </span>
-                <button
-                  className={styles.removeBtn}
-                  onClick={() => toggleMod(mod)}
-                  aria-label={`Remove ${mod.name}`}
-                >
-                  ×
-                </button>
-              </div>
-            ))}
           </div>
 
           <div className={styles.opponentBlock}>
             <div className={styles.opponentHeader}>
               <span className={styles.countLabel}>{opponentName} Draft</span>
               <span className={styles.countValue}>
-                {opponentModifierIds.length} / {MAX_COUNT}
+                {botSelected.length} / {MAX_COUNT}
               </span>
             </div>
             <div className={styles.selectedList}>
-              {opponentModifierIds.length === 0 && (
-                <p className={styles.emptySelected}>
-                  {opponentName} has no modifiers.
-                </p>
+              {botSelected.length === 0 ? (
+                <p className={styles.emptySelected}>{opponentName} has not picked yet.</p>
+              ) : (
+                botSelected.map(card => (
+                  <div key={card.id} className={styles.selectedItem}>
+                    <div
+                      className={styles.selectedDot}
+                      style={{ background: CATEGORY_COLORS[card.category] }}
+                    />
+                    <span className={styles.selectedName}>{card.name}</span>
+                    <span
+                      className={`${styles.selectedCost} ${
+                        card.cost < 0 ? styles.costNegative : ''
+                      }`}
+                    >
+                      {getCostDisplay(card.cost)}
+                    </span>
+                  </div>
+                ))
               )}
-              {ALL_MODIFIERS.filter(mod => opponentModifierIds.includes(mod.id)).map(mod => (
-                <div key={mod.id} className={styles.selectedItem}>
-                  <div
-                    className={styles.selectedDot}
-                    style={{ background: CATEGORY_COLORS[mod.category] }}
-                  />
-                  <span className={styles.selectedName}>{mod.name}</span>
-                  <span
-                    className={`${styles.selectedCost} ${mod.cost < 0 ? styles.costNegative : ''}`}
-                  >
-                    {getCostDisplay(mod.cost)}
-                  </span>
-                </div>
-              ))}
             </div>
           </div>
 
-          {/* Constraints hint */}
-          {selected.length > 0 && (
-            <p className={styles.rulesHint}>
-              Max {MAX_COUNT} modifiers · {MAX_PER_CATEGORY} per category
-            </p>
-          )}
+          <p className={styles.rulesHint}>
+            Max {MAX_COUNT} modifiers - {MAX_PER_CATEGORY} per category - Shared effects are
+            single-claim - Owned effects may be drafted by both sides
+          </p>
 
-          {/* Viktor quote */}
           <div className={styles.viktorQuote}>
             <p className={styles.viktorText}>
-              {selected.length === 0
-                ? '"An empty build is a statement of intent. Viktor chose not to explain the statement."'
-                : selected.length >= MAX_COUNT
-                ? '"The build is complete. Viktor is either very confident or completely wrong. Possibly both."'
-                : '"Choose carefully. The board remembers every modifier. The pigeon does not. The pigeon chooses randomly."'}
+              {draftFinished
+                ? '"The draft is settled. Viktor has stopped pretending there was a clean answer."'
+                : draftTurn === 'opponent'
+                  ? `"${opponentName} is picking now. Viktor trusts the chaos generator more than the birds."`
+                  : '"You pick first. The bird picks second. This was the diplomatic compromise."'}
             </p>
-            <span className={styles.viktorAttr}>— Viktor Crumb</span>
+            <span className={styles.viktorAttr}>- Viktor Crumb</span>
           </div>
 
-          {/* Actions */}
           <div className={styles.actions}>
-            <button
-              className={styles.startBtn}
-              onClick={() => onStartMatch(selectedIds)}
-              disabled={overBudget}
-            >
-              Start Match
+            <button className={styles.startBtn} onClick={handleFinishDraft}>
+              {draftFinished ? 'Start Match' : 'Finish Draft & Start Match'}
             </button>
             <button className={styles.backBtn} onClick={onBack}>
-              ← Back to Menu
+              Back to Bot Select
             </button>
           </div>
-
         </div>
       </aside>
     </div>

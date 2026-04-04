@@ -57,6 +57,20 @@
   color: rgba(200, 151, 58, 0.45);
 }
 
+.turnPill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid rgba(200, 151, 58, 0.22);
+  background: rgba(200, 151, 58, 0.08);
+  color: rgba(242, 234, 216, 0.76);
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 /* Search */
 .searchWrap {
   position: relative;

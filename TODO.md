@@ -13,10 +13,11 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - In-game history now supports modifier event messages in addition to SAN move notation
 - Prototype app and landing page now have an explicit mobile-responsive baseline
 - In-match UI now separates the primary play surface from the modifier rail and supports collapsible modifier browsing
-- New Run now follows bot select -> owned draft -> match start, with Chick generating a random modifier draft
+- New Run now follows bot select -> alternating draft -> match start, with owned vs shared modifier rules enforced during draft
 - Curse modifiers now respect draft ownership instead of always behaving as shared effects
 - Local player profile state and basic progression stats are now stored client-side for the serverless prototype
 - Local profiles now track titles, achievements, match history, mode stats, region, and placeholder ELO entirely on-device
+- The Roost can now serve as a real local records destination instead of a menu placeholder
 
 ## Priority 1: Stabilize The Prototype Core
 
@@ -51,6 +52,9 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Add a local-only player profile flow for the current serverless prototype
 - [x] Track local-only progression basics: runs played, wins, favorite drafted modifier
 - [x] Expand local profiles with titles, achievements, mode stats, match history, and placeholder online sections
+- [x] Turn The Roost into a real local records/profile destination
+- [x] Rework Story draft into alternating player-first picks with early finish support
+- [x] Classify prototype modifiers by draft scope so owned effects can be drafted by both sides
 - [ ] Build `VS Bots` as a complete menu-to-match flow
 - [ ] Expose a read-only Modifier Vault sourced from the modifier bible/data set
 - [ ] Track run state if Story Mode is meant to be more than a one-match draft

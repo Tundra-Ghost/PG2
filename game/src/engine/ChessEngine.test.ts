@@ -233,6 +233,22 @@ describe('ChessEngine TDD baseline', () => {
     expect(pacifists[0].color).toBe('black');
   });
 
+  it('allows both sides to draft owned modifiers like berserker', () => {
+    const state = chessEngine.activateDraftModifiers(
+      chessEngine.getInitialState(),
+      [
+        { id: 'MOD-E006', sourceColor: 'white' },
+        { id: 'MOD-E006', sourceColor: 'black' },
+      ],
+    );
+
+    const berserkers = Array.from(state.pieces.values()).filter(piece => piece.isBerserker);
+    const colors = berserkers.map(piece => piece.color).sort();
+
+    expect(berserkers).toHaveLength(2);
+    expect(colors).toEqual(['black', 'white']);
+  });
+
   it('scopes gerald to the drafting side turn', () => {
     let state = chessEngine.activateDraftModifiers(
       chessEngine.getInitialState(),

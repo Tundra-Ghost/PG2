@@ -26,6 +26,7 @@ export interface ModifierDefinition {
   pointCost: number;       // negative = grants budget (curse)
   curseRating: 0 | 1 | 2 | 3;
   activeFor: Color | 'both';
+  draftScope?: 'shared' | 'owned';
 
   /** Called once when modifier is selected in the draft. */
   onActivate?: (state: GameState) => GameState;

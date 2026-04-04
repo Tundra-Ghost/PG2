@@ -11,6 +11,7 @@ interface MainMenuProps {
   onPlay: (mode: 'run' | 'quick') => void;
   onSettings: () => void;
   onProfile: () => void;
+  onRoost: () => void;
   profile: LocalProfile | null;
 }
 
@@ -106,6 +107,7 @@ export default function MainMenu({
   onPlay,
   onSettings,
   onProfile,
+  onRoost,
   profile,
 }: MainMenuProps) {
   const profileLevel = profile ? getProfileLevel(profile) : 1;
@@ -125,7 +127,13 @@ export default function MainMenu({
 
   const rightRail = RIGHT_RAIL.map(item => ({
     ...item,
-    action: item.label === 'Settings' ? onSettings : undefined,
+    action:
+      item.label === 'Settings'
+        ? onSettings
+        : item.label === 'The Roost'
+          ? onRoost
+          : undefined,
+    status: item.label === 'The Roost' ? 'live' : item.status,
   }));
 
   return (

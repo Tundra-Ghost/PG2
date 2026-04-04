@@ -55,6 +55,7 @@ export const floorIsLavaDef: ModifierDefinition = {
   pointCost: 2,
   curseRating: 0,
   activeFor: 'both',
+  draftScope: 'shared',
 
   onActivate(state) {
     return placeLava(state, LAVA_COUNT);
