@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { BerserkerChainEvent, GameState } from './engine/types';
 import { chessEngine } from './engine/ChessEngine';
 import { getChickBotMove } from './engine/bot';
+import { getBotReaction } from './botChat';
 import { unlockBgm, playClick, playGameBgm, playMenuBgm } from './sound';
 import type { AppSettings } from './settings';
 import { applySettings, loadSettings } from './settings';
@@ -47,39 +48,10 @@ export interface MatchChatEntry {
   text: string;
   source: 'player' | 'bot';
   avatarLabel: string;
+  avatarIcon?: string | null;
 }
 
 const BERSERKER_ID = 'MOD-E006';
-
-const CHICK_RESPONSES = {
-  lostPiece: [
-    'Hey. That was one of my pieces.',
-    'I was using that bird.',
-    'Rude. Extremely rude.',
-  ],
-  wonPiece: [
-    'Mine now.',
-    'I meant to do that.',
-    'That looked expensive.',
-  ],
-  lostQueen: [
-    'That was the important one.',
-    'I have made a strategic mistake.',
-    'The large bird was not supposed to die.',
-  ],
-  playerCheckmate: [
-    'I would like a rematch with fewer consequences.',
-    'This result feels editorialized.',
-  ],
-  botCheckmate: [
-    'Calculated. More or less.',
-    'I am the rooftop now.',
-  ],
-};
-
-function pickLine(lines: string[], seed: number): string {
-  return lines[seed % lines.length] ?? lines[0] ?? '';
-}
 
 function getDerivedFeedOrder(state: GameState, chatEntries: MatchChatEntry[]): number {
   const moveOrder = state.moveHistory.length * 100;
@@ -210,23 +182,16 @@ export default function App() {
 
     const currentOpponentName =
       selectedBot ? (BOTS.find(bot => bot.id === selectedBot)?.name ?? 'Opponent') : 'Opponent';
+    const currentOpponentIcon =
+      selectedBot ? (BOTS.find(bot => bot.id === selectedBot)?.icon ?? null) : null;
 
-    let response: string | null = null;
     const moveIndex = gameState.moveHistory.length - 1;
-    const playerMoved = latestMove.pieceMoved.color === 'white';
-    const captured = latestMove.pieceCaptured;
-
-    if (gameState.status === 'checkmate') {
-      response = playerMoved
-        ? pickLine(CHICK_RESPONSES.playerCheckmate, moveIndex)
-        : pickLine(CHICK_RESPONSES.botCheckmate, moveIndex);
-    } else if (playerMoved && captured?.color === 'black' && captured.type === 'queen') {
-      response = pickLine(CHICK_RESPONSES.lostQueen, moveIndex);
-    } else if (playerMoved && captured?.color === 'black') {
-      response = pickLine(CHICK_RESPONSES.lostPiece, moveIndex);
-    } else if (!playerMoved && captured?.color === 'white') {
-      response = pickLine(CHICK_RESPONSES.wonPiece, moveIndex);
-    }
+    const response = getBotReaction({
+      botId: selectedBot,
+      moveRecord: latestMove,
+      moveIndex,
+      gameStatus: gameState.status,
+    });
 
     lastReactedMoveId.current = moveKey;
     if (!response) return;
@@ -241,6 +206,7 @@ export default function App() {
         text: response,
         source: 'bot',
         avatarLabel: currentOpponentName.slice(0, 1).toUpperCase(),
+        avatarIcon: currentOpponentIcon,
       },
     ]);
   }, [gameState, screen, selectedBot, vsBot]);
@@ -594,7 +560,7 @@ export default function App() {
               metaLine={`${opponentTitle} - Lv ${opponentLevel} - ELO ${botProfile?.elo ?? 1200}`}
               subtitle={botProfile?.motto || opponentTagline}
               badge={gameState.turn === 'black' ? 'To Move' : 'Standing By'}
-              portraitLabel={selectedBotMeta?.name.slice(0, 1).toUpperCase() ?? 'O'}
+              portraitLabel={selectedBotMeta?.icon ?? selectedBotMeta?.name.slice(0, 1).toUpperCase() ?? 'O'}
               align="right"
               onClick={() => {
                 if (!botProfile) return;

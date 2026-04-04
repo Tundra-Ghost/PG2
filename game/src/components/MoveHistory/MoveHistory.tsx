@@ -22,6 +22,7 @@ interface FeedEntry {
   emphasis: 'player' | 'opponent';
   order: number;
   avatarLabel?: string;
+  avatarIcon?: string | null;
   animated?: boolean;
 }
 
@@ -147,6 +148,7 @@ export default function MoveHistory({
         emphasis: chat.source === 'player' ? 'player' : 'opponent',
         order: chat.order,
         avatarLabel: chat.avatarLabel,
+        avatarIcon: chat.avatarIcon,
         animated: true,
       });
     }
@@ -211,7 +213,13 @@ export default function MoveHistory({
             }`}
           >
             <div className={styles.entryMeta}>
-              <span className={styles.entryAvatar}>{entry.avatarLabel ?? '?'}</span>
+              {entry.avatarIcon ? (
+                <span className={styles.entryAvatar} aria-hidden="true">
+                  {entry.avatarIcon}
+                </span>
+              ) : (
+                <span className={styles.entryAvatar}>{entry.avatarLabel ?? '?'}</span>
+              )}
               <span className={styles.entryActor}>{entry.actor}</span>
               {entry.detail ? <span className={styles.entryDetail}>{entry.detail}</span> : null}
             </div>

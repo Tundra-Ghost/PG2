@@ -12,6 +12,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Modifier audit is in progress to make currently shipped cards visible and testable in play
 - In-game history now supports modifier event messages in addition to SAN move notation
 - In-game history now supports modifier events, local match chat, and simple bot reaction lines in one merged feed
+- Bot reaction dialogue is now split into a code-level module so Chick can expand without bloating the app shell
 - Prototype app and landing page now have an explicit mobile-responsive baseline
 - In-match UI now separates the primary play surface from the modifier rail and supports collapsible modifier browsing
 - New Run now follows bot select -> alternating draft -> match start, with owned vs shared modifier rules enforced during draft
@@ -69,6 +70,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] GDD UI: route modifier-trigger messages into the in-game history feed
 - [x] GDD UI: separate match log from modifier browsing so the board surface reads more clearly
 - [x] GDD UI: merge local chat and move history into one in-match feed with typewriter-style bot/player delivery
+- [x] GDD UI: restore explicit bot icon presence in the match HUD/feed so dialogue reads as authored speaker output
 - [x] GDD UI: show modifier hover and long-press tooltips for affected pieces and tiles
 - [x] GDD UI: restructure the in-match HUD into top banners, a framed board stage, and bottom dock panels
 - [x] GDD UI: restructure the main menu into a hub layout that scales consistently across desktop resolutions
