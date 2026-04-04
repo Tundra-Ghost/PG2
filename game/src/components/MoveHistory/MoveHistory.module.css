@@ -199,6 +199,32 @@
     inset 0 0 0 1px rgba(255, 246, 224, 0.28);
 }
 
+.dialoguePortraitImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 17px 17px 7px 17px;
+}
+
+.dialoguePortraitPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem;
+}
+
+.dialoguePortraitSlotLabel {
+  font-family: var(--font-mono);
+  font-size: 0.42rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(72, 40, 18, 0.56);
+}
+
 .dialoguePortraitIcon,
 .dialoguePortraitLabel {
   color: rgba(72, 40, 18, 0.94);

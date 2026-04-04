@@ -50,6 +50,8 @@ export interface MatchChatEntry {
   source: 'player' | 'bot';
   avatarLabel: string;
   avatarIcon?: string | null;
+  portraitSrc?: string | null;
+  portraitSlotLabel?: string;
 }
 
 const BERSERKER_ID = 'MOD-E006';
@@ -207,6 +209,7 @@ export default function App() {
         source: 'bot',
         avatarLabel: currentOpponentName.slice(0, 1).toUpperCase(),
         avatarIcon: currentOpponentIcon,
+        portraitSlotLabel: currentSpeaker?.portraitSlotLabel ?? `${currentOpponentName} Portrait`,
       },
     ]);
   }, [gameState, screen, selectedBot, vsBot]);
@@ -382,6 +385,8 @@ export default function App() {
         text: trimmed,
         source: 'player',
         avatarLabel: playerName.slice(0, 1).toUpperCase(),
+        portraitSrc: playerProfile?.avatarDataUrl ?? null,
+        portraitSlotLabel: `${playerName} Portrait`,
       },
     ]);
   }

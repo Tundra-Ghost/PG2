@@ -5,6 +5,7 @@ export interface OpponentProfile {
   id: OpponentId;
   kind: 'bot' | 'npc';
   icon: string;
+  portraitSlotLabel: string;
   name: string;
   tagline: string;
   description: string;
@@ -18,6 +19,7 @@ export const BOTS: OpponentProfile[] = [
     id: 'chick',
     kind: 'bot',
     icon: '🐣',
+    portraitSlotLabel: 'Chick Portrait',
     name: 'Chick',
     tagline: 'Depth-1 · Material Evaluation',
     description: 'Grabs whatever looks tastiest. No plans. No remorse. Perfect for testing modifiers.',
@@ -29,6 +31,7 @@ export const BOTS: OpponentProfile[] = [
     id: 'pigeon',
     kind: 'bot',
     icon: '🐦',
+    portraitSlotLabel: 'Pigeon Portrait',
     name: 'Pigeon',
     tagline: 'Depth-3 · Positional Heuristics',
     description: 'Knows when to strut and when to scatter. Reads the board two moves ahead.',
@@ -40,6 +43,7 @@ export const BOTS: OpponentProfile[] = [
     id: 'magnus',
     kind: 'bot',
     icon: '🦅',
+    portraitSlotLabel: 'Magnus Portrait',
     name: 'Magnus Jr.',
     tagline: 'Deep Search · Endgame Tables',
     description:

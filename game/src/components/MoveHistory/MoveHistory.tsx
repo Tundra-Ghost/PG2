@@ -23,6 +23,8 @@ interface FeedEntry {
   order: number;
   avatarLabel?: string;
   avatarIcon?: string | null;
+  portraitSrc?: string | null;
+  portraitSlotLabel?: string;
   animated?: boolean;
 }
 
@@ -149,6 +151,8 @@ export default function MoveHistory({
         order: chat.order,
         avatarLabel: chat.avatarLabel,
         avatarIcon: chat.avatarIcon,
+        portraitSrc: chat.portraitSrc,
+        portraitSlotLabel: chat.portraitSlotLabel,
         animated: true,
       });
     }
@@ -236,10 +240,26 @@ export default function MoveHistory({
                     )}
                   </div>
                   <div className={styles.dialoguePortraitFrame} aria-hidden="true">
-                    {entry.avatarIcon ? (
-                      <span className={styles.dialoguePortraitIcon}>{entry.avatarIcon}</span>
+                    {entry.portraitSrc ? (
+                      <img
+                        src={entry.portraitSrc}
+                        alt=""
+                        className={styles.dialoguePortraitImage}
+                      />
+                    ) : entry.avatarIcon ? (
+                      <div className={styles.dialoguePortraitPlaceholder}>
+                        <span className={styles.dialoguePortraitSlotLabel}>
+                          {entry.portraitSlotLabel ?? 'Portrait Slot'}
+                        </span>
+                        <span className={styles.dialoguePortraitIcon}>{entry.avatarIcon}</span>
+                      </div>
                     ) : (
-                      <span className={styles.dialoguePortraitLabel}>{entry.avatarLabel ?? '?'}</span>
+                      <div className={styles.dialoguePortraitPlaceholder}>
+                        <span className={styles.dialoguePortraitSlotLabel}>
+                          {entry.portraitSlotLabel ?? 'Portrait Slot'}
+                        </span>
+                        <span className={styles.dialoguePortraitLabel}>{entry.avatarLabel ?? '?'}</span>
+                      </div>
                     )}
                   </div>
                 </div>
