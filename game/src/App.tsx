@@ -3,6 +3,8 @@ import type { GameState } from './engine/types';
 import { chessEngine } from './engine/ChessEngine';
 import { getChickBotMove } from './engine/bot';
 import { unlockBgm, playMenuBgm, playGameBgm } from './sound';
+import type { AppSettings } from './settings';
+import { loadSettings, applySettings } from './settings';
 import Board from './components/Board/Board';
 import GameStatus from './components/GameStatus/GameStatus';
 import MoveHistory from './components/MoveHistory/MoveHistory';
@@ -10,26 +12,33 @@ import MainMenu from './components/MainMenu/MainMenu';
 import DraftScreen from './components/DraftScreen/DraftScreen';
 import BotSelect from './components/BotSelect/BotSelect';
 import type { BotId } from './components/BotSelect/BotSelect';
+import SettingsScreen from './components/Settings/Settings';
 import styles from './App.module.css';
 
 // Register all modifier definitions (side-effect import)
 import './modifiers/index';
 
-type Screen = 'menu' | 'botselect' | 'draft' | 'game';
+type Screen = 'menu' | 'botselect' | 'draft' | 'game' | 'settings';
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('menu');
+  const [prevScreen, setPrevScreen] = useState<Screen>('menu');
   const [gameState, setGameState] = useState<GameState>(() =>
     chessEngine.getInitialState(),
   );
   const [vsBot, setVsBot] = useState(false);
+  const [settings, setSettings] = useState<AppSettings>(() => {
+    const s = loadSettings();
+    applySettings(s); // sync sound + CSS classes at startup
+    return s;
+  });
 
   // BGM: switch track when screen changes
   useEffect(() => {
-    if (screen === 'menu' || screen === 'botselect' || screen === 'draft') {
-      playMenuBgm();
-    } else if (screen === 'game') {
+    if (screen === 'game') {
       playGameBgm();
+    } else {
+      playMenuBgm();
     }
   }, [screen]);
 
@@ -51,6 +60,11 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [vsBot, gameState]);
 
+  function goToSettings() {
+    setPrevScreen(screen);
+    setScreen('settings');
+  }
+
   function handleMenuPlay(mode: 'run' | 'quick') {
     if (mode === 'run') {
       setVsBot(false);
@@ -61,7 +75,6 @@ export default function App() {
   }
 
   function handleBotSelect(_botId: BotId) {
-    // All bots currently route through Chick — swap implementation per botId later
     setVsBot(true);
     const state = chessEngine.beginTurn(chessEngine.getInitialState());
     setGameState(state);
@@ -86,11 +99,31 @@ export default function App() {
     setScreen('menu');
   }
 
+  function handleSettingsSave(s: AppSettings) {
+    setSettings(s);
+  }
+
   // Unlock BGM on any first click anywhere in the app (browser autoplay policy)
   const handleUnlock = () => unlockBgm();
 
+  if (screen === 'settings') {
+    return (
+      <div onClick={handleUnlock}>
+        <SettingsScreen
+          settings={settings}
+          onSave={handleSettingsSave}
+          onBack={() => setScreen(prevScreen)}
+        />
+      </div>
+    );
+  }
+
   if (screen === 'menu') {
-    return <div onClick={handleUnlock}><MainMenu onPlay={handleMenuPlay} /></div>;
+    return (
+      <div onClick={handleUnlock}>
+        <MainMenu onPlay={handleMenuPlay} onSettings={goToSettings} />
+      </div>
+    );
   }
 
   if (screen === 'botselect') {
@@ -124,17 +157,23 @@ export default function App() {
         <span className={styles.logo}>🐦</span>
         <span className={styles.title}>Pigeon Chess</span>
         <span className={styles.phase}>Phase 0</span>
+        <button className={styles.settingsBtn} onClick={goToSettings}>
+          ⚙
+        </button>
       </header>
 
       <main className={styles.main}>
         <div className={styles.gameArea}>
-          {/* Board + status bar */}
           <div className={styles.boardColumn}>
-            <Board state={gameState} onStateChange={setGameState} />
+            <Board
+              state={gameState}
+              onStateChange={setGameState}
+              showLegalMoves={settings.showLegalMoves}
+              autoQueen={settings.autoQueen}
+              showCoordinates={settings.showCoordinates}
+            />
             <GameStatus state={gameState} onNewGame={handleNewGame} />
           </div>
-
-          {/* Move history panel */}
           <MoveHistory state={gameState} />
         </div>
       </main>

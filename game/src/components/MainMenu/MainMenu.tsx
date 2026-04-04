@@ -2,9 +2,10 @@ import styles from './MainMenu.module.css';
 
 interface MainMenuProps {
   onPlay: (mode: 'run' | 'quick') => void;
+  onSettings: () => void;
 }
 
-export default function MainMenu({ onPlay }: MainMenuProps) {
+export default function MainMenu({ onPlay, onSettings }: MainMenuProps) {
   return (
     <div className={styles.root}>
       <div className={styles.scroll}>
@@ -75,14 +76,13 @@ export default function MainMenu({ onPlay }: MainMenuProps) {
             ))}
           </nav>
 
-          {/* ── Explore (locked) ─────────────────── */}
+          {/* ── Explore ──────────────────────────── */}
           <nav className={styles.section} aria-label="Collections">
             <p className={styles.sectionLabel}>Explore</p>
 
             {[
               { label: 'Modifier Vault', sub: '40 modifiers · 5 categories · Full Bible' },
               { label: 'The Roost',      sub: 'Run history · Hall of Feathers · Stats' },
-              { label: 'Settings',       sub: 'Audio · Display · Controls' },
             ].map(({ label, sub }) => (
               <button key={label} className={`${styles.menuItem} ${styles.menuItemLocked} ${styles.menuItemSmall}`} disabled>
                 <span className={styles.itemArrow} aria-hidden="true">◈</span>
@@ -93,6 +93,14 @@ export default function MainMenu({ onPlay }: MainMenuProps) {
                 <span className={styles.badge}>SOON</span>
               </button>
             ))}
+
+            <button className={`${styles.menuItem} ${styles.menuItemSmall}`} onClick={onSettings}>
+              <span className={styles.itemArrow} aria-hidden="true">▶</span>
+              <span className={styles.itemBody}>
+                <span className={styles.itemLabel}>Settings</span>
+                <span className={styles.itemSub}>Audio · Display · Gameplay · Accessibility</span>
+              </span>
+            </button>
           </nav>
 
           {/* ── Footer ───────────────────────────── */}

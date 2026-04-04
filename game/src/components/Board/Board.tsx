@@ -13,6 +13,9 @@ const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
 interface BoardProps {
   state: GameState;
   onStateChange: (next: GameState) => void;
+  showLegalMoves?: boolean;
+  autoQueen?: boolean;
+  showCoordinates?: boolean;
 }
 
 function isLightSquare(file: number, rank: number): boolean {
@@ -24,7 +27,13 @@ interface PendingPromotion {
   to: Square;
 }
 
-export default function Board({ state, onStateChange }: BoardProps) {
+export default function Board({
+  state,
+  onStateChange,
+  showLegalMoves = true,
+  autoQueen = false,
+  showCoordinates = true,
+}: BoardProps) {
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null);
@@ -103,9 +112,22 @@ export default function Board({ state, onStateChange }: BoardProps) {
 
       // Attempt move
       if (legalMoves.includes(square)) {
-        // Promotion — open modal instead of applying immediately
+        // Promotion
         if (chessEngine.isPromotionMove(state, selected, square)) {
-          setPendingPromotion({ from: selected, to: square });
+          if (autoQueen) {
+            // Skip modal — auto-promote to queen
+            const move = buildMove(state, selected, square);
+            move.promotion = 'queen';
+            const validation = chessEngine.validateMove(state, move);
+            if (validation.valid) {
+              sfxForMove(state, selected, square, false);
+              onStateChange(chessEngine.applyMove(state, move));
+            }
+            setSelected(null);
+            setLegalMoves([]);
+          } else {
+            setPendingPromotion({ from: selected, to: square });
+          }
           return;
         }
 
@@ -133,21 +155,25 @@ export default function Board({ state, onStateChange }: BoardProps) {
     <>
       <div className={styles.frame}>
         {/* Top file labels */}
-        <div className={styles.coordRowTop}>
-          <div className={styles.coordCorner} />
-          {FILES.map(f => (
-            <div key={f} className={styles.coordLabel}>{f}</div>
-          ))}
-          <div className={styles.coordCorner} />
-        </div>
+        {showCoordinates && (
+          <div className={styles.coordRowTop}>
+            <div className={styles.coordCorner} />
+            {FILES.map(f => (
+              <div key={f} className={styles.coordLabel}>{f}</div>
+            ))}
+            <div className={styles.coordCorner} />
+          </div>
+        )}
 
         <div className={styles.middleRow}>
           {/* Left rank labels */}
-          <div className={styles.coordCol}>
-            {rankOrder.map(r => (
-              <div key={r} className={styles.coordLabel}>{r}</div>
-            ))}
-          </div>
+          {showCoordinates && (
+            <div className={styles.coordCol}>
+              {rankOrder.map(r => (
+                <div key={r} className={styles.coordLabel}>{r}</div>
+              ))}
+            </div>
+          )}
 
           {/* Board grid */}
           <div className={styles.board}>
@@ -162,7 +188,7 @@ export default function Board({ state, onStateChange }: BoardProps) {
                     isLight={isLightSquare(fileIdx, 7 - rankIdx)}
                     piece={piece}
                     isSelected={selected === square}
-                    isLegalTarget={legalMoves.includes(square)}
+                    isLegalTarget={showLegalMoves && legalMoves.includes(square)}
                     isInCheck={checkSquare === square}
                     isLastMove={square === lastFrom || square === lastTo}
                     onClick={handleSquareClick}
@@ -173,21 +199,25 @@ export default function Board({ state, onStateChange }: BoardProps) {
           </div>
 
           {/* Right rank labels */}
-          <div className={styles.coordCol}>
-            {rankOrder.map(r => (
-              <div key={r} className={styles.coordLabel}>{r}</div>
-            ))}
-          </div>
+          {showCoordinates && (
+            <div className={styles.coordCol}>
+              {rankOrder.map(r => (
+                <div key={r} className={styles.coordLabel}>{r}</div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Bottom file labels */}
-        <div className={styles.coordRowBottom}>
-          <div className={styles.coordCorner} />
-          {FILES.map(f => (
-            <div key={f} className={styles.coordLabel}>{f}</div>
-          ))}
-          <div className={styles.coordCorner} />
-        </div>
+        {showCoordinates && (
+          <div className={styles.coordRowBottom}>
+            <div className={styles.coordCorner} />
+            {FILES.map(f => (
+              <div key={f} className={styles.coordLabel}>{f}</div>
+            ))}
+            <div className={styles.coordCorner} />
+          </div>
+        )}
       </div>
 
       {/* Promotion modal — rendered outside the board frame so it overlays everything */}
