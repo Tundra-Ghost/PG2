@@ -8,11 +8,11 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Architecture is client-side today
 - TDD target architecture is server-authoritative shared game-core
 - 5 modifier definitions are registered, while the modifier bible defines 40 cards
-- No project test harness is present yet
+- Vitest is now installed in `game/` and the first engine test suite has been added
 
 ## Priority 1: Stabilize The Prototype Core
 
-- [ ] Add a test runner for `game/` and create the first engine test suite
+- [x] Add a test runner for `game/` and create the first engine test suite
 - [ ] Cover TDD-critical chess rules with tests: move legality, check, checkmate, stalemate, castling, en passant, promotion
 - [ ] Add deterministic tests for draw logic: threefold repetition, 50-move rule, insufficient material
 - [ ] Audit engine state transitions in `game/src/engine/gameLoop.ts` against the TDD move-validation pipeline
