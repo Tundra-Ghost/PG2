@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { LocalProfile } from '../../profile';
+import { ALL_MODIFIERS } from '../../modifiers/data';
 import { saveProfile } from '../../profile';
 import styles from './ProfileSetup.module.css';
 
@@ -15,6 +16,9 @@ export default function ProfileSetup({ profile, onSave, onBack }: ProfileSetupPr
   const trimmedName = displayName.trim();
   const canSubmit = trimmedName.length >= 2;
   const heading = profile ? 'Edit Profile' : 'Create Profile';
+  const favoriteModifierName = profile?.stats.favoriteModifierId
+    ? (ALL_MODIFIERS.find(mod => mod.id === profile.stats.favoriteModifierId)?.name ?? 'Unknown')
+    : 'None yet';
   const helper = useMemo(() => {
     if (trimmedName.length === 0) return 'Choose the name the prototype should use for local runs.';
     if (trimmedName.length < 2) return 'Profile name must be at least 2 characters.';
@@ -49,6 +53,13 @@ export default function ProfileSetup({ profile, onSave, onBack }: ProfileSetupPr
               <span className={styles.previewLabel}>Preview</span>
               <div className={styles.previewName}>{trimmedName || 'Unnamed Pigeon'}</div>
               <div className={styles.previewMotto}>{motto.trim() || 'No motto set yet.'}</div>
+              {profile ? (
+                <div className={styles.statsBlock}>
+                  <span className={styles.statChip}>Runs {profile.stats.runsPlayed}</span>
+                  <span className={styles.statChip}>Wins {profile.stats.wins}</span>
+                  <span className={styles.statChip}>Favorite {favoriteModifierName}</span>
+                </div>
+              ) : null}
             </div>
 
             <form className={styles.form} onSubmit={handleSubmit}>

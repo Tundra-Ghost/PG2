@@ -273,6 +273,24 @@
   color: rgba(242, 234, 216, 0.66);
 }
 
+.profileStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+
+.profileStat {
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(242, 234, 216, 0.66);
+  border: 1px solid rgba(242, 234, 216, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.22rem 0.44rem;
+}
+
 .profileBtn {
   font-family: var(--font-mono);
   font-size: 0.54rem;

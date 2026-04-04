@@ -15,7 +15,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - In-match UI now separates the primary play surface from the modifier rail and supports collapsible modifier browsing
 - New Run now follows bot select -> owned draft -> match start, with Chick generating a random modifier draft
 - Curse modifiers now respect draft ownership instead of always behaving as shared effects
-- Local player profile state is now stored client-side to support the serverless prototype
+- Local player profile state and basic progression stats are now stored client-side for the serverless prototype
 
 ## Priority 1: Stabilize The Prototype Core
 
@@ -48,6 +48,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Route New Run through bot select before draft and show bot-owned draft picks
 - [x] Scope drafted curses to the side that selected them while preserving true shared modifiers
 - [x] Add a local-only player profile flow for the current serverless prototype
+- [x] Track local-only progression basics: runs played, wins, favorite drafted modifier
 - [ ] Build `VS Bots` as a complete menu-to-match flow
 - [ ] Expose a read-only Modifier Vault sourced from the modifier bible/data set
 - [ ] Track run state if Story Mode is meant to be more than a one-match draft

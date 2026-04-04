@@ -1,4 +1,5 @@
 import type { LocalProfile } from '../../profile';
+import { ALL_MODIFIERS } from '../../modifiers/data';
 import styles from './MainMenu.module.css';
 
 interface MainMenuProps {
@@ -14,6 +15,10 @@ export default function MainMenu({
   onProfile,
   profile,
 }: MainMenuProps) {
+  const favoriteModifierName = profile?.stats.favoriteModifierId
+    ? (ALL_MODIFIERS.find(mod => mod.id === profile.stats.favoriteModifierId)?.name ?? 'Unknown')
+    : 'None yet';
+
   return (
     <div className={styles.root}>
       <div className={styles.scroll}>
@@ -62,6 +67,13 @@ export default function MainMenu({
                 <span className={styles.profileMotto}>
                   {profile?.motto || 'Create a local identity for this device-based prototype.'}
                 </span>
+                {profile ? (
+                  <div className={styles.profileStats}>
+                    <span className={styles.profileStat}>Runs {profile.stats.runsPlayed}</span>
+                    <span className={styles.profileStat}>Wins {profile.stats.wins}</span>
+                    <span className={styles.profileStat}>Favorite {favoriteModifierName}</span>
+                  </div>
+                ) : null}
               </div>
               <button className={styles.profileBtn} onClick={onProfile}>
                 {profile ? 'Edit Profile' : 'Create Profile'}

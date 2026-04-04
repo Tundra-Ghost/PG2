@@ -16,7 +16,7 @@ import PlayerBanner from './components/PlayerBanner/PlayerBanner';
 import ProfileSetup from './components/ProfileSetup/ProfileSetup';
 import SettingsScreen from './components/Settings/Settings';
 import type { LocalProfile } from './profile';
-import { loadProfile } from './profile';
+import { loadProfile, recordProfileRun, recordProfileWin } from './profile';
 import styles from './App.module.css';
 import { ALL_MODIFIERS } from './modifiers/data';
 import { modifierRegistry } from './modifiers/registry';
@@ -77,9 +77,12 @@ export default function App() {
   const [selectedBot, setSelectedBot] = useState<BotId | null>(null);
   const [botSelectMode, setBotSelectMode] = useState<BotSelectMode>(null);
   const [pendingBotModifierIds, setPendingBotModifierIds] = useState<string[]>([]);
+  const [activePlayerModifierIds, setActivePlayerModifierIds] = useState<string[]>([]);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [modifierPanelCollapsed, setModifierPanelCollapsed] = useState(false);
   const seenBerserkerEvent = useRef(0);
+  const recordedRunIds = useRef<Set<string>>(new Set());
+  const recordedWinIds = useRef<Set<string>>(new Set());
   const [settings, setSettings] = useState<AppSettings>(() => {
     const loaded = loadSettings();
     applySettings(loaded);
@@ -133,6 +136,27 @@ export default function App() {
     seenBerserkerEvent.current = event.counter;
   }, [gameState]);
 
+  useEffect(() => {
+    if (screen !== 'game') return;
+    if (!profile) return;
+    if (recordedRunIds.current.has(gameState.id)) return;
+
+    const nextProfile = recordProfileRun(profile, activePlayerModifierIds);
+    recordedRunIds.current.add(gameState.id);
+    setProfile(nextProfile);
+  }, [screen, profile, gameState.id, activePlayerModifierIds]);
+
+  useEffect(() => {
+    if (!profile) return;
+    if (gameState.status !== 'checkmate') return;
+    if (gameState.turn !== 'black') return;
+    if (recordedWinIds.current.has(gameState.id)) return;
+
+    const nextProfile = recordProfileWin(profile);
+    recordedWinIds.current.add(gameState.id);
+    setProfile(nextProfile);
+  }, [profile, gameState.status, gameState.turn, gameState.id]);
+
   function goToSettings() {
     setPrevScreen(screen);
     setScreen('settings');
@@ -146,6 +170,7 @@ export default function App() {
     setVsBot(false);
     setSelectedBot(null);
     setPendingBotModifierIds([]);
+    setActivePlayerModifierIds([]);
     setBotSelectMode(mode);
     setScreen('botselect');
   }
@@ -161,6 +186,7 @@ export default function App() {
     }
 
     const state = chessEngine.beginTurn(chessEngine.getInitialState());
+    setActivePlayerModifierIds([]);
     setGameState(state);
     setScreen('game');
   }
@@ -172,12 +198,14 @@ export default function App() {
       ...pendingBotModifierIds.map(id => ({ id, sourceColor: 'black' as const })),
     ]);
     state = chessEngine.beginTurn(state);
+    setActivePlayerModifierIds(playerModifierIds);
     setGameState(state);
     setScreen('game');
   }
 
   function handleNewGame() {
     const state = chessEngine.beginTurn(chessEngine.getInitialState());
+    setActivePlayerModifierIds([]);
     setGameState(state);
   }
 
