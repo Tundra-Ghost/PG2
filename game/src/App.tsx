@@ -7,6 +7,7 @@ import type { AppSettings } from './settings';
 import { loadSettings, applySettings } from './settings';
 import Board from './components/Board/Board';
 import GameStatus from './components/GameStatus/GameStatus';
+import ModifierPanel from './components/ModifierPanel/ModifierPanel';
 import MoveHistory from './components/MoveHistory/MoveHistory';
 import MainMenu from './components/MainMenu/MainMenu';
 import DraftScreen from './components/DraftScreen/DraftScreen';
@@ -176,7 +177,10 @@ export default function App() {
             />
             <GameStatus state={gameState} onNewGame={handleNewGame} />
           </div>
-          <MoveHistory state={gameState} />
+          <div className={styles.sideColumn}>
+            <ModifierPanel state={gameState} />
+            <MoveHistory state={gameState} />
+          </div>
         </div>
       </main>
 

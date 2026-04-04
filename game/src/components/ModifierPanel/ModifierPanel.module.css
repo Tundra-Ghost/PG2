@@ -1,0 +1,185 @@
+.panel {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.25);
+  border-left: 1px solid rgba(200, 151, 58, 0.1);
+  overflow: hidden;
+}
+
+.header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid rgba(200, 151, 58, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.headerTitle {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(200, 151, 58, 0.5);
+}
+
+.headerSub {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  color: rgba(200, 151, 58, 0.3);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.45rem 0;
+}
+
+.section {
+  padding: 0 0.55rem 0.45rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.2rem 0.3rem 0.35rem;
+}
+
+.sectionTitle {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(242, 234, 216, 0.55);
+}
+
+.sectionCount {
+  min-width: 1.35rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: rgba(200, 151, 58, 0.55);
+  border: 1px solid rgba(200, 151, 58, 0.16);
+  background: rgba(200, 151, 58, 0.08);
+  padding: 0.08rem 0.25rem;
+}
+
+.empty {
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-style: italic;
+  color: rgba(242, 234, 216, 0.24);
+  padding: 0.45rem 0.3rem 0.25rem;
+}
+
+.modList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.modCard {
+  --accent-color: rgba(200, 151, 58, 0.22);
+  position: relative;
+  padding: 0.48rem 0.55rem;
+  border: 1px solid rgba(200, 151, 58, 0.08);
+  border-left: 3px solid var(--accent-color);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--accent-color) 16%, transparent) 0%, transparent 36%),
+    rgba(255, 255, 255, 0.02);
+}
+
+.modTopRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.modTitleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.modName {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.2;
+  color: rgba(242, 234, 216, 0.88);
+}
+
+.typeLine {
+  font-family: var(--font-mono);
+  font-size: 0.53rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(242, 234, 216, 0.34);
+}
+
+.categoryBadgeWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.12rem;
+}
+
+.categoryTag {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border: 1px solid;
+  padding: 0.12rem 0.26rem;
+}
+
+.categoryLabel {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(242, 234, 216, 0.32);
+}
+
+.description {
+  margin-top: 0.42rem;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: rgba(242, 234, 216, 0.64);
+}
+
+.modMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.07em;
+  color: rgba(200, 151, 58, 0.42);
+}
+
+.modId {
+  color: rgba(200, 151, 58, 0.58);
+}
+
+.dot {
+  color: rgba(200, 151, 58, 0.22);
+}
+
+@media (max-width: 1120px) {
+  .panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(200, 151, 58, 0.1);
+  }
+}

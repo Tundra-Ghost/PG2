@@ -99,3 +99,27 @@
   flex-direction: column;
   align-items: center;
 }
+
+.sideColumn {
+  display: flex;
+  flex-direction: column;
+  width: 240px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1120px) {
+  .main {
+    padding: 1rem;
+    align-items: flex-start;
+  }
+
+  .gameArea {
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sideColumn {
+    width: min(100%, 640px);
+  }
+}

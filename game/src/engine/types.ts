@@ -61,6 +61,7 @@ export interface ModifierInstance {
   id: ModifierID;
   name: string;
   activeFor: Color | 'both';
+  sourceColor?: Color | null;
 }
 
 export interface MoveRecord {

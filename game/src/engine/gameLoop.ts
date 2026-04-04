@@ -499,7 +499,12 @@ export function activateModifiers(state: GameState, ids: string[]): GameState {
     if (!def) continue;
     next.activeModifiers = [
       ...next.activeModifiers,
-      { id: def.id, name: def.name, activeFor: def.activeFor },
+      {
+        id: def.id,
+        name: def.name,
+        activeFor: def.activeFor,
+        sourceColor: def.activeFor === 'both' ? null : def.activeFor,
+      },
     ];
     if (def.onActivate) {
       next = def.onActivate(next);
