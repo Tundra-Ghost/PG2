@@ -35,6 +35,21 @@
   background: rgba(255, 247, 228, 0.42);
 }
 
+.entryAvatarEmoji {
+  font-size: 1.25rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.entryAvatarImg {
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(84, 48, 18, 0.18);
+}
+
 .composerAvatar,
 .entryAvatar {
   display: inline-flex;

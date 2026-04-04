@@ -647,6 +647,8 @@ export default function App() {
                 chatEntries={chatEntries}
                 onSendChat={gameState.status === 'active' ? handleSendChat : undefined}
                 playerAvatarLabel={playerName.slice(0, 1).toUpperCase()}
+                playerAvatarSrc={playerProfile?.avatarDataUrl ?? null}
+                opponentAvatarIcon={selectedBotProfile?.icon ?? null}
               />
             </div>
 

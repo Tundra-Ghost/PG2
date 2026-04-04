@@ -11,6 +11,8 @@ interface MoveHistoryProps {
   chatEntries?: MatchChatEntry[];
   onSendChat?: (text: string) => void;
   playerAvatarLabel?: string;
+  playerAvatarSrc?: string | null;
+  opponentAvatarIcon?: string | null;
 }
 
 interface FeedEntry {
@@ -93,6 +95,8 @@ export default function MoveHistory({
   chatEntries = [],
   onSendChat,
   playerAvatarLabel = 'P',
+  playerAvatarSrc = null,
+  opponentAvatarIcon = null,
 }: MoveHistoryProps) {
   const { moveHistory, eventHistory, status, turn, flags } = state;
   const [draftChat, setDraftChat] = useState('');
@@ -114,8 +118,9 @@ export default function MoveHistory({
 
     moveHistory.forEach((move, index) => {
       const ply = index + 1;
-      const actor = move.pieceMoved.color === 'white' ? whiteLabel : blackLabel;
-      const emphasis = move.pieceMoved.color === 'white' ? 'player' : 'opponent';
+      const isWhite = move.pieceMoved.color === 'white';
+      const actor = isWhite ? whiteLabel : blackLabel;
+      const emphasis = isWhite ? 'player' : 'opponent';
 
       feedEntries.push({
         key: `move-${ply}`,
@@ -126,6 +131,8 @@ export default function MoveHistory({
         emphasis,
         order: ply * 100,
         avatarLabel: actor.slice(0, 1).toUpperCase(),
+        avatarIcon: isWhite ? null : (opponentAvatarIcon ?? undefined),
+        portraitSrc: isWhite ? playerAvatarSrc : null,
       });
 
       for (const [eventIndex, event] of (eventsByPly.get(ply) ?? []).entries()) {
@@ -259,8 +266,10 @@ export default function MoveHistory({
             ) : (
               <>
                 <div className={styles.entryMeta}>
-                  {entry.avatarIcon ? (
-                    <span className={styles.entryAvatar} aria-hidden="true">
+                  {entry.portraitSrc ? (
+                    <img src={entry.portraitSrc} alt="" className={styles.entryAvatarImg} />
+                  ) : entry.avatarIcon ? (
+                    <span className={styles.entryAvatarEmoji} aria-hidden="true">
                       {entry.avatarIcon}
                     </span>
                   ) : (
