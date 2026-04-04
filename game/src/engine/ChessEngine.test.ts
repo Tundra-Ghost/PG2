@@ -200,7 +200,7 @@ describe('ChessEngine TDD baseline', () => {
       ply: 1,
       modifierId: 'MOD-A002',
       title: 'Lava',
-      message: 'white rook on a4 burned up on lava.',
+      message: 'white rook on a4 burns in lava.',
     });
   });
 
@@ -219,5 +219,36 @@ describe('ChessEngine TDD baseline', () => {
         expect.objectContaining({ id: 'MOD-B002', sourceColor: 'black' }),
       ]),
     );
+  });
+
+  it('scopes conscientious objector to the drafting side', () => {
+    const state = chessEngine.activateDraftModifiers(
+      chessEngine.getInitialState(),
+      [{ id: 'MOD-B007', sourceColor: 'black' }],
+    );
+
+    const pacifists = Array.from(state.pieces.values()).filter(piece => piece.isPacifist);
+
+    expect(pacifists).toHaveLength(1);
+    expect(pacifists[0].color).toBe('black');
+  });
+
+  it('scopes gerald to the drafting side turn', () => {
+    let state = chessEngine.activateDraftModifiers(
+      chessEngine.getInitialState(),
+      [{ id: 'MOD-B002', sourceColor: 'black' }],
+    );
+
+    state = chessEngine.beginTurn(state);
+    const whiteBlockedPieces = Array.from(state.pieces.values()).filter(
+      piece => (piece.cooldowns['MOD-B002'] ?? 0) > 0,
+    );
+    expect(whiteBlockedPieces).toHaveLength(0);
+
+    state = chessEngine.passTurn(state);
+    const blackBlockedPieces = Array.from(state.pieces.values()).filter(
+      piece => piece.color === 'black' && (piece.cooldowns['MOD-B002'] ?? 0) > 0,
+    );
+    expect(blackBlockedPieces).toHaveLength(1);
   });
 });

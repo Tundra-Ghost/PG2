@@ -14,6 +14,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Prototype app and landing page now have an explicit mobile-responsive baseline
 - In-match UI now separates the primary play surface from the modifier rail and supports collapsible modifier browsing
 - New Run now follows bot select → owned draft → match start, with Chick generating a random modifier draft
+- Curse modifiers now respect draft ownership instead of always behaving as shared effects
 
 ## Priority 1: Stabilize The Prototype Core
 
@@ -44,6 +45,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 
 - [ ] Add more bot tiers beyond `Chick`
 - [x] Route New Run through bot select before draft and show bot-owned draft picks
+- [x] Scope drafted curses to the side that selected them while preserving true shared modifiers
 - [ ] Build `VS Bots` as a complete menu-to-match flow
 - [ ] Expose a read-only Modifier Vault sourced from the modifier bible/data set
 - [ ] Track run state if Story Mode is meant to be more than a one-match draft

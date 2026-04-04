@@ -13,7 +13,12 @@ export const conscientiousObjectorDef: ModifierDefinition = {
   activeFor: 'both',
 
   onActivate(state) {
-    const pawns = Array.from(state.pieces.values()).filter(p => p.type === 'pawn');
+    const owner = [...state.activeModifiers]
+      .reverse()
+      .find(mod => mod.id === ID)?.sourceColor ?? null;
+    const pawns = Array.from(state.pieces.values()).filter(
+      p => p.type === 'pawn' && (owner === null || p.color === owner),
+    );
     if (pawns.length === 0) return state;
 
     const next = cloneState(state);

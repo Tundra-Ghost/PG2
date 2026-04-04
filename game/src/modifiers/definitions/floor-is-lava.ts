@@ -88,8 +88,8 @@ export const floorIsLavaDef: ModifierDefinition = {
       title: 'Lava',
       message:
         lavaVictims.length === 1
-          ? `${lavaVictims[0]} burned up on lava.`
-          : `${lavaVictims.join(', ')} burned up on lava.`,
+          ? `${lavaVictims[0]} burns in lava.`
+          : `${lavaVictims.join(', ')} burn in lava.`,
     });
   },
 };

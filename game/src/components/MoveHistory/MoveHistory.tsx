@@ -4,6 +4,8 @@ import styles from './MoveHistory.module.css';
 
 interface MoveHistoryProps {
   state: GameState;
+  whiteLabel?: string;
+  blackLabel?: string;
 }
 
 interface MovePair {
@@ -29,7 +31,27 @@ function buildMovePairs(history: MoveRecord[]): MovePair[] {
   return pairs;
 }
 
-export default function MoveHistory({ state }: MoveHistoryProps) {
+function formatActorMove(label: string, notation: string): string {
+  return `${label} plays: ${notation}`;
+}
+
+function formatEventMessage(
+  message: string,
+  whiteLabel: string,
+  blackLabel: string,
+): string {
+  return message
+    .replace(/\bwhite ([a-z_]+)/gi, `${whiteLabel}'s $1`)
+    .replace(/\bblack ([a-z_]+)/gi, `${blackLabel}'s $1`)
+    .replace(/\bwhite\b/gi, whiteLabel)
+    .replace(/\bblack\b/gi, blackLabel);
+}
+
+export default function MoveHistory({
+  state,
+  whiteLabel = 'White',
+  blackLabel = 'Black',
+}: MoveHistoryProps) {
   const { moveHistory, eventHistory, status, turn, flags } = state;
   const bottomRef = useRef<HTMLDivElement>(null);
   const lastMove = moveHistory[moveHistory.length - 1];
@@ -84,7 +106,7 @@ export default function MoveHistory({ state }: MoveHistoryProps) {
                       lastMove === pair.white ? styles.latest : ''
                     }`}
                   >
-                    {pair.white.notation}
+                    {formatActorMove(whiteLabel, pair.white.notation)}
                   </span>
 
                   <span
@@ -92,7 +114,7 @@ export default function MoveHistory({ state }: MoveHistoryProps) {
                       pair.black && lastMove === pair.black ? styles.latest : ''
                     }`}
                   >
-                    {pair.black?.notation ?? ''}
+                    {pair.black ? formatActorMove(blackLabel, pair.black.notation) : ''}
                   </span>
                 </div>
 
@@ -101,7 +123,9 @@ export default function MoveHistory({ state }: MoveHistoryProps) {
                     <span className={styles.eventSpacer} />
                     <div className={styles.eventCard}>
                       <span className={styles.eventTag}>{event.title}</span>
-                      <span className={styles.eventText}>{event.message}</span>
+                      <span className={styles.eventText}>
+                        {formatEventMessage(event.message, whiteLabel, blackLabel)}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -111,7 +135,9 @@ export default function MoveHistory({ state }: MoveHistoryProps) {
                     <span className={styles.eventSpacer} />
                     <div className={`${styles.eventCard} ${styles.eventCardAlt}`}>
                       <span className={styles.eventTag}>{event.title}</span>
-                      <span className={styles.eventText}>{event.message}</span>
+                      <span className={styles.eventText}>
+                        {formatEventMessage(event.message, whiteLabel, blackLabel)}
+                      </span>
                     </div>
                   </div>
                 ))}

@@ -70,7 +70,14 @@ export default function DraftScreen({
   const opponentClaimedSharedIds = useMemo(
     () =>
       new Set(
-        opponentModifierIds.filter(id => modifierRegistry.get(id)?.activeFor === 'both'),
+        ALL_MODIFIERS
+          .filter(
+            mod =>
+              opponentModifierIds.includes(mod.id) &&
+              modifierRegistry.get(mod.id)?.activeFor === 'both' &&
+              mod.category !== 'B',
+          )
+          .map(mod => mod.id),
       ),
     [opponentModifierIds],
   );

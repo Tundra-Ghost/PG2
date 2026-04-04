@@ -13,6 +13,11 @@ export const geraldDef: ModifierDefinition = {
   activeFor: 'both',
 
   onTurnStart(state) {
+    const geraldAffectsCurrentPlayer = state.activeModifiers.some(
+      mod => mod.id === ID && (mod.sourceColor === null || mod.sourceColor === state.turn),
+    );
+    if (!geraldAffectsCurrentPlayer) return state;
+
     // Pick one random non-king piece belonging to the current player and lock it.
     const candidates = Array.from(state.pieces.values()).filter(
       p => p.color === state.turn && p.type !== 'king',

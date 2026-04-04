@@ -264,7 +264,15 @@ export default function App() {
               onNewGame={handleNewGame}
               infoMessage={infoMessage}
             />
-            <MoveHistory state={gameState} />
+            <MoveHistory
+              state={gameState}
+              whiteLabel="You"
+              blackLabel={
+                vsBot
+                  ? (BOTS.find(bot => bot.id === selectedBot)?.name ?? 'Opponent')
+                  : 'Black'
+              }
+            />
           </div>
 
           <div
