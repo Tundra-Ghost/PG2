@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { BerserkerChainEvent, GameState } from './engine/types';
 import { chessEngine } from './engine/ChessEngine';
 import { getChickBotMove } from './engine/bot';
-import { unlockBgm, playGameBgm, playMenuBgm } from './sound';
+import { unlockBgm, playClick, playGameBgm, playMenuBgm } from './sound';
 import type { AppSettings } from './settings';
 import { applySettings, loadSettings } from './settings';
 import Board from './components/Board/Board';
@@ -229,15 +229,18 @@ export default function App() {
   }
 
   function goToSettings() {
+    playClick();
     setPrevScreen(screen);
     setScreen('settings');
   }
 
   function goToProfile() {
+    playClick();
     setScreen('profile');
   }
 
   function goToRoost() {
+    playClick();
     setScreen('roost');
   }
 
@@ -252,6 +255,7 @@ export default function App() {
   }
 
   function handleBotSelect(botId: BotId) {
+    playClick();
     setSelectedBot(botId);
     setVsBot(true);
 
@@ -285,6 +289,7 @@ export default function App() {
   }
 
   function handleNewGame() {
+    playClick();
     commitAbandonmentIfNeeded();
     const state = chessEngine.beginTurn(chessEngine.getInitialState());
     setActivePlayerModifierIds([]);
@@ -294,6 +299,7 @@ export default function App() {
   }
 
   function handleBackToMenu() {
+    playClick();
     if (screen === 'game') commitAbandonmentIfNeeded();
     setScreen('menu');
   }

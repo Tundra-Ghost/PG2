@@ -1,4 +1,5 @@
 import type { Color, GameState } from '../../engine/types';
+import { playClick } from '../../sound';
 import styles from './GameStatus.module.css';
 
 interface GameStatusProps {
@@ -70,7 +71,13 @@ export default function GameStatus({ state, onNewGame, infoMessage }: GameStatus
             <div className={styles.overlayEmoji}>{msg!.emoji}</div>
             <div className={styles.overlayHeadline}>{msg!.headline}</div>
             <div className={styles.overlaySub}>{msg!.sub}</div>
-            <button className={styles.newGameBtn} onClick={onNewGame}>
+            <button
+              className={styles.newGameBtn}
+              onClick={() => {
+                playClick();
+                onNewGame();
+              }}
+            >
               New Game
             </button>
           </div>
@@ -78,7 +85,13 @@ export default function GameStatus({ state, onNewGame, infoMessage }: GameStatus
       )}
 
       {!isOver && (
-        <button className={styles.newGameBtnSmall} onClick={onNewGame}>
+        <button
+          className={styles.newGameBtnSmall}
+          onClick={() => {
+            playClick();
+            onNewGame();
+          }}
+        >
           New Game
         </button>
       )}

@@ -1,3 +1,8 @@
+import buttonClickSrc from './Button Click.mp3';
+import captureSrc from './capture.mp3';
+import castleSrc from './castle.mp3';
+import moveSelfSrc from './move-self.mp3';
+
 /**
  * Sound manager for Pigeon Chess.
  * All audio is loaded lazily on first use — no autoplay until the user interacts.
@@ -114,10 +119,10 @@ export function getSoundOptions(): Readonly<SoundOptions> {
 }
 
 // SFX
-export function playMove()    { playSfx(soundPath('move.mp3')); }
-export function playCapture() { playSfx(soundPath('capture.mp3')); }
-export function playCastle()  { playSfx(soundPath('castle.mp3')); }
-export function playClick()   { playSfx(soundPath('button-click.mp3')); }
+export function playMove()    { playSfx(moveSelfSrc); }
+export function playCapture() { playSfx(captureSrc); }
+export function playCastle()  { playSfx(castleSrc); }
+export function playClick()   { playSfx(buttonClickSrc); }
 
 // BGM
 export function playMenuBgm() { startBgm(soundPath('bgm-menu.mp3')); }

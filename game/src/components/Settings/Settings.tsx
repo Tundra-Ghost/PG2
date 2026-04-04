@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { AppSettings } from '../../settings';
 import { saveSettings } from '../../settings';
+import { playClick } from '../../sound';
 import styles from './Settings.module.css';
 
 interface SettingsProps {
@@ -32,7 +33,10 @@ function Toggle({
         role="switch"
         aria-checked={value}
         className={`${styles.toggle} ${value ? styles.toggleOn : ''}`}
-        onClick={() => onChange(!value)}
+        onClick={() => {
+          playClick();
+          onChange(!value);
+        }}
         type="button"
       >
         <span className={styles.toggleThumb} />
@@ -123,13 +127,28 @@ export default function Settings({ settings: initial, onSave, onBack }: Settings
   return (
     <div className={styles.root}>
       {/* Backdrop — click outside to close */}
-      <div className={styles.backdrop} onClick={onBack} />
+      <div
+        className={styles.backdrop}
+        onClick={() => {
+          playClick();
+          onBack();
+        }}
+      />
 
       <div className={styles.box}>
         {/* ── Box header ─────────────────────────────────────── */}
         <div className={styles.boxHeader}>
           <span className={styles.boxTitle}>Settings</span>
-          <button className={styles.closeBtn} onClick={onBack} aria-label="Close settings">✕</button>
+          <button
+            className={styles.closeBtn}
+            onClick={() => {
+              playClick();
+              onBack();
+            }}
+            aria-label="Close settings"
+          >
+            ✕
+          </button>
         </div>
 
         {/* ── Tabs ───────────────────────────────────────────── */}
@@ -140,7 +159,10 @@ export default function Settings({ settings: initial, onSave, onBack }: Settings
               role="tab"
               aria-selected={activeTab === tab.id}
               className={`${styles.tab} ${activeTab === tab.id ? styles.tabActive : ''}`}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                playClick();
+                setActiveTab(tab.id);
+              }}
             >
               {tab.label}
             </button>

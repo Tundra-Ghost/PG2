@@ -1,3 +1,4 @@
+import { playClick } from '../../sound';
 import styles from './BotSelect.module.css';
 
 export type BotId = 'chick' | 'pigeon' | 'magnus';
@@ -67,7 +68,15 @@ export default function BotSelect({
       <div className={styles.scroll}>
         <div className={styles.content}>
           <header className={styles.header}>
-            <button className={styles.backBtn} onClick={onBack}>← Back</button>
+            <button
+              className={styles.backBtn}
+              onClick={() => {
+                playClick();
+                onBack();
+              }}
+            >
+              ← Back
+            </button>
             <div className={styles.heading}>
               <h2 className={styles.title}>Choose Opponent</h2>
               <p className={styles.sub}>{subtitle}</p>
@@ -79,7 +88,11 @@ export default function BotSelect({
               <li key={bot.id}>
                 <button
                   className={`${styles.card} ${!bot.available ? styles.cardLocked : ''}`}
-                  onClick={() => bot.available && onSelect(bot.id)}
+                  onClick={() => {
+                    if (!bot.available) return;
+                    playClick();
+                    onSelect(bot.id);
+                  }}
                   disabled={!bot.available}
                   aria-disabled={!bot.available}
                 >

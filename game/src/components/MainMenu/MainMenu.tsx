@@ -5,6 +5,7 @@ import {
   type LocalProfile,
 } from '../../profile';
 import { ALL_MODIFIERS } from '../../modifiers/data';
+import { playClick } from '../../sound';
 import styles from './MainMenu.module.css';
 
 interface MainMenuProps {
@@ -141,7 +142,13 @@ export default function MainMenu({
       <div className={styles.scroll}>
         <div className={styles.shell}>
           <header className={styles.topBar}>
-            <button className={styles.profileBanner} onClick={onProfile}>
+            <button
+              className={styles.profileBanner}
+              onClick={() => {
+                playClick();
+                onProfile();
+              }}
+            >
               {profile?.avatarDataUrl ? (
                 <img
                   src={profile.avatarDataUrl}
@@ -174,7 +181,13 @@ export default function MainMenu({
                 <span className={styles.utilityValue}>{profile?.elo ?? 1200}</span>
                 <span className={styles.utilityLabel}>ELO</span>
               </div>
-              <button className={styles.utilityBtn} onClick={onSettings}>
+              <button
+                className={styles.utilityBtn}
+                onClick={() => {
+                  playClick();
+                  onSettings();
+                }}
+              >
                 Settings
               </button>
             </div>
@@ -186,7 +199,11 @@ export default function MainMenu({
                 <button
                   key={item.label}
                   className={`${styles.railCard} ${styles[`accent${item.accent === 'stone' ? 'Stone' : item.accent === 'ember' ? 'Ember' : 'Gold'}`]} ${item.status === 'soon' ? styles.railCardLocked : ''}`}
-                  onClick={item.action}
+                  onClick={() => {
+                    if (!item.action || item.status === 'soon') return;
+                    playClick();
+                    item.action();
+                  }}
                   disabled={item.status === 'soon'}
                 >
                   <span className={styles.railCardLabel}>{item.label}</span>
@@ -226,12 +243,24 @@ export default function MainMenu({
                   </div>
 
                   <div className={styles.stageActions}>
-                    <button className={styles.primaryAction} onClick={() => onPlay('run')}>
+                    <button
+                      className={styles.primaryAction}
+                      onClick={() => {
+                        playClick();
+                        onPlay('run');
+                      }}
+                    >
                       Start Story Run
                     </button>
-                    <button className={styles.secondaryAction} onClick={() => onPlay('quick')}>
-                      Quick Skirmish
-                    </button>
+            <button
+              className={styles.secondaryAction}
+              onClick={() => {
+                playClick();
+                onPlay('quick');
+              }}
+            >
+              Quick Skirmish
+            </button>
                   </div>
 
                   <div className={styles.stageFooter}>
@@ -255,7 +284,11 @@ export default function MainMenu({
                 <button
                   key={item.label}
                   className={`${styles.railCard} ${styles[`accent${item.accent === 'stone' ? 'Stone' : item.accent === 'ember' ? 'Ember' : 'Gold'}`]} ${item.status === 'soon' ? styles.railCardLocked : ''}`}
-                  onClick={item.action}
+                  onClick={() => {
+                    if (!item.action || item.status === 'soon') return;
+                    playClick();
+                    item.action();
+                  }}
                   disabled={item.status === 'soon'}
                 >
                   <span className={styles.railCardLabel}>{item.label}</span>

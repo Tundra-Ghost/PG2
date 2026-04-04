@@ -18,6 +18,7 @@ import {
   type ModeStats,
 } from '../../profile';
 import { ALL_MODIFIERS } from '../../modifiers/data';
+import { playClick } from '../../sound';
 import styles from './ProfileSetup.module.css';
 
 interface ProfileSetupProps {
@@ -235,7 +236,13 @@ export default function ProfileSetup({
       <div className={styles.scroll}>
         <div className={styles.content}>
           <header className={styles.header}>
-            <button className={styles.backBtn} onClick={onBack}>
+            <button
+              className={styles.backBtn}
+              onClick={() => {
+                playClick();
+                onBack();
+              }}
+            >
               Back
             </button>
             <div className={styles.heading}>
@@ -270,13 +277,32 @@ export default function ProfileSetup({
 
             {editable ? (
               <div className={styles.heroActions}>
-                <button className={styles.secondaryBtn} onClick={() => fileInputRef.current?.click()}>
+                <button
+                  className={styles.secondaryBtn}
+                  onClick={() => {
+                    playClick();
+                    fileInputRef.current?.click();
+                  }}
+                >
                   Upload Avatar
                 </button>
-                <button className={styles.secondaryBtn} onClick={() => setDraftAvatarDataUrl(null)}>
+                <button
+                  className={styles.secondaryBtn}
+                  onClick={() => {
+                    playClick();
+                    setDraftAvatarDataUrl(null);
+                  }}
+                >
                   Clear Avatar
                 </button>
-                <button className={styles.primaryBtn} onClick={handleSave} disabled={!canSave}>
+                <button
+                  className={styles.primaryBtn}
+                  onClick={() => {
+                    playClick();
+                    handleSave();
+                  }}
+                  disabled={!canSave}
+                >
                   {profile ? 'Save Profile' : 'Create Profile'}
                 </button>
                 <input
@@ -297,7 +323,10 @@ export default function ProfileSetup({
                 role="tab"
                 aria-selected={activeTab === tab}
                 className={`${styles.tab} ${activeTab === tab ? styles.tabActive : ''}`}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  playClick();
+                  setActiveTab(tab);
+                }}
               >
                 {tab}
               </button>
@@ -371,7 +400,11 @@ export default function ProfileSetup({
                         <button
                           key={title.id}
                           className={`${styles.titleCard} ${selected ? styles.titleCardSelected : ''}`}
-                          onClick={() => editable && setDraftSelectedTitleId(title.id)}
+                          onClick={() => {
+                            if (!editable) return;
+                            playClick();
+                            setDraftSelectedTitleId(title.id);
+                          }}
                           disabled={!editable}
                         >
                           <span className={styles.titleCardName}>{title.name}</span>
@@ -491,13 +524,32 @@ export default function ProfileSetup({
                 </label>
 
                 <div className={styles.editActions}>
-                  <button className={styles.secondaryBtn} onClick={() => fileInputRef.current?.click()}>
+                  <button
+                    className={styles.secondaryBtn}
+                    onClick={() => {
+                      playClick();
+                      fileInputRef.current?.click();
+                    }}
+                  >
                     Upload Avatar
                   </button>
-                  <button className={styles.secondaryBtn} onClick={() => setDraftAvatarDataUrl(null)}>
+                  <button
+                    className={styles.secondaryBtn}
+                    onClick={() => {
+                      playClick();
+                      setDraftAvatarDataUrl(null);
+                    }}
+                  >
                     Clear Avatar
                   </button>
-                  <button className={styles.primaryBtn} onClick={handleSave} disabled={!canSave}>
+                  <button
+                    className={styles.primaryBtn}
+                    onClick={() => {
+                      playClick();
+                      handleSave();
+                    }}
+                    disabled={!canSave}
+                  >
                     {profile ? 'Save Changes' : 'Create Profile'}
                   </button>
                 </div>

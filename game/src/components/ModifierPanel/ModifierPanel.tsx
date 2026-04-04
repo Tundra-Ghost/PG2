@@ -5,6 +5,7 @@ import {
   CATEGORY_NAMES,
   type ModifierCategory,
 } from '../../modifiers/data';
+import { playClick } from '../../sound';
 import styles from './ModifierPanel.module.css';
 
 interface ModifierPanelProps {
@@ -184,7 +185,10 @@ export default function ModifierPanel({
         <button
           type="button"
           className={styles.collapseBtn}
-          onClick={onToggleCollapsed}
+          onClick={() => {
+            playClick();
+            onToggleCollapsed?.();
+          }}
           aria-expanded={!collapsed}
           aria-label={collapsed ? 'Expand modifier panel' : 'Collapse modifier panel'}
         >

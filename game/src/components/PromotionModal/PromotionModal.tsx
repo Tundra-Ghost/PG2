@@ -1,4 +1,5 @@
 import type { Color, PieceType } from '../../engine/types';
+import { playClick } from '../../sound';
 import styles from './PromotionModal.module.css';
 
 interface PromotionModalProps {
@@ -24,7 +25,10 @@ export default function PromotionModal({ color, onChoose }: PromotionModalProps)
             <button
               key={type}
               className={`${styles.choice} ${styles[color]}`}
-              onClick={() => onChoose(type)}
+              onClick={() => {
+                playClick();
+                onChoose(type);
+              }}
               aria-label={`Promote to ${label}`}
             >
               <span className={styles.symbol}>

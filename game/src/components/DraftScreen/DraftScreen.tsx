@@ -8,6 +8,7 @@ import {
 } from '../../modifiers/data';
 import { modifierRegistry } from '../../modifiers/registry';
 import { isSharedDraftModifier } from '../../modifiers/scope';
+import { playClick } from '../../sound';
 import '../../modifiers/index';
 import styles from './DraftScreen.module.css';
 
@@ -202,6 +203,7 @@ export default function DraftScreen({
   }
 
   function handleFinishDraft() {
+    playClick();
     onStartMatch(playerSelectedIds, botSelectedIds);
   }
 
@@ -243,7 +245,10 @@ export default function DraftScreen({
             {query && (
               <button
                 className={styles.searchClear}
-                onClick={() => setQuery('')}
+                onClick={() => {
+                  playClick();
+                  setQuery('');
+                }}
                 aria-label="Clear search"
               >
                 x
@@ -274,7 +279,10 @@ export default function DraftScreen({
                       }
                     : undefined
                 }
-                onClick={() => setActiveCategory(key)}
+                onClick={() => {
+                  playClick();
+                  setActiveCategory(key);
+                }}
               >
                 {label}
               </button>
@@ -360,6 +368,7 @@ export default function DraftScreen({
                     className={styles.flavorToggle}
                     onClick={e => {
                       e.stopPropagation();
+                      playClick();
                       setExpandedId(isExpanded ? null : card.id);
                     }}
                     aria-expanded={isExpanded}
@@ -490,7 +499,13 @@ export default function DraftScreen({
             <button className={styles.startBtn} onClick={handleFinishDraft}>
               {draftFinished ? 'Start Match' : 'Finish Draft & Start Match'}
             </button>
-            <button className={styles.backBtn} onClick={onBack}>
+            <button
+              className={styles.backBtn}
+              onClick={() => {
+                playClick();
+                onBack();
+              }}
+            >
               Back to Bot Select
             </button>
           </div>
