@@ -48,6 +48,16 @@
   letter-spacing: 0.1em;
 }
 
+.infoPill {
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.08em;
+  color: rgba(245, 232, 192, 0.92);
+  border: 1px solid rgba(200, 168, 75, 0.28);
+  background: rgba(200, 168, 75, 0.12);
+  padding: 0.2rem 0.45rem;
+}
+
 /* ── Overlay ── */
 .overlay {
   position: absolute;

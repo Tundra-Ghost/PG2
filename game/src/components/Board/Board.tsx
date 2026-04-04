@@ -9,10 +9,12 @@ import styles from './Board.module.css';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
+const GERALD_ID = 'MOD-B002';
 
 interface BoardProps {
   state: GameState;
   onStateChange: (next: GameState) => void;
+  onInfo?: (message: string) => void;
   showLegalMoves?: boolean;
   autoQueen?: boolean;
   showCoordinates?: boolean;
@@ -30,6 +32,7 @@ interface PendingPromotion {
 export default function Board({
   state,
   onStateChange,
+  onInfo,
   showLegalMoves = true,
   autoQueen = false,
   showCoordinates = true,
@@ -90,6 +93,13 @@ export default function Board({
       // Nothing selected yet
       if (!selected) {
         if (clickedPiece && clickedPiece.color === state.turn) {
+          if ((clickedPiece.cooldowns[GERALD_ID] ?? 0) > 0) {
+            onStateChange(chessEngine.passTurn(state));
+            onInfo?.('Gerald chased off. Turn forfeited.');
+            setSelected(null);
+            setLegalMoves([]);
+            return;
+          }
           setSelected(square);
           setLegalMoves(chessEngine.getLegalMoves(state, square));
         }

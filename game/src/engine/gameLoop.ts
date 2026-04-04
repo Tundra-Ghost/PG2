@@ -488,6 +488,53 @@ export function beginTurn(state: GameState): GameState {
   return next;
 }
 
+export function passTurn(state: GameState): GameState {
+  let next = cloneState(state);
+
+  const nextColor: Color = state.turn === 'white' ? 'black' : 'white';
+  next.turn = nextColor;
+  next.turnNumber = state.turnNumber + 1;
+  next.flags.enPassantSquare = null;
+  next.flags.halfMoveClock = state.flags.halfMoveClock + 1;
+
+  if (state.turn === 'black') {
+    next.flags.fullMoveNumber = state.flags.fullMoveNumber + 1;
+  }
+
+  const key = positionKey(next);
+  const posCount = (state.positionHistory[key] ?? 0) + 1;
+  next.positionHistory = { ...state.positionHistory, [key]: posCount };
+
+  let drawReason: DrawReason | undefined;
+  if (isStalemate(next, nextColor)) {
+    next.status = 'draw';
+    drawReason = 'stalemate';
+  } else if (next.flags.halfMoveClock >= 100) {
+    next.status = 'draw';
+    drawReason = '50-move';
+  } else if (posCount >= 3) {
+    next.status = 'draw';
+    drawReason = 'threefold';
+  } else if (isInsufficientMaterial(next)) {
+    next.status = 'draw';
+    drawReason = 'insufficient';
+  }
+  if (drawReason) next.drawReason = drawReason;
+
+  for (const inst of state.activeModifiers) {
+    const def = modifierRegistry.get(inst.id);
+    if (def?.onTurnEnd) {
+      next = def.onTurnEnd(next);
+    }
+  }
+
+  if (next.status === 'active') {
+    next = beginTurn(next);
+  }
+
+  return next;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // activateModifiers  (call after draft, before first beginTurn)
 // ─────────────────────────────────────────────────────────────────────────────

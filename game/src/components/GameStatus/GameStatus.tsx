@@ -4,6 +4,7 @@ import styles from './GameStatus.module.css';
 interface GameStatusProps {
   state: GameState;
   onNewGame: () => void;
+  infoMessage?: string | null;
 }
 
 const DRAW_LABELS: Record<string, string> = {
@@ -29,7 +30,7 @@ function getStatusMessage(state: GameState): { emoji: string; headline: string; 
   return null;
 }
 
-export default function GameStatus({ state, onNewGame }: GameStatusProps) {
+export default function GameStatus({ state, onNewGame, infoMessage }: GameStatusProps) {
   const msg = getStatusMessage(state);
   const isOver = msg !== null;
 
@@ -48,6 +49,9 @@ export default function GameStatus({ state, onNewGame }: GameStatusProps) {
               <span className={styles.moveNum}>
                 Move {state.flags.fullMoveNumber}
               </span>
+            )}
+            {infoMessage && (
+              <span className={styles.infoPill}>{infoMessage}</span>
             )}
           </>
         )}

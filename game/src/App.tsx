@@ -30,6 +30,7 @@ export default function App() {
   const [vsBot, setVsBot] = useState(false);
   const [selectedBot, setSelectedBot] = useState<BotId | null>(null);
   const [pendingRunModifiers, setPendingRunModifiers] = useState<string[] | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [settings, setSettings] = useState<AppSettings>(() => {
     const s = loadSettings();
     applySettings(s); // sync sound + CSS classes at startup
@@ -63,6 +64,12 @@ export default function App() {
 
     return () => clearTimeout(timer);
   }, [vsBot, selectedBot, gameState]);
+
+  useEffect(() => {
+    if (!infoMessage) return;
+    const timer = setTimeout(() => setInfoMessage(null), 2200);
+    return () => clearTimeout(timer);
+  }, [infoMessage]);
 
   function goToSettings() {
     setPrevScreen(screen);
@@ -184,11 +191,16 @@ export default function App() {
             <Board
               state={gameState}
               onStateChange={setGameState}
+              onInfo={setInfoMessage}
               showLegalMoves={settings.showLegalMoves}
               autoQueen={settings.autoQueen}
               showCoordinates={settings.showCoordinates}
             />
-            <GameStatus state={gameState} onNewGame={handleNewGame} />
+            <GameStatus
+              state={gameState}
+              onNewGame={handleNewGame}
+              infoMessage={infoMessage}
+            />
           </div>
           <div className={styles.sideColumn}>
             <ModifierPanel state={gameState} />
