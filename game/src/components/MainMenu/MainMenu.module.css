@@ -304,6 +304,81 @@
     radial-gradient(circle at 94% 50%, rgba(46, 68, 36, 0.82), transparent 16%);
 }
 
+.sceneSlots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.artSlot {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.12rem;
+  padding: 0.65rem;
+  border: 1px dashed rgba(255, 245, 223, 0.28);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 245, 223, 0.08) 0,
+      rgba(255, 245, 223, 0.08) 10px,
+      transparent 10px,
+      transparent 20px
+    );
+  box-shadow: inset 0 0 0 1px rgba(255, 245, 223, 0.06);
+}
+
+.slotBackdrop {
+  left: 6%;
+  top: 8%;
+  width: 88%;
+  height: 42%;
+}
+
+.slotCharacter {
+  left: 9%;
+  bottom: 23%;
+  width: 28%;
+  height: 42%;
+}
+
+.slotBoardProp {
+  left: 29%;
+  bottom: 16%;
+  width: 42%;
+  height: 24%;
+}
+
+.slotSideProp {
+  right: 8%;
+  bottom: 19%;
+  width: 18%;
+  height: 32%;
+}
+
+.artSlotLabel,
+.artSlotNote,
+.stepArtLabel,
+.stepArtNote {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.artSlotLabel {
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  color: rgba(255, 239, 204, 0.82);
+}
+
+.artSlotNote {
+  font-size: 0.48rem;
+  letter-spacing: 0.12em;
+  color: rgba(255, 239, 204, 0.56);
+}
+
 .sceneBoard {
   position: absolute;
   left: 50%;
@@ -434,11 +509,35 @@
 .stepArt {
   flex: 1;
   min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.15rem;
+  padding: 0.75rem;
   border-radius: 14px;
   background:
     linear-gradient(180deg, rgba(153, 188, 214, 0.54), rgba(73, 111, 76, 0.58)),
-    linear-gradient(135deg, rgba(255, 217, 126, 0.18), transparent 56%);
-  border: 1px solid rgba(255, 234, 191, 0.12);
+    linear-gradient(135deg, rgba(255, 217, 126, 0.18), transparent 56%),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 238, 196, 0.08) 0,
+      rgba(255, 238, 196, 0.08) 8px,
+      transparent 8px,
+      transparent 16px
+    );
+  border: 1px dashed rgba(255, 234, 191, 0.22);
+}
+
+.stepArtLabel {
+  font-size: 0.52rem;
+  letter-spacing: 0.18em;
+  color: rgba(255, 239, 204, 0.86);
+}
+
+.stepArtNote {
+  font-size: 0.48rem;
+  letter-spacing: 0.12em;
+  color: rgba(255, 239, 204, 0.58);
 }
 
 .stepTitle {
@@ -564,6 +663,30 @@
   .sceneFrame {
     min-height: 500px;
     border-radius: 20px;
+  }
+
+  .slotBackdrop {
+    left: 4%;
+    width: 92%;
+    height: 36%;
+  }
+
+  .slotCharacter {
+    left: 5%;
+    width: 34%;
+    height: 34%;
+  }
+
+  .slotBoardProp {
+    left: 24%;
+    width: 52%;
+    height: 21%;
+  }
+
+  .slotSideProp {
+    right: 4%;
+    width: 20%;
+    height: 26%;
   }
 
   .sceneBoard {

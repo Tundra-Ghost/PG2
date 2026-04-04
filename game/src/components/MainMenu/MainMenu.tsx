@@ -17,6 +17,12 @@ interface MenuCard {
   accent?: 'gold' | 'stone' | 'ember';
 }
 
+interface ArtSlot {
+  label: string;
+  note: string;
+  className: string;
+}
+
 const LEFT_RAIL: MenuCard[] = [
   {
     label: 'Story Mode',
@@ -63,14 +69,43 @@ const JOURNEY_STEPS = [
   {
     title: '1. Set Your Flight',
     body: 'Create a local profile, choose your opponent, and set the run tone before the board ever opens.',
+    artLabel: 'Flight Art',
+    artNote: 'Scene panel · setup',
   },
   {
     title: '2. Draft The Chaos',
     body: 'Pick your modifier package, let Chick grab its own nonsense, and enter the match with visible ownership.',
+    artLabel: 'Draft Art',
+    artNote: 'Scene panel · mid flow',
   },
   {
     title: '3. Land And Challenge',
     body: 'Track outcomes, modifier events, and local progression while the prototype stays fully device-side.',
+    artLabel: 'Challenge Art',
+    artNote: 'Scene panel · payoff',
+  },
+];
+
+const STAGE_ART_SLOTS: ArtSlot[] = [
+  {
+    label: 'Park Backdrop',
+    note: 'Wide environment art',
+    className: 'slotBackdrop',
+  },
+  {
+    label: 'Hero Character',
+    note: 'Main illustrated figure',
+    className: 'slotCharacter',
+  },
+  {
+    label: 'Board Table',
+    note: 'Chessboard prop cluster',
+    className: 'slotBoardProp',
+  },
+  {
+    label: 'Bench / Side Prop',
+    note: 'Secondary supporting prop',
+    className: 'slotSideProp',
   },
 ];
 
@@ -163,6 +198,17 @@ export default function MainMenu({
               <div className={styles.sceneFrame}>
                 <div className={styles.sceneSky} />
                 <div className={styles.sceneTrees} />
+                <div className={styles.sceneSlots} aria-hidden="true">
+                  {STAGE_ART_SLOTS.map(slot => (
+                    <div
+                      key={slot.label}
+                      className={`${styles.artSlot} ${styles[slot.className]}`}
+                    >
+                      <span className={styles.artSlotLabel}>{slot.label}</span>
+                      <span className={styles.artSlotNote}>{slot.note}</span>
+                    </div>
+                  ))}
+                </div>
                 <div className={styles.sceneBoard}>
                   <div className={styles.boardHeader}>
                     <span className={styles.boardHeaderLabel}>Current Build</span>
@@ -223,7 +269,10 @@ export default function MainMenu({
           <section className={styles.journeyBand} aria-label="Run structure">
             {JOURNEY_STEPS.map(step => (
               <article key={step.title} className={styles.stepCard}>
-                <div className={styles.stepArt} aria-hidden="true" />
+                <div className={styles.stepArt} aria-hidden="true">
+                  <span className={styles.stepArtLabel}>{step.artLabel}</span>
+                  <span className={styles.stepArtNote}>{step.artNote}</span>
+                </div>
                 <span className={styles.stepTitle}>{step.title}</span>
                 <p className={styles.stepBody}>{step.body}</p>
               </article>
