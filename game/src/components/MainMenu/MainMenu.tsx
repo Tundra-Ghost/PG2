@@ -1,18 +1,26 @@
+import type { LocalProfile } from '../../profile';
 import styles from './MainMenu.module.css';
 
 interface MainMenuProps {
   onPlay: (mode: 'run' | 'quick') => void;
   onSettings: () => void;
+  onProfile: () => void;
+  profile: LocalProfile | null;
 }
 
-export default function MainMenu({ onPlay, onSettings }: MainMenuProps) {
+export default function MainMenu({
+  onPlay,
+  onSettings,
+  onProfile,
+  profile,
+}: MainMenuProps) {
   return (
     <div className={styles.root}>
       <div className={styles.scroll}>
         <div className={styles.content}>
           <header className={styles.hero}>
             <div className={styles.pigeonWrap}>
-              <span className={styles.pigeonIcon} aria-hidden="true">🐦</span>
+              <span className={styles.pigeonIcon} aria-hidden="true">P</span>
             </div>
             <h1 className={styles.title}>Pigeon Chess</h1>
             <p className={styles.tagLine}>
@@ -41,6 +49,23 @@ export default function MainMenu({ onPlay, onSettings }: MainMenuProps) {
               <span className={styles.liveStat}>New Run</span>
               <span className={styles.liveStat}>Quick Play</span>
               <span className={styles.liveStat}>5 live mods</span>
+            </div>
+          </section>
+
+          <section className={styles.profileCard} aria-label="Local profile">
+            <div className={styles.profileTop}>
+              <div className={styles.profileCopy}>
+                <span className={styles.profileLabel}>Local Profile</span>
+                <span className={styles.profileName}>
+                  {profile?.displayName ?? 'No profile created'}
+                </span>
+                <span className={styles.profileMotto}>
+                  {profile?.motto || 'Create a local identity for this device-based prototype.'}
+                </span>
+              </div>
+              <button className={styles.profileBtn} onClick={onProfile}>
+                {profile ? 'Edit Profile' : 'Create Profile'}
+              </button>
             </div>
           </section>
 
@@ -119,6 +144,17 @@ export default function MainMenu({ onPlay, onSettings }: MainMenuProps) {
                 <span className={styles.badge}>SOON</span>
               </button>
             ))}
+
+            <button
+              className={`${styles.menuItem} ${styles.menuItemSmall}`}
+              onClick={onProfile}
+            >
+              <span className={styles.itemArrow} aria-hidden="true">▶</span>
+              <span className={styles.itemBody}>
+                <span className={styles.itemLabel}>Profile</span>
+                <span className={styles.itemSub}>Local save data · Name · Motto</span>
+              </span>
+            </button>
 
             <button
               className={`${styles.menuItem} ${styles.menuItemSmall}`}

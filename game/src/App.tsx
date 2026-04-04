@@ -13,14 +13,17 @@ import MainMenu from './components/MainMenu/MainMenu';
 import ModifierPanel from './components/ModifierPanel/ModifierPanel';
 import MoveHistory from './components/MoveHistory/MoveHistory';
 import PlayerBanner from './components/PlayerBanner/PlayerBanner';
+import ProfileSetup from './components/ProfileSetup/ProfileSetup';
 import SettingsScreen from './components/Settings/Settings';
+import type { LocalProfile } from './profile';
+import { loadProfile } from './profile';
 import styles from './App.module.css';
 import { ALL_MODIFIERS } from './modifiers/data';
 import { modifierRegistry } from './modifiers/registry';
 
 import './modifiers/index';
 
-type Screen = 'menu' | 'botselect' | 'draft' | 'game' | 'settings';
+type Screen = 'menu' | 'botselect' | 'draft' | 'game' | 'settings' | 'profile';
 type BotSelectMode = 'run' | 'quick' | null;
 
 const BERSERKER_ID = 'MOD-E006';
@@ -82,6 +85,7 @@ export default function App() {
     applySettings(loaded);
     return loaded;
   });
+  const [profile, setProfile] = useState<LocalProfile | null>(() => loadProfile());
 
   useEffect(() => {
     if (screen === 'game') {
@@ -132,6 +136,10 @@ export default function App() {
   function goToSettings() {
     setPrevScreen(screen);
     setScreen('settings');
+  }
+
+  function goToProfile() {
+    setScreen('profile');
   }
 
   function handleMenuPlay(mode: 'run' | 'quick') {
@@ -191,6 +199,8 @@ export default function App() {
     gameState.moveHistory.length > 0
       ? `Move ${gameState.flags.fullMoveNumber}`
       : 'Opening position';
+  const playerName = profile?.displayName ?? 'Player';
+  const playerMotto = profile?.motto || moveCountLabel;
 
   const settingsOverlay = screen === 'settings' ? (
     <SettingsScreen
@@ -205,7 +215,28 @@ export default function App() {
   if (baseScreen === 'menu') {
     return (
       <div onClick={handleUnlock}>
-        <MainMenu onPlay={handleMenuPlay} onSettings={goToSettings} />
+        <MainMenu
+          onPlay={handleMenuPlay}
+          onSettings={goToSettings}
+          onProfile={goToProfile}
+          profile={profile}
+        />
+        {settingsOverlay}
+      </div>
+    );
+  }
+
+  if (baseScreen === 'profile') {
+    return (
+      <div onClick={handleUnlock}>
+        <ProfileSetup
+          profile={profile}
+          onSave={nextProfile => {
+            setProfile(nextProfile);
+            setScreen('menu');
+          }}
+          onBack={() => setScreen('menu')}
+        />
         {settingsOverlay}
       </div>
     );
@@ -261,10 +292,10 @@ export default function App() {
           <div className={styles.bannerRow}>
             <PlayerBanner
               role="Player"
-              name="You"
-              subtitle={moveCountLabel}
+              name={playerName}
+              subtitle={playerMotto}
               badge={gameState.turn === 'white' ? 'To Move' : 'Waiting'}
-              portraitLabel="P"
+              portraitLabel={playerName.slice(0, 1).toUpperCase()}
             />
             <PlayerBanner
               role={vsBot ? 'AI' : 'Opponent'}
