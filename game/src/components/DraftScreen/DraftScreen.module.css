@@ -200,6 +200,10 @@
   cursor: not-allowed;
 }
 
+.cardUnimplemented {
+  filter: grayscale(0.92);
+}
+
 /* Category stripe — 3px top per Art Direction */
 .cardStripe {
   height: 3px;
@@ -228,6 +232,17 @@
   letter-spacing: 0.12em;
   color: rgba(200, 151, 58, 0.35);
   flex: 1;
+}
+
+.devBadge {
+  font-family: var(--font-mono);
+  font-size: 0.44rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(242, 234, 216, 0.45);
+  border: 1px solid rgba(242, 234, 216, 0.18);
+  background: rgba(242, 234, 216, 0.06);
+  padding: 0.12rem 0.28rem;
 }
 
 .tier {
@@ -286,6 +301,15 @@
   color: rgba(242, 234, 216, 0.72);
   line-height: 1.55;
   margin: 0;
+}
+
+.implementationHint {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(242, 234, 216, 0.34);
+  margin: 0.1rem 0 0;
 }
 
 /* Flavor toggle */

@@ -6,6 +6,8 @@ import {
   type ModifierCard,
   type ModifierCategory,
 } from '../../modifiers/data';
+import { modifierRegistry } from '../../modifiers/registry';
+import '../../modifiers/index';
 import styles from './DraftScreen.module.css';
 
 // Story Mode budget per GDD: 8pt
@@ -53,6 +55,10 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('ALL');
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const implementedIds = useMemo(
+    () => new Set(modifierRegistry.getAll().map(mod => mod.id)),
+    [],
+  );
 
   // ── Selection math ──────────────────────────────────────────────────────────
   const selected = useMemo(
@@ -78,6 +84,7 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
 
   function canSelect(mod: ModifierCard): boolean {
     if (selectedIds.includes(mod.id)) return true; // already selected → can deselect
+    if (!implementedIds.has(mod.id)) return false;
     if (selected.length >= MAX_COUNT) return false;
     if (totalCost + mod.cost > BUDGET) return false;
     const counts = categoryCounts();
@@ -178,13 +185,14 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
           {filtered.map(mod => {
             const isSelected = selectedIds.includes(mod.id);
             const selectable = canSelect(mod);
+            const isImplemented = implementedIds.has(mod.id);
             const catColor = CATEGORY_COLORS[mod.category];
             const isExpanded = expandedId === mod.id;
 
             return (
               <div
                 key={mod.id}
-                className={`${styles.card} ${isSelected ? styles.cardSelected : ''} ${!selectable && !isSelected ? styles.cardDisabled : ''}`}
+                className={`${styles.card} ${isSelected ? styles.cardSelected : ''} ${!selectable && !isSelected ? styles.cardDisabled : ''} ${!isImplemented ? styles.cardUnimplemented : ''}`}
                 style={isSelected ? { '--cat-color': catColor } as React.CSSProperties : undefined}
                 onClick={() => toggleMod(mod)}
               >
@@ -198,6 +206,9 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
                   {/* Top row: ID + tier + cost */}
                   <div className={styles.cardMeta}>
                     <span className={styles.cardId}>{mod.id}</span>
+                    {!isImplemented && (
+                      <span className={styles.devBadge}>NOT IMPLEMENTED</span>
+                    )}
                     <span
                       className={`${styles.tier} ${styles[`tier${mod.tier}`]}`}
                     >
@@ -223,6 +234,11 @@ export default function DraftScreen({ onStartMatch, onBack }: DraftScreenProps) 
 
                   {/* Description */}
                   <p className={styles.cardDesc}>{mod.description}</p>
+                  {!isImplemented && (
+                    <p className={styles.implementationHint}>
+                      Disabled for testing until the runtime behavior exists.
+                    </p>
+                  )}
 
                   {/* Flavor — toggle expanded */}
                   <button
