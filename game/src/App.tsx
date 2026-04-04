@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import type { BerserkerChainEvent, GameState } from './engine/types';
 import { chessEngine } from './engine/ChessEngine';
 import { getChickBotMove } from './engine/bot';
-import { getBotReaction } from './botChat';
+import { getBotReaction, getBotSpeaker } from './botChat';
+import { getBotProfile, type BotId } from './opponents';
 import { unlockBgm, playClick, playGameBgm, playMenuBgm } from './sound';
 import type { AppSettings } from './settings';
 import { applySettings, loadSettings } from './settings';
 import Board from './components/Board/Board';
-import BotSelect, { BOTS, type BotId } from './components/BotSelect/BotSelect';
+import BotSelect from './components/BotSelect/BotSelect';
 import DraftScreen from './components/DraftScreen/DraftScreen';
 import GameStatus from './components/GameStatus/GameStatus';
 import MainMenu from './components/MainMenu/MainMenu';
@@ -78,7 +79,7 @@ function getBerserkerEvent(state: GameState): BerserkerChainEvent | null {
 }
 
 function buildBotProfile(botId: BotId | null): LocalProfile | null {
-  const bot = botId ? (BOTS.find(entry => entry.id === botId) ?? null) : null;
+  const bot = getBotProfile(botId);
   if (!bot) return null;
 
   const base = createProfile({
@@ -151,7 +152,7 @@ export default function App() {
 
   useEffect(() => {
     if (!vsBot) return;
-    if (selectedBot !== 'chick') return;
+    if (!selectedBot) return;
     if (gameState.status !== 'active') return;
     if (gameState.turn !== 'black') return;
 
@@ -172,7 +173,7 @@ export default function App() {
   }, [infoMessage]);
 
   useEffect(() => {
-    if (!vsBot || selectedBot !== 'chick') return;
+    if (!vsBot || !selectedBot) return;
     if (screen !== 'game') return;
 
     const latestMove = gameState.moveHistory[gameState.moveHistory.length - 1];
@@ -180,14 +181,13 @@ export default function App() {
     const moveKey = `${gameState.id}:${gameState.moveHistory.length}`;
     if (lastReactedMoveId.current === moveKey) return;
 
-    const currentOpponentName =
-      selectedBot ? (BOTS.find(bot => bot.id === selectedBot)?.name ?? 'Opponent') : 'Opponent';
-    const currentOpponentIcon =
-      selectedBot ? (BOTS.find(bot => bot.id === selectedBot)?.icon ?? null) : null;
+    const currentSpeaker = getBotSpeaker(selectedBot);
+    const currentOpponentName = currentSpeaker?.name ?? 'Opponent';
+    const currentOpponentIcon = currentSpeaker?.icon ?? null;
 
     const moveIndex = gameState.moveHistory.length - 1;
     const response = getBotReaction({
-      botId: selectedBot,
+      speakerId: selectedBot,
       moveRecord: latestMove,
       moveIndex,
       gameStatus: gameState.status,
@@ -247,7 +247,7 @@ export default function App() {
       matchId: gameState.id,
       playedAt: currentMatchStartedAt,
       mode: currentMatchMode,
-      opponentName: selectedBot ? (BOTS.find(bot => bot.id === selectedBot)?.name ?? 'Opponent') : 'Opponent',
+      opponentName: getBotSpeaker(selectedBot)?.name ?? 'Opponent',
       opponentType: vsBot ? 'bot' : 'player',
       result,
       outcome: gameState.status === 'draw' ? 'draw' : 'checkmate',
@@ -280,7 +280,7 @@ export default function App() {
       matchId: gameState.id,
       playedAt: currentMatchStartedAt,
       mode: currentMatchMode,
-      opponentName: selectedBot ? (BOTS.find(bot => bot.id === selectedBot)?.name ?? 'Opponent') : 'Opponent',
+      opponentName: getBotSpeaker(selectedBot)?.name ?? 'Opponent',
       opponentType: vsBot ? 'bot' : 'player',
       result: 'loss',
       outcome: 'abandoned',
@@ -397,9 +397,9 @@ export default function App() {
   }
 
   const handleUnlock = () => unlockBgm();
-  const selectedBotMeta = selectedBot ? (BOTS.find(bot => bot.id === selectedBot) ?? null) : null;
-  const opponentName = selectedBotMeta?.name ?? 'Opponent';
-  const opponentTagline = selectedBotMeta?.tagline ?? 'Awaiting challenger';
+  const selectedBotProfile = getBotSpeaker(selectedBot);
+  const opponentName = selectedBotProfile?.name ?? 'Opponent';
+  const opponentTagline = selectedBotProfile?.tagline ?? 'Awaiting challenger';
   const moveCountLabel =
     gameState.moveHistory.length > 0 ? `Move ${gameState.flags.fullMoveNumber}` : 'Opening position';
   const botProfile = buildBotProfile(selectedBot);
@@ -560,7 +560,7 @@ export default function App() {
               metaLine={`${opponentTitle} - Lv ${opponentLevel} - ELO ${botProfile?.elo ?? 1200}`}
               subtitle={botProfile?.motto || opponentTagline}
               badge={gameState.turn === 'black' ? 'To Move' : 'Standing By'}
-              portraitLabel={selectedBotMeta?.icon ?? selectedBotMeta?.name.slice(0, 1).toUpperCase() ?? 'O'}
+              portraitLabel={selectedBotProfile?.icon ?? selectedBotProfile?.name.slice(0, 1).toUpperCase() ?? 'O'}
               align="right"
               onClick={() => {
                 if (!botProfile) return;
