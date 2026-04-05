@@ -194,19 +194,12 @@
 
 @media (max-width: 800px) {
   .stageRow {
-    grid-template-columns: 1fr;
+    grid-template-columns: clamp(108px, 19vw, 150px) minmax(0, 1fr) clamp(108px, 19vw, 150px);
+    gap: 0.75rem;
   }
 
   .boardOnly {
-    grid-column: 1;
-  }
-
-  .modifierDock {
-    width: 100%;
-  }
-
-  .modifierDockCollapsed {
-    width: 100%;
+    grid-column: 2;
   }
 }
 
@@ -253,7 +246,13 @@
   }
 
   .bannerRow {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .stageRow {
+    grid-template-columns: clamp(88px, 20vw, 124px) minmax(0, 1fr) clamp(88px, 20vw, 124px);
+    gap: 0.55rem;
   }
 
   .boardStage {
@@ -262,8 +261,20 @@
   }
 
   .boardShell {
-    padding: 0.7rem;
+    width: 100%;
+    padding: 0.55rem;
     border-radius: 22px;
+  }
+
+  .logDock,
+  .modifierDock {
+    min-height: 0;
+    max-height: min(calc(100vw - 0.4rem), 470px);
+  }
+
+  .modifierDockCollapsed {
+    width: 48px;
+    flex-basis: 48px;
   }
 }
 
@@ -293,8 +304,27 @@
     padding: 0.5rem;
   }
 
+  .bannerRow {
+    gap: 0.5rem;
+  }
+
+  .stageRow {
+    grid-template-columns: clamp(76px, 21vw, 96px) minmax(0, 1fr) clamp(76px, 21vw, 96px);
+    gap: 0.4rem;
+  }
+
   .boardShell {
-    padding: 0.45rem;
+    padding: 0.35rem;
     border-radius: 18px;
+  }
+
+  .logDock,
+  .modifierDock {
+    max-height: min(calc(100vw - 0.25rem), 390px);
+  }
+
+  .modifierDockCollapsed {
+    width: 42px;
+    flex-basis: 42px;
   }
 }
