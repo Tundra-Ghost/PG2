@@ -129,34 +129,70 @@ describe('shipped modifier behavior', () => {
     });
   });
 
-  it('winter freezes pieces that enter the opponent home zone for one turn', () => {
+  it('winter freezes pieces that enter a frozen zone from outside it', () => {
     const state = chessEngine.activateDraftModifiers(
       makeEmptyState([
         makePiece('king', 'white', 'e1'),
         makePiece('king', 'black', 'e8'),
-        makePiece('rook', 'white', 'a6'),
+        makePiece('rook', 'white', 'a5'),
       ]),
       [{ id: 'MOD-A004', sourceColor: 'white' }],
     );
 
-    const next = chessEngine.applyMove(state, move('a6', 'a7', 'white'));
+    const next = chessEngine.applyMove(state, move('a5', 'a6', 'white'));
 
-    expect(next.pieces.get('a7')?.cooldowns['MOD-A004']).toBe(2);
+    expect(next.pieces.get('a6')?.cooldowns['MOD-A004']).toBe(2);
 
     const afterBlackTurn = chessEngine.passTurn(next);
 
     expect(afterBlackTurn.turn).toBe('white');
-    expect(afterBlackTurn.pieces.get('a7')?.cooldowns['MOD-A004']).toBe(1);
-    expect(chessEngine.validateMove(afterBlackTurn, move('a7', 'a8', 'white'))).toEqual({
+    expect(afterBlackTurn.pieces.get('a6')?.cooldowns['MOD-A004']).toBe(1);
+    expect(chessEngine.validateMove(afterBlackTurn, move('a6', 'a7', 'white'))).toEqual({
       valid: false,
       reason: 'That piece is frozen by Winter is Coming.',
     });
 
     const afterFrozenTurn = chessEngine.passTurn(afterBlackTurn);
-    expect(afterFrozenTurn.pieces.get('a7')?.cooldowns['MOD-A004']).toBe(1);
+    expect(afterFrozenTurn.pieces.get('a6')?.cooldowns['MOD-A004']).toBe(1);
 
     const thawed = chessEngine.passTurn(afterFrozenTurn);
-    expect(thawed.pieces.get('a7')?.cooldowns['MOD-A004']).toBeUndefined();
+    expect(thawed.pieces.get('a6')?.cooldowns['MOD-A004']).toBeUndefined();
+  });
+
+  it('winter does not auto-freeze pieces that start inside frozen rows', () => {
+    const state = chessEngine.activateDraftModifiers(
+      makeEmptyState([
+        makePiece('king', 'white', 'e1'),
+        makePiece('rook', 'white', 'a1'),
+        makePiece('king', 'black', 'e8'),
+      ]),
+      [{ id: 'MOD-A004', sourceColor: 'white' }],
+    );
+
+    expect(state.pieces.get('a1')?.cooldowns['MOD-A004']).toBeUndefined();
+  });
+
+  it('winter blocks castling when the castle path is frozen', () => {
+    const state = chessEngine.activateDraftModifiers(
+      makeEmptyState([
+        makePiece('king', 'white', 'e1'),
+        makePiece('rook', 'white', 'h1'),
+        makePiece('king', 'black', 'h8'),
+      ]),
+      [{ id: 'MOD-A004', sourceColor: 'white' }],
+    );
+
+    state.flags.castlingRights.white.kingSide = true;
+
+    expect(
+      chessEngine.validateMove(
+        state,
+        move('e1', 'g1', 'white', { isCastle: 'kingside' }),
+      ),
+    ).toEqual({
+      valid: false,
+      reason: 'Winter locks the castling path in ice.',
+    });
   });
 
   it('conscientious objector blocks captures but still allows non-capturing moves', () => {

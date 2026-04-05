@@ -14,6 +14,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Legality coverage now also includes queenside castling safety, double-check king-only responses, rank/file SAN disambiguation, and modifier edge safety for pacifist en passant, Gerald non-king targeting, and lava empty-tile placement
 - Modifier presentation now classifies shared-vs-owned effects using modifier scope instead of raw draft source, so shared environmental cards like Floor Is Lava appear under Shared Effects in-match
 - Gerald clear-and-forfeit interaction is now isolated in board interaction logic and covered by tests
+- Winter now uses true frozen rows for prototype rules, freezes pieces on zone entry from outside, and blocks castling through frozen path tiles
 - Modifier audit is in progress to make currently shipped cards visible and testable in play
 - Shipped modifier tests now cover lava safety, Gerald distraction timing, Winter freeze timing, Conscientious Objector capture refusal, and Berserker self-check-safe chaining
 - `gameLoop` now executes `onPreMoveApply` and `onMatchEnd`, and validation now checks legality against the effective post-hook move

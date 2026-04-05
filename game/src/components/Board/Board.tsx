@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import type { GameState, PieceType, Square } from '../../engine/types';
 import { chessEngine } from '../../engine/ChessEngine';
 import { buildMove } from '../../engine/gameLoop';
+import { isFrozenZoneSquare } from '../../modifiers/definitions/winter';
 import { playCapture, playCastle, playMove } from '../../sound';
 import { shouldForfeitTurnForGerald } from './interaction';
 import SquareComponent from '../Square/Square';
@@ -25,11 +26,6 @@ interface BoardProps {
 
 function isLightSquare(file: number, rank: number): boolean {
   return (file + rank) % 2 !== 0;
-}
-
-function isFrozenZone(square: Square): boolean {
-  const rank = square[1];
-  return rank === '1' || rank === '2' || rank === '7' || rank === '8';
 }
 
 interface PendingPromotion {
@@ -233,7 +229,7 @@ export default function Board({
                 const piece  = state.pieces.get(square);
                 const tileEffects =
                   state.tiles.get(square)?.effects.map(effect => effect.type) ?? [];
-                const frozenZone = winterActive && isFrozenZone(square);
+                const frozenZone = winterActive && isFrozenZoneSquare(square);
                 return (
                   <SquareComponent
                     key={square}

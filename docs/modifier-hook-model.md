@@ -161,16 +161,15 @@ Modifier-bible intent:
 
 Prototype status:
 
-- Implemented: entering the opponent home zone applies a freeze cooldown; frozen pieces are blocked for a full future turn.
+- Implemented: ranks `1-3` and `6-8` are treated as frozen zones; entering a frozen zone from outside applies a freeze cooldown; frozen pieces are blocked for a full future turn; castling is blocked because castle-path tiles on frozen home rows are iced over.
 - Prototype deviation:
-  - Current zone logic is "opponent home zone" rather than permanent frozen board rows.
-  - No explicit frozen tile model or castle-path freeze check.
+  - Uses zone classification and validation rules rather than persistent per-tile frozen state objects.
   - No special-case promotion interaction beyond normal movement blocking.
 
 Assessment:
 
-- Core freeze behavior exists.
-- The board-zone model is simplified relative to the modifier bible.
+- Core freeze behavior now matches the modifier-bible intent much more closely.
+- Remaining gap is mostly presentation/state-model fidelity, not basic rules.
 
 ### `MOD-B002` Distracted Piece / Gerald
 
