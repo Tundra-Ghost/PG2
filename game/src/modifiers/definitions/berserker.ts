@@ -12,7 +12,7 @@ import {
   applyMoveInternal,
   buildMove,
 } from '../../engine/gameLoop';
-import { getLegalMovesForPiece } from '../../engine/moveGenerator';
+import { getLegalMovesForPiece, isInCheck } from '../../engine/moveGenerator';
 
 const ID = 'MOD-E006';
 
@@ -51,6 +51,8 @@ function getBestCaptureTarget(state: GameState, from: Square): Square | null {
   for (const to of moves) {
     const target = state.pieces.get(to);
     if (!target || target.color === piece.color) continue;
+    const projected = applyMoveInternal(state, buildMove(state, from, to));
+    if (isInCheck(projected, piece.color)) continue;
     const val = PIECE_VALUE[target.type] ?? 0;
     if (val > bestValue) {
       bestValue = val;

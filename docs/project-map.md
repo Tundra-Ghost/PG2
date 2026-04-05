@@ -12,6 +12,7 @@ Primary product references:
 - `docs/pigeon-chess-tdd.html`
 - `docs/pigeon-chess-art-direction.html`
 - `docs/pigeon-chess-modifier-bible-v02.html`
+- `docs/modifier-hook-model.md`
 
 ## Top-Level Structure
 
@@ -118,10 +119,9 @@ TDD direction implies engine-first validation.
 Current repo:
 
 - Vitest is installed in `game/`
-- Baseline engine tests cover opening movement, wrong-turn rejection, en passant, castling-through-check rejection, promotion detection, and Fool's Mate
-- Draw-rule and modifier coverage are still incomplete
+- Engine and modifier tests now cover core legality, draw rules, SAN edge cases, hook-pipeline regressions, and shipped modifier safety cases
 
-This is the most immediate execution risk.
+This risk is materially lower than before, though more coverage is still useful as new modifiers land.
 
 ### Gap 3: Modifier completeness
 
@@ -133,7 +133,7 @@ Current repo:
 
 - 5 registered runtime definitions
 - A broader card catalog exists in data, but most cards are not implemented as behavior
-- The current shipped-modifier audit is focused on closing the gap between "has runtime logic" and "is visibly testable in the prototype"
+- `docs/modifier-hook-model.md` now documents the implemented hook model and the shipped-modifier deviations from modifier-bible intent
 
 ### Gap 4: Feature ordering
 

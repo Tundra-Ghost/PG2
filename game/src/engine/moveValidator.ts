@@ -1,6 +1,6 @@
 import type { GameState, Move, ValidationResult } from './types';
 import { getLegalMovesForPiece, isInCheck, isSquareAttacked } from './moveGenerator';
-import { applyMoveInternal, cloneState } from './gameLoop';
+import { applyMoveInternal, cloneState, runPreMoveApplyHooks } from './gameLoop';
 import { modifierRegistry } from '../modifiers/registry';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
@@ -87,7 +87,8 @@ export function validateMove(state: GameState, move: Move): ValidationResult {
 
   // ─── Stage 6: Self-check guard (NEVER stub) ───────────────────────────────
   // Simulate the move and verify the moving player's king is not in check
-  const simulated = applyMoveInternal(cloneState(state), move);
+  const prepared = runPreMoveApplyHooks(state, move);
+  const simulated = applyMoveInternal(cloneState(prepared.state), prepared.move);
   if (isInCheck(simulated, move.playerColor)) {
     return { valid: false, reason: 'leaves king in check' };
   }
