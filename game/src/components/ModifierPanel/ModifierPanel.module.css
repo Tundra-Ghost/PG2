@@ -72,10 +72,14 @@
 }
 
 .body {
+  flex: 1;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
   padding: 0.5rem 0.35rem 0.55rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(84, 48, 18, 0.18) transparent;
 }
 
 .collapsedBody {

@@ -98,8 +98,10 @@
 }
 
 .stageRow {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr) 280px;
+  gap: 1rem;
+  align-items: stretch;
 }
 
 .boardStage {
@@ -107,7 +109,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  width: min(100%, 740px);
+  min-width: 0;
 }
 
 .boardShell {
@@ -125,24 +127,21 @@
     inset 0 0 0 1px rgba(255, 255, 255, 0.02);
 }
 
-.bottomDock {
-  display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.8fr);
-  gap: 1rem;
-  align-items: stretch;
-}
-
 .logDock {
   min-width: 0;
-  min-height: clamp(360px, 42vh, 620px);
+  display: flex;
+  flex-direction: column;
 }
 
 .modifierDock {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .modifierDockCollapsed {
-  justify-self: end;
+  width: 56px;
+  flex-shrink: 0;
 }
 
 @media (max-width: 1120px) {
@@ -154,16 +153,31 @@
     width: 100%;
   }
 
-  .boardStage {
-    width: 100%;
+  .stageRow {
+    grid-template-columns: 240px minmax(0, 1fr) 240px;
   }
+}
 
-  .bottomDock {
+@media (max-width: 900px) {
+  .stageRow {
     grid-template-columns: 1fr;
   }
 
+  .boardStage {
+    order: 0;
+  }
+
+  .logDock {
+    order: 1;
+  }
+
+  .modifierDock {
+    order: 2;
+    width: 100%;
+  }
+
   .modifierDockCollapsed {
-    justify-self: stretch;
+    width: 100%;
   }
 }
 
@@ -213,9 +227,7 @@
     grid-template-columns: 1fr;
   }
 
-  .boardStage,
-  .logDock,
-  .modifierDock {
+  .boardStage {
     width: 100%;
     max-width: 100%;
   }

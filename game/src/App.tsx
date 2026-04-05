@@ -619,6 +619,19 @@ export default function App() {
           </div>
 
           <div className={styles.stageRow}>
+            <div className={styles.logDock}>
+              <MoveHistory
+                state={gameState}
+                whiteLabel={playerName}
+                blackLabel={vsBot ? opponentName : 'Black'}
+                chatEntries={chatEntries}
+                onSendChat={gameState.status === 'active' ? handleSendChat : undefined}
+                playerAvatarLabel={playerName.slice(0, 1).toUpperCase()}
+                playerAvatarSrc={playerProfile?.avatarDataUrl ?? null}
+                opponentAvatarIcon={selectedBotProfile?.icon ?? null}
+              />
+            </div>
+
             <div className={styles.boardStage}>
               <div className={styles.boardShell}>
                 <Board
@@ -634,21 +647,6 @@ export default function App() {
                 state={gameState}
                 onNewGame={handleNewGame}
                 infoMessage={infoMessage}
-              />
-            </div>
-          </div>
-
-          <div className={styles.bottomDock}>
-            <div className={styles.logDock}>
-              <MoveHistory
-                state={gameState}
-                whiteLabel={playerName}
-                blackLabel={vsBot ? opponentName : 'Black'}
-                chatEntries={chatEntries}
-                onSendChat={gameState.status === 'active' ? handleSendChat : undefined}
-                playerAvatarLabel={playerName.slice(0, 1).toUpperCase()}
-                playerAvatarSrc={playerProfile?.avatarDataUrl ?? null}
-                opponentAvatarIcon={selectedBotProfile?.icon ?? null}
               />
             </div>
 
