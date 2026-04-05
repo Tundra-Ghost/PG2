@@ -17,6 +17,7 @@ import {
   type MatchMode,
   type ModeStats,
 } from '../../profile';
+import { createCircularAvatarDataUrl } from '../../profile/avatar';
 import { ALL_MODIFIERS } from '../../modifiers/data';
 import { playClick } from '../../sound';
 import styles from './ProfileSetup.module.css';
@@ -155,11 +156,12 @@ export default function ProfileSetup({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') setDraftAvatarDataUrl(reader.result);
-    };
-    reader.readAsDataURL(file);
+    try {
+      const nextAvatar = await createCircularAvatarDataUrl(file);
+      setDraftAvatarDataUrl(nextAvatar);
+    } finally {
+      e.target.value = '';
+    }
   }
 
   function handleSave() {

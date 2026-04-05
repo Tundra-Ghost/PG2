@@ -97,14 +97,16 @@
 
 .avatarShell {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  justify-content: center;
 }
 
 .avatarImage,
 .avatarPlaceholder {
-  width: 100%;
-  min-height: 160px;
-  border-radius: 18px;
+  width: 160px;
+  height: 160px;
+  border-radius: 999px;
+  flex-shrink: 0;
 }
 
 .avatarImage {
@@ -543,6 +545,7 @@
 
   .avatarImage,
   .avatarPlaceholder {
-    min-height: 140px;
+    width: 140px;
+    height: 140px;
   }
 }
