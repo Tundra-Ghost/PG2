@@ -632,7 +632,7 @@ export default function App() {
               />
             </div>
 
-            <div className={styles.boardStage}>
+            <div className={styles.boardOnly}>
               <div className={styles.boardShell}>
                 <Board
                   state={gameState}
@@ -643,11 +643,6 @@ export default function App() {
                   showCoordinates={settings.showCoordinates}
                 />
               </div>
-              <GameStatus
-                state={gameState}
-                onNewGame={handleNewGame}
-                infoMessage={infoMessage}
-              />
             </div>
 
             <div
@@ -664,12 +659,20 @@ export default function App() {
               />
             </div>
           </div>
+
+          <div className={styles.gameFooter}>
+            <GameStatus
+              state={gameState}
+              onNewGame={handleNewGame}
+              infoMessage={infoMessage}
+            />
+          </div>
+
+          {pendingDialogue && (
+            <DialogueBox entry={pendingDialogue} onDismiss={handleDialogueDismiss} />
+          )}
         </section>
       </main>
-
-      {pendingDialogue && (
-        <DialogueBox entry={pendingDialogue} onDismiss={handleDialogueDismiss} />
-      )}
 
       {settingsOverlay}
       {viewedProfileOverlay}

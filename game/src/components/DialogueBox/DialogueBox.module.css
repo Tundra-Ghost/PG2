@@ -1,14 +1,9 @@
-/* ---- Root (fixed overlay) ---- */
+/* ---- Root (inline, directly below game board) ---- */
 
 .root {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 80;
+  width: 100%;
   display: flex;
   justify-content: center;
-  padding: 0 1rem;
   pointer-events: none;
 }
 
@@ -46,7 +41,7 @@
 
 .box {
   width: 100%;
-  max-width: 1120px;
+  max-width: 1360px;
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
@@ -54,17 +49,16 @@
   background:
     radial-gradient(ellipse at 4% 0%, rgba(255, 246, 210, 0.055) 0%, transparent 45%),
     linear-gradient(180deg, rgba(22, 14, 7, 0.98) 0%, rgba(12, 8, 3, 0.99) 100%);
+  border: 1px solid rgba(200, 151, 58, 0.28);
   border-top: 2px solid rgba(200, 151, 58, 0.52);
-  border-left: 1px solid rgba(200, 151, 58, 0.28);
-  border-right: 1px solid rgba(200, 151, 58, 0.28);
-  border-radius: 16px 16px 0 0;
+  border-radius: 16px;
   cursor: pointer;
   text-align: left;
   pointer-events: all;
   position: relative;
   box-shadow:
-    0 -14px 48px rgba(0, 0, 0, 0.58),
-    0 -2px 14px rgba(200, 151, 58, 0.07),
+    0 8px 32px rgba(0, 0, 0, 0.48),
+    0 2px 8px rgba(200, 151, 58, 0.07),
     inset 0 1px 0 rgba(255, 255, 255, 0.03);
 
   /* Default theme (npc) */
@@ -233,10 +227,6 @@
 /* ---- Responsive ---- */
 
 @media (max-width: 720px) {
-  .root {
-    padding: 0 0.5rem;
-  }
-
   .box {
     padding: 0.85rem 1rem 0.75rem;
   }
@@ -251,13 +241,9 @@
 }
 
 @media (max-width: 480px) {
-  .root {
-    padding: 0;
-  }
-
   .box {
     padding: 0.75rem 0.85rem 0.65rem;
-    border-radius: 12px 12px 0 0;
+    border-radius: 12px;
   }
 
   .avatarEmoji {

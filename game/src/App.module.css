@@ -81,11 +81,11 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 1.5rem 1.5rem 2rem;
+  padding: 1.5rem;
 }
 
 .matchHud {
-  width: min(100%, 1120px);
+  width: min(100%, 1360px);
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
@@ -97,13 +97,26 @@
   gap: 1rem;
 }
 
+/* Center column is `auto` so the board drives its own width — no overflow into side panels */
 .stageRow {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr) 280px;
-  gap: 1rem;
+  grid-template-columns: minmax(220px, 1fr) auto minmax(220px, 1fr);
+  gap: 1.25rem;
   align-items: stretch;
 }
 
+/* Board-only column: no GameStatus (moved below stageRow) */
+.boardOnly {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+.gameFooter {
+  width: 100%;
+}
+
+/* Legacy alias kept for reference — not used */
 .boardStage {
   display: flex;
   flex-direction: column;
@@ -144,26 +157,14 @@
   flex-shrink: 0;
 }
 
-@media (max-width: 1120px) {
-  .main {
-    padding: 1rem;
-  }
-
-  .matchHud {
-    width: 100%;
-  }
-
+@media (max-width: 1200px) {
+  /* Switch to stacked: board first, then chat + modifier side by side below */
   .stageRow {
-    grid-template-columns: 240px minmax(0, 1fr) 240px;
-  }
-}
-
-@media (max-width: 900px) {
-  .stageRow {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
-  .boardStage {
+  .boardOnly {
+    grid-column: 1 / -1;
     order: 0;
   }
 
@@ -173,6 +174,29 @@
 
   .modifierDock {
     order: 2;
+  }
+}
+
+@media (max-width: 1120px) {
+  .main {
+    padding: 1rem;
+  }
+
+  .matchHud {
+    width: 100%;
+  }
+}
+
+@media (max-width: 800px) {
+  .stageRow {
+    grid-template-columns: 1fr;
+  }
+
+  .boardOnly {
+    grid-column: 1;
+  }
+
+  .modifierDock {
     width: 100%;
   }
 
