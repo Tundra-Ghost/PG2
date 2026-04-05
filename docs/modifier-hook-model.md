@@ -183,9 +183,8 @@ Modifier-bible intent:
 
 Prototype status:
 
-- Implemented: start-of-turn targeting, owned draft scoping, multi-turn persistence, move blocking, cooldown decay, non-king targeting.
+- Implemented: start-of-turn targeting, owned draft scoping, multi-turn persistence, move blocking, cooldown decay, non-king targeting, and board-level "click Gerald off and forfeit the turn" interaction.
 - Prototype deviation:
-  - No "click Gerald off and forfeit move" interaction yet.
   - No explicit leaderboard or UI interaction loop beyond cooldown behavior.
   - No special exclusion for future pigeon piece types yet.
 

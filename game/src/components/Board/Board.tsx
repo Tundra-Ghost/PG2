@@ -3,6 +3,7 @@ import type { GameState, PieceType, Square } from '../../engine/types';
 import { chessEngine } from '../../engine/ChessEngine';
 import { buildMove } from '../../engine/gameLoop';
 import { playCapture, playCastle, playMove } from '../../sound';
+import { shouldForfeitTurnForGerald } from './interaction';
 import SquareComponent from '../Square/Square';
 import PromotionModal from '../PromotionModal/PromotionModal';
 import styles from './Board.module.css';
@@ -112,7 +113,7 @@ export default function Board({
       // Nothing selected yet
       if (!selected) {
         if (clickedPiece && clickedPiece.color === state.turn) {
-          if ((clickedPiece.cooldowns[GERALD_ID] ?? 0) > 0) {
+          if (shouldForfeitTurnForGerald(clickedPiece, state.turn)) {
             onStateChange(chessEngine.passTurn(state));
             onInfo?.('Gerald chased off. Turn forfeited.');
             setSelected(null);
@@ -133,6 +134,13 @@ export default function Board({
 
       // Re-select own piece
       if (clickedPiece && clickedPiece.color === state.turn && square !== selected) {
+        if (shouldForfeitTurnForGerald(clickedPiece, state.turn)) {
+          onStateChange(chessEngine.passTurn(state));
+          onInfo?.('Gerald chased off. Turn forfeited.');
+          setSelected(null);
+          setLegalMoves([]);
+          return;
+        }
         if (clickedPiece.isPacifist) {
           onInfo?.('This piece refuses to capture.');
         }
