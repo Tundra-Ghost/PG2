@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import './index';
 import { getModifierDisplayBucket, getModifierOwnershipLabel } from './presentation';
+import { getDraftScope } from './scope';
 
 describe('modifier presentation', () => {
   it('shows shared draft modifiers in the shared bucket even when drafted by a side', () => {
@@ -24,5 +26,9 @@ describe('modifier presentation', () => {
 
     expect(getModifierDisplayBucket(modifier)).toBe('black');
     expect(getModifierOwnershipLabel(modifier)).toBe('black owned');
+  });
+
+  it('reads shared scope from the registered modifier definition for floor is lava', () => {
+    expect(getDraftScope('MOD-A002')).toBe('shared');
   });
 });
