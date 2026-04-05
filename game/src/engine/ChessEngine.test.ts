@@ -10,6 +10,8 @@ import type {
   Square,
 } from './types';
 import '../modifiers/index';
+import { modifierRegistry } from '../modifiers/registry';
+import type { ModifierDefinition } from '../modifiers/types';
 
 function makePiece(
   type: PieceType,
@@ -121,6 +123,123 @@ describe('ChessEngine TDD baseline', () => {
     });
   });
 
+  it('allows castling when the lane is clear and safe', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('rook', 'white', 'h1'),
+      makePiece('king', 'black', 'a8'),
+    ]);
+
+    state.flags.castlingRights.white.kingSide = true;
+
+    expect(
+      chessEngine.validateMove(
+        state,
+        move('e1', 'g1', 'white', { isCastle: 'kingside' }),
+      ),
+    ).toEqual({ valid: true });
+
+    const next = chessEngine.applyMove(
+      state,
+      move('e1', 'g1', 'white', { isCastle: 'kingside' }),
+    );
+
+    expect(next.pieces.get('g1')?.type).toBe('king');
+    expect(next.pieces.get('f1')?.type).toBe('rook');
+    expect(next.flags.castlingRights.white).toEqual({
+      kingSide: false,
+      queenSide: false,
+    });
+  });
+
+  it('allows queenside castling when the lane is clear and safe', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('rook', 'white', 'a1'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+
+    state.flags.castlingRights.white.queenSide = true;
+
+    expect(
+      chessEngine.validateMove(
+        state,
+        move('e1', 'c1', 'white', { isCastle: 'queenside' }),
+      ),
+    ).toEqual({ valid: true });
+
+    const next = chessEngine.applyMove(
+      state,
+      move('e1', 'c1', 'white', { isCastle: 'queenside' }),
+    );
+
+    expect(next.pieces.get('c1')?.type).toBe('king');
+    expect(next.pieces.get('d1')?.type).toBe('rook');
+  });
+
+  it('rejects queenside castling through an attacked intermediate square', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('rook', 'white', 'a1'),
+      makePiece('king', 'black', 'h8'),
+      makePiece('rook', 'black', 'd8'),
+    ]);
+
+    state.flags.castlingRights.white.queenSide = true;
+
+    expect(
+      chessEngine.validateMove(
+        state,
+        move('e1', 'c1', 'white', { isCastle: 'queenside' }),
+      ),
+    ).toEqual({
+      valid: false,
+      reason: 'cannot castle through check',
+    });
+  });
+
+  it('removes castling rights after a rook moves off its home square', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('rook', 'white', 'h1'),
+      makePiece('king', 'black', 'a8'),
+    ]);
+
+    state.flags.castlingRights.white = {
+      kingSide: true,
+      queenSide: true,
+    };
+
+    const next = chessEngine.applyMove(state, move('h1', 'h3', 'white'));
+
+    expect(next.flags.castlingRights.white).toEqual({
+      kingSide: false,
+      queenSide: true,
+    });
+  });
+
+  it('removes castling rights when a home rook is captured', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('rook', 'white', 'a1'),
+      makePiece('king', 'black', 'e8'),
+      makePiece('bishop', 'black', 'c3'),
+    ]);
+
+    state.turn = 'black';
+    state.flags.castlingRights.white = {
+      kingSide: true,
+      queenSide: true,
+    };
+
+    const next = chessEngine.applyMove(state, move('c3', 'a1', 'black'));
+
+    expect(next.flags.castlingRights.white).toEqual({
+      kingSide: true,
+      queenSide: false,
+    });
+  });
+
   it('detects a promotion move on the back rank', () => {
     const state = makeEmptyState([
       makePiece('king', 'white', 'h1'),
@@ -134,6 +253,25 @@ describe('ChessEngine TDD baseline', () => {
     });
   });
 
+  it('applies pawn promotion to the selected piece type', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'h1'),
+      makePiece('king', 'black', 'h8'),
+      makePiece('pawn', 'white', 'a7'),
+    ]);
+
+    const next = chessEngine.applyMove(
+      state,
+      move('a7', 'a8', 'white', { promotion: 'queen' }),
+    );
+
+    expect(next.pieces.get('a8')).toMatchObject({
+      type: 'queen',
+      color: 'white',
+    });
+    expect(next.moveHistory[next.moveHistory.length - 1]?.notation).toBe('a8=Q+');
+  });
+
   it("detects Fool's Mate as checkmate", () => {
     let state = chessEngine.getInitialState();
 
@@ -144,6 +282,291 @@ describe('ChessEngine TDD baseline', () => {
 
     expect(state.status).toBe('checkmate');
     expect(chessEngine.isCheckmate(state, 'white')).toBe(true);
+  });
+
+  it('detects stalemate when the side to move has no legal moves and is not in check', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'c6'),
+      makePiece('queen', 'white', 'b6'),
+      makePiece('king', 'black', 'a8'),
+    ]);
+
+    state.turn = 'black';
+
+    expect(chessEngine.isInCheck(state, 'black')).toBe(false);
+    expect(chessEngine.isStalemate(state, 'black')).toBe(true);
+  });
+
+  it('rejects a move that exposes the moving side king to check', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('rook', 'white', 'e2'),
+      makePiece('rook', 'black', 'e8'),
+      makePiece('king', 'black', 'a8'),
+    ]);
+
+    expect(chessEngine.validateMove(state, move('e2', 'f2', 'white'))).toEqual({
+      valid: false,
+      reason: 'leaves king in check',
+    });
+  });
+
+  it('declares a draw by insufficient material', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('king', 'black', 'e8'),
+    ]);
+
+    const next = chessEngine.passTurn(state);
+
+    expect(next.status).toBe('draw');
+    expect(next.drawReason).toBe('insufficient');
+  });
+
+  it('declares a draw on the 50-move rule threshold', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('king', 'black', 'e8'),
+      makePiece('knight', 'white', 'g1'),
+      makePiece('knight', 'black', 'g8'),
+    ]);
+
+    state.flags.halfMoveClock = 99;
+
+    const next = chessEngine.passTurn(state);
+
+    expect(next.status).toBe('draw');
+    expect(next.drawReason).toBe('50-move');
+  });
+
+  it('declares a draw after the third repetition of the same position', () => {
+    let state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('knight', 'white', 'b1'),
+      makePiece('king', 'black', 'e8'),
+      makePiece('knight', 'black', 'g8'),
+    ]);
+
+    for (let cycle = 0; cycle < 3; cycle += 1) {
+      state = chessEngine.applyMove(state, move('b1', 'a3', 'white'));
+      state = chessEngine.applyMove(state, move('g8', 'h6', 'black'));
+      state = chessEngine.applyMove(state, move('a3', 'b1', 'white'));
+      state = chessEngine.applyMove(state, move('h6', 'g8', 'black'));
+    }
+
+    expect(state.status).toBe('draw');
+    expect(state.drawReason).toBe('threefold');
+  });
+
+  it('expires en passant if it is not taken immediately', () => {
+    let state = chessEngine.getInitialState();
+
+    state = chessEngine.applyMove(state, move('e2', 'e4', 'white'));
+    state = chessEngine.applyMove(state, move('a7', 'a6', 'black'));
+    state = chessEngine.applyMove(state, move('e4', 'e5', 'white'));
+    state = chessEngine.applyMove(state, move('d7', 'd5', 'black'));
+    state = chessEngine.applyMove(state, move('g1', 'f3', 'white'));
+    state = chessEngine.applyMove(state, move('a6', 'a5', 'black'));
+
+    expect(
+      chessEngine.validateMove(state, move('e5', 'd6', 'white', { isEnPassant: true })),
+    ).toEqual({
+      valid: false,
+      reason: 'illegal move for piece type',
+    });
+  });
+
+  it('allows a pinned piece to move along the pin line when it still shields the king', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('rook', 'white', 'e2'),
+      makePiece('rook', 'black', 'e8'),
+      makePiece('king', 'black', 'a8'),
+    ]);
+
+    expect(chessEngine.validateMove(state, move('e2', 'e3', 'white'))).toEqual({
+      valid: true,
+    });
+  });
+
+  it('allows only king moves to resolve a double check', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('rook', 'white', 'a1'),
+      makePiece('rook', 'black', 'e8'),
+      makePiece('bishop', 'black', 'b4'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+
+    expect(chessEngine.isInCheck(state, 'white')).toBe(true);
+    expect(chessEngine.validateMove(state, move('a1', 'a8', 'white'))).toEqual({
+      valid: false,
+      reason: 'leaves king in check',
+    });
+    expect(chessEngine.getLegalMoves(state, 'e1')).toContain('f1');
+  });
+
+  it('adds file disambiguation to SAN when two knights can reach the same square', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('king', 'black', 'h8'),
+      makePiece('knight', 'white', 'd2'),
+      makePiece('knight', 'white', 'h2'),
+    ]);
+
+    const next = chessEngine.applyMove(state, move('d2', 'f3', 'white'));
+
+    expect(next.moveHistory[next.moveHistory.length - 1]?.notation).toBe('Ndf3');
+  });
+
+  it('adds rank disambiguation to SAN when two rooks on the same file can reach the target square', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('king', 'black', 'h8'),
+      makePiece('rook', 'white', 'a1'),
+      makePiece('rook', 'white', 'a8'),
+    ]);
+
+    const next = chessEngine.applyMove(state, move('a1', 'a5', 'white'));
+
+    expect(next.moveHistory[next.moveHistory.length - 1]?.notation).toBe('R1a5+');
+  });
+
+  it('records en passant captures with SAN capture notation', () => {
+    let state = chessEngine.getInitialState();
+
+    state = chessEngine.applyMove(state, move('e2', 'e4', 'white'));
+    state = chessEngine.applyMove(state, move('a7', 'a6', 'black'));
+    state = chessEngine.applyMove(state, move('e4', 'e5', 'white'));
+    state = chessEngine.applyMove(state, move('d7', 'd5', 'black'));
+    state = chessEngine.applyMove(state, move('e5', 'd6', 'white', { isEnPassant: true }));
+
+    expect(state.moveHistory[state.moveHistory.length - 1]?.notation).toBe('exd6');
+  });
+
+  it('validates against the effective onPreMoveApply result, not just the raw move', () => {
+    const redirectModifier: ModifierDefinition = {
+      id: 'TEST-PRE-MOVE-APPLY',
+      name: 'Redirect',
+      category: 'C',
+      pointCost: 0,
+      curseRating: 0,
+      activeFor: 'both',
+      onPreMoveApply(state, mv) {
+        if (mv.from === 'e2' && mv.to === 'e3') {
+          return {
+            state,
+            move: {
+              ...mv,
+              to: 'f2',
+            },
+          };
+        }
+        return { state, move: mv };
+      },
+    };
+
+    modifierRegistry.register(redirectModifier);
+
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('rook', 'white', 'e2'),
+      makePiece('rook', 'black', 'e8'),
+      makePiece('king', 'black', 'a8'),
+    ]);
+
+    state.activeModifiers = [
+      {
+        id: redirectModifier.id,
+        name: redirectModifier.name,
+        activeFor: 'both',
+        sourceColor: null,
+      },
+    ];
+
+    expect(chessEngine.validateMove(state, move('e2', 'e3', 'white'))).toEqual({
+      valid: false,
+      reason: 'leaves king in check',
+    });
+  });
+
+  it('applies the effective onPreMoveApply move and fires onMatchEnd on terminal results', () => {
+    let matchEndCalls = 0;
+    let finalStatus: GameState['status'] | null = null;
+
+    const pipelineModifier: ModifierDefinition = {
+      id: 'TEST-PIPELINE-HOOKS',
+      name: 'Pipeline Hooks',
+      category: 'C',
+      pointCost: 0,
+      curseRating: 0,
+      activeFor: 'both',
+      onPreMoveApply(state, mv) {
+        if (mv.from === 'e2' && mv.to === 'e3') {
+          return {
+            state,
+            move: {
+              ...mv,
+              to: 'e4',
+            },
+          };
+        }
+        return { state, move: mv };
+      },
+      onMatchEnd(state) {
+        matchEndCalls += 1;
+        finalStatus = state.status;
+      },
+    };
+
+    modifierRegistry.register(pipelineModifier);
+
+    const redirectedState = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('king', 'black', 'e8'),
+      makePiece('pawn', 'white', 'e2'),
+    ]);
+
+    redirectedState.activeModifiers = [
+      {
+        id: pipelineModifier.id,
+        name: pipelineModifier.name,
+        activeFor: 'both',
+        sourceColor: null,
+      },
+    ];
+
+    const redirectedNext = chessEngine.applyMove(
+      redirectedState,
+      move('e2', 'e3', 'white'),
+    );
+
+    expect(redirectedNext.pieces.has('e3')).toBe(false);
+    expect(redirectedNext.pieces.get('e4')).toMatchObject({
+      type: 'pawn',
+      color: 'white',
+    });
+    expect(redirectedNext.moveHistory[0]?.move.to).toBe('e4');
+
+    let terminalState = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('king', 'black', 'e8'),
+    ]);
+
+    terminalState.activeModifiers = [
+      {
+        id: pipelineModifier.id,
+        name: pipelineModifier.name,
+        activeFor: 'both',
+        sourceColor: null,
+      },
+    ];
+
+    terminalState = chessEngine.passTurn(terminalState);
+
+    expect(terminalState.status).toBe('draw');
+    expect(matchEndCalls).toBe(1);
+    expect(finalStatus).toBe('draw');
   });
 
   it('records berserker chain captures for UI feedback', () => {

@@ -155,6 +155,25 @@ export function appendGameEvent(
   return next;
 }
 
+export function runPreMoveApplyHooks(
+  state: GameState,
+  move: Move,
+): { state: GameState; move: Move } {
+  let nextState = cloneState(state);
+  let nextMove = { ...move };
+
+  for (const inst of state.activeModifiers) {
+    const def = modifierRegistry.get(inst.id);
+    if (def?.onPreMoveApply) {
+      const result = def.onPreMoveApply(nextState, nextMove);
+      nextState = result.state;
+      nextMove = result.move;
+    }
+  }
+
+  return { state: nextState, move: nextMove };
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // buildMove
 // ─────────────────────────────────────────────────────────────────────────────
@@ -398,61 +417,64 @@ function buildNotation(
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function applyMove(state: GameState, move: Move): GameState {
-  const pieceMoved = state.pieces.get(move.from)!;
+  const prepared = runPreMoveApplyHooks(state, move);
+  const preparedState = prepared.state;
+  const preparedMove = prepared.move;
+  const pieceMoved = preparedState.pieces.get(preparedMove.from)!;
 
   // Capture lookup (before the move is applied)
-  const pieceCaptured = move.isEnPassant
+  const pieceCaptured = preparedMove.isEnPassant
     ? (() => {
         const dir = pieceMoved.color === 'white' ? -1 : 1;
-        const capRank = rankIndex(move.to) + dir;
-        return state.pieces.get(toSquare(fileIndex(move.to), capRank));
+        const capRank = rankIndex(preparedMove.to) + dir;
+        return preparedState.pieces.get(toSquare(fileIndex(preparedMove.to), capRank));
       })()
-    : state.pieces.get(move.to);
+    : preparedState.pieces.get(preparedMove.to);
 
   // Apply physical move
-  let next = applyMoveInternal(state, move);
+  let next = applyMoveInternal(preparedState, preparedMove);
 
   // ── Modifier hooks: onCapture ───────────────────────────────────────────────
   const isCapture = pieceCaptured !== undefined;
   if (isCapture) {
-    for (const inst of state.activeModifiers) {
+    for (const inst of preparedState.activeModifiers) {
       const def = modifierRegistry.get(inst.id);
       if (def?.onCapture) {
-        next = def.onCapture(next, move, pieceCaptured!);
+        next = def.onCapture(next, preparedMove, pieceCaptured!);
       }
     }
   }
 
   // ── Modifier hooks: onPromotion ─────────────────────────────────────────────
-  if (move.promotion) {
-    for (const inst of state.activeModifiers) {
+  if (preparedMove.promotion) {
+    for (const inst of preparedState.activeModifiers) {
       const def = modifierRegistry.get(inst.id);
       if (def?.onPromotion) {
-        next = def.onPromotion(next, move);
+        next = def.onPromotion(next, preparedMove);
       }
     }
   }
 
   // ── Modifier hooks: onPostMove ──────────────────────────────────────────────
-  for (const inst of state.activeModifiers) {
+  for (const inst of preparedState.activeModifiers) {
     const def = modifierRegistry.get(inst.id);
     if (def?.onPostMove) {
-      next = def.onPostMove(next, move);
+      next = def.onPostMove(next, preparedMove);
     }
   }
 
   // Switch turn & counters
-  const nextColor: Color = state.turn === 'white' ? 'black' : 'white';
+  const nextColor: Color = preparedState.turn === 'white' ? 'black' : 'white';
   next.turn = nextColor;
-  next.turnNumber = state.turnNumber + 1;
-  if (state.turn === 'black') {
-    next.flags.fullMoveNumber = state.flags.fullMoveNumber + 1;
+  next.turnNumber = preparedState.turnNumber + 1;
+  if (preparedState.turn === 'black') {
+    next.flags.fullMoveNumber = preparedState.flags.fullMoveNumber + 1;
   }
 
   // ── Position history (threefold-repetition) ─────────────────────────────────
   const key = positionKey(next);
-  const posCount = (state.positionHistory[key] ?? 0) + 1;
-  next.positionHistory = { ...state.positionHistory, [key]: posCount };
+  const posCount = (preparedState.positionHistory[key] ?? 0) + 1;
+  next.positionHistory = { ...preparedState.positionHistory, [key]: posCount };
 
   // ── Game-end detection ──────────────────────────────────────────────────────
   let drawReason: DrawReason | undefined;
@@ -475,7 +497,7 @@ export function applyMove(state: GameState, move: Move): GameState {
   if (drawReason) next.drawReason = drawReason;
 
   // ── Modifier hooks: onTurnEnd (player who just moved) ──────────────────────
-  for (const inst of state.activeModifiers) {
+  for (const inst of preparedState.activeModifiers) {
     const def = modifierRegistry.get(inst.id);
     if (def?.onTurnEnd) {
       next = def.onTurnEnd(next);
@@ -485,15 +507,20 @@ export function applyMove(state: GameState, move: Move): GameState {
   // ── Modifier hooks: onTurnStart (next player) — only if game still active ──
   if (next.status === 'active') {
     next = beginTurn(next);
+  } else {
+    for (const inst of preparedState.activeModifiers) {
+      const def = modifierRegistry.get(inst.id);
+      def?.onMatchEnd?.(next);
+    }
   }
 
   // ── Build notation AFTER result state is known (check/# suffix) ─────────────
-  const notation = buildNotation(state, move, isCapture, next);
+  const notation = buildNotation(preparedState, preparedMove, isCapture, next);
 
   // Record move
   next.moveHistory = [
-    ...state.moveHistory,
-    { move, pieceMoved, pieceCaptured, notation },
+    ...preparedState.moveHistory,
+    { move: preparedMove, pieceMoved, pieceCaptured, notation },
   ];
 
   return next;
@@ -556,6 +583,11 @@ export function passTurn(state: GameState): GameState {
 
   if (next.status === 'active') {
     next = beginTurn(next);
+  } else {
+    for (const inst of state.activeModifiers) {
+      const def = modifierRegistry.get(inst.id);
+      def?.onMatchEnd?.(next);
+    }
   }
 
   return next;

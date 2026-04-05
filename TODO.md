@@ -9,7 +9,12 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - TDD target architecture is server-authoritative shared game-core
 - 5 modifier definitions are registered, while the modifier bible defines 40 cards
 - Vitest is now installed in `game/` and baseline engine tests are passing
+- Engine tests now cover opening movement, wrong-turn rejection, self-check rejection, castling safety/rights, en passant, promotion, checkmate, stalemate, threefold repetition, 50-move rule, and insufficient material
+- Engine rule-regression coverage now also includes rook-capture castling-rights loss, en-passant expiry, pinned-piece legal movement along the pin line, and SAN disambiguation/capture notation
+- Legality coverage now also includes queenside castling safety, double-check king-only responses, rank/file SAN disambiguation, and modifier edge safety for pacifist en passant, Gerald non-king targeting, and lava empty-tile placement
 - Modifier audit is in progress to make currently shipped cards visible and testable in play
+- Shipped modifier tests now cover lava safety, Gerald distraction timing, Winter freeze timing, Conscientious Objector capture refusal, and Berserker self-check-safe chaining
+- `gameLoop` now executes `onPreMoveApply` and `onMatchEnd`, and validation now checks legality against the effective post-hook move
 - In-game history now supports modifier event messages in addition to SAN move notation
 - In-game history now supports modifier events, local match chat, and simple bot reaction lines in one merged feed
 - Bot reaction dialogue is now split into a code-level module so Chick can expand without bloating the app shell
@@ -25,16 +30,16 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 ## Priority 1: Stabilize The Prototype Core
 
 - [x] Add a test runner for `game/` and create the first engine test suite
-- [ ] Cover TDD-critical chess rules with tests: move legality, check, checkmate, stalemate, castling, en passant, promotion
-- [ ] Add deterministic tests for draw logic: threefold repetition, 50-move rule, insufficient material
-- [ ] Audit engine state transitions in `game/src/engine/gameLoop.ts` against the TDD move-validation pipeline
-- [ ] Confirm current modifier hooks do not break core chess legality
+- [ ] Cover remaining TDD-critical chess rule edges with tests: broader move legality matrix, check-state handling, and rule-regression cases
+- [x] Add deterministic tests for draw logic: threefold repetition, 50-move rule, insufficient material
+- [x] Audit engine state transitions in `game/src/engine/gameLoop.ts` against the TDD move-validation pipeline
+- [x] Confirm current modifier hooks do not break core chess legality
 
 ## Priority 2: Formalize Modifier Architecture
 
-- [ ] Document the implemented hook model in code-facing terms
-- [ ] Add tests for the 5 currently registered modifiers
-- [ ] Verify the existing 5 modifiers match their modifier-bible intent
+- [x] Document the implemented hook model in code-facing terms
+- [x] Add tests for the 5 currently registered modifiers
+- [x] Verify the existing 5 modifiers match their modifier-bible intent
 - [ ] Separate shipped modifiers from design-only modifiers in the UI/data layer
 - [x] Add a draft filter to hide unavailable modifiers during modifier testing
 - [ ] Track implementation status per shipped modifier: engine logic, board visuals, interaction feedback, tests

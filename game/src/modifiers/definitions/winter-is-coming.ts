@@ -22,13 +22,15 @@ export const winterIsComingDef: ModifierDefinition = {
     if (!piece) return state;
     if (!isOpponentHomeZone(piece.color, move.to[1])) return state;
 
-    // Freeze the piece for 1 turn
+    // Use 2 ticks here because onTurnEnd runs immediately after the move.
+    // The first tick is consumed at the end of the entry turn, leaving
+    // one full blocked turn for the frozen piece's next activation.
     const next = cloneState(state);
     const p = next.pieces.get(move.to);
     if (p) {
       next.pieces.set(move.to, {
         ...p,
-        cooldowns: { ...p.cooldowns, [ID]: 1 },
+        cooldowns: { ...p.cooldowns, [ID]: 2 },
       });
     }
     return next;
@@ -43,9 +45,10 @@ export const winterIsComingDef: ModifierDefinition = {
   },
 
   onTurnEnd(state) {
-    // Decrement freeze cooldowns at end of turn
+    // Only decrement pieces belonging to the side whose turn just ended.
     const next = cloneState(state);
     for (const [sq, piece] of next.pieces) {
+      if (piece.color !== state.turn) continue;
       const cd = piece.cooldowns[ID] ?? 0;
       if (cd > 0) {
         const newCooldowns = { ...piece.cooldowns };
