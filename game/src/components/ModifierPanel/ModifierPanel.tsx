@@ -6,6 +6,10 @@ import {
   CATEGORY_NAMES,
   type ModifierCategory,
 } from '../../modifiers/data';
+import {
+  getModifierDisplayBucket,
+  getModifierOwnershipLabel,
+} from '../../modifiers/presentation';
 import { playClick } from '../../sound';
 import styles from './ModifierPanel.module.css';
 
@@ -61,7 +65,7 @@ function bucketModifiers(
 
   for (const mod of modifiers) {
     const meta = modifierMeta.get(mod.id);
-    const bucket = mod.sourceColor ?? mod.activeFor;
+    const bucket = getModifierDisplayBucket(mod);
     buckets[bucket].push({
       ...mod,
       category: meta?.category,
@@ -168,10 +172,10 @@ function ExpandedCard({
         <span className={styles.modId}>{mod.id}</span>
         <span className={styles.dot}>•</span>
         <span>{mod.categoryName ?? 'Unclassified'}</span>
-        {mod.sourceColor && (
+        {(mod.sourceColor || mod.activeFor === 'both') && (
           <>
             <span className={styles.dot}>•</span>
-            <span>{mod.sourceColor} owned</span>
+            <span>{getModifierOwnershipLabel(mod)}</span>
           </>
         )}
       </div>

@@ -204,14 +204,14 @@ Modifier-bible intent:
 
 Prototype status:
 
-- Implemented: one owned pawn becomes pacifist; normal movement remains legal; captures and en passant are blocked.
+- Implemented: one owned pawn becomes pacifist; normal movement remains legal; captures and en passant are blocked; pacifism persists through promotion because the promoted piece keeps the original piece flags.
 - Prototype deviation:
-  - Promotion persistence is not implemented yet.
+  - No special visual treatment yet for promoted pacifist pieces.
 
 Assessment:
 
 - Core rule restriction is implemented and safe.
-- Promotion carry-over is still missing.
+- Prototype behavior now matches the core modifier-bible rule.
 
 ### `MOD-E006` BOY. / The Berserker
 

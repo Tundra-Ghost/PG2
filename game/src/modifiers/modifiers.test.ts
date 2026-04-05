@@ -211,6 +211,41 @@ describe('shipped modifier behavior', () => {
     });
   });
 
+  it('conscientious objector stays pacifist after promotion', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'h1'),
+      { ...makePiece('pawn', 'white', 'a7'), isPacifist: true },
+      makePiece('king', 'black', 'h8'),
+      makePiece('rook', 'black', 'b8'),
+    ]);
+
+    state.activeModifiers = [
+      {
+        id: 'MOD-B007',
+        name: 'Conscientious Objector',
+        activeFor: 'both',
+        sourceColor: 'white',
+      },
+    ];
+
+    const promoted = chessEngine.applyMove(
+      state,
+      move('a7', 'a8', 'white', { promotion: 'queen' }),
+    );
+
+    expect(promoted.pieces.get('a8')).toMatchObject({
+      type: 'queen',
+      color: 'white',
+      isPacifist: true,
+    });
+
+    const afterBlackTurn = chessEngine.passTurn(promoted);
+    expect(chessEngine.validateMove(afterBlackTurn, move('a8', 'b8', 'white'))).toEqual({
+      valid: false,
+      reason: 'The Conscientious Objector refuses to capture.',
+    });
+  });
+
   it('gerald never targets kings when selecting a distracted piece', () => {
     let state = chessEngine.activateDraftModifiers(
       makeEmptyState([
