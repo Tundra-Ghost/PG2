@@ -12,6 +12,7 @@ import type {
 } from './types';
 import { getLegalMovesForPiece, isInCheck, isSquareAttacked } from './moveGenerator';
 import { modifierRegistry } from '../modifiers/registry';
+import { getDraftScope } from '../modifiers/scope';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -612,13 +613,14 @@ export function activateDraftModifiers(
   for (const pick of picks) {
     const def = modifierRegistry.get(pick.id);
     if (!def) continue;
+    const sourceColor = getDraftScope(def.id) === 'shared' ? null : pick.sourceColor;
     next.activeModifiers = [
       ...next.activeModifiers,
       {
         id: def.id,
         name: def.name,
         activeFor: def.activeFor,
-        sourceColor: pick.sourceColor,
+        sourceColor,
       },
     ];
     if (def.onActivate) {

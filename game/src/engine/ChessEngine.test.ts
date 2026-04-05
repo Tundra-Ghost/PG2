@@ -627,7 +627,7 @@ describe('ChessEngine TDD baseline', () => {
     });
   });
 
-  it('preserves draft ownership on activated modifiers', () => {
+  it('normalizes shared draft modifiers as shared while preserving owned modifier ownership', () => {
     const state = chessEngine.activateDraftModifiers(
       chessEngine.getInitialState(),
       [
@@ -638,7 +638,7 @@ describe('ChessEngine TDD baseline', () => {
 
     expect(state.activeModifiers).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: 'MOD-A002', sourceColor: 'white' }),
+        expect.objectContaining({ id: 'MOD-A002', sourceColor: null }),
         expect.objectContaining({ id: 'MOD-B002', sourceColor: 'black' }),
       ]),
     );
@@ -739,5 +739,20 @@ describe('ChessEngine TDD baseline', () => {
     const rotatedLavaSquares = Array.from(state.tiles.keys()).sort();
     expect(rotatedLavaSquares).not.toEqual(initialLavaSquares);
     expect(rotatedLavaSquares).toHaveLength(4);
+  });
+
+  it('stores floor is lava as a shared runtime modifier even when drafted by one side', () => {
+    const state = chessEngine.activateDraftModifiers(
+      chessEngine.getInitialState(),
+      [{ id: 'MOD-A002', sourceColor: 'white' }],
+    );
+
+    expect(state.activeModifiers).toContainEqual(
+      expect.objectContaining({
+        id: 'MOD-A002',
+        activeFor: 'both',
+        sourceColor: null,
+      }),
+    );
   });
 });
