@@ -3,6 +3,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  position: relative;
   background:
     linear-gradient(180deg, rgba(250, 234, 195, 0.94), rgba(225, 183, 120, 0.9));
   border: 2px solid rgba(84, 48, 18, 0.72);
@@ -12,6 +13,10 @@
     inset 0 0 0 2px rgba(255, 246, 224, 0.28);
   overflow: hidden;
   min-height: 300px;
+}
+
+.mobileDialogueOverlay {
+  display: none;
 }
 
 .header {
@@ -372,6 +377,14 @@
     flex: none;
   }
 
+  .mobileDialogueOverlay {
+    display: block;
+    position: absolute;
+    inset: 3.15rem 0 auto;
+    z-index: 4;
+    pointer-events: none;
+  }
+
   .header {
     padding: 0.65rem 0.8rem;
   }
@@ -400,6 +413,10 @@
     min-height: 240px;
     height: 240px;
     flex: none;
+  }
+
+  .mobileDialogueOverlay {
+    inset: 3rem 0 auto;
   }
 
   .bubble {

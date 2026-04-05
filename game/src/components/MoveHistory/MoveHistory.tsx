@@ -3,6 +3,7 @@ import type { GameEvent, GameState } from '../../engine/types';
 import { playClick } from '../../sound';
 import type { MatchChatEntry } from '../../App';
 import styles from './MoveHistory.module.css';
+import DialogueBox from '../DialogueBox/DialogueBox';
 
 interface MoveHistoryProps {
   state: GameState;
@@ -13,6 +14,8 @@ interface MoveHistoryProps {
   playerAvatarLabel?: string;
   playerAvatarSrc?: string | null;
   opponentAvatarIcon?: string | null;
+  pendingDialogue?: MatchChatEntry | null;
+  onDismissDialogue?: () => void;
 }
 
 interface FeedEntry {
@@ -97,6 +100,8 @@ export default function MoveHistory({
   playerAvatarLabel = 'P',
   playerAvatarSrc = null,
   opponentAvatarIcon = null,
+  pendingDialogue = null,
+  onDismissDialogue,
 }: MoveHistoryProps) {
   const { moveHistory, eventHistory, status, turn, flags } = state;
   const [draftChat, setDraftChat] = useState('');
@@ -183,6 +188,16 @@ export default function MoveHistory({
 
   return (
     <aside className={styles.panel}>
+      {pendingDialogue && onDismissDialogue ? (
+        <div className={styles.mobileDialogueOverlay}>
+          <DialogueBox
+            entry={pendingDialogue}
+            onDismiss={onDismissDialogue}
+            variant="panelOverlay"
+          />
+        </div>
+      ) : null}
+
       <header className={styles.header}>
         <span className={styles.headerTitle}>Chat / Moves</span>
         <span className={styles.moveCount}>

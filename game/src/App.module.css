@@ -238,7 +238,7 @@
   }
 
   .main {
-    padding: 0.75rem;
+    padding: 0.45rem;
   }
 
   .matchHud {
@@ -269,8 +269,8 @@
     width: fit-content;
     max-width: 100%;
     margin: 0 auto;
-    padding: 0.65rem;
-    border-radius: 22px;
+    padding: 0.35rem;
+    border-radius: 18px;
   }
 
   .logDock,
@@ -309,7 +309,7 @@
   }
 
   .main {
-    padding: 0.5rem;
+    padding: 0.2rem;
   }
 
   .bannerRow {
@@ -321,8 +321,8 @@
   }
 
   .boardShell {
-    padding: 0.5rem;
-    border-radius: 18px;
+    padding: 0.2rem;
+    border-radius: 14px;
   }
 
   .logDock,

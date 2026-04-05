@@ -5,6 +5,7 @@ import styles from './DialogueBox.module.css';
 interface DialogueBoxProps {
   entry: MatchChatEntry;
   onDismiss: () => void;
+  variant?: 'default' | 'panelOverlay';
 }
 
 function cap(s: string): string {
@@ -23,7 +24,11 @@ function AvatarIcon({ entry, className }: { entry: MatchChatEntry; className: st
   );
 }
 
-export default function DialogueBox({ entry, onDismiss }: DialogueBoxProps) {
+export default function DialogueBox({
+  entry,
+  onDismiss,
+  variant = 'default',
+}: DialogueBoxProps) {
   const [count, setCount] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [exiting, setExiting] = useState(false);
@@ -74,10 +79,16 @@ export default function DialogueBox({ entry, onDismiss }: DialogueBoxProps) {
   const exprClass = styles[`expression${cap(entry.dialogueExpression ?? 'neutral')}`] ?? '';
 
   return (
-    <div className={`${styles.root} ${exiting ? styles.rootExit : styles.rootEnter}`}>
+    <div
+      className={`${styles.root} ${styles[`root${cap(variant)}`] ?? ''} ${
+        exiting ? styles.rootExit : styles.rootEnter
+      }`}
+    >
       <button
         type="button"
-        className={`${styles.box} ${themeClass} ${isPlayer ? styles.boxPlayer : ''}`}
+        className={`${styles.box} ${styles[`box${cap(variant)}`] ?? ''} ${themeClass} ${
+          isPlayer ? styles.boxPlayer : ''
+        }`}
         onClick={() => {
           if (!done) {
             clearTimers();

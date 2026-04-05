@@ -7,6 +7,10 @@
   pointer-events: none;
 }
 
+.rootPanelOverlay {
+  align-items: flex-start;
+}
+
 .rootEnter {
   animation: dlgSlideIn 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
@@ -64,6 +68,10 @@
   /* Default theme (npc) */
   --dlg-accent: rgba(200, 151, 58, 0.95);
   --dlg-nameplate-bg: linear-gradient(90deg, rgba(92, 52, 16, 0.9), rgba(54, 30, 8, 0.9));
+}
+
+.boxPanelOverlay {
+  max-width: none;
 }
 
 /* Player dialogue: right-align the nameplate row */
@@ -231,6 +239,14 @@
     padding: 0.85rem 1rem 0.75rem;
   }
 
+  .boxPanelOverlay {
+    border-radius: 0 0 14px 14px;
+    border-top: none;
+    box-shadow:
+      0 10px 26px rgba(0, 0, 0, 0.34),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  }
+
   .text {
     font-size: 0.9rem;
   }
@@ -244,6 +260,10 @@
   .box {
     padding: 0.75rem 0.85rem 0.65rem;
     border-radius: 12px;
+  }
+
+  .boxPanelOverlay {
+    border-radius: 0 0 12px 12px;
   }
 
   .avatarEmoji {

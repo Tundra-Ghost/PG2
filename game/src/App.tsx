@@ -15,7 +15,6 @@ import MainMenu from './components/MainMenu/MainMenu';
 import ModifierPanel from './components/ModifierPanel/ModifierPanel';
 import MoveHistory from './components/MoveHistory/MoveHistory';
 import PlayerBanner from './components/PlayerBanner/PlayerBanner';
-import DialogueBox from './components/DialogueBox/DialogueBox';
 import ProfileSetup from './components/ProfileSetup/ProfileSetup';
 import SettingsScreen from './components/Settings/Settings';
 import {
@@ -629,6 +628,8 @@ export default function App() {
                 playerAvatarLabel={playerName.slice(0, 1).toUpperCase()}
                 playerAvatarSrc={playerProfile?.avatarDataUrl ?? null}
                 opponentAvatarIcon={selectedBotProfile?.icon ?? null}
+                pendingDialogue={pendingDialogue}
+                onDismissDialogue={handleDialogueDismiss}
               />
             </div>
 
@@ -667,10 +668,6 @@ export default function App() {
               infoMessage={infoMessage}
             />
           </div>
-
-          {pendingDialogue && (
-            <DialogueBox entry={pendingDialogue} onDismiss={handleDialogueDismiss} />
-          )}
         </section>
       </main>
 
