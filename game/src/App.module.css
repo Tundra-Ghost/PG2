@@ -144,12 +144,17 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  /* Cap height to board frame: board (min(80vmin,560px)) + coord labels (44px) + shell padding (~43px) */
+  max-height: min(calc(80vmin + 87px), 647px);
+  overflow: hidden;
 }
 
 .modifierDock {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  max-height: min(calc(80vmin + 87px), 647px);
+  overflow: hidden;
 }
 
 .modifierDockCollapsed {

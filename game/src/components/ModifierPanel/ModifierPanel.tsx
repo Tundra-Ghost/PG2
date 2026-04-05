@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import type { Color, GameState, ModifierInstance } from '../../engine/types';
 import {
   ALL_MODIFIERS,
@@ -45,6 +46,10 @@ const CATEGORY_LABELS: Record<ModifierCategory, string> = {
   E: 'Army',
 };
 
+function modKey(mod: ModifierDisplay): string {
+  return `${mod.id}-${mod.sourceColor ?? 'both'}-${mod.activeFor}`;
+}
+
 function bucketModifiers(
   modifiers: ModifierInstance[],
 ): Record<Color | 'both', ModifierDisplay[]> {
@@ -74,14 +79,116 @@ function bucketModifiers(
   return buckets;
 }
 
-function Section({
+function CategoryBadge({ mod }: { mod: ModifierDisplay }) {
+  if (!mod.category) return null;
+  return (
+    <div className={styles.categoryBadgeWrap}>
+      <span
+        className={styles.categoryTag}
+        style={{
+          color: mod.color,
+          borderColor: `${mod.color}66`,
+          background: `${mod.color}14`,
+        }}
+      >
+        {mod.category}
+      </span>
+      <span className={styles.categoryLabel}>{CATEGORY_LABELS[mod.category]}</span>
+    </div>
+  );
+}
+
+function CompactCard({
+  mod,
+  onExpand,
+}: {
+  mod: ModifierDisplay;
+  onExpand: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className={styles.modCard}
+      style={mod.color ? ({ '--accent-color': mod.color } as React.CSSProperties) : undefined}
+      onClick={() => {
+        playClick();
+        onExpand();
+      }}
+      title="Click to expand"
+    >
+      <div className={styles.modTopRow}>
+        <div className={styles.modTitleBlock}>
+          <span className={styles.modName}>{mod.name}</span>
+          {mod.typeLine && <span className={styles.typeLine}>{mod.typeLine}</span>}
+        </div>
+        <CategoryBadge mod={mod} />
+      </div>
+    </button>
+  );
+}
+
+function ExpandedCard({
+  mod,
+  onCollapse,
+}: {
+  mod: ModifierDisplay;
+  onCollapse: () => void;
+}) {
+  return (
+    <div
+      className={styles.expandedCard}
+      style={mod.color ? ({ '--accent-color': mod.color } as React.CSSProperties) : undefined}
+    >
+      <div className={styles.expandedTopBar}>
+        <div className={styles.expandedTitleBlock}>
+          <span className={styles.modName}>{mod.name}</span>
+          {mod.typeLine && <span className={styles.typeLine}>{mod.typeLine}</span>}
+        </div>
+        <div className={styles.expandedBadgeClose}>
+          <CategoryBadge mod={mod} />
+          <button
+            type="button"
+            className={styles.collapseCardBtn}
+            onClick={() => {
+              playClick();
+              onCollapse();
+            }}
+            aria-label="Collapse modifier"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+
+      {mod.description && (
+        <p className={styles.expandedDescription}>{mod.description}</p>
+      )}
+
+      <div className={styles.modMeta}>
+        <span className={styles.modId}>{mod.id}</span>
+        <span className={styles.dot}>•</span>
+        <span>{mod.categoryName ?? 'Unclassified'}</span>
+        {mod.sourceColor && (
+          <>
+            <span className={styles.dot}>•</span>
+            <span>{mod.sourceColor} owned</span>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SectionCompact({
   title,
   mods,
   emptyLabel,
+  onExpand,
 }: {
   title: string;
   mods: ModifierDisplay[];
   emptyLabel: string;
+  onExpand: (key: string) => void;
 }) {
   return (
     <section className={styles.section}>
@@ -95,58 +202,11 @@ function Section({
       ) : (
         <div className={styles.modList}>
           {mods.map(mod => (
-            <article
-              key={`${mod.activeFor}-${mod.sourceColor ?? 'shared'}-${mod.id}`}
-              className={styles.modCard}
-              style={
-                mod.color
-                  ? ({ '--accent-color': mod.color } as React.CSSProperties)
-                  : undefined
-              }
-              title={mod.description}
-            >
-              <div className={styles.modTopRow}>
-                <div className={styles.modTitleBlock}>
-                  <span className={styles.modName}>{mod.name}</span>
-                  {mod.typeLine && (
-                    <span className={styles.typeLine}>{mod.typeLine}</span>
-                  )}
-                </div>
-                {mod.category && (
-                  <div className={styles.categoryBadgeWrap}>
-                    <span
-                      className={styles.categoryTag}
-                      style={{
-                        color: mod.color,
-                        borderColor: `${mod.color}66`,
-                        background: `${mod.color}14`,
-                      }}
-                    >
-                      {mod.category}
-                    </span>
-                    <span className={styles.categoryLabel}>
-                      {CATEGORY_LABELS[mod.category]}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {mod.description && (
-                <p className={styles.description}>{mod.description}</p>
-              )}
-
-              <div className={styles.modMeta}>
-                <span className={styles.modId}>{mod.id}</span>
-                <span className={styles.dot}>•</span>
-                <span>{mod.categoryName ?? 'Unclassified'}</span>
-                {mod.sourceColor && (
-                  <>
-                    <span className={styles.dot}>•</span>
-                    <span>{mod.sourceColor} owned</span>
-                  </>
-                )}
-              </div>
-            </article>
+            <CompactCard
+              key={modKey(mod)}
+              mod={mod}
+              onExpand={() => onExpand(modKey(mod))}
+            />
           ))}
         </div>
       )}
@@ -161,11 +221,27 @@ export default function ModifierPanel({
   playerLabel = 'Your Draft',
   opponentLabel = 'Opponent Draft',
 }: ModifierPanelProps) {
+  const [expandedKey, setExpandedKey] = useState<string | null>(null);
+
+  // Reset accordion when panel collapses
+  useEffect(() => {
+    if (collapsed) setExpandedKey(null);
+  }, [collapsed]);
+
   const buckets = bucketModifiers(state.activeModifiers);
   const total = state.activeModifiers.length;
   const ownedCount = buckets.white.length;
   const sharedCount = buckets.both.length;
   const opponentCount = buckets.black.length;
+
+  const allMods = [...buckets.white, ...buckets.both, ...buckets.black];
+  const expandedMod = expandedKey ? (allMods.find(m => modKey(m) === expandedKey) ?? null) : null;
+
+  const sections = [
+    { title: playerLabel, mods: buckets.white, emptyLabel: 'No player-owned modifiers.' },
+    { title: 'Shared Effects', mods: buckets.both, emptyLabel: 'No shared modifiers.' },
+    { title: opponentLabel, mods: buckets.black, emptyLabel: 'No opponent-owned modifiers.' },
+  ];
 
   return (
     <aside
@@ -208,23 +284,21 @@ export default function ModifierPanel({
             </div>
           )}
         </div>
+      ) : expandedMod ? (
+        <div className={`${styles.body} ${styles.bodyExpanded}`}>
+          <ExpandedCard mod={expandedMod} onCollapse={() => setExpandedKey(null)} />
+        </div>
       ) : (
         <div className={styles.body}>
-          <Section
-            title={playerLabel}
-            mods={buckets.white}
-            emptyLabel="No player-owned modifiers."
-          />
-          <Section
-            title="Shared Effects"
-            mods={buckets.both}
-            emptyLabel="No shared modifiers."
-          />
-          <Section
-            title={opponentLabel}
-            mods={buckets.black}
-            emptyLabel="No opponent-owned modifiers."
-          />
+          {sections.map(section => (
+            <SectionCompact
+              key={section.title}
+              title={section.title}
+              mods={section.mods}
+              emptyLabel={section.emptyLabel}
+              onExpand={setExpandedKey}
+            />
+          ))}
         </div>
       )}
     </aside>
