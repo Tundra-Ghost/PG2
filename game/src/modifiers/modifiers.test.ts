@@ -341,4 +341,31 @@ describe('shipped modifier behavior', () => {
     expect(chainEvent?.to).not.toBe('h3');
     expect(chessEngine.isInCheck(next, 'white')).toBe(false);
   });
+
+  it('passes the berserker title to a surviving allied piece when the current berserker is captured', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      { ...makePiece('rook', 'white', 'a1'), isBerserker: true },
+      makePiece('bishop', 'white', 'c1'),
+      makePiece('knight', 'white', 'g1'),
+      makePiece('king', 'black', 'e8'),
+      makePiece('queen', 'black', 'a5'),
+    ]);
+
+    state.turn = 'black';
+    state.activeModifiers = [
+      { id: 'MOD-E006', name: 'Berserker', activeFor: 'both', sourceColor: 'white' },
+    ];
+    state.prngState = 0;
+
+    const next = chessEngine.applyMove(state, move('a5', 'a1', 'black'));
+    const whiteBerserkers = Array.from(next.pieces.values()).filter(
+      piece => piece.color === 'white' && piece.isBerserker,
+    );
+
+    expect(next.pieces.has('a1')).toBe(true);
+    expect(whiteBerserkers).toHaveLength(1);
+    expect(whiteBerserkers[0].type).not.toBe('king');
+    expect(['c1', 'g1']).toContain(whiteBerserkers[0].square);
+  });
 });
