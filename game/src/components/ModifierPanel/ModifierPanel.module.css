@@ -356,9 +356,37 @@
 }
 
 @media (max-width: 720px) {
+  .panel,
+  .panelCollapsed {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .panelCollapsed {
+    min-height: 72px;
+  }
+
   .body {
     gap: 0.5rem;
     padding: 0.45rem 0.4rem 0.5rem;
+  }
+
+  .collapsedBody {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0.85rem;
+  }
+
+  .collapsedLabel {
+    writing-mode: initial;
+    transform: none;
+    font-size: 0.54rem;
+  }
+
+  .collapsedBreakdown {
+    flex-direction: row;
+    gap: 0.35rem;
   }
 
   .section {

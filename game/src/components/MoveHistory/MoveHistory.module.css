@@ -366,6 +366,12 @@
 }
 
 @media (max-width: 720px) {
+  .panel {
+    min-height: 280px;
+    height: 280px;
+    flex: none;
+  }
+
   .header {
     padding: 0.65rem 0.8rem;
   }
@@ -391,8 +397,8 @@
 
 @media (max-width: 480px) {
   .panel {
-    min-height: 260px;
-    height: min(56vh, 400px);
+    min-height: 240px;
+    height: 240px;
     flex: none;
   }
 

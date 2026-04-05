@@ -136,8 +136,8 @@
 @media (max-width: 720px) {
   .card,
   .cardRight {
-    grid-template-columns: 72px minmax(0, 1fr);
-    min-height: 96px;
+    grid-template-columns: 82px minmax(0, 1fr);
+    min-height: 104px;
     gap: 0.65rem;
   }
 
@@ -159,15 +159,20 @@
   }
 
   .role {
-    font-size: 0.92rem;
+    font-size: 0.96rem;
   }
 
   .name {
-    font-size: 1.18rem;
+    font-size: 1.42rem;
+  }
+
+  .metaLine {
+    font-size: 0.54rem;
+    letter-spacing: 0.1em;
   }
 
   .subtitle {
-    font-size: 0.62rem;
+    font-size: 0.66rem;
     white-space: normal;
   }
 }
@@ -175,11 +180,31 @@
 @media (max-width: 480px) {
   .card,
   .cardRight {
-    padding: 0.55rem;
+    grid-template-columns: 74px minmax(0, 1fr);
+    min-height: 96px;
+    padding: 0.6rem;
     border-radius: 14px;
   }
 
   .portraitFrame {
     border-radius: 12px;
+  }
+
+  .topRow {
+    gap: 0.45rem;
+  }
+
+  .badge {
+    font-size: 0.56rem;
+    letter-spacing: 0.1em;
+    padding: 0.18rem 0.38rem;
+  }
+
+  .name {
+    font-size: 1.24rem;
+  }
+
+  .subtitle {
+    font-size: 0.62rem;
   }
 }

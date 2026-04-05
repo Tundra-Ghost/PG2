@@ -24,7 +24,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Bot reaction dialogue is now split into a code-level module so Chick can expand without bloating the app shell
 - Opponent speaker metadata and reaction personas are now separated from UI components, which keeps future bots and NPCs viable
 - Prototype app and landing page now have an explicit mobile-responsive baseline
-- In-match mobile layout now preserves the desktop-style three-row HUD structure: top banners, center board flanked by history/modifiers, and bottom dialogue/status space
+- In-match mobile layout now favors readable full-width sections over compressed desktop mimicry while preserving the GDD HUD hierarchy: player banners, board focus, support panels, then status/dialogue
 - In-match UI now separates the primary play surface from the modifier rail and supports collapsible modifier browsing
 - New Run now follows bot select -> alternating draft -> match start, with owned vs shared modifier rules enforced during draft
 - Curse modifiers now respect draft ownership instead of always behaving as shared effects
