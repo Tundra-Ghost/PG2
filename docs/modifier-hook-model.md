@@ -221,10 +221,9 @@ Modifier-bible intent:
 
 Prototype status:
 
-- Implemented: one owned piece becomes berserker; capture triggers one additional best-value legal chain capture; state/event logging exists; promotion preserves berserker flag.
+- Implemented: one owned piece becomes berserker; capture triggers one additional best-value legal chain capture; the title passes to a random surviving allied non-king piece if the current berserker is captured; state/event logging exists; promotion preserves berserker flag.
 - Prototype deviation:
   - Current runtime executes one chained follow-up per trigger, not indefinite recursive chaining.
-  - "Pass title on capture" is not implemented.
   - Lava interaction is indirect rather than explicitly modeled.
 
 Safety note:

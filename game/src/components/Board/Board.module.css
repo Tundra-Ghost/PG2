@@ -66,11 +66,13 @@
 @media (max-width: 720px) {
   .frame {
     border-width: 2px;
+    width: 100%;
   }
 
   .board {
-    width: min(calc(100vw - 1.5rem), 560px);
-    height: min(calc(100vw - 1.5rem), 560px);
+    width: min(100%, 560px);
+    height: auto;
+    aspect-ratio: 1;
   }
 
   .coordCol {
@@ -94,8 +96,9 @@
 
 @media (max-width: 480px) {
   .board {
-    width: min(calc(100vw - 1rem), 560px);
-    height: min(calc(100vw - 1rem), 560px);
+    width: min(100%, 560px);
+    height: auto;
+    aspect-ratio: 1;
   }
 
   .coordCol {

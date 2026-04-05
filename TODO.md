@@ -15,6 +15,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Modifier presentation now classifies shared-vs-owned effects using modifier scope instead of raw draft source, so shared environmental cards like Floor Is Lava appear under Shared Effects in-match
 - Gerald clear-and-forfeit interaction is now isolated in board interaction logic and covered by tests
 - Winter now uses true frozen rows for prototype rules, freezes pieces on zone entry from outside, and blocks castling through frozen path tiles
+- Berserker now reassigns its title to a surviving allied piece when the current berserker is captured
 - Modifier audit is in progress to make currently shipped cards visible and testable in play
 - Shipped modifier tests now cover lava safety, Gerald distraction timing, Winter freeze timing, Conscientious Objector capture refusal, and Berserker self-check-safe chaining
 - `gameLoop` now executes `onPreMoveApply` and `onMatchEnd`, and validation now checks legality against the effective post-hook move
@@ -23,6 +24,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Bot reaction dialogue is now split into a code-level module so Chick can expand without bloating the app shell
 - Opponent speaker metadata and reaction personas are now separated from UI components, which keeps future bots and NPCs viable
 - Prototype app and landing page now have an explicit mobile-responsive baseline
+- In-match mobile layout now preserves the desktop-style three-row HUD structure: top banners, center board flanked by history/modifiers, and bottom dialogue/status space
 - In-match UI now separates the primary play surface from the modifier rail and supports collapsible modifier browsing
 - New Run now follows bot select -> alternating draft -> match start, with owned vs shared modifier rules enforced during draft
 - Curse modifiers now respect draft ownership instead of always behaving as shared effects

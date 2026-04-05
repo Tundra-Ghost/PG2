@@ -27,6 +27,30 @@ function findBerserker(state: GameState): Piece | undefined {
   return undefined;
 }
 
+function assignReplacementBerserker(state: GameState, color: Piece['color']): GameState {
+  const candidates = Array.from(state.pieces.values()).filter(
+    piece => piece.color === color && piece.type !== 'king',
+  );
+  if (candidates.length === 0) return state;
+
+  const next = cloneState(state);
+  const [idx, nextPrng] = prngPickIndex(state.prngState, candidates.length);
+  next.prngState = nextPrng;
+
+  const successor = candidates[idx];
+  const piece = next.pieces.get(successor.square);
+  if (!piece) return next;
+
+  next.pieces.set(successor.square, { ...piece, isBerserker: true });
+  return appendGameEvent(next, {
+    ply: state.moveHistory.length + 1,
+    type: 'modifier',
+    modifierId: ID,
+    title: 'Berserker',
+    message: `${color} berserker title passes to ${successor.type} on ${successor.square}.`,
+  });
+}
+
 function getEventCounter(value: unknown): number {
   if (
     typeof value === 'object' &&
@@ -97,18 +121,24 @@ export const berserkerDef: ModifierDefinition = {
     return next;
   },
 
-  onCapture(state, move, _captured) {
+  onCapture(state, move, captured) {
+    let nextState = state;
+
+    if (captured.isBerserker) {
+      nextState = assignReplacementBerserker(nextState, captured.color);
+    }
+
     // After the berserker makes a capture, auto-execute one chain capture
     // if a target is available (uses applyMoveInternal to avoid recursion).
-    const berserkerNow = state.pieces.get(move.to);
-    if (!berserkerNow?.isBerserker) return state;
+    const berserkerNow = nextState.pieces.get(move.to);
+    if (!berserkerNow?.isBerserker) return nextState;
 
-    const chainTo = getBestCaptureTarget(state, move.to);
-    if (!chainTo) return state;
+    const chainTo = getBestCaptureTarget(nextState, move.to);
+    if (!chainTo) return nextState;
 
-    const chainedTarget = state.pieces.get(chainTo);
-    const chainMove = buildMove(state, move.to, chainTo);
-    const next = applyMoveInternal(state, chainMove);
+    const chainedTarget = nextState.pieces.get(chainTo);
+    const chainMove = buildMove(nextState, move.to, chainTo);
+    const next = applyMoveInternal(nextState, chainMove);
     const previousCounter = getEventCounter(next.modifierState[ID]);
     const event: BerserkerChainEvent = {
       counter: previousCounter + 1,
@@ -118,7 +148,7 @@ export const berserkerDef: ModifierDefinition = {
     };
     next.modifierState[ID] = event;
     return appendGameEvent(next, {
-      ply: state.moveHistory.length + 1,
+      ply: nextState.moveHistory.length + 1,
       type: 'modifier',
       modifierId: ID,
       title: 'Berserker',
