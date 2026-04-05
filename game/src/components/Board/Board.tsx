@@ -2,7 +2,9 @@ import { useCallback, useState } from 'react';
 import type { GameState, PieceType, Square } from '../../engine/types';
 import { chessEngine } from '../../engine/ChessEngine';
 import { buildMove } from '../../engine/gameLoop';
+import { isFrozenZoneSquare } from '../../modifiers/definitions/winter';
 import { playCapture, playCastle, playMove } from '../../sound';
+import { shouldForfeitTurnForGerald } from './interaction';
 import SquareComponent from '../Square/Square';
 import PromotionModal from '../PromotionModal/PromotionModal';
 import styles from './Board.module.css';
@@ -24,11 +26,6 @@ interface BoardProps {
 
 function isLightSquare(file: number, rank: number): boolean {
   return (file + rank) % 2 !== 0;
-}
-
-function isFrozenZone(square: Square): boolean {
-  const rank = square[1];
-  return rank === '1' || rank === '2' || rank === '7' || rank === '8';
 }
 
 interface PendingPromotion {
@@ -112,7 +109,7 @@ export default function Board({
       // Nothing selected yet
       if (!selected) {
         if (clickedPiece && clickedPiece.color === state.turn) {
-          if ((clickedPiece.cooldowns[GERALD_ID] ?? 0) > 0) {
+          if (shouldForfeitTurnForGerald(clickedPiece, state.turn)) {
             onStateChange(chessEngine.passTurn(state));
             onInfo?.('Gerald chased off. Turn forfeited.');
             setSelected(null);
@@ -133,6 +130,13 @@ export default function Board({
 
       // Re-select own piece
       if (clickedPiece && clickedPiece.color === state.turn && square !== selected) {
+        if (shouldForfeitTurnForGerald(clickedPiece, state.turn)) {
+          onStateChange(chessEngine.passTurn(state));
+          onInfo?.('Gerald chased off. Turn forfeited.');
+          setSelected(null);
+          setLegalMoves([]);
+          return;
+        }
         if (clickedPiece.isPacifist) {
           onInfo?.('This piece refuses to capture.');
         }
@@ -225,7 +229,7 @@ export default function Board({
                 const piece  = state.pieces.get(square);
                 const tileEffects =
                   state.tiles.get(square)?.effects.map(effect => effect.type) ?? [];
-                const frozenZone = winterActive && isFrozenZone(square);
+                const frozenZone = winterActive && isFrozenZoneSquare(square);
                 return (
                   <SquareComponent
                     key={square}

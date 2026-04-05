@@ -161,16 +161,15 @@ Modifier-bible intent:
 
 Prototype status:
 
-- Implemented: entering the opponent home zone applies a freeze cooldown; frozen pieces are blocked for a full future turn.
+- Implemented: ranks `1-3` and `6-8` are treated as frozen zones; entering a frozen zone from outside applies a freeze cooldown; frozen pieces are blocked for a full future turn; castling is blocked because castle-path tiles on frozen home rows are iced over.
 - Prototype deviation:
-  - Current zone logic is "opponent home zone" rather than permanent frozen board rows.
-  - No explicit frozen tile model or castle-path freeze check.
+  - Uses zone classification and validation rules rather than persistent per-tile frozen state objects.
   - No special-case promotion interaction beyond normal movement blocking.
 
 Assessment:
 
-- Core freeze behavior exists.
-- The board-zone model is simplified relative to the modifier bible.
+- Core freeze behavior now matches the modifier-bible intent much more closely.
+- Remaining gap is mostly presentation/state-model fidelity, not basic rules.
 
 ### `MOD-B002` Distracted Piece / Gerald
 
@@ -183,9 +182,8 @@ Modifier-bible intent:
 
 Prototype status:
 
-- Implemented: start-of-turn targeting, owned draft scoping, multi-turn persistence, move blocking, cooldown decay, non-king targeting.
+- Implemented: start-of-turn targeting, owned draft scoping, multi-turn persistence, move blocking, cooldown decay, non-king targeting, and board-level "click Gerald off and forfeit the turn" interaction.
 - Prototype deviation:
-  - No "click Gerald off and forfeit move" interaction yet.
   - No explicit leaderboard or UI interaction loop beyond cooldown behavior.
   - No special exclusion for future pigeon piece types yet.
 
@@ -204,14 +202,14 @@ Modifier-bible intent:
 
 Prototype status:
 
-- Implemented: one owned pawn becomes pacifist; normal movement remains legal; captures and en passant are blocked.
+- Implemented: one owned pawn becomes pacifist; normal movement remains legal; captures and en passant are blocked; pacifism persists through promotion because the promoted piece keeps the original piece flags.
 - Prototype deviation:
-  - Promotion persistence is not implemented yet.
+  - No special visual treatment yet for promoted pacifist pieces.
 
 Assessment:
 
 - Core rule restriction is implemented and safe.
-- Promotion carry-over is still missing.
+- Prototype behavior now matches the core modifier-bible rule.
 
 ### `MOD-E006` BOY. / The Berserker
 

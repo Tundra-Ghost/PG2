@@ -44,4 +44,5 @@ export const conscientiousObjectorDef: ModifierDefinition = {
     }
     return { blocked: false };
   },
+
 };

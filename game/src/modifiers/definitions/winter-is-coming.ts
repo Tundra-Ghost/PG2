@@ -1,12 +1,8 @@
 import type { ModifierDefinition } from '../types';
 import { cloneState } from '../../engine/gameLoop';
+import { isFrozenZoneSquare } from './winter';
 
 const ID = 'MOD-A004';
-
-/** Returns true if `rank` is in the opponent's home zone for the given color. */
-function isOpponentHomeZone(color: 'white' | 'black', rank: string): boolean {
-  return color === 'white' ? rank === '7' || rank === '8' : rank === '1' || rank === '2';
-}
 
 export const winterIsComingDef: ModifierDefinition = {
   id: ID,
@@ -20,7 +16,8 @@ export const winterIsComingDef: ModifierDefinition = {
   onPostMove(state, move) {
     const piece = state.pieces.get(move.to);
     if (!piece) return state;
-    if (!isOpponentHomeZone(piece.color, move.to[1])) return state;
+    if (!isFrozenZoneSquare(move.to)) return state;
+    if (isFrozenZoneSquare(move.from)) return state;
 
     // Use 2 ticks here because onTurnEnd runs immediately after the move.
     // The first tick is consumed at the end of the entry turn, leaving
@@ -41,6 +38,21 @@ export const winterIsComingDef: ModifierDefinition = {
     if (piece && (piece.cooldowns[ID] ?? 0) > 0) {
       return { blocked: true, reason: 'That piece is frozen by Winter is Coming.' };
     }
+
+    if (move.isCastle) {
+      const homeRank = move.playerColor === 'white' ? '1' : '8';
+      const pathSquares = move.isCastle === 'kingside'
+        ? ([`f${homeRank}`, `g${homeRank}`] as const)
+        : ([`d${homeRank}`, `c${homeRank}`] as const);
+
+      if (pathSquares.some(square => isFrozenZoneSquare(square))) {
+        return {
+          blocked: true,
+          reason: 'Winter locks the castling path in ice.',
+        };
+      }
+    }
+
     return { blocked: false };
   },
 
