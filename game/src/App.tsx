@@ -1,14 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { BerserkerChainEvent, GameState } from './engine/types';
+import type { GameState } from './engine/types';
 import { chessEngine } from './engine/ChessEngine';
 import { getChickBotMove } from './engine/bot';
 import { getBotReaction, getBotSpeaker } from './botChat';
-import { getBotProfile, type BotId } from './opponents';
+import type { BotId } from './opponents';
 import { unlockBgm, playClick, playGameBgm, playMenuBgm } from './sound';
 import type { AppSettings } from './settings';
 import { applySettings, loadSettings } from './settings';
+import {
+  getDerivedFeedOrder,
+  getModifierEventBannerMessage,
+  type MatchChatEntry,
+} from './matchFeed';
+import { buildBotProfile } from './matchProfiles';
 import Board from './components/Board/Board';
 import BotSelect from './components/BotSelect/BotSelect';
+import CollectionVault from './components/CollectionVault/CollectionVault';
 import DraftScreen from './components/DraftScreen/DraftScreen';
 import GameStatus from './components/GameStatus/GameStatus';
 import MainMenu from './components/MainMenu/MainMenu';
@@ -31,7 +38,15 @@ import styles from './App.module.css';
 
 import './modifiers/index';
 
-type Screen = 'menu' | 'botselect' | 'draft' | 'game' | 'settings' | 'profile' | 'roost';
+type Screen =
+  | 'menu'
+  | 'botselect'
+  | 'draft'
+  | 'game'
+  | 'settings'
+  | 'profile'
+  | 'roost'
+  | 'collection';
 type BotSelectMode = 'run' | 'quick' | null;
 
 interface ProfileViewerState {
@@ -39,84 +54,6 @@ interface ProfileViewerState {
   editable: boolean;
   heading: string;
   subtitle: string;
-}
-
-export interface MatchChatEntry {
-  id: string;
-  order: number;
-  ply: number;
-  author: string;
-  text: string;
-  source: 'player' | 'bot';
-  avatarLabel: string;
-  avatarIcon?: string | null;
-  portraitSrc?: string | null;
-  portraitSlotLabel?: string;
-  dialogueTheme?: 'player' | 'chick' | 'measured' | 'grandmaster' | 'npc';
-  dialogueExpression?: 'neutral' | 'shocked' | 'smug' | 'frustrated';
-  shownInDialogue?: boolean;
-}
-
-const BERSERKER_ID = 'MOD-E006';
-
-function getDerivedFeedOrder(state: GameState, chatEntries: MatchChatEntry[]): number {
-  const moveOrder = state.moveHistory.length * 100;
-  const eventOrder = state.eventHistory.reduce(
-    (max, event) => Math.max(max, event.ply * 100 + 50),
-    0,
-  );
-  const chatOrder = chatEntries.reduce((max, entry) => Math.max(max, entry.order), 0);
-  return Math.max(moveOrder, eventOrder, chatOrder);
-}
-
-function getBerserkerEvent(state: GameState): BerserkerChainEvent | null {
-  const value = state.modifierState[BERSERKER_ID];
-  if (
-    typeof value === 'object' &&
-    value !== null &&
-    'counter' in value &&
-    'from' in value &&
-    'to' in value
-  ) {
-    return value as BerserkerChainEvent;
-  }
-  return null;
-}
-
-function buildBotProfile(botId: BotId | null): LocalProfile | null {
-  const bot = getBotProfile(botId);
-  if (!bot) return null;
-
-  const base = createProfile({
-    displayName: bot.name,
-    motto: bot.description,
-    region: 'Local Bot Pool',
-    country: 'Prototype',
-    avatarDataUrl: null,
-    selectedTitleId: bot.id === 'chick' ? 'title_bread_bandit' : 'title_rookery_scout',
-  });
-
-  return {
-    ...base,
-    elo: 1200,
-    createdAt: '2026-01-01T00:00:00.000Z',
-    updatedAt: new Date().toISOString(),
-    stats: {
-      modes: {
-        story: { gamesPlayed: 0, wins: 0, losses: 0, draws: 0 },
-        quick: {
-          gamesPlayed: bot.difficulty * 6,
-          wins: bot.difficulty * 2,
-          losses: bot.difficulty * 3,
-          draws: bot.difficulty,
-        },
-        online: { gamesPlayed: 0, wins: 0, losses: 0, draws: 0 },
-      },
-    },
-    unlockedAchievements: {
-      ach_first_flight: '2026-01-02T00:00:00.000Z',
-    },
-  };
 }
 
 export default function App() {
@@ -143,7 +80,7 @@ export default function App() {
   useEffect(() => {
     pendingDialogueRef.current = pendingDialogue;
   }, [pendingDialogue]);
-  const seenBerserkerEvent = useRef(0);
+  const lastAnnouncedEventId = useRef<string | null>(null);
   const recordedStartIds = useRef<Set<string>>(new Set());
   const recordedCompletionIds = useRef<Set<string>>(new Set());
   const lastReactedMoveId = useRef<string | null>(null);
@@ -244,18 +181,16 @@ export default function App() {
   }, [gameState, screen, selectedBot, vsBot]);
 
   useEffect(() => {
-    if (gameState.moveHistory.length === 0 && gameState.turnNumber === 1) {
-      seenBerserkerEvent.current = 0;
+    const latestEvent = gameState.eventHistory[gameState.eventHistory.length - 1];
+    if (!latestEvent) {
+      lastAnnouncedEventId.current = null;
       return;
     }
+    if (latestEvent.id === lastAnnouncedEventId.current) return;
 
-    const event = getBerserkerEvent(gameState);
-    if (!event || event.counter <= seenBerserkerEvent.current) return;
-
-    const pieceLabel = event.capturedType ? ` ${event.capturedType}` : '';
-    setInfoMessage(`BOY chained into${pieceLabel} on ${event.to}.`);
-    seenBerserkerEvent.current = event.counter;
-  }, [gameState]);
+    lastAnnouncedEventId.current = latestEvent.id;
+    setInfoMessage(getModifierEventBannerMessage(latestEvent));
+  }, [gameState.eventHistory]);
 
   useEffect(() => {
     if (screen !== 'game') return;
@@ -338,6 +273,11 @@ export default function App() {
   function goToRoost() {
     playClick();
     setScreen('roost');
+  }
+
+  function goToCollection() {
+    playClick();
+    setScreen('collection');
   }
 
   function handleMenuPlay(mode: 'run' | 'quick') {
@@ -481,6 +421,7 @@ export default function App() {
           onSettings={goToSettings}
           onProfile={goToProfile}
           onRoost={goToRoost}
+          onCollection={goToCollection}
           profile={profile}
         />
         {settingsOverlay}
@@ -525,6 +466,15 @@ export default function App() {
           subtitle="Local records, titles, achievements, and offline history for the current serverless prototype. Online sections remain placeholder scaffolding."
           onBack={() => setScreen('menu')}
         />
+        {settingsOverlay}
+      </div>
+    );
+  }
+
+  if (baseScreen === 'collection') {
+    return (
+      <div onClick={handleUnlock}>
+        <CollectionVault onBack={() => setScreen('menu')} />
         {settingsOverlay}
       </div>
     );

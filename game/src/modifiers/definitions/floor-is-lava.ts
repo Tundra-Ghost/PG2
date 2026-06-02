@@ -2,8 +2,9 @@ import type { ModifierDefinition } from '../types';
 import type { GameState, Square } from '../../engine/types';
 import { prngPickIndex } from '../../engine/prng';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
+import { MODIFIER_IDS } from '../ids';
 
-const ID = 'MOD-A002';
+const ID = MODIFIER_IDS.floorIsLava;
 const LAVA_COUNT = 4;
 const ROTATION_INTERVAL = 3;
 

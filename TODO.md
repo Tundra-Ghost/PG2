@@ -26,6 +26,10 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Prototype app and landing page now have an explicit mobile-responsive baseline
 - In-match mobile layout now favors readable full-width sections over compressed desktop mimicry while preserving the GDD HUD hierarchy: player banners, board focus, support panels, then status/dialogue
 - In-match UI now separates the primary play surface from the modifier rail and supports collapsible modifier browsing
+- Main menu now presents a stacked card poster layout with future image slots instead of visible placeholder art labels
+- Collection now opens a read-only Modifier Vault sourced from the 40-card modifier bible, with playable/design status filters
+- Modifier events now surface as short in-match status banners in addition to the chat/move feed
+- App-level match feed and bot dossier helpers are split out of the main React shell for easier future polish work
 - New Run now follows bot select -> alternating draft -> match start, with owned vs shared modifier rules enforced during draft
 - Curse modifiers now respect draft ownership instead of always behaving as shared effects
 - Local player profile state and basic progression stats are now stored client-side for the serverless prototype
@@ -70,14 +74,14 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Rework Story draft into alternating player-first picks with early finish support
 - [x] Classify prototype modifiers by draft scope so owned effects can be drafted by both sides
 - [ ] Build `VS Bots` as a complete menu-to-match flow
-- [ ] Expose a read-only Modifier Vault sourced from the modifier bible/data set
+- [x] Expose a read-only Modifier Vault sourced from the modifier bible/data set
 - [ ] Track run state if Story Mode is meant to be more than a one-match draft
 
 ## Priority 4A: UI, VFX, And SFX Readability
 
 - [ ] GDD UI: replace temporary letter badges with authored icon badges for Gerald, lava, freeze, pacifist, and berserker states
 - [ ] GDD UI: animate modifier triggers on board and pieces: lava burn, Gerald fly-off, freeze thaw, berserker chain, pacifist refusal
-- [ ] GDD UI: add short event banners for autonomous or curse-driven actions so modifier outcomes never feel silent
+- [x] GDD UI: add short event banners for autonomous or curse-driven actions so modifier outcomes never feel silent
 - [x] GDD UI: route modifier-trigger messages into the in-game history feed
 - [x] GDD UI: separate match log from modifier browsing so the board surface reads more clearly
 - [x] GDD UI: merge local chat and move history into one in-match feed with typewriter-style bot/player delivery

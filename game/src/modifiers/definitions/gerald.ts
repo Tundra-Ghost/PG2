@@ -1,8 +1,9 @@
 import type { ModifierDefinition } from '../types';
 import { prngPickIndex } from '../../engine/prng';
 import { cloneState } from '../../engine/gameLoop';
+import { MODIFIER_IDS } from '../ids';
 
-const ID = 'MOD-B002';
+const ID = MODIFIER_IDS.gerald;
 const DISTRACTION_DURATION = 2;
 
 export const geraldDef: ModifierDefinition = {

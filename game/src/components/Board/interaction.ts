@@ -1,6 +1,7 @@
 import type { Color, Piece } from '../../engine/types';
+import { MODIFIER_IDS } from '../../modifiers/ids';
 
-const GERALD_ID = 'MOD-B002';
+const GERALD_ID = MODIFIER_IDS.gerald;
 
 export function shouldForfeitTurnForGerald(
   piece: Piece | undefined,

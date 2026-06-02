@@ -1,4 +1,5 @@
 import type { Color, Piece as ChessPiece, PieceType } from '../../engine/types';
+import { MODIFIER_IDS } from '../../modifiers/ids';
 import styles from './Piece.module.css';
 
 interface PieceProps {
@@ -24,8 +25,8 @@ const SYMBOLS: Record<Color, Partial<Record<PieceType, string>>> = {
   },
 };
 
-const GERALD_ID = 'MOD-B002';
-const WINTER_ID = 'MOD-A004';
+const GERALD_ID = MODIFIER_IDS.gerald;
+const WINTER_ID = MODIFIER_IDS.winterIsComing;
 
 export default function Piece({ piece }: PieceProps) {
   const { type, color, cooldowns, isPacifist, isBerserker } = piece;

@@ -1,11 +1,12 @@
 import type { ModifierID } from '../engine/types';
+import { MODIFIER_IDS } from './ids';
 import { modifierRegistry } from './registry';
 
 export type DraftScope = 'shared' | 'owned';
 
 const SHARED_MODIFIER_IDS = new Set<ModifierID>([
-  'MOD-A002',
-  'MOD-A004',
+  MODIFIER_IDS.floorIsLava,
+  MODIFIER_IDS.winterIsComing,
 ]);
 
 export function getDraftScope(id: ModifierID): DraftScope {

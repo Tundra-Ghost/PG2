@@ -2,24 +2,14 @@
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background:
-    radial-gradient(circle at top, rgba(227, 186, 101, 0.14), transparent 34%),
-    linear-gradient(180deg, #1a140d 0%, #0f0a05 100%);
+  background: #c9baa0;
 }
 
 .root::before {
   content: '';
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0, transparent 12%, transparent 88%, rgba(255, 255, 255, 0.025)),
-    repeating-linear-gradient(
-      90deg,
-      rgba(227, 186, 101, 0.03) 0,
-      rgba(227, 186, 101, 0.03) 1px,
-      transparent 1px,
-      transparent 120px
-    );
+  background: url('../../assets/menu/menu-background.png') center bottom / cover no-repeat;
   pointer-events: none;
 }
 
@@ -27,7 +17,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at center, transparent 38%, rgba(5, 4, 2, 0.5) 100%);
+  background:
+    linear-gradient(90deg, rgba(245, 239, 226, 0.72) 0%, rgba(245, 239, 226, 0.42) 30%, rgba(245, 239, 226, 0.14) 58%, rgba(245, 239, 226, 0.05) 100%),
+    linear-gradient(180deg, rgba(245, 239, 226, 0.38) 0%, rgba(245, 239, 226, 0.1) 42%, rgba(58, 55, 48, 0.18) 100%);
   pointer-events: none;
 }
 
@@ -36,694 +28,737 @@
   z-index: 1;
   height: 100%;
   overflow-y: auto;
-  padding: clamp(1rem, 2vw, 2rem);
+  padding: clamp(0.75rem, 2.2vw, 2rem);
 }
 
-.shell {
-  width: min(100%, 1440px);
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.85rem, 1.5vw, 1.25rem);
-}
-
-.topBar {
-  display: grid;
-  grid-template-columns: minmax(320px, 1fr) auto;
-  gap: 1rem;
-  align-items: stretch;
-}
-
-.profileBanner {
-  display: grid;
-  grid-template-columns: 86px minmax(0, 1fr);
-  gap: 0.85rem;
-  align-items: center;
-  padding: 0.85rem;
-  text-align: left;
-  background:
-    linear-gradient(180deg, rgba(244, 222, 173, 0.96), rgba(207, 167, 102, 0.94));
-  border: 2px solid rgba(83, 53, 24, 0.76);
-  border-radius: 20px;
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.26),
-    inset 0 0 0 2px rgba(255, 247, 225, 0.34);
-  cursor: pointer;
-}
-
-.profilePortrait {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 86px;
-  height: 86px;
-  flex-shrink: 0;
-  border-radius: 999px;
-  font-family: var(--font-display);
-  font-size: 2rem;
-  color: rgba(72, 44, 16, 0.86);
-  background:
-    radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.72), transparent 42%),
-    linear-gradient(180deg, rgba(230, 201, 141, 0.9), rgba(176, 128, 71, 0.5));
-}
-
-.profilePortraitImage {
-  width: 86px;
-  height: 86px;
-  object-fit: cover;
-  flex-shrink: 0;
-  border-radius: 999px;
-  border: 2px solid rgba(84, 48, 18, 0.16);
-}
-
-.profileBody {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.profileTitle {
-  font-family: var(--font-display);
-  font-size: clamp(1.2rem, 1.8vw, 1.7rem);
-  color: rgba(52, 30, 11, 0.94);
-}
-
-.profileMeta,
-.profileFlavor,
-.utilityLabel,
-.boardHeaderLabel,
-.stageKicker,
-.stageStatLabel,
-.railCardState,
-.stepTitle,
-.footerLabel,
-.backLink {
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-}
-
-.profileMeta {
-  font-size: 0.56rem;
-  letter-spacing: 0.18em;
-  color: rgba(84, 52, 20, 0.54);
-}
-
-.profileFlavor {
-  font-size: 0.62rem;
-  letter-spacing: 0.08em;
-  color: rgba(84, 52, 20, 0.72);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.utilityBar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.7rem;
-}
-
-.utilityChip,
-.utilityBtn {
-  min-height: 64px;
-  border-radius: 16px;
-  border: 2px solid rgba(83, 53, 24, 0.72);
-  background:
-    linear-gradient(180deg, rgba(245, 225, 177, 0.96), rgba(207, 167, 102, 0.94));
-  box-shadow:
-    0 14px 34px rgba(0, 0, 0, 0.24),
-    inset 0 0 0 2px rgba(255, 247, 225, 0.32);
-}
-
-.utilityChip {
-  min-width: 110px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.1rem;
-  padding: 0.55rem 0.8rem;
-}
-
-.utilityValue {
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  color: rgba(52, 30, 11, 0.94);
-}
-
-.utilityLabel {
-  font-size: 0.5rem;
-  letter-spacing: 0.16em;
-  color: rgba(84, 52, 20, 0.58);
-}
-
-.utilityBtn {
-  padding: 0.9rem 1rem;
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.16em;
-  color: rgba(52, 30, 11, 0.94);
-  cursor: pointer;
-}
-
-.hubGrid {
-  display: grid;
-  grid-template-columns: minmax(220px, 250px) minmax(0, 1fr) minmax(220px, 250px);
-  gap: clamp(0.8rem, 1.4vw, 1.15rem);
-  align-items: stretch;
-}
-
-.rail {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-}
-
-.railCard {
+.poster {
   position: relative;
-  min-height: 126px;
-  padding: 1rem 1rem 1.1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 0.45rem;
-  text-align: left;
-  border: 2px solid rgba(85, 57, 30, 0.76);
-  border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(85, 63, 42, 0.92), rgba(38, 27, 18, 0.96));
-  box-shadow:
-    0 16px 36px rgba(0, 0, 0, 0.28),
-    inset 0 0 0 2px rgba(255, 244, 224, 0.06);
-  cursor: pointer;
+  width: min(100%, 1240px);
+  min-height: calc(100vh - clamp(1.5rem, 4.4vw, 4rem));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.66fr) minmax(600px, 1.34fr);
+  grid-template-rows: 1fr auto;
+  gap: clamp(0.5rem, 1vw, 0.85rem);
 }
 
-.railCard::before {
+.brandPanel {
+  position: relative;
+  z-index: 3;
+  align-self: start;
+  min-height: 520px;
+  padding: clamp(1.5rem, 4vw, 3.8rem) clamp(1rem, 3vw, 2.6rem);
+  color: #273035;
+}
+
+.brandPanel::before {
   content: '';
   position: absolute;
-  inset: 0;
-  border-radius: 16px;
+  inset: 0 clamp(-0.4rem, -0.8vw, -0.2rem) auto clamp(-0.5rem, -1vw, -0.25rem);
+  height: min(52vh, 470px);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 40%),
-    radial-gradient(circle at top right, rgba(255, 219, 151, 0.12), transparent 38%);
+    linear-gradient(90deg, rgba(248, 243, 233, 0.66) 0%, rgba(248, 243, 233, 0.42) 58%, transparent 100%),
+    linear-gradient(180deg, rgba(248, 243, 233, 0.42), rgba(248, 243, 233, 0.08));
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 72%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 72%, transparent 100%);
   pointer-events: none;
 }
 
-.railCard:hover:not(:disabled) {
+.brandMark {
+  width: fit-content;
+  margin: 0 auto 1.1rem;
+  color: rgba(39, 48, 53, 0.42);
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
+}
+
+.brandTitle {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  font-family: var(--font-mono);
+  font-size: clamp(2.65rem, 5.6vw, 5.4rem);
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  line-height: 0.86;
+  text-transform: uppercase;
+  text-shadow: 0 2px 20px rgba(248, 243, 233, 0.38);
+}
+
+.brandTitle span:last-child {
+  position: relative;
+  font-size: 0.45em;
+  letter-spacing: 0.34em;
+}
+
+.brandTitle span:last-child::before,
+.brandTitle span:last-child::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: clamp(1.4rem, 4vw, 3.5rem);
+  height: 1px;
+  background: rgba(39, 48, 53, 0.34);
+}
+
+.brandTitle span:last-child::before {
+  right: calc(100% + 0.65rem);
+}
+
+.brandTitle span:last-child::after {
+  left: calc(100% + 0.35rem);
+}
+
+.brandSubtitle {
+  position: relative;
+  max-width: 26rem;
+  margin: clamp(1.2rem, 2.4vw, 2rem) auto 0;
+  color: rgba(39, 48, 53, 0.7);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.profileButton {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 360px);
+  margin: clamp(1.5rem, 3vw, 2.4rem) auto 0;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.5rem 0.65rem;
+  color: #263036;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.34);
+  border: 1px solid rgba(39, 48, 53, 0.16);
+  border-radius: 8px;
+  box-shadow: 0 12px 24px rgba(74, 61, 48, 0.14);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.profileButton:hover,
+.modeCard:hover:not(:disabled) {
   transform: translateY(-2px);
 }
 
-.railCardLocked {
-  opacity: 0.58;
+.profileInitial,
+.profileImage {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+}
+
+.profileInitial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #273035;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  background: linear-gradient(135deg, #f4e8d2, #bbc2a4 52%, #8b97a0);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.58);
+}
+
+.profileImage {
+  object-fit: cover;
+}
+
+.profileText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.08rem;
+}
+
+.profileName {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profileMeta {
+  overflow: hidden;
+  color: rgba(39, 48, 53, 0.6);
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.brandStats {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 360px);
+  margin: 0.65rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.brandStats div {
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+  background: rgba(255, 255, 255, 0.24);
+  border: 1px solid rgba(39, 48, 53, 0.1);
+  border-radius: 8px;
+}
+
+.brandStats dt,
+.soonBadge {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.brandStats dt {
+  color: rgba(39, 48, 53, 0.5);
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+}
+
+.brandStats dd {
+  overflow: hidden;
+  margin: 0.12rem 0 0;
+  color: rgba(39, 48, 53, 0.88);
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardDeck {
+  position: relative;
+  justify-self: center;
+  width: min(100%, 760px);
+  height: clamp(760px, calc(100vh - 3.5rem), 1120px);
+  min-height: 760px;
+  isolation: isolate;
+}
+
+.cardDeck::before {
+  content: '';
+  position: absolute;
+  inset: 0.35rem 0.15rem 0.5rem;
+  z-index: 0;
+  border-radius: 34px;
+  background:
+    linear-gradient(180deg, rgba(245, 239, 226, 0.18), rgba(245, 239, 226, 0.04)),
+    rgba(51, 45, 38, 0.04);
+  box-shadow:
+    inset 0 0 0 1px rgba(74, 61, 48, 0.08),
+    0 28px 60px rgba(38, 34, 28, 0.12);
+  pointer-events: none;
+}
+
+.modeCard {
+  position: absolute;
+  overflow: hidden;
+  display: block;
+  text-align: left;
+  border: none;
+  border-radius: 28px;
+  box-shadow:
+    0 28px 52px rgba(76, 65, 52, 0.24),
+    0 2px 0 rgba(255, 255, 255, 0.35) inset;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.modeCard:hover:not(:disabled) {
+  box-shadow:
+    0 32px 60px rgba(76, 65, 52, 0.3),
+    0 2px 0 rgba(255, 255, 255, 0.42) inset;
+}
+
+.modeCard:disabled {
   cursor: not-allowed;
 }
 
-.accentGold {
-  border-color: rgba(171, 122, 55, 0.8);
-}
-
-.accentStone {
-  border-color: rgba(118, 93, 66, 0.82);
-}
-
-.accentEmber {
-  border-color: rgba(150, 84, 43, 0.8);
-}
-
-.railCardLabel {
-  position: relative;
-  z-index: 1;
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-  color: rgba(255, 241, 216, 0.94);
-}
-
-.railCardSub {
-  position: relative;
-  z-index: 1;
-  font-family: var(--font-body);
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: rgba(240, 223, 193, 0.72);
-}
-
-.railCardState {
-  position: relative;
-  z-index: 1;
-  font-size: 0.5rem;
-  letter-spacing: 0.16em;
-  color: rgba(240, 208, 147, 0.6);
-}
-
-.centerStage {
-  min-width: 0;
-}
-
-.sceneFrame {
-  position: relative;
-  min-height: min(52vw, 700px);
-  border-radius: 28px;
-  overflow: hidden;
-  border: 2px solid rgba(108, 80, 48, 0.78);
-  background:
-    linear-gradient(180deg, rgba(123, 158, 185, 0.9) 0%, rgba(65, 98, 73, 0.9) 54%, rgba(50, 39, 27, 0.96) 100%);
-  box-shadow:
-    0 28px 58px rgba(0, 0, 0, 0.34),
-    inset 0 0 0 2px rgba(255, 245, 223, 0.08);
-}
-
-.sceneSky,
-.sceneTrees {
+.modeCard::before {
+  content: '';
   position: absolute;
   inset: 0;
+  background:
+    linear-gradient(110deg, rgba(255, 255, 255, 0.18), transparent 34%),
+    radial-gradient(circle at 90% 10%, rgba(255, 255, 255, 0.16), transparent 28%);
   pointer-events: none;
 }
 
-.sceneSky {
-  background:
-    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.42), transparent 14%),
-    radial-gradient(circle at 76% 16%, rgba(255, 255, 255, 0.36), transparent 12%),
-    linear-gradient(180deg, rgba(188, 222, 242, 0.34), transparent 56%);
-}
-
-.sceneTrees {
-  background:
-    radial-gradient(circle at 8% 52%, rgba(47, 73, 45, 0.88), transparent 18%),
-    radial-gradient(circle at 20% 46%, rgba(55, 85, 48, 0.9), transparent 20%),
-    radial-gradient(circle at 78% 42%, rgba(66, 88, 45, 0.88), transparent 22%),
-    radial-gradient(circle at 94% 50%, rgba(46, 68, 36, 0.82), transparent 16%);
-}
-
-.sceneSlots {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.artSlot {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 0.12rem;
-  padding: 0.65rem;
-  border: 1px dashed rgba(255, 245, 223, 0.28);
-  border-radius: 16px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
-    repeating-linear-gradient(
-      135deg,
-      rgba(255, 245, 223, 0.08) 0,
-      rgba(255, 245, 223, 0.08) 10px,
-      transparent 10px,
-      transparent 20px
-    );
-  box-shadow: inset 0 0 0 1px rgba(255, 245, 223, 0.06);
-}
-
-.slotBackdrop {
-  left: 6%;
-  top: 8%;
-  width: 88%;
-  height: 42%;
-}
-
-.slotCharacter {
-  left: 9%;
-  bottom: 23%;
-  width: 28%;
-  height: 42%;
-}
-
-.slotBoardProp {
-  left: 29%;
-  bottom: 16%;
-  width: 42%;
-  height: 24%;
-}
-
-.slotSideProp {
-  right: 8%;
-  bottom: 19%;
-  width: 18%;
-  height: 32%;
-}
-
-.artSlotLabel,
-.artSlotNote,
-.stepArtLabel,
-.stepArtNote {
-  font-family: var(--font-mono);
-  text-transform: uppercase;
-}
-
-.artSlotLabel {
-  font-size: 0.52rem;
-  letter-spacing: 0.18em;
-  color: rgba(255, 239, 204, 0.82);
-}
-
-.artSlotNote {
-  font-size: 0.48rem;
-  letter-spacing: 0.12em;
-  color: rgba(255, 239, 204, 0.56);
-}
-
-.sceneBoard {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(1rem, 3vw, 2rem);
-  transform: translateX(-50%);
-  width: min(88%, 620px);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: clamp(1rem, 2vw, 1.4rem);
-  border-radius: 22px;
-  border: 2px solid rgba(92, 63, 31, 0.78);
-  background:
-    linear-gradient(180deg, rgba(243, 220, 170, 0.95), rgba(189, 144, 84, 0.95));
-  box-shadow:
-    0 18px 34px rgba(0, 0, 0, 0.3),
-    inset 0 0 0 2px rgba(255, 243, 215, 0.34);
-}
-
-.boardHeader,
-.stageFooter {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.7rem;
-  flex-wrap: wrap;
-}
-
-.boardHeaderLabel,
-.stageStatLabel {
-  font-size: 0.5rem;
-  letter-spacing: 0.18em;
-  color: rgba(84, 52, 20, 0.58);
-}
-
-.boardHeaderValue,
-.stageStatValue {
-  font-family: var(--font-display);
-  font-size: 0.95rem;
-  color: rgba(58, 32, 12, 0.92);
-}
-
-.stageCopy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.stageKicker {
-  font-size: 0.54rem;
-  letter-spacing: 0.24em;
-  color: rgba(84, 52, 20, 0.54);
-}
-
-.stageTitle {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  line-height: 0.95;
-  color: rgba(58, 32, 12, 0.96);
-}
-
-.stageSub {
-  margin: 0;
-  font-family: var(--font-body);
-  font-size: 0.96rem;
-  line-height: 1.55;
-  color: rgba(68, 44, 19, 0.8);
-}
-
-.stageActions {
-  display: flex;
-  gap: 0.7rem;
-  flex-wrap: wrap;
-}
-
-.primaryAction,
-.secondaryAction {
-  min-height: 56px;
-  padding: 0.9rem 1.2rem;
-  border-radius: 14px;
-  cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.primaryAction {
-  color: #201104;
-  border: 2px solid rgba(126, 83, 33, 0.8);
-  background: linear-gradient(180deg, #f1ca7f, #d79f47);
-}
-
-.secondaryAction {
-  color: rgba(74, 46, 16, 0.9);
-  border: 2px solid rgba(126, 83, 33, 0.28);
-  background: rgba(255, 244, 219, 0.54);
-}
-
-.stageStat {
-  display: flex;
-  flex-direction: column;
-  gap: 0.12rem;
-}
-
-.journeyBand {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.9rem;
-}
-
-.stepCard {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  padding: 0.85rem;
+.sizeStandard {
+  z-index: 5;
+  width: 48.5%;
+  height: clamp(220px, 29%, 310px);
   min-height: 220px;
-  background:
-    linear-gradient(180deg, rgba(74, 53, 34, 0.94), rgba(35, 26, 17, 0.96));
-  border: 2px solid rgba(99, 72, 41, 0.78);
-  border-radius: 18px;
-  box-shadow:
-    0 18px 38px rgba(0, 0, 0, 0.24),
-    inset 0 0 0 2px rgba(255, 246, 224, 0.05);
 }
 
-.stepArt {
-  flex: 1;
-  min-height: 120px;
+.sizeSettings {
+  z-index: 9;
+  width: 89%;
+  height: clamp(132px, 17.5%, 164px);
+  min-height: 132px;
+}
+
+.cardStory {
+  top: 1.5%;
+  right: 2.5%;
+  transform: rotate(3deg);
+}
+
+.cardPuzzles {
+  top: 35%;
+  right: 2.5%;
+  transform: rotate(-2deg);
+}
+
+.cardStats {
+  left: 4%;
+  top: 50%;
+  transform: rotate(3deg);
+}
+
+.cardCollection {
+  right: 4%;
+  top: 56.5%;
+  transform: rotate(2deg);
+}
+
+.cardOnline {
+  z-index: 4;
+  left: 2.5%;
+  top: 18%;
+  transform: rotate(-4deg);
+}
+
+.cardSettings {
+  left: 5.5%;
+  bottom: 0.8%;
+  transform: rotate(-1deg);
+}
+
+.toneOlive {
+  color: #253034;
+  background: #b7bb92;
+}
+
+.toneBlue {
+  color: #f3efe6;
+  background: #506c78;
+}
+
+.toneSand {
+  color: #46372b;
+  background: #d1b686;
+}
+
+.tonePlum {
+  color: #fff7ef;
+  background: #82718a;
+}
+
+.toneSlate {
+  color: #f3efe6;
+  background: #243137;
+}
+
+.toneSteel {
+  color: #f3efe6;
+  background: #6f8c94;
+}
+
+.cardDisabled {
+  filter: saturate(0.74) brightness(0.92);
+}
+
+.cardCopy {
+  position: relative;
+  z-index: 2;
+  width: min(52%, 280px);
+  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  gap: 0.15rem;
-  padding: 0.75rem;
-  border-radius: 14px;
-  background:
-    linear-gradient(180deg, rgba(153, 188, 214, 0.54), rgba(73, 111, 76, 0.58)),
-    linear-gradient(135deg, rgba(255, 217, 126, 0.18), transparent 56%),
-    repeating-linear-gradient(
-      135deg,
-      rgba(255, 238, 196, 0.08) 0,
-      rgba(255, 238, 196, 0.08) 8px,
-      transparent 8px,
-      transparent 16px
-    );
-  border: 1px dashed rgba(255, 234, 191, 0.22);
+  justify-content: center;
+  gap: 0.55rem;
+  padding: clamp(1rem, 2.4vw, 2rem);
 }
 
-.stepArtLabel {
-  font-size: 0.52rem;
-  letter-spacing: 0.18em;
-  color: rgba(255, 239, 204, 0.86);
+.sizeSettings .cardCopy {
+  width: min(38%, 280px);
+  padding: 1.2rem 1.7rem;
 }
 
-.stepArtNote {
-  font-size: 0.48rem;
-  letter-spacing: 0.12em;
-  color: rgba(255, 239, 204, 0.58);
-}
-
-.stepTitle {
-  font-size: 0.56rem;
-  letter-spacing: 0.18em;
-  color: rgba(227, 186, 101, 0.72);
-}
-
-.stepBody {
-  margin: 0;
-  font-family: var(--font-body);
-  font-size: 0.84rem;
-  line-height: 1.5;
-  color: rgba(241, 225, 198, 0.74);
-}
-
-.footer {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-  gap: 1rem;
-  align-items: end;
-  padding: 0.8rem 0 0.2rem;
-}
-
-.footerBlock {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.footerLabel {
-  font-size: 0.5rem;
+.cardLabel {
+  font-family: var(--font-mono);
+  font-size: clamp(1.55rem, 3.2vw, 3.1rem);
+  font-weight: 500;
   letter-spacing: 0.16em;
-  color: rgba(227, 186, 101, 0.48);
+  line-height: 1;
+  text-transform: uppercase;
 }
 
-.footerText {
+.cardCollection .cardLabel,
+.cardSettings .cardLabel {
+  font-size: clamp(1.2rem, 2.2vw, 2.2rem);
+  letter-spacing: 0.12em;
+}
+
+.cardDetail {
+  max-width: 14rem;
   font-family: var(--font-body);
-  font-size: 0.8rem;
+  font-size: clamp(0.88rem, 1.2vw, 1.04rem);
   line-height: 1.45;
-  color: rgba(240, 223, 195, 0.62);
 }
 
-.backLink {
-  align-self: center;
-  justify-self: end;
-  font-size: 0.58rem;
+.cardArrow {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+  color: currentColor;
+  font-family: var(--font-body);
+  font-size: 1.25rem;
+  line-height: 1;
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 999px;
+}
+
+.soonBadge {
+  position: absolute;
+  z-index: 4;
+  left: clamp(1rem, 2vw, 1.8rem);
+  bottom: clamp(0.8rem, 1.4vw, 1.2rem);
+  color: currentColor;
+  font-size: 0.55rem;
   letter-spacing: 0.14em;
-  color: rgba(227, 186, 101, 0.68);
-  text-decoration: none;
+  opacity: 0.58;
 }
 
-@media (max-width: 1180px) {
-  .hubGrid {
-    grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
-  }
+.cardArtSlot {
+  --card-image: none;
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 54%;
+  background-image:
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08)),
+    var(--card-image);
+  background-position: center;
+  background-size: cover;
+  pointer-events: none;
+}
 
-  .centerStage {
-    order: -1;
-    grid-column: 1 / -1;
-  }
+.artStory,
+.artPuzzles,
+.artStats,
+.artCollection,
+.artOnline,
+.artSettings {
+  /* Future card art hooks: replace none with a card-specific image URL. */
+  --card-image: none;
+}
 
-  .sceneFrame {
-    min-height: min(62vw, 700px);
-  }
+.artStory {
+  --card-image: url('../../assets/menu/play-card.png');
+  width: 74%;
+  background-position: 60% center;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 18%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 18%);
+}
 
-  .journeyBand {
+.artStory .artFallback {
+  display: none;
+}
+
+.artPuzzles,
+.artStats,
+.artCollection,
+.artOnline {
+  inset: 0;
+  width: 100%;
+  background-position: center;
+}
+
+.artPuzzles {
+  --card-image: url('../../assets/menu/puzzles-card.png');
+}
+
+.artStats {
+  --card-image: url('../../assets/menu/stats-card.png');
+  background-position: 48% center;
+}
+
+.artCollection {
+  --card-image: url('../../assets/menu/collection-card.png');
+  background-position: 52% center;
+}
+
+.artOnline {
+  --card-image: url('../../assets/menu/online-card.png');
+  background-position: center;
+}
+
+.artPuzzles .artFallback,
+.artStats .artFallback,
+.artCollection .artFallback,
+.artOnline .artFallback,
+.artSettings .artFallback {
+  display: none;
+}
+
+.sizeSettings .cardArtSlot {
+  width: 66%;
+}
+
+.sizeSettings .artSettings {
+  --card-image: url('../../assets/menu/settings-card.png');
+  inset: 0;
+  width: 100%;
+  background-image:
+    linear-gradient(90deg, rgba(23, 32, 36, 0.88) 0%, rgba(23, 32, 36, 0.58) 38%, rgba(23, 32, 36, 0.12) 72%),
+    var(--card-image);
+  background-position: center;
+}
+
+.artFallback {
+  position: absolute;
+  inset: 0;
+}
+
+.artFallback::before,
+.artFallback::after {
+  content: '';
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.artFallback::before {
+  width: 44%;
+  aspect-ratio: 1;
+  right: 16%;
+  top: 14%;
+}
+
+.artFallback::after {
+  width: 30%;
+  aspect-ratio: 1;
+  right: 8%;
+  bottom: 12%;
+}
+
+.artBoard,
+.artPiece,
+.artAccent {
+  position: absolute;
+  display: block;
+}
+
+.artBoard {
+  right: 8%;
+  bottom: 7%;
+  width: 72%;
+  height: 30%;
+  opacity: 0.36;
+  transform: rotate(-4deg);
+  background:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25% 50%, rgba(255, 255, 255, 0.2) 50% 75%, transparent 75%),
+    rgba(0, 0, 0, 0.14);
+  background-size: 32px 32px;
+  border-radius: 4px;
+}
+
+.artPiece {
+  right: 16%;
+  bottom: 22%;
+  width: 26%;
+  height: 38%;
+  border-radius: 45% 45% 18% 18%;
+  background: rgba(255, 255, 255, 0.68);
+  box-shadow: inset -12px -14px 0 rgba(0, 0, 0, 0.12);
+}
+
+.artPiece::before {
+  content: '';
+  position: absolute;
+  left: 25%;
+  top: -24%;
+  width: 50%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: inherit;
+}
+
+.artAccent {
+  right: 36%;
+  top: 18%;
+  width: 18%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.artSettings .artPiece {
+  width: 18%;
+  height: 18%;
+  right: 24%;
+  bottom: 38%;
+  border-radius: 4px;
+}
+
+.artSettings .artPiece::before {
+  display: none;
+}
+
+.artCollection .artAccent,
+.artSettings .artAccent {
+  background:
+    linear-gradient(90deg, transparent 42%, rgba(255, 255, 255, 0.42) 42% 58%, transparent 58%),
+    linear-gradient(0deg, transparent 42%, rgba(255, 255, 255, 0.42) 42% 58%, transparent 58%),
+    rgba(0, 0, 0, 0.16);
+}
+
+@media (max-width: 1120px) {
+  .poster {
     grid-template-columns: 1fr;
+  }
+
+  .brandPanel {
+    min-height: 0;
+    padding-block: 1.4rem;
+  }
+
+  .brandPanel::before {
+    display: none;
+  }
+
+  .brandTitle {
+    font-size: clamp(2.8rem, 10vw, 5rem);
+  }
+
+  .cardDeck {
+    width: min(100%, 760px);
+    height: 900px;
+    min-height: 900px;
   }
 }
 
-@media (max-width: 860px) {
-  .topBar {
-    grid-template-columns: 1fr;
-  }
-
-  .utilityBar {
-    justify-content: stretch;
-    flex-wrap: wrap;
-  }
-
-  .utilityChip,
-  .utilityBtn {
-    flex: 1 1 160px;
-  }
-
-  .hubGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .sceneFrame {
-    min-height: 560px;
-  }
-
-  .footer {
-    grid-template-columns: 1fr;
-  }
-
-  .backLink {
-    justify-self: start;
-  }
-}
-
-@media (max-width: 620px) {
+@media (max-width: 780px) {
   .scroll {
-    padding: 0.75rem;
+    padding: 0.65rem;
   }
 
-  .shell {
+  .poster {
     gap: 0.75rem;
   }
 
-  .profileBanner {
-    grid-template-columns: 70px minmax(0, 1fr);
-    padding: 0.7rem;
+  .brandPanel {
+    padding: 1rem 0.6rem;
   }
 
-  .profilePortrait {
-    width: 70px;
-    height: 70px;
-    border-radius: 999px;
+  .brandTitle {
+    align-items: flex-start;
+    font-size: clamp(2.4rem, 14vw, 4rem);
   }
 
-  .profilePortraitImage {
-    width: 70px;
-    height: 70px;
-    border-radius: 999px;
+  .brandMark {
+    margin-left: 0;
   }
 
-  .sceneFrame {
-    min-height: 500px;
-    border-radius: 20px;
+  .brandSubtitle {
+    margin-left: 0;
+    text-align: left;
   }
 
-  .slotBackdrop {
-    left: 4%;
-    width: 92%;
-    height: 36%;
+  .profileButton,
+  .brandStats {
+    margin-left: 0;
   }
 
-  .slotCharacter {
-    left: 5%;
-    width: 34%;
-    height: 34%;
-  }
-
-  .slotBoardProp {
-    left: 24%;
-    width: 52%;
-    height: 21%;
-  }
-
-  .slotSideProp {
-    right: 4%;
-    width: 20%;
-    height: 26%;
-  }
-
-  .sceneBoard {
-    width: calc(100% - 1rem);
-    bottom: 0.5rem;
-    padding: 0.9rem;
-  }
-
-  .stageActions {
+  .cardDeck {
+    min-height: auto;
+    height: auto;
+    display: flex;
     flex-direction: column;
+    gap: 0.75rem;
   }
 
-  .primaryAction,
-  .secondaryAction {
+  .modeCard,
+  .sizeStandard,
+  .sizeSettings,
+  .cardStory,
+  .cardPuzzles,
+  .cardStats,
+  .cardCollection,
+  .cardOnline,
+  .cardSettings {
+    position: relative;
+    inset: auto;
     width: 100%;
+    min-height: 190px;
+    transform: none;
   }
 
-  .railCard,
-  .stepCard {
-    min-height: 0;
+  .cardCopy {
+    width: 64%;
+    padding: 1.2rem;
+  }
+
+  .cardLabel {
+    font-size: clamp(1.7rem, 9vw, 2.6rem);
+  }
+
+  .cardArtSlot {
+    width: 46%;
+  }
+
+}
+
+@media (max-width: 480px) {
+  .brandTitle {
+    letter-spacing: 0.1em;
+  }
+
+  .brandTitle span:last-child {
+    letter-spacing: 0.22em;
+  }
+
+  .brandStats {
+    grid-template-columns: 1fr;
+  }
+
+  .profileButton {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .profileInitial,
+  .profileImage {
+    width: 42px;
+    height: 42px;
+  }
+
+  .modeCard {
+    min-height: 180px;
+    border-radius: 18px;
+  }
+
+  .cardCopy {
+    width: 72%;
+    padding: 1rem;
+  }
+
+  .cardDetail {
+    font-size: 0.86rem;
+  }
+
+  .cardArtSlot {
+    width: 42%;
   }
 }

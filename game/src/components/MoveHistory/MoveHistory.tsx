@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { GameEvent, GameState } from '../../engine/types';
 import { playClick } from '../../sound';
-import type { MatchChatEntry } from '../../App';
+import type { MatchChatEntry } from '../../matchFeed';
 import styles from './MoveHistory.module.css';
 import DialogueBox from '../DialogueBox/DialogueBox';
 
@@ -174,7 +174,15 @@ export default function MoveHistory({
     }
 
     return feedEntries.sort((a, b) => a.order - b.order);
-  }, [blackLabel, chatEntries, eventHistory, moveHistory, whiteLabel]);
+  }, [
+    blackLabel,
+    chatEntries,
+    eventHistory,
+    moveHistory,
+    opponentAvatarIcon,
+    playerAvatarSrc,
+    whiteLabel,
+  ]);
 
   const gameOver = status === 'checkmate' || status === 'draw';
 

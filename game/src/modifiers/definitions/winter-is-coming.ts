@@ -1,8 +1,9 @@
 import type { ModifierDefinition } from '../types';
 import { cloneState } from '../../engine/gameLoop';
 import { isFrozenZoneSquare } from './winter';
+import { MODIFIER_IDS } from '../ids';
 
-const ID = 'MOD-A004';
+const ID = MODIFIER_IDS.winterIsComing;
 
 export const winterIsComingDef: ModifierDefinition = {
   id: ID,

@@ -3,6 +3,7 @@ import type { GameState, PieceType, Square } from '../../engine/types';
 import { chessEngine } from '../../engine/ChessEngine';
 import { buildMove } from '../../engine/gameLoop';
 import { isFrozenZoneSquare } from '../../modifiers/definitions/winter';
+import { MODIFIER_IDS } from '../../modifiers/ids';
 import { playCapture, playCastle, playMove } from '../../sound';
 import { shouldForfeitTurnForGerald } from './interaction';
 import SquareComponent from '../Square/Square';
@@ -11,9 +12,8 @@ import styles from './Board.module.css';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
-const GERALD_ID = 'MOD-B002';
-const WINTER_ID = 'MOD-A004';
-const OBJECTOR_ID = 'MOD-B007';
+const GERALD_ID = MODIFIER_IDS.gerald;
+const WINTER_ID = MODIFIER_IDS.winterIsComing;
 
 interface BoardProps {
   state: GameState;
@@ -42,6 +42,18 @@ function getDisplayLegalMoves(state: GameState, from: Square): Square[] {
     }
     return chessEngine.validateMove(state, move).valid;
   });
+}
+
+function playSfxForMove(state: GameState, from: Square, to: Square, isCastle: boolean) {
+  if (isCastle) {
+    playCastle();
+    return;
+  }
+  if (state.pieces.has(to) || state.flags.enPassantSquare === to) {
+    playCapture();
+    return;
+  }
+  playMove();
 }
 
 export default function Board({
@@ -75,12 +87,6 @@ export default function Board({
     }
   }
 
-  function sfxForMove(s: GameState, from: Square, to: Square, isCastle: boolean) {
-    if (isCastle) { playCastle(); return; }
-    if (s.pieces.has(to) || s.flags.enPassantSquare === to) { playCapture(); return; }
-    playMove();
-  }
-
   // Called when user picks a piece in the PromotionModal
   const handlePromotionChoice = useCallback(
     (type: PieceType) => {
@@ -89,7 +95,7 @@ export default function Board({
       move.promotion = type;
       const validation = chessEngine.validateMove(state, move);
       if (validation.valid) {
-        playCapture(); // promotions often capture; use capture sfx
+        playSfxForMove(state, pendingPromotion.from, pendingPromotion.to, false);
         onStateChange(chessEngine.applyMove(state, move));
       }
       setPendingPromotion(null);
@@ -162,7 +168,7 @@ export default function Board({
             move.promotion = 'queen';
             const validation = chessEngine.validateMove(state, move);
             if (validation.valid) {
-              sfxForMove(state, selected, square, false);
+              playSfxForMove(state, selected, square, false);
               onStateChange(chessEngine.applyMove(state, move));
             } else if (validation.reason) {
               onInfo?.(validation.reason);
@@ -178,7 +184,7 @@ export default function Board({
         const move = buildMove(state, selected, square);
         const validation = chessEngine.validateMove(state, move);
         if (validation.valid) {
-          sfxForMove(state, selected, square, !!move.isCastle);
+          playSfxForMove(state, selected, square, !!move.isCastle);
           onStateChange(chessEngine.applyMove(state, move));
         } else if (validation.reason) {
           onInfo?.(validation.reason);
@@ -192,7 +198,7 @@ export default function Board({
       setSelected(null);
       setLegalMoves([]);
     },
-    [state, selected, legalMoves, pendingPromotion, onStateChange],
+    [autoQueen, legalMoves, onInfo, onStateChange, pendingPromotion, selected, state],
   );
 
   const rankOrder = [...RANKS].reverse();

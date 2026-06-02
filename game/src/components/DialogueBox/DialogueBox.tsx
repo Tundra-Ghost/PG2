@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { MatchChatEntry } from '../../App';
+import type { MatchChatEntry } from '../../matchFeed';
 import styles from './DialogueBox.module.css';
 
 interface DialogueBoxProps {

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import type { Piece as PieceType, Square as SquareType, TileEffectType } from '../../engine/types';
+import { MODIFIER_IDS } from '../../modifiers/ids';
 import PieceComponent from '../Piece/Piece';
 import styles from './Square.module.css';
 
@@ -16,8 +17,8 @@ interface SquareProps {
   onClick: (square: SquareType) => void;
 }
 
-const GERALD_ID = 'MOD-B002';
-const WINTER_ID = 'MOD-A004';
+const GERALD_ID = MODIFIER_IDS.gerald;
+const WINTER_ID = MODIFIER_IDS.winterIsComing;
 
 function getPieceTooltipLines(piece: PieceType | undefined): string[] {
   if (!piece) return [];

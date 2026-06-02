@@ -13,8 +13,9 @@ import {
   buildMove,
 } from '../../engine/gameLoop';
 import { getLegalMovesForPiece, isInCheck } from '../../engine/moveGenerator';
+import { MODIFIER_IDS } from '../ids';
 
-const ID = 'MOD-E006';
+const ID = MODIFIER_IDS.berserker;
 
 const PIECE_VALUE: Partial<Record<string, number>> = {
   queen: 900, rook: 500, bishop: 320, knight: 310, pawn: 100,

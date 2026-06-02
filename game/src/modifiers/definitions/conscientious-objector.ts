@@ -1,8 +1,9 @@
 import type { ModifierDefinition } from '../types';
 import { prngPickIndex } from '../../engine/prng';
 import { cloneState } from '../../engine/gameLoop';
+import { MODIFIER_IDS } from '../ids';
 
-const ID = 'MOD-B007';
+const ID = MODIFIER_IDS.conscientiousObjector;
 
 export const conscientiousObjectorDef: ModifierDefinition = {
   id: ID,
