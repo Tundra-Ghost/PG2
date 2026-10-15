@@ -30,3 +30,16 @@ export { getDraftScope, isSharedDraftModifier } from './modifiers/scope';
 export type { DraftScope } from './modifiers/scope';
 export * from './modifiers/data';
 export { isFrozenZoneSquare } from './modifiers/definitions/winter';
+
+export { fromWire, toWire } from './net/wire';
+export type { WireGameState } from './net/wire';
+export type {
+  ActionAck,
+  ClientToServerEvents,
+  JoinRequest,
+  MoveRequest,
+  RoomAck,
+  RoomSnapshot,
+  SeatStatus,
+  ServerToClientEvents,
+} from './net/protocol';

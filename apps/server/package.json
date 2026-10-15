@@ -1,0 +1,25 @@
+{
+  "name": "@pigeon-chess/server",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Fastify + Socket.IO game server. All move validation runs here (TDD P0-03).",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "start": "tsx src/main.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@pigeon-chess/game-core": "workspace:*",
+    "fastify": "^5.6.1",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "socket.io-client": "^4.8.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.5.3",
+    "vitest": "^4.1.2"
+  }
+}
