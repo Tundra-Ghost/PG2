@@ -126,6 +126,9 @@ export default function App() {
       const move = getChickBotMove(gameState, 'black');
       if (move) {
         setGameState(prev => (prev.status === 'active' ? chessEngine.applyMove(prev, move) : prev));
+      } else if (chessEngine.canShooGerald(gameState)) {
+        // Gerald pinned the only movable piece. The bot spends its turn shooing him.
+        setGameState(prev => (prev.status === 'active' ? chessEngine.shooGerald(prev) : prev));
       }
     }, 350);
 

@@ -105,6 +105,17 @@ export default function Board({
     [pendingPromotion, state, onStateChange],
   );
 
+  const shooGeraldOrWarn = useCallback(() => {
+    setSelected(null);
+    setLegalMoves([]);
+    if (!chessEngine.canShooGerald(state)) {
+      onInfo?.('You are in check. Gerald stays put.');
+      return;
+    }
+    onStateChange(chessEngine.shooGerald(state));
+    onInfo?.('Gerald chased off. Turn forfeited.');
+  }, [state, onStateChange, onInfo]);
+
   const handleSquareClick = useCallback(
     (square: Square) => {
       if (state.status !== 'active') return;
@@ -116,10 +127,7 @@ export default function Board({
       if (!selected) {
         if (clickedPiece && clickedPiece.color === state.turn) {
           if (shouldForfeitTurnForGerald(clickedPiece, state.turn)) {
-            onStateChange(chessEngine.passTurn(state));
-            onInfo?.('Gerald chased off. Turn forfeited.');
-            setSelected(null);
-            setLegalMoves([]);
+            shooGeraldOrWarn();
             return;
           }
           if ((clickedPiece.cooldowns[WINTER_ID] ?? 0) > 0) {
@@ -137,10 +145,7 @@ export default function Board({
       // Re-select own piece
       if (clickedPiece && clickedPiece.color === state.turn && square !== selected) {
         if (shouldForfeitTurnForGerald(clickedPiece, state.turn)) {
-          onStateChange(chessEngine.passTurn(state));
-          onInfo?.('Gerald chased off. Turn forfeited.');
-          setSelected(null);
-          setLegalMoves([]);
+          shooGeraldOrWarn();
           return;
         }
         if (clickedPiece.isPacifist) {
@@ -198,7 +203,7 @@ export default function Board({
       setSelected(null);
       setLegalMoves([]);
     },
-    [autoQueen, legalMoves, onInfo, onStateChange, pendingPromotion, selected, state],
+    [autoQueen, legalMoves, onInfo, onStateChange, pendingPromotion, selected, shooGeraldOrWarn, state],
   );
 
   const rankOrder = [...RANKS].reverse();

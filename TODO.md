@@ -35,6 +35,9 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Local player profile state and basic progression stats are now stored client-side for the serverless prototype
 - Local profiles now track titles, achievements, match history, mode stats, region, and placeholder ELO entirely on-device
 - The Roost can now serve as a real local records destination instead of a menu placeholder
+- Turn resolution is now modifier-aware: if modifiers block every move, the side in check is checkmated, otherwise the turn is skipped (both sides stuck back to back is a stalemate draw)
+- Shooing Gerald now actually clears him, spends the turn, and is refused while in check
+- The start position now counts toward threefold repetition
 
 ## Priority 1: Stabilize The Prototype Core
 

@@ -32,6 +32,7 @@ Current move pipeline:
 14. Checkmate / stalemate / draw detection
 15. `onTurnEnd`
 16. `onTurnStart` for the next side if the game remains active
+16a. Blocked-turn resolution: if modifiers leave the side to move with no valid move (and no Gerald to shoo), it is checkmate when in check, otherwise the turn is skipped. Two skips back to back is a stalemate draw.
 17. `onMatchEnd` if the game ends
 18. Move history / SAN recording
 
