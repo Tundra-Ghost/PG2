@@ -10,6 +10,7 @@ import { modifierRegistry } from '@pigeon-chess/game-core';
 import { isSharedDraftModifier } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './DraftScreen.module.css';
+import PrototypeRules from '../PrototypeRules/PrototypeRules';
 
 const BUDGET = 8;
 const MAX_COUNT = 5;
@@ -346,6 +347,7 @@ export default function DraftScreen({
                     {card.typeLine}
                   </p>
                   <p className={styles.cardDesc}>{card.description}</p>
+                  <PrototypeRules text={card.prototypeRules} />
 
                   {!isImplemented && (
                     <p className={styles.implementationHint}>

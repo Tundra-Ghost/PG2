@@ -18,6 +18,13 @@ export interface ModifierCard {
   tier: ModifierTier;
   description: string;
   flavor: string;
+  /**
+   * How this card actually plays in the current build, when that differs
+   * from the design text above. Shown under the description so drafts never
+   * promise rules the engine does not have (GDD Pillar 1). Required for
+   * every registered modifier.
+   */
+  prototypeRules?: string;
 }
 
 export const CATEGORY_COLORS: Record<ModifierCategory, string> = {
@@ -65,6 +72,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Four tiles are Lava. Any piece landing on Lava is immediately captured — including your own. Every 10 turns, each Lava tile rotates clockwise one square. Next position is shown as an amber outline one turn in advance.',
     flavor: '"The floor is lava. Viktor\'s knight is on the floor. Viktor is processing this."',
+    prototypeRules:
+      'Lava moves every 3 moves, counting both players. There is no preview of the next spot yet. Kings are immune.',
   },
   {
     id: 'MOD-A003',
@@ -91,6 +100,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Both home rows (Ranks 1–3 and 6–8) are Frozen. Any piece entering a Frozen zone must thaw for 1 full turn before moving. Pawns freeze before promoting. Kings cannot castle if either path tile is Frozen.',
     flavor: '"Viktor\'s entire back rank is frozen. A raven arrived to warn him. Viktor does not know how to talk to ravens."',
+    prototypeRules:
+      'Ranks 1-3 and 6-8 are frozen. A piece that enters from ranks 4-5 must wait one turn. Castling is blocked.',
   },
   {
     id: 'MOD-A005',
@@ -172,6 +183,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'At the start of each turn, a pigeon named Gerald lands on one of your pieces, blocking it. Spend your turn clicking Gerald off — freeing the piece but forfeiting your move. Gerald maintains his own interference leaderboard.',
     flavor: '"Gerald is looking at something else entirely. Viktor\'s rook is right there. Gerald does not care."',
+    prototypeRules:
+      'Gerald holds a piece for 2 of your turns. Click him to shoo him off. That costs your turn and is not allowed in check. No leaderboard yet.',
   },
   {
     id: 'MOD-B003',
@@ -237,6 +250,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'One randomly selected pawn holds deeply personal convictions and will not capture. It moves, blocks, and promotes — but will not take a piece. If promoted to Queen, the Queen is also a pacifist.',
     flavor: '"The pawn has values. Viktor respects this. Viktor is also trying to win a chess match."',
+    prototypeRules:
+      'Plays as written.',
   },
   {
     id: 'MOD-B008',
@@ -545,6 +560,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'One designated non-King piece is The Berserker. Whenever it captures, it may immediately chain-capture if another legal capture exists — and keep going. If captured, its title passes to a random surviving piece.',
     flavor: '"The rook captured once. Then again. Then a third time. \'BOY.\' said the rook, to nobody in particular."',
+    prototypeRules:
+      'The game picks the Berserker (never a king or pawn). After it captures, it automatically takes one more capture if there is one, never more. It skips any capture that would leave its king in check.',
   },
   {
     id: 'MOD-E007',
