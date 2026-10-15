@@ -65,6 +65,8 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Define the smallest viable multiplayer slice: room code, two seats, standard rules, server-validated moves (`apps/server`)
 - [ ] Online: resign, draw offer, and the 30s reconnect / forfeit rules from TDD §05
 - [ ] Online: modifier draft over sockets (TDD P1-03)
+- [x] Site: publish to GitHub Pages from Actions on every merge (`.github/workflows/pages.yml`)
+- [ ] Site: stop committing `game/dist` once the Actions deploy is confirmed live
 - [ ] Online: host the server so the Pages build can reach it
 - [ ] Persist rooms in Redis and results in Postgres (TDD P0-05)
 - [ ] Reconcile current menu promises with actual scope so the prototype does not over-claim
