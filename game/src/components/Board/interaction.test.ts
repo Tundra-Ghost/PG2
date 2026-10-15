@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Piece } from '@pigeon-chess/game-core';
-import { shouldForfeitTurnForGerald } from './interaction';
+import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
 
 function makePiece(
   color: Piece['color'],
@@ -24,5 +24,18 @@ describe('board Gerald interaction', () => {
     expect(shouldForfeitTurnForGerald(makePiece('white', 0), 'white')).toBe(false);
     expect(shouldForfeitTurnForGerald(makePiece('black', 2), 'white')).toBe(false);
     expect(shouldForfeitTurnForGerald(undefined, 'white')).toBe(false);
+  });
+});
+
+describe('board marker legend', () => {
+  it('is empty in a standard game', () => {
+    expect(getMarkerLegend([])).toEqual([]);
+  });
+
+  it('lists only the markers of active modifiers, in a fixed order', () => {
+    expect(getMarkerLegend(['MOD-B002', 'MOD-A004'])).toEqual([
+      { mark: '❄', label: 'Frozen' },
+      { mark: 'G', label: 'Gerald' },
+    ]);
   });
 });

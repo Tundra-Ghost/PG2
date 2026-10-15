@@ -62,7 +62,9 @@ export default function GameStatus({ state, onNewGame, infoMessage, actionLabel 
           {infoMessage ? (
             <span className={styles.infoPill}>{infoMessage}</span>
           ) : (
-            <span className={styles.idlePill}>Board live. Modifiers armed.</span>
+            <span className={styles.idlePill}>
+              {state.activeModifiers.length > 0 ? 'Board live. Modifiers armed.' : 'Board live. Standard rules.'}
+            </span>
           )}
         </div>
       )}

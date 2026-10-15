@@ -18,6 +18,43 @@
   height: var(--board-size);
 }
 
+/* Leave room for the legend row so the frame still fits short screens. */
+.withLegend {
+  --board-size: max(320px, min(80vmin, 560px, calc(100dvh - 360px)));
+}
+
+/* Explains the piece and tile markers of the active modifiers. */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem 0.85rem;
+  padding: 0.3rem 0.5rem 0.4rem;
+  border-top: 1px solid rgba(200, 168, 75, 0.15);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  color: rgba(242, 234, 216, 0.8);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.legendMark {
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: #18120a;
+  background: rgba(245, 232, 192, 0.95);
+}
+
 /* ── Coordinate labels ── */
 .coordRowTop,
 .coordRowBottom {
