@@ -1,4 +1,4 @@
-import type { GameEvent, GameState } from './engine/types';
+import type { GameEvent, GameState } from '@pigeon-chess/game-core';
 
 export interface MatchChatEntry {
   id: string;

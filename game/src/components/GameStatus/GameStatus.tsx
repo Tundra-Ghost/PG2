@@ -1,4 +1,4 @@
-import type { Color, GameState } from '../../engine/types';
+import type { Color, GameState } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './GameStatus.module.css';
 
@@ -6,6 +6,8 @@ interface GameStatusProps {
   state: GameState;
   onNewGame: () => void;
   infoMessage?: string | null;
+  /** Label for the restart button. Online play uses it to leave the room. */
+  actionLabel?: string;
 }
 
 const DRAW_LABELS: Record<string, string> = {
@@ -31,7 +33,7 @@ function getStatusMessage(state: GameState): { emoji: string; headline: string; 
   return null;
 }
 
-export default function GameStatus({ state, onNewGame, infoMessage }: GameStatusProps) {
+export default function GameStatus({ state, onNewGame, infoMessage, actionLabel = 'New Game' }: GameStatusProps) {
   const msg = getStatusMessage(state);
   const isOver = msg !== null;
 
@@ -78,7 +80,7 @@ export default function GameStatus({ state, onNewGame, infoMessage }: GameStatus
                 onNewGame();
               }}
             >
-              New Game
+              {actionLabel}
             </button>
           </div>
         </div>
@@ -92,7 +94,7 @@ export default function GameStatus({ state, onNewGame, infoMessage }: GameStatus
             onNewGame();
           }}
         >
-          New Game
+          {actionLabel}
         </button>
       )}
     </div>

@@ -9,7 +9,7 @@ import type {
   ValidationResult,
 } from './types';
 import { getLegalMovesForPiece, isInCheck as isInCheckGen, isSquareAttacked } from './moveGenerator';
-import { activateDraftModifiers as activateDraftModifiersGL, activateModifiers as activateModifiersGL, applyMove as applyMoveFull, applyMoveInternal, beginTurn as beginTurnGL, buildMove, cloneState, isCheckmate as isCheckmateGL, isPromotionMove, isStalemate as isStalemateGL, passTurn as passTurnGL } from './gameLoop';
+import { activateDraftModifiers as activateDraftModifiersGL, activateModifiers as activateModifiersGL, applyMove as applyMoveFull, applyMoveInternal, beginTurn as beginTurnGL, buildMove, canShooGerald as canShooGeraldGL, cloneState, hasAnyValidMove as hasAnyValidMoveGL, isCheckmate as isCheckmateGL, isPromotionMove, isStalemate as isStalemateGL, passTurn as passTurnGL, positionKey, shooGerald as shooGeraldGL } from './gameLoop';
 import { validateMove } from './moveValidator';
 
 export interface IChessEngine {
@@ -25,6 +25,9 @@ export interface IChessEngine {
   activateModifiers(state: GameState, ids: string[]): GameState;
   activateDraftModifiers(state: GameState, picks: DraftModifierPick[]): GameState;
   passTurn(state: GameState): GameState;
+  hasAnyValidMove(state: GameState): boolean;
+  canShooGerald(state: GameState): boolean;
+  shooGerald(state: GameState): GameState;
 }
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
@@ -64,7 +67,7 @@ function buildInitialPieces(): Map<Square, Piece> {
 
 class ChessEngineImpl implements IChessEngine {
   getInitialState(): GameState {
-    return {
+    const state: GameState = {
       id: uuidv4(),
       pieces: buildInitialPieces(),
       tiles: new Map(),
@@ -91,6 +94,9 @@ class ChessEngineImpl implements IChessEngine {
       tempoTokens: { white: 0, black: 0 },
       mercTokens: { white: 0, black: 0 },
     };
+    // The start position counts toward threefold repetition.
+    state.positionHistory = { [positionKey(state)]: 1 };
+    return state;
   }
 
   validateMove(state: GameState, move: Move): ValidationResult {
@@ -165,6 +171,18 @@ class ChessEngineImpl implements IChessEngine {
 
   passTurn(state: GameState): GameState {
     return passTurnGL(state);
+  }
+
+  hasAnyValidMove(state: GameState): boolean {
+    return hasAnyValidMoveGL(state);
+  }
+
+  canShooGerald(state: GameState): boolean {
+    return canShooGeraldGL(state);
+  }
+
+  shooGerald(state: GameState): GameState {
+    return shooGeraldGL(state);
   }
 }
 

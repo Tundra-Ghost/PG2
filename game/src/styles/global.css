@@ -1,4 +1,8 @@
 :root {
+  /* Board size: fits under the header and player banners so rank 1 never
+     falls below the fold. Shared by the board and the side docks. */
+  --board-size: max(320px, min(80vmin, 560px, calc(100dvh - 330px)));
+
   /* Board squares */
   --board-light-sq: #c8a870;
   --board-dark-sq:  #1e1408;

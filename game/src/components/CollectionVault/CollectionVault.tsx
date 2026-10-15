@@ -5,10 +5,9 @@ import {
   CATEGORY_NAMES,
   type ModifierCard,
   type ModifierCategory,
-} from '../../modifiers/data';
-import { modifierRegistry } from '../../modifiers/registry';
+} from '@pigeon-chess/game-core';
+import { modifierRegistry } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
-import '../../modifiers/index';
 import styles from './CollectionVault.module.css';
 
 type CategoryFilter = 'ALL' | ModifierCategory;

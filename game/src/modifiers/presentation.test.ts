@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import './index';
 import { getModifierDisplayBucket, getModifierOwnershipLabel } from './presentation';
-import { getDraftScope } from './scope';
+import { getDraftScope } from '@pigeon-chess/game-core';
 
 describe('modifier presentation', () => {
   it('shows shared draft modifiers in the shared bucket even when drafted by a side', () => {

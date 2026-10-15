@@ -1,4 +1,4 @@
-import type { Color, PieceType } from '../../engine/types';
+import type { Color, PieceType } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './PromotionModal.module.css';
 

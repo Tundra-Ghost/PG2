@@ -14,8 +14,8 @@
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
-  width: min(80vmin, 560px);
-  height: min(80vmin, 560px);
+  width: var(--board-size);
+  height: var(--board-size);
 }
 
 /* ── Coordinate labels ── */

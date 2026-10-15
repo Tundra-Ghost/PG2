@@ -13,6 +13,10 @@ import type {
 import { getLegalMovesForPiece, isInCheck, isSquareAttacked } from './moveGenerator';
 import { modifierRegistry } from '../modifiers/registry';
 import { getDraftScope } from '../modifiers/scope';
+import { MODIFIER_IDS } from '../modifiers/ids';
+import { validateMove } from './moveValidator';
+
+const GERALD_ID = MODIFIER_IDS.gerald;
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -37,7 +41,7 @@ function toSquare(f: number, r: number): Square {
  * Produces a deterministic key representing the full chess position.
  * Encodes: piece placement, side to move, castling rights, en-passant file.
  */
-function positionKey(state: GameState): string {
+export function positionKey(state: GameState): string {
   // 1. Piece placement — sorted so Map iteration order doesn't matter
   const pieceTokens: string[] = [];
   for (const [sq, p] of state.pieces) {
@@ -507,12 +511,9 @@ export function applyMove(state: GameState, move: Move): GameState {
 
   // ── Modifier hooks: onTurnStart (next player) — only if game still active ──
   if (next.status === 'active') {
-    next = beginTurn(next);
+    next = resolveBlockedTurn(beginTurn(next), 0);
   } else {
-    for (const inst of preparedState.activeModifiers) {
-      const def = modifierRegistry.get(inst.id);
-      def?.onMatchEnd?.(next);
-    }
+    runMatchEndHooks(next);
   }
 
   // ── Build notation AFTER result state is known (check/# suffix) ─────────────
@@ -542,7 +543,19 @@ export function beginTurn(state: GameState): GameState {
   return next;
 }
 
+/**
+ * Ends the current side's turn without a move. Refused (state returned
+ * unchanged) while the side to move is in check: passing would leave the
+ * king in check, which TDD Stage 6 never allows.
+ */
 export function passTurn(state: GameState): GameState {
+  return passTurnWithSkips(state, 0);
+}
+
+function passTurnWithSkips(state: GameState, skipsInARow: number): GameState {
+  if (state.status !== 'active') return state;
+  if (isInCheck(state, state.turn)) return state;
+
   let next = cloneState(state);
 
   const nextColor: Color = state.turn === 'white' ? 'black' : 'white';
@@ -583,15 +596,105 @@ export function passTurn(state: GameState): GameState {
   }
 
   if (next.status === 'active') {
-    next = beginTurn(next);
+    next = resolveBlockedTurn(beginTurn(next), skipsInARow);
   } else {
-    for (const inst of state.activeModifiers) {
-      const def = modifierRegistry.get(inst.id);
-      def?.onMatchEnd?.(next);
-    }
+    runMatchEndHooks(next);
   }
 
   return next;
+}
+
+function runMatchEndHooks(state: GameState): void {
+  for (const inst of state.activeModifiers) {
+    const def = modifierRegistry.get(inst.id);
+    def?.onMatchEnd?.(state);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Modifier-aware turn resolution
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * True if the side to move has at least one move that passes the full
+ * validation pipeline, modifier hooks included. Pure-chess checkmate and
+ * stalemate detection cannot see modifier blocks (Gerald, Winter, pacifist).
+ */
+export function hasAnyValidMove(state: GameState): boolean {
+  for (const piece of state.pieces.values()) {
+    if (piece.color !== state.turn) continue;
+    for (const to of getLegalMovesForPiece(state, piece)) {
+      const move = buildMove(state, piece.square, to);
+      if (isPromotionMove(state, piece.square, to)) move.promotion = 'queen';
+      if (validateMove(state, move).valid) return true;
+    }
+  }
+  return false;
+}
+
+/** The side to move may shoo Gerald (spending its turn) unless it is in check. */
+export function canShooGerald(state: GameState): boolean {
+  if (state.status !== 'active') return false;
+  if (isInCheck(state, state.turn)) return false;
+  return Array.from(state.pieces.values()).some(
+    piece => piece.color === state.turn && (piece.cooldowns[GERALD_ID] ?? 0) > 0,
+  );
+}
+
+/** GDD 04: the player clicks Gerald off a piece. Costs the turn. */
+export function shooGerald(state: GameState): GameState {
+  if (!canShooGerald(state)) return state;
+
+  const next = cloneState(state);
+  for (const [sq, piece] of next.pieces) {
+    if (piece.color !== state.turn || (piece.cooldowns[GERALD_ID] ?? 0) <= 0) continue;
+    const cooldowns = { ...piece.cooldowns };
+    delete cooldowns[GERALD_ID];
+    next.pieces.set(sq, { ...piece, cooldowns });
+  }
+
+  const shooed = appendGameEvent(next, {
+    ply: state.moveHistory.length + 1,
+    type: 'modifier',
+    modifierId: GERALD_ID,
+    title: 'Gerald',
+    message: `${state.turn === 'white' ? 'White' : 'Black'} shoos Gerald away. Turn spent.`,
+  });
+  return passTurn(shooed);
+}
+
+/**
+ * Runs after onTurnStart. If modifiers leave the side to move with no valid
+ * action: in check it is checkmate; otherwise the turn is skipped. If both
+ * sides are stuck back to back, the game is drawn as a stalemate.
+ */
+function resolveBlockedTurn(state: GameState, skipsInARow: number): GameState {
+  if (state.status !== 'active') return state;
+  if (hasAnyValidMove(state) || canShooGerald(state)) return state;
+
+  if (isInCheck(state, state.turn)) {
+    const mated = cloneState(state);
+    mated.status = 'checkmate';
+    runMatchEndHooks(mated);
+    return mated;
+  }
+
+  if (skipsInARow >= 1) {
+    const drawn = cloneState(state);
+    drawn.status = 'draw';
+    drawn.drawReason = 'stalemate';
+    runMatchEndHooks(drawn);
+    return drawn;
+  }
+
+  const skipped = appendGameEvent(state, {
+    ply: state.moveHistory.length + 1,
+    type: 'modifier',
+    modifierId: 'ENGINE',
+    title: 'No move',
+    message: `${state.turn === 'white' ? 'White' : 'Black'} has no piece free to move. Turn skipped.`,
+  });
+  return passTurnWithSkips(skipped, skipsInARow + 1);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

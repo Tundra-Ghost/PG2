@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { GameState } from './engine/types';
-import { chessEngine } from './engine/ChessEngine';
-import { getChickBotMove } from './engine/bot';
+import type { GameState } from '@pigeon-chess/game-core';
+import { chessEngine } from '@pigeon-chess/game-core';
+import { getChickBotMove } from '@pigeon-chess/game-core';
 import { getBotReaction, getBotSpeaker } from './botChat';
 import type { BotId } from './opponents';
 import { unlockBgm, playClick, playGameBgm, playMenuBgm } from './sound';
@@ -24,6 +24,7 @@ import MoveHistory from './components/MoveHistory/MoveHistory';
 import PlayerBanner from './components/PlayerBanner/PlayerBanner';
 import ProfileSetup from './components/ProfileSetup/ProfileSetup';
 import SettingsScreen from './components/Settings/Settings';
+import OnlineMatch from './components/OnlineMatch/OnlineMatch';
 import {
   createProfile,
   getProfileLevel,
@@ -36,7 +37,6 @@ import {
 } from './profile';
 import styles from './App.module.css';
 
-import './modifiers/index';
 
 type Screen =
   | 'menu'
@@ -46,7 +46,8 @@ type Screen =
   | 'settings'
   | 'profile'
   | 'roost'
-  | 'collection';
+  | 'collection'
+  | 'online';
 type BotSelectMode = 'run' | 'quick' | null;
 
 interface ProfileViewerState {
@@ -109,6 +110,12 @@ export default function App() {
   const [profile, setProfile] = useState<LocalProfile | null>(() => loadProfile());
 
   useEffect(() => {
+    // A new screen starts at the top. Without this, mobile kept the draft
+    // screen's scroll offset and opened the match with the board off-screen.
+    window.scrollTo(0, 0);
+  }, [screen]);
+
+  useEffect(() => {
     if (screen === 'game') {
       playGameBgm();
     } else {
@@ -126,6 +133,9 @@ export default function App() {
       const move = getChickBotMove(gameState, 'black');
       if (move) {
         setGameState(prev => (prev.status === 'active' ? chessEngine.applyMove(prev, move) : prev));
+      } else if (chessEngine.canShooGerald(gameState)) {
+        // Gerald pinned the only movable piece. The bot spends its turn shooing him.
+        setGameState(prev => (prev.status === 'active' ? chessEngine.shooGerald(prev) : prev));
       }
     }, 350);
 
@@ -422,6 +432,10 @@ export default function App() {
           onProfile={goToProfile}
           onRoost={goToRoost}
           onCollection={goToCollection}
+          onOnline={() => {
+            playClick();
+            setScreen('online');
+          }}
           profile={profile}
         />
         {settingsOverlay}
@@ -465,6 +479,20 @@ export default function App() {
           heading="The Roost"
           subtitle="Local records, titles, achievements, and offline history for the current serverless prototype. Online sections remain placeholder scaffolding."
           onBack={() => setScreen('menu')}
+        />
+        {settingsOverlay}
+      </div>
+    );
+  }
+
+  if (baseScreen === 'online') {
+    return (
+      <div onClick={handleUnlock}>
+        <OnlineMatch
+          playerName={playerName}
+          settings={settings}
+          onBack={() => setScreen('menu')}
+          onSettings={goToSettings}
         />
         {settingsOverlay}
       </div>
@@ -588,6 +616,7 @@ export default function App() {
                 <Board
                   state={gameState}
                   onStateChange={setGameState}
+                  controlColor={vsBot ? 'white' : undefined}
                   onInfo={setInfoMessage}
                   showLegalMoves={settings.showLegalMoves}
                   autoQueen={settings.autoQueen}

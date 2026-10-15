@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
-import type { Piece as PieceType, Square as SquareType, TileEffectType } from '../../engine/types';
-import { MODIFIER_IDS } from '../../modifiers/ids';
+import type { Piece as PieceType, Square as SquareType, TileEffectType } from '@pigeon-chess/game-core';
+import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import PieceComponent from '../Piece/Piece';
 import styles from './Square.module.css';
 

@@ -1,5 +1,5 @@
-import type { Color, Piece } from '../../engine/types';
-import { MODIFIER_IDS } from '../../modifiers/ids';
+import type { Color, Piece } from '@pigeon-chess/game-core';
+import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 
 const GERALD_ID = MODIFIER_IDS.gerald;
 

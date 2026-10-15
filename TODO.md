@@ -35,13 +35,16 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Local player profile state and basic progression stats are now stored client-side for the serverless prototype
 - Local profiles now track titles, achievements, match history, mode stats, region, and placeholder ELO entirely on-device
 - The Roost can now serve as a real local records destination instead of a menu placeholder
+- Turn resolution is now modifier-aware: if modifiers block every move, the side in check is checkmated, otherwise the turn is skipped (both sides stuck back to back is a stalemate draw)
+- Shooing Gerald now actually clears him, spends the turn, and is refused while in check
+- The start position now counts toward threefold repetition
 
 ## Priority 1: Stabilize The Prototype Core
 
 - [x] Add a test runner for `game/` and create the first engine test suite
 - [ ] Cover remaining TDD-critical chess rule edges with tests: broader move legality matrix, check-state handling, and rule-regression cases
 - [x] Add deterministic tests for draw logic: threefold repetition, 50-move rule, insufficient material
-- [x] Audit engine state transitions in `game/src/engine/gameLoop.ts` against the TDD move-validation pipeline
+- [x] Audit engine state transitions in `packages/game-core/src/engine/gameLoop.ts` against the TDD move-validation pipeline
 - [x] Confirm current modifier hooks do not break core chess legality
 
 ## Priority 2: Formalize Modifier Architecture
@@ -57,9 +60,13 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 
 ## Priority 3: Close TDD/GDD Gaps
 
-- [ ] Decide whether the next milestone remains a local prototype or begins migration to server-authoritative play
-- [ ] If migrating, extract pure game logic into a shared package boundary
-- [ ] Define the smallest viable multiplayer slice before building ranked/casual systems
+- [x] Decide whether the next milestone remains a local prototype or begins migration to server-authoritative play (decided 2026-10-15: migrate)
+- [x] If migrating, extract pure game logic into a shared package boundary (`packages/game-core`)
+- [x] Define the smallest viable multiplayer slice: room code, two seats, standard rules, server-validated moves (`apps/server`)
+- [ ] Online: resign, draw offer, and the 30s reconnect / forfeit rules from TDD §05
+- [ ] Online: modifier draft over sockets (TDD P1-03)
+- [ ] Online: host the server so the Pages build can reach it
+- [ ] Persist rooms in Redis and results in Postgres (TDD P0-05)
 - [ ] Reconcile current menu promises with actual scope so the prototype does not over-claim
 
 ## Priority 4: Expand Playable Surface Area

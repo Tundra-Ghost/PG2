@@ -1,5 +1,5 @@
 {
-  "name": "pigeon-chess-game",
+  "name": "@pigeon-chess/web",
   "private": true,
   "version": "0.0.1",
   "scripts": {
@@ -11,17 +11,17 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@pigeon-chess/game-core": "workspace:*",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "uuid": "^9.0.1"
+    "socket.io-client": "^4.8.4"
   },
   "devDependencies": {
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
-    "@types/uuid": "^9.0.8",
     "@vitejs/plugin-react": "^4.3.1",
     "typescript": "^5.5.3",
-    "vite": "^5.3.4",
+    "vite": "^6.3.5",
     "vitest": "^4.1.2"
   }
 }

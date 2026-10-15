@@ -4,7 +4,7 @@ import {
   getSelectedTitle,
   type LocalProfile,
 } from '../../profile';
-import { ALL_MODIFIERS } from '../../modifiers/data';
+import { ALL_MODIFIERS } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './MainMenu.module.css';
 
@@ -14,6 +14,7 @@ interface MainMenuProps {
   onProfile: () => void;
   onRoost: () => void;
   onCollection: () => void;
+  onOnline: () => void;
   profile: LocalProfile | null;
 }
 
@@ -92,6 +93,7 @@ export default function MainMenu({
   onProfile,
   onRoost,
   onCollection,
+  onOnline,
   profile,
 }: MainMenuProps) {
   const profileLevel = profile ? getProfileLevel(profile) : 1;
@@ -144,11 +146,12 @@ export default function MainMenu({
     {
       id: 'online',
       label: 'Online',
-      detail: 'Ranked, casual, and direct challenges.',
-      status: 'soon',
+      detail: 'Play a friend with a room code.',
+      status: 'live',
       tone: 'blue',
       size: 'standard',
       artClass: 'artOnline',
+      action: onOnline,
     },
     {
       id: 'settings',
