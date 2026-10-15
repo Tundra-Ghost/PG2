@@ -34,26 +34,26 @@ Primary product references:
 
 ### Chess core
 
-- `game/src/engine/ChessEngine.ts`
+- `packages/game-core/src/engine/ChessEngine.ts`
   - Public engine API
-- `game/src/engine/gameLoop.ts`
+- `packages/game-core/src/engine/gameLoop.ts`
   - Move application, turn handling, draw logic
-- `game/src/engine/moveGenerator.ts`
+- `packages/game-core/src/engine/moveGenerator.ts`
   - Legal move generation support
-- `game/src/engine/moveValidator.ts`
+- `packages/game-core/src/engine/moveValidator.ts`
   - Validation layer
-- `game/src/engine/types.ts`
+- `packages/game-core/src/engine/types.ts`
   - Core state model
 
 ### Modifier system
 
-- `game/src/modifiers/data.ts`
+- `packages/game-core/src/modifiers/data.ts`
   - Card catalog and UI-facing modifier metadata
-- `game/src/modifiers/registry.ts`
+- `packages/game-core/src/modifiers/registry.ts`
   - Runtime modifier registry
-- `game/src/modifiers/index.ts`
+- `packages/game-core/src/modifiers/index.ts`
   - Registers active modifier definitions
-- `game/src/modifiers/definitions/`
+- `packages/game-core/src/modifiers/definitions/`
   - Currently implemented definitions:
     - `berserker.ts`
     - `conscientious-objector.ts`
@@ -104,13 +104,13 @@ TDD target:
 - Server-authoritative rules
 - Client renders emitted state only
 
-Current repo:
+Current repo (2026-10-15):
 
-- Client owns gameplay state
-- Client runs engine logic directly
-- Client runs bot logic directly
-
-This is acceptable for a prototype, but it is the largest architectural gap in the repo.
+- Engine and modifiers live in `packages/game-core` (pnpm workspace)
+- `apps/server` runs Fastify + Socket.IO rooms and validates every online move with game-core
+- Online play (standard rules) renders server state only
+- Local bot play and the modifier draft still run in the client
+- Still missing from the TDD stack: Redis/Postgres (P0-05), Clerk auth (P0-06), Phaser renderer (P0-04), Turborepo, draft over sockets (P1-03)
 
 ### Gap 2: Test discipline
 

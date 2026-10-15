@@ -6,9 +6,9 @@ Primary references:
 
 - `docs/pigeon-chess-tdd.html`
 - `docs/pigeon-chess-modifier-bible-v02.html`
-- `game/src/modifiers/types.ts`
-- `game/src/engine/gameLoop.ts`
-- `game/src/engine/moveValidator.ts`
+- `packages/game-core/src/modifiers/types.ts`
+- `packages/game-core/src/engine/gameLoop.ts`
+- `packages/game-core/src/engine/moveValidator.ts`
 
 ## Current Runtime Pipeline
 
@@ -115,7 +115,7 @@ Current move pipeline:
 
 ### Aligned now
 
-- Hook interface exists in `game/src/modifiers/types.ts`.
+- Hook interface exists in `packages/game-core/src/modifiers/types.ts`.
 - Runtime executes `onTurnStart`, `onPreMoveValidate`, `onPreMoveApply`, `onCapture`, `onPromotion`, `onPostMove`, `onTurnEnd`, and `onMatchEnd`.
 - Self-check remains a non-bypassable engine rule even when `onPreMoveApply` rewrites a move.
 - Modifier behavior is under test with focused engine and modifier suites.
