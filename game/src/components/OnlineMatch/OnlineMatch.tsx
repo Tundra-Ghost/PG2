@@ -184,10 +184,76 @@ export default function OnlineMatch({ playerName, settings, onBack, onSettings }
               onNewGame={leave}
               infoMessage={infoMessage ?? (opponentAway ? 'Opponent disconnected.' : null)}
               actionLabel="Leave Room"
+              controls={
+                <MatchControls
+                  myColor={myColor}
+                  drawOffer={room.drawOffer}
+                  confirmResign={settings.confirmResign}
+                  onResign={room.resign}
+                  onOfferDraw={room.offerDraw}
+                  onAnswerDraw={room.answerDraw}
+                />
+              }
             />
           </div>
         </section>
       </main>
+    </div>
+  );
+}
+
+interface MatchControlsProps {
+  myColor: 'white' | 'black';
+  drawOffer: 'white' | 'black' | null;
+  confirmResign: boolean;
+  onResign: () => void;
+  onOfferDraw: () => void;
+  onAnswerDraw: (accept: boolean) => void;
+}
+
+/** Resign and draw offer buttons for an online match (TDD §05). */
+function MatchControls({ myColor, drawOffer, confirmResign, onResign, onOfferDraw, onAnswerDraw }: MatchControlsProps) {
+  const [confirming, setConfirming] = useState(false);
+
+  if (drawOffer && drawOffer !== myColor) {
+    return (
+      <div className={styles.controls} role="group" aria-label="Draw offer">
+        <span className={styles.controlsText}>Opponent offers a draw.</span>
+        <button className={styles.controlBtn} onClick={() => { playClick(); onAnswerDraw(true); }}>Accept</button>
+        <button className={styles.controlBtn} onClick={() => { playClick(); onAnswerDraw(false); }}>Decline</button>
+      </div>
+    );
+  }
+
+  if (confirming) {
+    return (
+      <div className={styles.controls} role="group" aria-label="Confirm resign">
+        <span className={styles.controlsText}>Resign this game?</span>
+        <button className={styles.controlBtn} onClick={() => { playClick(); setConfirming(false); onResign(); }}>Resign</button>
+        <button className={styles.controlBtn} onClick={() => { playClick(); setConfirming(false); }}>Keep playing</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.controls}>
+      <button
+        className={styles.controlBtn}
+        disabled={drawOffer === myColor}
+        onClick={() => { playClick(); onOfferDraw(); }}
+      >
+        {drawOffer === myColor ? 'Draw offered' : 'Offer draw'}
+      </button>
+      <button
+        className={styles.controlBtn}
+        onClick={() => {
+          playClick();
+          if (confirmResign) setConfirming(true);
+          else onResign();
+        }}
+      >
+        Resign
+      </button>
     </div>
   );
 }

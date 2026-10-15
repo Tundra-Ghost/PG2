@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { GameEvent, GameState } from '@pigeon-chess/game-core';
+import { getWinner, type GameEvent, type GameState } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import type { MatchChatEntry } from '../../matchFeed';
 import styles from './MoveHistory.module.css';
 import DialogueBox from '../DialogueBox/DialogueBox';
+
+const RESULT_TEXT = { white: '1 - 0', black: '0 - 1', draw: '1/2 - 1/2' } as const;
 
 interface MoveHistoryProps {
   state: GameState;
@@ -184,7 +186,7 @@ export default function MoveHistory({
     whiteLabel,
   ]);
 
-  const gameOver = status === 'checkmate' || status === 'draw';
+  const gameOver = status === 'checkmate' || status === 'draw' || status === 'resigned';
 
   function handleSend() {
     const trimmed = draftChat.trim();
@@ -315,10 +317,7 @@ export default function MoveHistory({
 
         {gameOver && (
           <div className={styles.resultRow}>
-            {status === 'checkmate' && (
-              <span className={styles.result}>{turn === 'white' ? '0 - 1' : '1 - 0'}</span>
-            )}
-            {status === 'draw' && <span className={styles.result}>1/2 - 1/2</span>}
+            <span className={styles.result}>{RESULT_TEXT[getWinner(state) ?? 'draw']}</span>
           </div>
         )}
 

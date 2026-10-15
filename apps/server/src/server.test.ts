@@ -42,6 +42,19 @@ const join = (c: Client, roomId: string, token?: string) =>
   new Promise<RoomAck>(resolve => c.emit('room:join', { roomId, token }, resolve));
 const move = (c: Client, req: MoveRequest) =>
   new Promise<ActionAck>(resolve => c.emit('game:move', req, resolve));
+const resign = (c: Client) => new Promise<ActionAck>(resolve => c.emit('game:resign', resolve));
+const drawOffer = (c: Client, accept?: boolean) =>
+  new Promise<ActionAck>(resolve => c.emit('game:draw_offer', { accept }, resolve));
+/** Waits for a broadcast that passes the check, skipping earlier ones still in flight. */
+const stateWhere = (c: Client, check: (snapshot: RoomSnapshot) => boolean) =>
+  new Promise<RoomSnapshot>(resolve => {
+    const onState = (snapshot: RoomSnapshot) => {
+      if (!check(snapshot)) return;
+      c.off('game:state', onState);
+      resolve(snapshot);
+    };
+    c.on('game:state', onState);
+  });
 const nextState = (c: Client) => new Promise<RoomSnapshot>(resolve => c.once('game:state', resolve));
 
 async function startGame() {
@@ -105,5 +118,52 @@ describe('game server', () => {
     const { white } = await startGame();
     white.emit('game:move', null as unknown as MoveRequest, undefined as unknown as (res: ActionAck) => void);
     expect(await move(white, { from: 'e2', to: 'e4' })).toEqual({ ok: true });
+  });
+
+  it('resigning ends the game for both players and blocks further moves', async () => {
+    const { white, black } = await startGame();
+
+    const seenByWhite = stateWhere(white, s => s.state.status !== 'active');
+    expect(await resign(black)).toEqual({ ok: true });
+    const state = fromWire((await seenByWhite).state);
+    expect(state.status).toBe('resigned');
+    expect(state.resignedBy).toBe('black');
+
+    expect(await move(white, { from: 'e2', to: 'e4' })).toMatchObject({ ok: false });
+    expect(await resign(white)).toMatchObject({ ok: false });
+  });
+
+  it('runs the draw offer flow: offer, decline, offer again, accept', async () => {
+    const { white, black } = await startGame();
+
+    let seen = stateWhere(black, s => s.drawOffer !== null);
+    expect(await drawOffer(white)).toEqual({ ok: true });
+    expect((await seen).drawOffer).toBe('white');
+
+    // You cannot accept or decline your own offer.
+    expect(await drawOffer(white, true)).toMatchObject({ ok: false });
+
+    seen = stateWhere(white, s => s.drawOffer === null);
+    expect(await drawOffer(black, false)).toEqual({ ok: true });
+    expect((await seen).drawOffer).toBeNull();
+
+    expect(await drawOffer(white)).toEqual({ ok: true });
+    seen = stateWhere(white, s => s.state.status !== 'active');
+    expect(await drawOffer(black, true)).toEqual({ ok: true });
+    const snapshot = await seen;
+    const state = fromWire(snapshot.state);
+    expect(state.status).toBe('draw');
+    expect(state.drawReason).toBe('agreement');
+    expect(snapshot.drawOffer).toBeNull();
+  });
+
+  it('a move withdraws an open draw offer', async () => {
+    const { white, black } = await startGame();
+
+    expect(await drawOffer(white)).toEqual({ ok: true });
+    const seen = stateWhere(black, s => s.state.moveHistory.length > 0);
+    expect(await move(white, { from: 'e2', to: 'e4' })).toEqual({ ok: true });
+    expect((await seen).drawOffer).toBeNull();
+    expect(await drawOffer(black, true)).toMatchObject({ ok: false });
   });
 });

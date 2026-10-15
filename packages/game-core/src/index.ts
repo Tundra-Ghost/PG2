@@ -20,6 +20,7 @@ export {
   isPromotionMove,
 } from './engine/gameLoop';
 export { getChickBotMove } from './engine/bot';
+export { drawByAgreement, getWinner, resign } from './engine/result';
 export { prngPickIndex, prngStep } from './engine/prng';
 
 export type { ModifierDefinition, PreMoveApplyResult, PreMoveResult } from './modifiers/types';
@@ -36,6 +37,7 @@ export type { WireGameState } from './net/wire';
 export type {
   ActionAck,
   ClientToServerEvents,
+  DrawOfferRequest,
   JoinRequest,
   MoveRequest,
   RoomAck,

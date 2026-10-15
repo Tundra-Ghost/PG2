@@ -63,7 +63,8 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Decide whether the next milestone remains a local prototype or begins migration to server-authoritative play (decided 2026-10-15: migrate)
 - [x] If migrating, extract pure game logic into a shared package boundary (`packages/game-core`)
 - [x] Define the smallest viable multiplayer slice: room code, two seats, standard rules, server-validated moves (`apps/server`)
-- [ ] Online: resign, draw offer, and the 30s reconnect / forfeit rules from TDD §05
+- [x] Online: resign and draw offer (TDD §05 game:resign, game:draw_offer)
+- [ ] Online: 30s reconnect window and forfeit rules from TDD §05
 - [ ] Online: modifier draft over sockets (TDD P1-03)
 - [x] Site: publish to GitHub Pages from Actions on every merge (`.github/workflows/pages.yml`)
 - [ ] Site: stop committing `game/dist` once the Actions deploy is confirmed live
