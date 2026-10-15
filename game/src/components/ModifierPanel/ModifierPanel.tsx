@@ -12,6 +12,7 @@ import {
 } from '../../modifiers/presentation';
 import { playClick } from '../../sound';
 import styles from './ModifierPanel.module.css';
+import PrototypeRules from '../PrototypeRules/PrototypeRules';
 
 interface ModifierPanelProps {
   state: GameState;
@@ -26,6 +27,7 @@ interface ModifierDisplay extends ModifierInstance {
   categoryName?: string;
   color?: string;
   description?: string;
+  prototypeRules?: string;
   typeLine?: string;
 }
 
@@ -37,6 +39,7 @@ const modifierMeta = new Map(
       categoryName: CATEGORY_NAMES[mod.category],
       color: CATEGORY_COLORS[mod.category],
       description: mod.description,
+      prototypeRules: mod.prototypeRules,
       typeLine: mod.typeLine,
     },
   ]),
@@ -72,6 +75,7 @@ function bucketModifiers(
       categoryName: meta?.categoryName,
       color: meta?.color,
       description: meta?.description,
+      prototypeRules: meta?.prototypeRules,
       typeLine: meta?.typeLine,
     });
   }
@@ -167,6 +171,7 @@ function ExpandedCard({
       {mod.description && (
         <p className={styles.expandedDescription}>{mod.description}</p>
       )}
+      <PrototypeRules text={mod.prototypeRules} tone="light" />
 
       <div className={styles.modMeta}>
         <span className={styles.modId}>{mod.id}</span>

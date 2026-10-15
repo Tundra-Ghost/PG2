@@ -361,6 +361,10 @@
   line-height: 1.55;
 }
 
+.prototypeRules {
+  margin: 0 0.8rem;
+}
+
 .flavorButton {
   width: fit-content;
   margin: auto 0.8rem 0;

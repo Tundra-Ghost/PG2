@@ -9,6 +9,7 @@ import {
 import { modifierRegistry } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './CollectionVault.module.css';
+import PrototypeRules from '../PrototypeRules/PrototypeRules';
 
 type CategoryFilter = 'ALL' | ModifierCategory;
 type StatusFilter = 'all' | 'implemented' | 'design';
@@ -87,6 +88,9 @@ function VaultCard({
       </dl>
 
       <p className={styles.description}>{card.description}</p>
+      <div className={styles.prototypeRules}>
+        <PrototypeRules text={card.prototypeRules} />
+      </div>
 
       <button
         type="button"

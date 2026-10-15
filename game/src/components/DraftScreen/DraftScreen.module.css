@@ -347,10 +347,10 @@
 
 .implementationHint {
   font-family: var(--font-mono);
-  font-size: 0.52rem;
+  font-size: 0.64rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(242, 234, 216, 0.34);
+  color: rgba(242, 234, 216, 0.6);
   margin: 0.1rem 0 0;
 }
 
@@ -523,9 +523,9 @@
 
 .budgetHint {
   font-family: var(--font-mono);
-  font-size: 0.52rem;
-  letter-spacing: 0.1em;
-  color: rgba(200, 151, 58, 0.40);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: rgba(200, 151, 58, 0.75);
   margin: 0;
 }
 
@@ -657,9 +657,10 @@
 
 .rulesHint {
   font-family: var(--font-mono);
-  font-size: 0.5rem;
-  letter-spacing: 0.1em;
-  color: rgba(200, 151, 58, 0.28);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  color: rgba(200, 151, 58, 0.7);
   text-align: center;
   margin: 0;
 }
