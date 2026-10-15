@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import type { GameState, PieceType, Square } from '@pigeon-chess/game-core';
+import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
 import { buildMove } from '@pigeon-chess/game-core';
 import { isFrozenZoneSquare } from '@pigeon-chess/game-core';
@@ -17,7 +17,15 @@ const WINTER_ID = MODIFIER_IDS.winterIsComing;
 
 interface BoardProps {
   state: GameState;
-  onStateChange: (next: GameState) => void;
+  /** Local play: the board applies moves itself and reports the new state. */
+  onStateChange?: (next: GameState) => void;
+  /** Online play: the board only sends intents. The server applies them. */
+  onMove?: (move: Move) => void;
+  onShooGerald?: () => void;
+  /** The side this player controls. Clicks are ignored on the other side's turn. */
+  controlColor?: Color;
+  /** Which side sits at the bottom. Black players see the board flipped. */
+  orientation?: Color;
   onInfo?: (message: string) => void;
   showLegalMoves?: boolean;
   autoQueen?: boolean;
@@ -59,6 +67,10 @@ function playSfxForMove(state: GameState, from: Square, to: Square, isCastle: bo
 export default function Board({
   state,
   onStateChange,
+  onMove,
+  onShooGerald,
+  controlColor,
+  orientation = 'white',
   onInfo,
   showLegalMoves = true,
   autoQueen = false,
@@ -67,6 +79,14 @@ export default function Board({
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null);
+  const commitMove = useCallback(
+    (move: Move) => {
+      if (onMove) onMove(move);
+      else onStateChange?.(chessEngine.applyMove(state, move));
+    },
+    [onMove, onStateChange, state],
+  );
+
   const winterActive = state.activeModifiers.some(mod => mod.id === WINTER_ID);
 
   const lastMove = state.moveHistory[state.moveHistory.length - 1];
@@ -96,13 +116,13 @@ export default function Board({
       const validation = chessEngine.validateMove(state, move);
       if (validation.valid) {
         playSfxForMove(state, pendingPromotion.from, pendingPromotion.to, false);
-        onStateChange(chessEngine.applyMove(state, move));
+        commitMove(move);
       }
       setPendingPromotion(null);
       setSelected(null);
       setLegalMoves([]);
     },
-    [pendingPromotion, state, onStateChange],
+    [commitMove, pendingPromotion, state],
   );
 
   const shooGeraldOrWarn = useCallback(() => {
@@ -112,13 +132,15 @@ export default function Board({
       onInfo?.('You are in check. Gerald stays put.');
       return;
     }
-    onStateChange(chessEngine.shooGerald(state));
+    if (onShooGerald) onShooGerald();
+    else onStateChange?.(chessEngine.shooGerald(state));
     onInfo?.('Gerald chased off. Turn forfeited.');
-  }, [state, onStateChange, onInfo]);
+  }, [state, onStateChange, onShooGerald, onInfo]);
 
   const handleSquareClick = useCallback(
     (square: Square) => {
       if (state.status !== 'active') return;
+      if (controlColor && state.turn !== controlColor) return; // opponent's turn
       if (pendingPromotion) return; // modal is open — ignore board clicks
 
       const clickedPiece = state.pieces.get(square);
@@ -174,7 +196,7 @@ export default function Board({
             const validation = chessEngine.validateMove(state, move);
             if (validation.valid) {
               playSfxForMove(state, selected, square, false);
-              onStateChange(chessEngine.applyMove(state, move));
+              commitMove(move);
             } else if (validation.reason) {
               onInfo?.(validation.reason);
             }
@@ -190,7 +212,7 @@ export default function Board({
         const validation = chessEngine.validateMove(state, move);
         if (validation.valid) {
           playSfxForMove(state, selected, square, !!move.isCastle);
-          onStateChange(chessEngine.applyMove(state, move));
+          commitMove(move);
         } else if (validation.reason) {
           onInfo?.(validation.reason);
         }
@@ -203,10 +225,11 @@ export default function Board({
       setSelected(null);
       setLegalMoves([]);
     },
-    [autoQueen, legalMoves, onInfo, onStateChange, pendingPromotion, selected, shooGeraldOrWarn, state],
+    [autoQueen, commitMove, controlColor, legalMoves, onInfo, pendingPromotion, selected, shooGeraldOrWarn, state],
   );
 
-  const rankOrder = [...RANKS].reverse();
+  const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
+  const fileOrder = orientation === 'white' ? [...FILES] : [...FILES].reverse();
 
   return (
     <>
@@ -215,7 +238,7 @@ export default function Board({
         {showCoordinates && (
           <div className={styles.coordRowTop}>
             <div className={styles.coordCorner} />
-            {FILES.map(f => (
+            {fileOrder.map(f => (
               <div key={f} className={styles.coordLabel}>{f}</div>
             ))}
             <div className={styles.coordCorner} />
@@ -234,8 +257,8 @@ export default function Board({
 
           {/* Board grid */}
           <div className={styles.board}>
-            {rankOrder.map((rank, rankIdx) =>
-              FILES.map((file, fileIdx) => {
+            {rankOrder.map(rank =>
+              fileOrder.map(file => {
                 const square = `${file}${rank}` as Square;
                 const piece  = state.pieces.get(square);
                 const tileEffects =
@@ -245,7 +268,7 @@ export default function Board({
                   <SquareComponent
                     key={square}
                     square={square}
-                    isLight={isLightSquare(fileIdx, 7 - rankIdx)}
+                    isLight={isLightSquare(FILES.indexOf(file), RANKS.indexOf(rank))}
                     piece={piece}
                     isSelected={selected === square}
                     isLegalTarget={showLegalMoves && legalMoves.includes(square)}
@@ -274,7 +297,7 @@ export default function Board({
         {showCoordinates && (
           <div className={styles.coordRowBottom}>
             <div className={styles.coordCorner} />
-            {FILES.map(f => (
+            {fileOrder.map(f => (
               <div key={f} className={styles.coordLabel}>{f}</div>
             ))}
             <div className={styles.coordCorner} />
