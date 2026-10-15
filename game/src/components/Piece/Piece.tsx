@@ -27,7 +27,7 @@ export default function Piece({ piece }: PieceProps) {
   const markers: string[] = [];
 
   if ((cooldowns[GERALD_ID] ?? 0) > 0) markers.push('G');
-  if ((cooldowns[WINTER_ID] ?? 0) > 0) markers.push('F');
+  if ((cooldowns[WINTER_ID] ?? 0) > 0) markers.push('❄');
   if (isPacifist) markers.push('O');
   if (isBerserker) markers.push('B');
 

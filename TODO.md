@@ -88,6 +88,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 
 ## Priority 4A: UI, VFX, And SFX Readability
 
+- [x] UX: board legend explains the marker badges of active modifiers; Winter zone is a light tint, frozen pieces show ❄
 - [ ] GDD UI: replace temporary letter badges with authored icon badges for Gerald, lava, freeze, pacifist, and berserker states
 - [ ] GDD UI: animate modifier triggers on board and pieces: lava burn, Gerald fly-off, freeze thaw, berserker chain, pacifist refusal
 - [x] GDD UI: add short event banners for autonomous or curse-driven actions so modifier outcomes never feel silent

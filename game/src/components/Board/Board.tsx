@@ -5,7 +5,7 @@ import { buildMove } from '@pigeon-chess/game-core';
 import { isFrozenZoneSquare } from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import { playCapture, playCastle, playMove } from '../../sound';
-import { shouldForfeitTurnForGerald } from './interaction';
+import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
 import SquareComponent from '../Square/Square';
 import PromotionModal from '../PromotionModal/PromotionModal';
 import styles from './Board.module.css';
@@ -88,6 +88,7 @@ export default function Board({
   );
 
   const winterActive = state.activeModifiers.some(mod => mod.id === WINTER_ID);
+  const markerLegend = getMarkerLegend(state.activeModifiers.map(mod => mod.id));
 
   const lastMove = state.moveHistory[state.moveHistory.length - 1];
   const lastFrom = lastMove?.move.from;
@@ -233,7 +234,7 @@ export default function Board({
 
   return (
     <>
-      <div className={styles.frame}>
+      <div className={markerLegend.length > 0 ? `${styles.frame} ${styles.withLegend}` : styles.frame}>
         {/* Top file labels */}
         {showCoordinates && (
           <div className={styles.coordRowTop}>
@@ -301,6 +302,17 @@ export default function Board({
               <div key={f} className={styles.coordLabel}>{f}</div>
             ))}
             <div className={styles.coordCorner} />
+          </div>
+        )}
+
+        {markerLegend.length > 0 && (
+          <div className={styles.legend} aria-label="Board markers">
+            {markerLegend.map(entry => (
+              <span key={entry.label} className={styles.legendItem}>
+                <span className={styles.legendMark}>{entry.mark}</span>
+                {entry.label}
+              </span>
+            ))}
           </div>
         )}
       </div>

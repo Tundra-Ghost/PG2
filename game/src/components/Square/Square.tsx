@@ -135,10 +135,7 @@ export default function Square({
       tabIndex={-1}
     >
       {isFrozenZone && (
-        <div className={styles.tileEffectLayer} aria-hidden="true">
-          <div className={styles.frozenGlow} />
-          <div className={styles.frozenIcon}>❄</div>
-        </div>
+        <div className={`${styles.tileEffectLayer} ${styles.frozenTint}`} aria-hidden="true" />
       )}
 
       {hasLava && (
