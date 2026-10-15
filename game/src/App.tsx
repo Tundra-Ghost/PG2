@@ -109,6 +109,12 @@ export default function App() {
   const [profile, setProfile] = useState<LocalProfile | null>(() => loadProfile());
 
   useEffect(() => {
+    // A new screen starts at the top. Without this, mobile kept the draft
+    // screen's scroll offset and opened the match with the board off-screen.
+    window.scrollTo(0, 0);
+  }, [screen]);
+
+  useEffect(() => {
     if (screen === 'game') {
       playGameBgm();
     } else {

@@ -1,4 +1,4 @@
-import type { Color, Piece as ChessPiece, PieceType } from '../../engine/types';
+import type { Piece as ChessPiece, PieceType } from '../../engine/types';
 import { MODIFIER_IDS } from '../../modifiers/ids';
 import styles from './Piece.module.css';
 
@@ -6,23 +6,16 @@ interface PieceProps {
   piece: ChessPiece;
 }
 
-const SYMBOLS: Record<Color, Partial<Record<PieceType, string>>> = {
-  white: {
-    king: '♔',
-    queen: '♕',
-    rook: '♖',
-    bishop: '♗',
-    knight: '♘',
-    pawn: '♙',
-  },
-  black: {
-    king: '♚',
-    queen: '♛',
-    rook: '♜',
-    bishop: '♝',
-    knight: '♞',
-    pawn: '♟',
-  },
+// Both colours use the solid glyphs. The outline glyphs (♙ etc.) have a
+// transparent body, so white pieces looked hollow and black pieces on dark
+// squares read as white. Colour now comes from CSS fill and stroke alone.
+const SYMBOLS: Partial<Record<PieceType, string>> = {
+  king: '♚',
+  queen: '♛',
+  rook: '♜',
+  bishop: '♝',
+  knight: '♞',
+  pawn: '♟',
 };
 
 const GERALD_ID = MODIFIER_IDS.gerald;
@@ -30,7 +23,7 @@ const WINTER_ID = MODIFIER_IDS.winterIsComing;
 
 export default function Piece({ piece }: PieceProps) {
   const { type, color, cooldowns, isPacifist, isBerserker } = piece;
-  const symbol = SYMBOLS[color][type] ?? '?';
+  const symbol = SYMBOLS[type] ?? '?';
   const markers: string[] = [];
 
   if ((cooldowns[GERALD_ID] ?? 0) > 0) markers.push('G');

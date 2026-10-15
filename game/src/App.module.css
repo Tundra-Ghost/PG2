@@ -50,8 +50,9 @@
   color: rgba(200, 151, 58, 0.45);
   background: transparent;
   border: 1px solid rgba(200, 151, 58, 0.18);
-  width: 2rem;
+  min-width: 2rem;
   height: 2rem;
+  padding: 0 0.6rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -144,8 +145,8 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  /* Cap height to board frame: board (min(80vmin,560px)) + coord labels (44px) + shell padding (~43px) */
-  max-height: min(calc(80vmin + 87px), 647px);
+  /* Cap height to board frame: board (--board-size) + coord labels (44px) + shell padding (~43px) */
+  max-height: calc(var(--board-size) + 87px);
   overflow: hidden;
 }
 
@@ -153,7 +154,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  max-height: min(calc(80vmin + 87px), 647px);
+  max-height: calc(var(--board-size) + 87px);
   overflow: hidden;
 }
 

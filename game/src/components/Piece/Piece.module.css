@@ -21,16 +21,17 @@
 }
 
 .white {
-  color: #fffff0;
-  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.60);
+  color: #f2ead8;
+  -webkit-text-stroke: 1px rgba(24, 18, 10, 0.85);
   text-shadow:
     0 1px 3px rgba(0, 0, 0, 0.55),
     0 0 1px rgba(0, 0, 0, 0.4);
 }
 
-/* Black pieces: warm cream outline so they read on both light AND dark squares */
+/* Black pieces: walnut body plus cream outline. The body must differ from
+   Board Dark (#1e1408) or black pieces on dark squares read as hollow. */
 .black {
-  color: #1a1008;
+  color: #4a3420;
   -webkit-text-stroke: 1.5px #c8a870;
   text-shadow:
     0 0 4px rgba(200, 168, 112, 0.35),
