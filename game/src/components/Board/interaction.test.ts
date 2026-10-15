@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Piece } from '../../engine/types';
+import type { Piece } from '@pigeon-chess/game-core';
 import { shouldForfeitTurnForGerald } from './interaction';
 
 function makePiece(

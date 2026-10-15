@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { GameState } from './engine/types';
-import { chessEngine } from './engine/ChessEngine';
-import { getChickBotMove } from './engine/bot';
+import type { GameState } from '@pigeon-chess/game-core';
+import { chessEngine } from '@pigeon-chess/game-core';
+import { getChickBotMove } from '@pigeon-chess/game-core';
 import { getBotReaction, getBotSpeaker } from './botChat';
 import type { BotId } from './opponents';
 import { unlockBgm, playClick, playGameBgm, playMenuBgm } from './sound';
@@ -36,7 +36,6 @@ import {
 } from './profile';
 import styles from './App.module.css';
 
-import './modifiers/index';
 
 type Screen =
   | 'menu'

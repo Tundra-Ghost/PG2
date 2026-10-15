@@ -1,5 +1,5 @@
-import type { Piece as ChessPiece, PieceType } from '../../engine/types';
-import { MODIFIER_IDS } from '../../modifiers/ids';
+import type { Piece as ChessPiece, PieceType } from '@pigeon-chess/game-core';
+import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import styles from './Piece.module.css';
 
 interface PieceProps {

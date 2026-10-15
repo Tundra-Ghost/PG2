@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
-import type { GameState, PieceType, Square } from '../../engine/types';
-import { chessEngine } from '../../engine/ChessEngine';
-import { buildMove } from '../../engine/gameLoop';
-import { isFrozenZoneSquare } from '../../modifiers/definitions/winter';
-import { MODIFIER_IDS } from '../../modifiers/ids';
+import type { GameState, PieceType, Square } from '@pigeon-chess/game-core';
+import { chessEngine } from '@pigeon-chess/game-core';
+import { buildMove } from '@pigeon-chess/game-core';
+import { isFrozenZoneSquare } from '@pigeon-chess/game-core';
+import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import { playCapture, playCastle, playMove } from '../../sound';
 import { shouldForfeitTurnForGerald } from './interaction';
 import SquareComponent from '../Square/Square';

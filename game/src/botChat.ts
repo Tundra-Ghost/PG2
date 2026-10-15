@@ -1,4 +1,4 @@
-import type { MoveRecord, PieceType } from './engine/types';
+import type { MoveRecord, PieceType } from '@pigeon-chess/game-core';
 import {
   BOTS,
   getBotProfile,

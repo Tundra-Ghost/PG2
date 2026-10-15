@@ -1,5 +1,5 @@
-import type { Color, ModifierInstance } from '../engine/types';
-import { getDraftScope } from './scope';
+import type { Color, ModifierInstance } from '@pigeon-chess/game-core';
+import { getDraftScope } from '@pigeon-chess/game-core';
 
 export function getModifierDisplayBucket(
   modifier: ModifierInstance,

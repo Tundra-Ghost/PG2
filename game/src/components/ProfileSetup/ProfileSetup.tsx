@@ -18,7 +18,7 @@ import {
   type ModeStats,
 } from '../../profile';
 import { createCircularAvatarDataUrl } from '../../profile/avatar';
-import { ALL_MODIFIERS } from '../../modifiers/data';
+import { ALL_MODIFIERS } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './ProfileSetup.module.css';
 

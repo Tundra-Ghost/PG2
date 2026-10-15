@@ -4,7 +4,7 @@ import {
   getSelectedTitle,
   type LocalProfile,
 } from '../../profile';
-import { ALL_MODIFIERS } from '../../modifiers/data';
+import { ALL_MODIFIERS } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './MainMenu.module.css';
 

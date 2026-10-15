@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { GameEvent, GameState } from '../../engine/types';
+import type { GameEvent, GameState } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import type { MatchChatEntry } from '../../matchFeed';
 import styles from './MoveHistory.module.css';

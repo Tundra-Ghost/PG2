@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import type { Color, GameState, ModifierInstance } from '../../engine/types';
+import type { Color, GameState, ModifierInstance } from '@pigeon-chess/game-core';
 import {
   ALL_MODIFIERS,
   CATEGORY_COLORS,
   CATEGORY_NAMES,
   type ModifierCategory,
-} from '../../modifiers/data';
+} from '@pigeon-chess/game-core';
 import {
   getModifierDisplayBucket,
   getModifierOwnershipLabel,

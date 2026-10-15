@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getBotReaction, getSpeakerProfile } from './botChat';
-import type { MoveRecord, Piece } from './engine/types';
+import type { MoveRecord, Piece } from '@pigeon-chess/game-core';
 
 function makePiece(
   type: Piece['type'],

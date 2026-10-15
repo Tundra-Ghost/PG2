@@ -1,4 +1,4 @@
-import type { Color, GameState } from '../../engine/types';
+import type { Color, GameState } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './GameStatus.module.css';
 

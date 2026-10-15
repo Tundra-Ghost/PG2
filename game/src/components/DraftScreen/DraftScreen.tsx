@@ -5,11 +5,10 @@ import {
   CATEGORY_NAMES,
   type ModifierCard,
   type ModifierCategory,
-} from '../../modifiers/data';
-import { modifierRegistry } from '../../modifiers/registry';
-import { isSharedDraftModifier } from '../../modifiers/scope';
+} from '@pigeon-chess/game-core';
+import { modifierRegistry } from '@pigeon-chess/game-core';
+import { isSharedDraftModifier } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
-import '../../modifiers/index';
 import styles from './DraftScreen.module.css';
 
 const BUDGET = 8;
