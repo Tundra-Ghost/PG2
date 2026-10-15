@@ -51,10 +51,16 @@ export interface OnlineRoom {
   seats: Record<Color, SeatStatus> | null;
   state: GameState | null;
   error: string | null;
+  /** The side with an open draw offer, if any. */
+  drawOffer: Color | null;
   createRoom: () => void;
   joinRoom: (code: string) => void;
   sendMove: (move: Move) => void;
   shooGerald: () => void;
+  resign: () => void;
+  /** Offers a draw, or accepts the opponent's open offer. */
+  offerDraw: () => void;
+  answerDraw: (accept: boolean) => void;
   leave: () => void;
 }
 
@@ -124,6 +130,7 @@ export function useOnlineRoom(): OnlineRoom {
     seats: snapshot?.seats ?? null,
     state,
     error,
+    drawOffer: snapshot?.drawOffer ?? null,
     createRoom: () => socketRef.current?.emit('room:create', onSeat),
     joinRoom: code => socketRef.current?.emit('room:join', { roomId: code }, onSeat),
     sendMove: move =>
@@ -133,6 +140,9 @@ export function useOnlineRoom(): OnlineRoom {
         actionAck,
       ),
     shooGerald: () => socketRef.current?.emit('game:shoo_gerald', actionAck),
+    resign: () => socketRef.current?.emit('game:resign', actionAck),
+    offerDraw: () => socketRef.current?.emit('game:draw_offer', {}, actionAck),
+    answerDraw: accept => socketRef.current?.emit('game:draw_offer', { accept }, actionAck),
     leave: () => {
       seatRef.current = null;
       writeSeat(null);

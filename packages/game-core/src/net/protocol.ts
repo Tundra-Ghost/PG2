@@ -13,6 +13,8 @@ export interface RoomSnapshot {
   roomId: string;
   seats: Record<Color, SeatStatus>;
   state: WireGameState;
+  /** The side with an open draw offer, if any. Any move clears it. */
+  drawOffer: Color | null;
 }
 
 export type RoomAck =
@@ -33,11 +35,21 @@ export interface MoveRequest {
   promotion?: PieceType;
 }
 
+/**
+ * TDD §05 game:draw_offer. With no `accept`, offers a draw (or accepts the
+ * opponent's open offer). With `accept`, answers the opponent's offer.
+ */
+export interface DrawOfferRequest {
+  accept?: boolean;
+}
+
 export interface ClientToServerEvents {
   'room:create': (ack: (res: RoomAck) => void) => void;
   'room:join': (req: JoinRequest, ack: (res: RoomAck) => void) => void;
   'game:move': (req: MoveRequest, ack: (res: ActionAck) => void) => void;
   'game:shoo_gerald': (ack: (res: ActionAck) => void) => void;
+  'game:resign': (ack: (res: ActionAck) => void) => void;
+  'game:draw_offer': (req: DrawOfferRequest, ack: (res: ActionAck) => void) => void;
 }
 
 export interface ServerToClientEvents {

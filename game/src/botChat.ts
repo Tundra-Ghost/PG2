@@ -1,4 +1,4 @@
-import type { MoveRecord, PieceType } from '@pigeon-chess/game-core';
+import type { GameState, MoveRecord, PieceType } from '@pigeon-chess/game-core';
 import {
   BOTS,
   getBotProfile,
@@ -12,7 +12,7 @@ export interface BotReactionInput {
   speakerId: OpponentId;
   moveRecord: MoveRecord;
   moveIndex: number;
-  gameStatus: 'active' | 'checkmate' | 'draw' | 'abandoned' | 'draft';
+  gameStatus: GameState['status'];
 }
 
 export interface BotReactionOutput {

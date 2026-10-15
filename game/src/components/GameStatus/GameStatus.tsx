@@ -1,4 +1,5 @@
-import type { Color, GameState } from '@pigeon-chess/game-core';
+import type { ReactNode } from 'react';
+import { getWinner, type GameState } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './GameStatus.module.css';
 
@@ -8,6 +9,8 @@ interface GameStatusProps {
   infoMessage?: string | null;
   /** Label for the restart button. Online play uses it to leave the room. */
   actionLabel?: string;
+  /** Extra match controls shown next to the action button (online resign / draw). */
+  controls?: ReactNode;
 }
 
 const DRAW_LABELS: Record<string, string> = {
@@ -15,25 +18,26 @@ const DRAW_LABELS: Record<string, string> = {
   '50-move':   '50-move rule',
   threefold:   'threefold repetition',
   insufficient: 'insufficient material',
+  agreement:   'by agreement',
 };
 
 function getStatusMessage(state: GameState): { emoji: string; headline: string; sub: string } | null {
-  if (state.status === 'checkmate') {
-    const winner: Color = state.turn === 'white' ? 'black' : 'white';
+  const winner = getWinner(state);
+  if (winner && winner !== 'draw') {
     return {
       emoji: winner === 'white' ? '♔' : '♚',
       headline: `${winner.toUpperCase()} WINS`,
-      sub: 'by checkmate',
+      sub: state.status === 'resigned' ? `${state.resignedBy} resigned` : 'by checkmate',
     };
   }
-  if (state.status === 'draw') {
+  if (winner === 'draw') {
     const label = DRAW_LABELS[state.drawReason ?? 'stalemate'] ?? 'draw';
     return { emoji: '🕊️', headline: 'DRAW', sub: label };
   }
   return null;
 }
 
-export default function GameStatus({ state, onNewGame, infoMessage, actionLabel = 'New Game' }: GameStatusProps) {
+export default function GameStatus({ state, onNewGame, infoMessage, actionLabel = 'New Game', controls }: GameStatusProps) {
   const msg = getStatusMessage(state);
   const isOver = msg !== null;
 
@@ -87,6 +91,8 @@ export default function GameStatus({ state, onNewGame, infoMessage, actionLabel 
           </div>
         </div>
       )}
+
+      {!isOver && controls}
 
       {!isOver && (
         <button

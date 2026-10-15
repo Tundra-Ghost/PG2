@@ -92,7 +92,7 @@ export interface MoveRecord {
   notation: string;
 }
 
-export type DrawReason = 'stalemate' | '50-move' | 'threefold' | 'insufficient';
+export type DrawReason = 'stalemate' | '50-move' | 'threefold' | 'insufficient' | 'agreement';
 
 export interface GameState {
   id: string;
@@ -104,8 +104,10 @@ export interface GameState {
   modifierState: Record<ModifierID, unknown>;
   moveHistory: MoveRecord[];
   eventHistory: GameEvent[];
-  status: 'draft' | 'active' | 'checkmate' | 'draw' | 'abandoned';
+  status: 'draft' | 'active' | 'checkmate' | 'draw' | 'resigned' | 'abandoned';
   drawReason?: DrawReason;
+  /** Set when status is 'resigned'. */
+  resignedBy?: Color;
   flags: GameFlags;
   /** FEN-like position keys → occurrence count, used for threefold repetition. */
   positionHistory: Record<string, number>;
