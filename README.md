@@ -39,6 +39,8 @@ pnpm typecheck
 
 To try online play, run both, open the web app in two tabs, create a room in one and join with the code in the other.
 
+The live site (tundra-ghost.github.io/PG2/) is built and published by `.github/workflows/pages.yml` on every merge to main. Online play there needs a hosted server (not set up yet).
+
 ## Repo Map
 
 - `index.html`: landing page / product pitch
