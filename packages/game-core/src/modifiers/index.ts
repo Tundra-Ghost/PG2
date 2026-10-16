@@ -19,6 +19,7 @@ import { ventTilesDef } from './definitions/vent-tiles';
 import { didIDoThatDef } from './definitions/oops-knight';
 import { retaliatorySwipeDef } from './definitions/retaliatory-swipe';
 import { forTheEmperorDef } from './definitions/for-the-emperor';
+import { youDiedDef } from './definitions/you-died';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -36,3 +37,4 @@ modifierRegistry.register(ventTilesDef);
 modifierRegistry.register(didIDoThatDef);
 modifierRegistry.register(retaliatorySwipeDef);
 modifierRegistry.register(forTheEmperorDef);
+modifierRegistry.register(youDiedDef);

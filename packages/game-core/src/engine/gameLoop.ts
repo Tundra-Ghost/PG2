@@ -445,6 +445,10 @@ function buildNotation(
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function applyMove(state: GameState, move: Move): GameState {
+  return playTakenOverTurns(applyMoveOnce(state, move));
+}
+
+function applyMoveOnce(state: GameState, move: Move): GameState {
   // Abilities skip onPreMoveApply: they already are a rule-bending move.
   const prepared = move.ability ? { state: cloneState(state), move: { ...move } } : runPreMoveApplyHooks(state, move);
   const preparedState = prepared.state;
@@ -578,7 +582,23 @@ export function beginTurn(state: GameState): GameState {
  * king in check, which TDD Stage 6 never allows.
  */
 export function passTurn(state: GameState): GameState {
-  return passTurnWithSkips(state, 0);
+  return playTakenOverTurns(passTurnWithSkips(state, 0));
+}
+
+/**
+ * If a modifier takes over the side to move (MOD-B001), play that move now.
+ * Each played move can hand over to the next turn, so this recurses through
+ * applyMove until a human (or bot) has to act.
+ */
+function playTakenOverTurns(state: GameState): GameState {
+  if (state.status !== 'active') return state;
+  for (const def of getActiveDefinitions(state)) {
+    const takeover = def.takeOverTurn?.(state);
+    if (!takeover) continue;
+    if (!validateMove(takeover.state, takeover.move).valid) continue;
+    return applyMove(takeover.state, takeover.move);
+  }
+  return state;
 }
 
 function passTurnWithSkips(state: GameState, skipsInARow: number): GameState {

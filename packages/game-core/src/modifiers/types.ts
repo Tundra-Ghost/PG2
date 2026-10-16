@@ -80,6 +80,13 @@ export interface ModifierDefinition {
   /** Called at the end of a turn, after game-end detection. */
   onTurnEnd?: (state: GameState) => GameState;
 
+  /**
+   * Called once the side to move is known and its turn has begun. Return a
+   * move to play for that side instead of waiting for input (MOD-B001), with
+   * the state it should be played from (PRNG advanced, events added).
+   */
+  takeOverTurn?: (state: GameState) => { state: GameState; move: Move } | null;
+
   /** Called when the match ends (checkmate, draw, abandon). */
   onMatchEnd?: (state: GameState) => void;
 

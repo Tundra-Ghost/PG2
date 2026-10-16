@@ -3,6 +3,7 @@ export const MODIFIER_IDS = {
   ventTiles: 'MOD-A003',
   winterIsComing: 'MOD-A004',
   thisIsMySwamp: 'MOD-A006',
+  youDied: 'MOD-B001',
   gerald: 'MOD-B002',
   conscientiousObjector: 'MOD-B007',
   reginaldBeak: 'MOD-B008',
