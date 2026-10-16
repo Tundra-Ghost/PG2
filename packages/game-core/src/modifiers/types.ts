@@ -1,4 +1,4 @@
-import type { Color, GameState, ModifierID, Move, Piece, Square } from '../engine/types';
+import type { Color, GameState, ModifierID, Move, Piece, PieceType, Square } from '../engine/types';
 
 export interface PreMoveResult {
   blocked: boolean;
@@ -8,6 +8,33 @@ export interface PreMoveResult {
 export interface PreMoveApplyResult {
   state: GameState;
   move: Move;
+}
+
+export interface AbilityResult {
+  state: GameState;
+  /** The piece removed by the ability, if any. Runs onCapture hooks. */
+  captured?: Piece;
+}
+
+/**
+ * An active ability (category C). The player selects a piece, presses the
+ * ability button, then picks a target square. It is played as a Move with
+ * `ability` set, costs the turn, and then cools down for that piece.
+ */
+export interface AbilitySpec {
+  /** Short button label, such as "Rook move". */
+  label: string;
+  /** One line shown under the button. */
+  hint: string;
+  pieceTypes: PieceType[];
+  /** Own turns the piece must wait after using it. */
+  cooldown: number;
+  /** Candidate target squares (self-check is filtered by the engine). */
+  getTargets: (state: GameState, piece: Piece) => Square[];
+  /** Physical effect. Default: the piece moves to the target like a normal move. */
+  apply?: (state: GameState, move: Move) => AbilityResult;
+  /** Move-list text. Default: piece letter, from, x or -, to. */
+  notation?: (state: GameState, move: Move) => string;
 }
 
 /**
@@ -27,6 +54,7 @@ export interface ModifierDefinition {
   curseRating: 0 | 1 | 2 | 3;
   activeFor: Color | 'both';
   draftScope?: 'shared' | 'owned';
+  ability?: AbilitySpec;
 
   /** Called once when modifier is selected in the draft. */
   onActivate?: (state: GameState) => GameState;

@@ -34,6 +34,8 @@ export interface Piece {
   isTraitor?: boolean;   // MOD-B006: warned, defects next turn
   hasPromotionChain?: boolean; // MOD-E007: chain-captures on its next capture
   cooldowns: Record<ModifierID, number>;
+  /** Own turns left before each active ability (C cards) can be used again. */
+  abilityCooldowns?: Record<ModifierID, number>;
   bannedEP?: Square;     // future: MOD-C008
 }
 
@@ -128,6 +130,8 @@ export interface Move {
   promotion?: PieceType;
   isCastle?: 'kingside' | 'queenside';
   isEnPassant?: boolean;
+  /** Set when the move is an active ability (C cards) instead of a normal move. */
+  ability?: ModifierID;
 }
 
 export interface ValidationResult {

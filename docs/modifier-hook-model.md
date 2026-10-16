@@ -286,6 +286,15 @@ Assessment:
 - `isVoid` tiles are off the board in the move generator: nothing lands on or slides through them. Future Storm can reuse this.
 - The vent jams (stays hidden, piece stays) if the exit holds a king or the jump would expose the mover's king.
 
+## Active abilities (category C)
+
+- A definition with `ability` (see `AbilitySpec` in `modifiers/types.ts`) gives a piece type a button ability.
+- It is played as a `Move` with `ability` set. `validateMove` runs the normal pre-move hooks (Gerald, frozen, pacifist, swamp), then `checkAbilityMove` (owner, piece type, cooldown, target), then the self-check guard on the ability's effect.
+- `applyMove` skips `onPreMoveApply` for abilities, uses `ability.apply` (default: move to the target), then runs the usual capture, post-move and turn-end hooks.
+- Cooldowns live in `piece.abilityCooldowns` and tick at the end of each own turn, passes included.
+- The board shows an ability bar when the side has ability cards. The bot weighs ability moves on the same material score.
+- Shipped: `MOD-C003` knight rook move (6), `MOD-C004` pawn backward capture (4), `MOD-C006` rook cannon (7, kings block the shot).
+
 ## Recommended Next Modifier Work
 
 `TDD`-aligned next steps:

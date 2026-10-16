@@ -22,10 +22,12 @@ export {
   PROMOTION_TYPES,
 } from './engine/gameLoop';
 export { getChickBotMove } from './engine/bot';
+export { getAbilityOptions } from './engine/abilities';
+export type { AbilityOption } from './engine/abilities';
 export { drawByAgreement, getWinner, resign } from './engine/result';
 export { prngPickIndex, prngStep } from './engine/prng';
 
-export type { ModifierDefinition, PreMoveApplyResult, PreMoveResult } from './modifiers/types';
+export type { AbilityResult, AbilitySpec, ModifierDefinition, PreMoveApplyResult, PreMoveResult } from './modifiers/types';
 export { ModifierRegistry, modifierRegistry } from './modifiers/registry';
 export { MODIFIER_IDS } from './modifiers/ids';
 export type { ModifierId } from './modifiers/ids';

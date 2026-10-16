@@ -16,6 +16,7 @@ import type { ModifierDefinition } from '../modifiers/types';
 import { getDraftScope } from '../modifiers/scope';
 import { MODIFIER_IDS } from '../modifiers/ids';
 import { validateMove } from './moveValidator';
+import { buildAbilityNotation, performAbility, startAbilityCooldown, tickAbilityCooldowns } from './abilities';
 
 const GERALD_ID = MODIFIER_IDS.gerald;
 
@@ -114,7 +115,11 @@ function isInsufficientMaterial(state: GameState): boolean {
 export function cloneState(state: GameState): GameState {
   const pieces = new Map<Square, Piece>();
   for (const [sq, piece] of state.pieces) {
-    pieces.set(sq, { ...piece, cooldowns: { ...piece.cooldowns } });
+    pieces.set(sq, {
+      ...piece,
+      cooldowns: { ...piece.cooldowns },
+      ...(piece.abilityCooldowns ? { abilityCooldowns: { ...piece.abilityCooldowns } } : {}),
+    });
   }
   const tiles = new Map(
     Array.from(state.tiles.entries()).map(([sq, tile]) => [
@@ -386,6 +391,7 @@ function buildNotation(
   isCapture: boolean,
   stateAfter: GameState,
 ): string {
+  if (move.ability) return buildAbilityNotation(stateBefore, move, isCapture, stateAfter);
   if (move.isCastle === 'kingside')  return 'O-O';
   if (move.isCastle === 'queenside') return 'O-O-O';
 
@@ -439,22 +445,33 @@ function buildNotation(
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function applyMove(state: GameState, move: Move): GameState {
-  const prepared = runPreMoveApplyHooks(state, move);
+  // Abilities skip onPreMoveApply: they already are a rule-bending move.
+  const prepared = move.ability ? { state: cloneState(state), move: { ...move } } : runPreMoveApplyHooks(state, move);
   const preparedState = prepared.state;
   const preparedMove = prepared.move;
   const pieceMoved = preparedState.pieces.get(preparedMove.from)!;
 
-  // Capture lookup (before the move is applied)
-  const pieceCaptured = preparedMove.isEnPassant
-    ? (() => {
-        const dir = pieceMoved.color === 'white' ? -1 : 1;
-        const capRank = rankIndex(preparedMove.to) + dir;
-        return preparedState.pieces.get(toSquare(fileIndex(preparedMove.to), capRank));
-      })()
-    : preparedState.pieces.get(preparedMove.to);
+  let pieceCaptured: Piece | undefined;
+  let next: GameState;
+  if (preparedMove.ability) {
+    const result = performAbility(preparedState, preparedMove);
+    pieceCaptured = result.captured;
+    next = result.state;
+  } else {
+    // Capture lookup (before the move is applied)
+    pieceCaptured = preparedMove.isEnPassant
+      ? (() => {
+          const dir = pieceMoved.color === 'white' ? -1 : 1;
+          const capRank = rankIndex(preparedMove.to) + dir;
+          return preparedState.pieces.get(toSquare(fileIndex(preparedMove.to), capRank));
+        })()
+      : preparedState.pieces.get(preparedMove.to);
 
-  // Apply physical move
-  let next = applyMoveInternal(preparedState, preparedMove);
+    // Apply physical move
+    next = applyMoveInternal(preparedState, preparedMove);
+  }
+  next = tickAbilityCooldowns(next, preparedState.turn);
+  if (preparedMove.ability) next = startAbilityCooldown(next, pieceMoved.id, preparedMove.ability);
 
   // ── Modifier hooks: onCapture ───────────────────────────────────────────────
   const isCapture = pieceCaptured !== undefined;
@@ -568,7 +585,7 @@ function passTurnWithSkips(state: GameState, skipsInARow: number): GameState {
   if (state.status !== 'active') return state;
   if (isInCheck(state, state.turn)) return state;
 
-  let next = cloneState(state);
+  let next = tickAbilityCooldowns(cloneState(state), state.turn);
 
   const nextColor: Color = state.turn === 'white' ? 'black' : 'white';
   next.turn = nextColor;

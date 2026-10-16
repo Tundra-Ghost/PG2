@@ -1,7 +1,7 @@
 import type { GameState, Move, ValidationResult } from './types';
 import { getLegalMovesForPiece, isInCheck, isSquareAttacked } from './moveGenerator';
 import { applyMoveInternal, cloneState, getActiveDefinitions, runPreMoveApplyHooks } from './gameLoop';
-import { modifierRegistry } from '../modifiers/registry';
+import { checkAbilityMove, performAbility } from './abilities';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -55,6 +55,17 @@ export function validateMove(state: GameState, move: Move): ValidationResult {
   const hookResult = runPreMoveHooks(state, move);
   if (hookResult.blocked) {
     return { valid: false, reason: hookResult.reason ?? 'blocked by modifier' };
+  }
+
+  // ─── Abilities replace stages 4–5 with their own target rules ────────────
+  if (move.ability) {
+    const abilityError = checkAbilityMove(state, move);
+    if (abilityError) return { valid: false, reason: abilityError };
+    const simulated = performAbility(cloneState(state), move).state;
+    if (isInCheck(simulated, move.playerColor)) {
+      return { valid: false, reason: 'leaves king in check' };
+    }
+    return { valid: true };
   }
 
   // ─── Stage 4: Piece movement rules ───────────────────────────────────────

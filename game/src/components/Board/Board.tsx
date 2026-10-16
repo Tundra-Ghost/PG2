@@ -1,8 +1,8 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
 import { buildMove } from '@pigeon-chess/game-core';
-import { getValidPromotionTypes, isFrozenZoneSquare } from '@pigeon-chess/game-core';
+import { getAbilityOptions, getValidPromotionTypes, isFrozenZoneSquare, modifierRegistry } from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import { playCapture, playCastle, playMove } from '../../sound';
 import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
@@ -78,6 +78,35 @@ export default function Board({
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null);
+  /** The ability (modifier id) armed for the selected piece, if any. */
+  const [abilityMode, setAbilityMode] = useState<string | null>(null);
+
+  // A new selection (or none) always disarms the ability.
+  useEffect(() => setAbilityMode(null), [selected, state]);
+
+  const abilitySide = controlColor ?? state.turn;
+  const hasAbilityCards = state.activeModifiers.some(
+    mod => modifierRegistry.get(mod.id)?.ability && (mod.sourceColor == null || mod.sourceColor === abilitySide),
+  );
+  const abilityOptions = selected && state.pieces.get(selected)?.color === abilitySide
+    ? getAbilityOptions(state, selected)
+    : [];
+
+  const toggleAbility = useCallback(
+    (modifierId: string) => {
+      if (!selected) return;
+      if (abilityMode === modifierId) {
+        setAbilityMode(null);
+        setLegalMoves(getDisplayLegalMoves(state, selected));
+        return;
+      }
+      const option = getAbilityOptions(state, selected).find(o => o.modifierId === modifierId);
+      if (!option || option.targets.length === 0) return;
+      setAbilityMode(modifierId);
+      setLegalMoves(option.targets);
+    },
+    [abilityMode, selected, state],
+  );
   const commitMove = useCallback(
     (move: Move) => {
       if (onMove) onMove(move);
@@ -164,6 +193,22 @@ export default function Board({
         return;
       }
 
+      // Attempt an armed ability (it may target an own piece, so check first)
+      if (abilityMode && legalMoves.includes(square)) {
+        const move: Move = { from: selected, to: square, playerColor: state.turn, ability: abilityMode };
+        const validation = chessEngine.validateMove(state, move);
+        if (validation.valid) {
+          if (state.pieces.has(square)) playCapture();
+          else playMove();
+          commitMove(move);
+        } else if (validation.reason) {
+          onInfo?.(validation.reason);
+        }
+        setSelected(null);
+        setLegalMoves([]);
+        return;
+      }
+
       // Re-select own piece
       if (clickedPiece && clickedPiece.color === state.turn && square !== selected) {
         if (shouldForfeitTurnForGerald(clickedPiece, state.turn)) {
@@ -225,7 +270,7 @@ export default function Board({
       setSelected(null);
       setLegalMoves([]);
     },
-    [autoQueen, commitMove, controlColor, legalMoves, onInfo, pendingPromotion, selected, shooGeraldOrWarn, state],
+    [abilityMode, autoQueen, commitMove, controlColor, legalMoves, onInfo, pendingPromotion, selected, shooGeraldOrWarn, state],
   );
 
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
@@ -233,7 +278,7 @@ export default function Board({
 
   return (
     <>
-      <div className={markerLegend.length > 0 ? `${styles.frame} ${styles.withLegend}` : styles.frame}>
+      <div className={[styles.frame, markerLegend.length > 0 ? styles.withLegend : '', hasAbilityCards ? styles.withAbilities : ''].filter(Boolean).join(' ')}>
         {/* Top file labels */}
         {showCoordinates && (
           <div className={styles.coordRowTop}>
@@ -305,6 +350,43 @@ export default function Board({
               <div key={f} className={styles.coordLabel}>{f}</div>
             ))}
             <div className={styles.coordCorner} />
+          </div>
+        )}
+
+        {hasAbilityCards && (
+          <div className={styles.abilityBar} aria-label="Abilities">
+            {abilityOptions.length === 0 ? (
+              <span className={styles.abilityHint}>
+                {selected ? 'This piece has no ability.' : 'Select a piece to see its ability.'}
+              </span>
+            ) : (
+              abilityOptions.map(option => {
+                const ready = option.cooldownLeft === 0 && option.targets.length > 0;
+                const armed = abilityMode === option.modifierId;
+                return (
+                  <button
+                    key={option.modifierId}
+                    type="button"
+                    className={`${styles.abilityButton} ${armed ? styles.abilityArmed : ''}`}
+                    disabled={!ready}
+                    aria-pressed={armed}
+                    title={option.hint}
+                    onClick={() => toggleAbility(option.modifierId)}
+                  >
+                    {armed ? `Cancel ${option.label}` : option.label}
+                    <span className={styles.abilityState}>
+                      {option.cooldownLeft > 0
+                        ? `ready in ${option.cooldownLeft}`
+                        : option.targets.length === 0
+                          ? 'no target'
+                          : armed
+                            ? 'pick a target'
+                            : 'ready'}
+                    </span>
+                  </button>
+                );
+              })
+            )}
           </div>
         )}
 

@@ -315,6 +315,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'This turn, your Knight moves like a Rook — any distance horizontally or vertically. It can capture on this move. The Knight is fully aware this is illegal. It moves anyway.',
     flavor: '"The knight moved in a straight line. It looked around. Nobody stopped it. Viktor pretended this was planned."',
+    prototypeRules:
+      'Select a knight and press the ability button. It moves like a rook this turn and can capture. Then that knight waits 6 of your turns. Cannot start from the Swamp.',
   },
   {
     id: 'MOD-C004',
@@ -328,6 +330,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'The selected pawn captures diagonally backwards this turn only. No promotion awarded for this capture. Each pawn tracks its own cooldown independently.',
     flavor: '"The pawn turned around. \'Look what you made me do,\' it communicated through chess movement."',
+    prototypeRules:
+      'Select a pawn and press the ability button. It captures one square diagonally backwards. No promotion. Then that pawn waits 4 of your turns.',
   },
   {
     id: 'MOD-C005',
@@ -354,6 +358,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'The Rook fires a cannonball in a chosen direction (N/S/E/W) travelling the full board, capturing the first piece it hits regardless of colour. Yes — it can capture your own pieces.',
     flavor: '"The rook fired. Something was hit. Viktor is checking whether it was his. It was his."',
+    prototypeRules:
+      'Select a rook and press the ability button, then click the piece to hit. The rook stays put and destroys the first piece on its rank or file, either colour. Kings block the shot. Then that rook waits 7 of your turns.',
   },
   {
     id: 'MOD-C007',

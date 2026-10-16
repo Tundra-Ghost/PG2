@@ -25,7 +25,7 @@ export function isVoidSquare(state: GameState, sq: Square): boolean {
 }
 
 /** Pseudo-legal squares a sliding piece can reach (stops at blockers/captures). */
-function slidingMoves(
+export function slidingMoves(
   state: GameState,
   piece: Piece,
   directions: [number, number][],
