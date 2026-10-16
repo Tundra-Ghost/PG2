@@ -12,6 +12,7 @@ import type {
 } from './types';
 import { getLegalMovesForPiece, isInCheck, isSquareAttacked } from './moveGenerator';
 import { modifierRegistry } from '../modifiers/registry';
+import type { ModifierDefinition } from '../modifiers/types';
 import { getDraftScope } from '../modifiers/scope';
 import { MODIFIER_IDS } from '../modifiers/ids';
 import { validateMove } from './moveValidator';
@@ -160,6 +161,23 @@ export function appendGameEvent(
   return next;
 }
 
+/**
+ * Definitions of the active modifiers, once each. An owned modifier drafted by
+ * both sides has two instances, but its hooks must run once per event; the
+ * definition reads every instance's owner itself.
+ */
+export function getActiveDefinitions(state: GameState): ModifierDefinition[] {
+  const seen = new Set<string>();
+  const defs: ModifierDefinition[] = [];
+  for (const inst of state.activeModifiers) {
+    if (seen.has(inst.id)) continue;
+    seen.add(inst.id);
+    const def = modifierRegistry.get(inst.id);
+    if (def) defs.push(def);
+  }
+  return defs;
+}
+
 export function runPreMoveApplyHooks(
   state: GameState,
   move: Move,
@@ -167,9 +185,8 @@ export function runPreMoveApplyHooks(
   let nextState = cloneState(state);
   let nextMove = { ...move };
 
-  for (const inst of state.activeModifiers) {
-    const def = modifierRegistry.get(inst.id);
-    if (def?.onPreMoveApply) {
+  for (const def of getActiveDefinitions(state)) {
+    if (def.onPreMoveApply) {
       const result = def.onPreMoveApply(nextState, nextMove);
       nextState = result.state;
       nextMove = result.move;
@@ -442,9 +459,8 @@ export function applyMove(state: GameState, move: Move): GameState {
   // ── Modifier hooks: onCapture ───────────────────────────────────────────────
   const isCapture = pieceCaptured !== undefined;
   if (isCapture) {
-    for (const inst of preparedState.activeModifiers) {
-      const def = modifierRegistry.get(inst.id);
-      if (def?.onCapture) {
+    for (const def of getActiveDefinitions(preparedState)) {
+      if (def.onCapture) {
         next = def.onCapture(next, preparedMove, pieceCaptured!);
       }
     }
@@ -452,18 +468,16 @@ export function applyMove(state: GameState, move: Move): GameState {
 
   // ── Modifier hooks: onPromotion ─────────────────────────────────────────────
   if (preparedMove.promotion) {
-    for (const inst of preparedState.activeModifiers) {
-      const def = modifierRegistry.get(inst.id);
-      if (def?.onPromotion) {
+    for (const def of getActiveDefinitions(preparedState)) {
+      if (def.onPromotion) {
         next = def.onPromotion(next, preparedMove);
       }
     }
   }
 
   // ── Modifier hooks: onPostMove ──────────────────────────────────────────────
-  for (const inst of preparedState.activeModifiers) {
-    const def = modifierRegistry.get(inst.id);
-    if (def?.onPostMove) {
+  for (const def of getActiveDefinitions(preparedState)) {
+    if (def.onPostMove) {
       next = def.onPostMove(next, preparedMove);
     }
   }
@@ -502,9 +516,8 @@ export function applyMove(state: GameState, move: Move): GameState {
   if (drawReason) next.drawReason = drawReason;
 
   // ── Modifier hooks: onTurnEnd (player who just moved) ──────────────────────
-  for (const inst of preparedState.activeModifiers) {
-    const def = modifierRegistry.get(inst.id);
-    if (def?.onTurnEnd) {
+  for (const def of getActiveDefinitions(preparedState)) {
+    if (def.onTurnEnd) {
       next = def.onTurnEnd(next);
     }
   }
@@ -534,9 +547,8 @@ export function applyMove(state: GameState, move: Move): GameState {
 
 export function beginTurn(state: GameState): GameState {
   let next = cloneState(state);
-  for (const inst of state.activeModifiers) {
-    const def = modifierRegistry.get(inst.id);
-    if (def?.onTurnStart) {
+  for (const def of getActiveDefinitions(state)) {
+    if (def.onTurnStart) {
       next = def.onTurnStart(next);
     }
   }
@@ -588,9 +600,8 @@ function passTurnWithSkips(state: GameState, skipsInARow: number): GameState {
   }
   if (drawReason) next.drawReason = drawReason;
 
-  for (const inst of state.activeModifiers) {
-    const def = modifierRegistry.get(inst.id);
-    if (def?.onTurnEnd) {
+  for (const def of getActiveDefinitions(state)) {
+    if (def.onTurnEnd) {
       next = def.onTurnEnd(next);
     }
   }
@@ -605,9 +616,8 @@ function passTurnWithSkips(state: GameState, skipsInARow: number): GameState {
 }
 
 function runMatchEndHooks(state: GameState): void {
-  for (const inst of state.activeModifiers) {
-    const def = modifierRegistry.get(inst.id);
-    def?.onMatchEnd?.(state);
+  for (const def of getActiveDefinitions(state)) {
+    def.onMatchEnd?.(state);
   }
 }
 

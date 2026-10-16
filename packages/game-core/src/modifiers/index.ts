@@ -8,9 +8,15 @@ import { geraldDef } from './definitions/gerald';
 import { winterIsComingDef } from './definitions/winter-is-coming';
 import { conscientiousObjectorDef } from './definitions/conscientious-objector';
 import { berserkerDef } from './definitions/berserker';
+import { thisIsMySwampDef } from './definitions/this-is-my-swamp';
+import { reginaldBeakDef } from './definitions/reginald-beak';
+import { smallCouncilDef } from './definitions/small-council';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
 modifierRegistry.register(winterIsComingDef);
 modifierRegistry.register(conscientiousObjectorDef);
 modifierRegistry.register(berserkerDef);
+modifierRegistry.register(thisIsMySwampDef);
+modifierRegistry.register(reginaldBeakDef);
+modifierRegistry.register(smallCouncilDef);

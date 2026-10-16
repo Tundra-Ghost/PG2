@@ -1,6 +1,6 @@
 import type { GameState, Move, ValidationResult } from './types';
 import { getLegalMovesForPiece, isInCheck, isSquareAttacked } from './moveGenerator';
-import { applyMoveInternal, cloneState, runPreMoveApplyHooks } from './gameLoop';
+import { applyMoveInternal, cloneState, getActiveDefinitions, runPreMoveApplyHooks } from './gameLoop';
 import { modifierRegistry } from '../modifiers/registry';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
@@ -19,9 +19,8 @@ function toSquare(f: number, r: number): string {
 }
 
 function runPreMoveHooks(state: GameState, move: Move): { blocked: boolean; reason?: string } {
-  for (const inst of state.activeModifiers) {
-    const def = modifierRegistry.get(inst.id);
-    if (def?.onPreMoveValidate) {
+  for (const def of getActiveDefinitions(state)) {
+    if (def.onPreMoveValidate) {
       const result = def.onPreMoveValidate(state, move);
       if (result.blocked) return result;
     }

@@ -14,11 +14,13 @@ interface SquareProps {
   isLastMove: boolean;
   tileEffects: TileEffectType[];
   isFrozenZone: boolean;
+  isSwamp: boolean;
   onClick: (square: SquareType) => void;
 }
 
 const GERALD_ID = MODIFIER_IDS.gerald;
 const WINTER_ID = MODIFIER_IDS.winterIsComing;
+const SWAMP_ID = MODIFIER_IDS.thisIsMySwamp;
 
 function getPieceTooltipLines(piece: PieceType | undefined): string[] {
   if (!piece) return [];
@@ -30,6 +32,9 @@ function getPieceTooltipLines(piece: PieceType | undefined): string[] {
   }
   if ((piece.cooldowns[WINTER_ID] ?? 0) > 0) {
     lines.push('Winter Is Coming: This piece is frozen for one turn.');
+  }
+  if ((piece.cooldowns[SWAMP_ID] ?? 0) > 0) {
+    lines.push('This Is My Swamp: This knight is stuck in the Swamp.');
   }
   if (piece.isPacifist) {
     lines.push('Conscientious Objector: This piece refuses to capture.');
@@ -44,6 +49,7 @@ function getPieceTooltipLines(piece: PieceType | undefined): string[] {
 function getTileTooltipLines(
   tileEffects: TileEffectType[],
   isFrozenZone: boolean,
+  isSwamp: boolean,
 ): string[] {
   const lines: string[] = [];
 
@@ -52,6 +58,9 @@ function getTileTooltipLines(
   }
   if (isFrozenZone) {
     lines.push('Winter Is Coming: Pieces entering this zone must thaw before moving again.');
+  }
+  if (isSwamp) {
+    lines.push('This Is My Swamp: Pieces here move only 1 square. Knights landing here are stuck for 2 turns.');
   }
 
   return lines;
@@ -67,6 +76,7 @@ export default function Square({
   isLastMove,
   tileEffects,
   isFrozenZone,
+  isSwamp,
   onClick,
 }: SquareProps) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -76,7 +86,7 @@ export default function Square({
   const colorClass = isLight ? styles.light : styles.dark;
   const hasLava = tileEffects.includes('lava');
   const pieceTooltipLines = getPieceTooltipLines(piece);
-  const tileTooltipLines = getTileTooltipLines(tileEffects, isFrozenZone);
+  const tileTooltipLines = getTileTooltipLines(tileEffects, isFrozenZone, isSwamp);
   const tooltipLines = [...pieceTooltipLines, ...tileTooltipLines];
   const hasTooltip = tooltipLines.length > 0;
 
@@ -136,6 +146,12 @@ export default function Square({
     >
       {isFrozenZone && (
         <div className={`${styles.tileEffectLayer} ${styles.frozenTint}`} aria-hidden="true" />
+      )}
+
+      {isSwamp && (
+        <div className={`${styles.tileEffectLayer} ${styles.swampTint}`} aria-hidden="true">
+          <div className={styles.swampIcon}>≈</div>
+        </div>
       )}
 
       {hasLava && (

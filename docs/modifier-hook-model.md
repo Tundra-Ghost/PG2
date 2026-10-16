@@ -38,6 +38,12 @@ Current move pipeline:
 
 ## Hook Semantics
 
+### Owned cards drafted by both sides
+
+- Both players may draft the same owned card, which adds two instances to `activeModifiers`.
+- `onActivate` runs once per instance. Use `getModifierOwner` there to read the instance just added.
+- Every other hook runs once per definition per event (`getActiveDefinitions`). Use `affectsColor` to check whether any instance applies to a side.
+
 ### `onActivate`
 
 - Runs once when a drafted modifier is attached to `activeModifiers`.
@@ -46,6 +52,8 @@ Current move pipeline:
   - `MOD-A002` places initial lava tiles.
   - `MOD-B007` marks one pawn as pacifist.
   - `MOD-E006` marks one piece as the berserker.
+  - `MOD-A006` marks the four centre tiles as Swamp.
+  - `MOD-E002` rebuilds the owner's army as 12 pawns.
 
 ### `onTurnStart`
 
@@ -235,6 +243,23 @@ Assessment:
 
 - Safe prototype slice of the mechanic.
 - Not modifier-bible complete.
+
+### `MOD-A006` This Is My Swamp
+
+- A piece that starts its move on d4, d5, e4 or e5 moves only 1 square, captures included. Sliders may pass through.
+- A knight landing in the Swamp is blocked for 2 of its turns, then leaps out normally.
+- Deviation: Swamp pieces still give check at full range, because check detection is pure chess.
+
+### `MOD-B008` 7/10 Too Many Pieces
+
+- Reginald Beak posts a review event after every move by the owner. No gameplay effect.
+- The match banner prefers any other event from the same move over Reginald.
+- Deviation: about 30 lines so far; the bible asks for 150+.
+
+### `MOD-E002` The Small Council
+
+- Owner loses knights and bishops and gets 12 pawns: rank 3 (or 6) full, plus b, c, f and g on rank 2 (or 7).
+- Third-rank pawns cannot double step.
 
 ## Recommended Next Modifier Work
 
