@@ -39,7 +39,17 @@ pnpm typecheck
 
 To try online play, run both, open the web app in two tabs, create a room in one and join with the code in the other.
 
-The live site (tundra-ghost.github.io/PG2/) is built and published by `.github/workflows/pages.yml` on every merge to main. Online play there needs a hosted server (not set up yet).
+The live site (tundra-ghost.github.io/PG2/) is built and published by `.github/workflows/pages.yml` on every merge to main. Online play there uses the game server on Fly.io (`fly.toml`, `apps/server/Dockerfile`).
+
+Deploying the server (one machine, since rooms live in memory):
+
+```
+fly auth login
+fly apps create pg2-pigeon-chess   # first time only
+fly deploy --ha=false
+```
+
+After that, `.github/workflows/deploy-server.yml` redeploys on every merge once the `FLY_API_TOKEN` repo secret is set (`fly tokens create deploy`).
 
 ## Repo Map
 

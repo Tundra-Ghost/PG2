@@ -1,0 +1,29 @@
+# Fly.io config for the online game server (apps/server).
+# Rooms live in memory, so keep exactly one machine: deploy with --ha=false.
+app = "pg2-pigeon-chess"
+primary_region = "ord"
+
+[build]
+  dockerfile = "apps/server/Dockerfile"
+
+[env]
+  CORS_ORIGIN = "https://tundra-ghost.github.io,http://localhost:5173,http://127.0.0.1:5173"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    path = "/health"
+    timeout = "5s"
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1

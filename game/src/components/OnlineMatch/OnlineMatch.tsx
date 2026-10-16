@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { AppSettings } from '../../settings';
 import { playClick } from '../../sound';
-import { useOnlineRoom } from '../../online/useOnlineRoom';
+import { SERVER_URL, useOnlineRoom } from '../../online/useOnlineRoom';
 import Board from '../Board/Board';
 import GameStatus from '../GameStatus/GameStatus';
 import MoveHistory from '../MoveHistory/MoveHistory';
@@ -261,9 +261,16 @@ function MatchControls({ myColor, drawOffer, confirmResign, onResign, onOfferDra
 function ConnectionLine({ connection }: { connection: 'connecting' | 'online' | 'offline' }) {
   if (connection === 'online') return <p className={styles.online}>Connected to the game server.</p>;
   if (connection === 'connecting') return <p className={styles.hint}>Connecting to the game server...</p>;
+  if (SERVER_URL.includes('localhost') || SERVER_URL.includes('127.0.0.1')) {
+    return (
+      <p className={styles.error}>
+        Can't reach the local game server. Run <code>pnpm dev:server</code> to start it.
+      </p>
+    );
+  }
   return (
     <p className={styles.error}>
-      Can't reach the game server. It is not hosted yet. To test locally, run <code>pnpm dev:server</code>.
+      Can't reach the game server. It may be waking up. Retrying...
     </p>
   );
 }
