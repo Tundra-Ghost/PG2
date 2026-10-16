@@ -5,6 +5,7 @@ import {
   type ActionAck,
   type ClientToServerEvents,
   type Color,
+  type GameSummary,
   type GameState,
   type Move,
   type RoomAck,
@@ -17,6 +18,9 @@ type GameSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
 
 export const SERVER_URL: string = import.meta.env.VITE_SERVER_URL ?? 'http://localhost:3001';
 
+import { forgetSeat, keepSeats, readSavedSeats, rememberSeat } from './savedGames';
+
+/** The game this tab is showing, so a reload drops you back into it. */
 const SEAT_KEY = 'pigeon-chess-online-seat';
 
 interface StoredSeat {
@@ -61,6 +65,10 @@ export interface OnlineRoom {
   /** Offers a draw, or accepts the opponent's open offer. */
   offerDraw: () => void;
   answerDraw: (accept: boolean) => void;
+  /** Saved games this browser holds a seat in, newest first. */
+  savedGames: GameSummary[];
+  resumeGame: (roomId: string) => void;
+  forgetGame: (roomId: string) => void;
   leave: () => void;
 }
 
@@ -76,6 +84,21 @@ export function useOnlineRoom(): OnlineRoom {
   const [color, setColor] = useState<Color | null>(null);
   const [snapshot, setSnapshot] = useState<RoomSnapshot | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [savedGames, setSavedGames] = useState<GameSummary[]>([]);
+
+  const refreshSavedGames = useCallback(() => {
+    const seats = readSavedSeats();
+    if (seats.length === 0) {
+      setSavedGames([]);
+      return;
+    }
+    socketRef.current?.emit('room:list', seats, games => {
+      // Drop seats for games the server deleted.
+      keepSeats(games.map(game => game.roomId));
+      const order = seats.map(seat => seat.roomId);
+      setSavedGames([...games].sort((a, b) => order.indexOf(a.roomId) - order.indexOf(b.roomId)));
+    });
+  }, []);
 
   const onSeat = useCallback((res: RoomAck) => {
     if (!res.ok) {
@@ -87,6 +110,7 @@ export function useOnlineRoom(): OnlineRoom {
     setColor(res.color);
     seatRef.current = { roomId: res.roomId, token: res.token };
     writeSeat(seatRef.current);
+    rememberSeat(seatRef.current);
   }, []);
 
   useEffect(() => {
@@ -95,6 +119,7 @@ export function useOnlineRoom(): OnlineRoom {
 
     socket.on('connect', () => {
       setConnection('online');
+      refreshSavedGames();
       // Reclaim our seat after a dropped connection or a page reload.
       const seat = seatRef.current;
       if (seat) {
@@ -115,7 +140,7 @@ export function useOnlineRoom(): OnlineRoom {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [onSeat]);
+  }, [onSeat, refreshSavedGames]);
 
   const actionAck = useCallback((res: ActionAck) => {
     setError(res.ok ? null : res.reason);
@@ -143,6 +168,16 @@ export function useOnlineRoom(): OnlineRoom {
     resign: () => socketRef.current?.emit('game:resign', actionAck),
     offerDraw: () => socketRef.current?.emit('game:draw_offer', {}, actionAck),
     answerDraw: accept => socketRef.current?.emit('game:draw_offer', { accept }, actionAck),
+    savedGames,
+    resumeGame: id => {
+      const seat = readSavedSeats().find(saved => saved.roomId === id);
+      if (seat) socketRef.current?.emit('room:join', { roomId: seat.roomId, token: seat.token }, onSeat);
+    },
+    forgetGame: id => {
+      forgetSeat(id);
+      setSavedGames(games => games.filter(game => game.roomId !== id));
+    },
+    // Leaving only closes this view. The seat stays saved so the game can be resumed.
     leave: () => {
       seatRef.current = null;
       writeSeat(null);

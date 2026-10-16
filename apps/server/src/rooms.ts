@@ -9,12 +9,15 @@ import {
   type ActionAck,
   type Color,
   type DrawOfferRequest,
+  type GameSummary,
+  type SeatRef,
   type GameState,
   type MoveRequest,
   type RoomAck,
   type RoomSnapshot,
   type SeatStatus,
 } from '@pigeon-chess/game-core';
+import { MemoryStore, type RoomStore } from './store';
 
 /** Unambiguous characters only, so a code read aloud or retyped still works. */
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -31,14 +34,43 @@ export interface Room {
   seats: Partial<Record<Color, Seat>>;
   /** The side with an open draw offer. Cleared by any move. */
   drawOffer: Color | null;
+  /** Last time anything happened in the room (ms since epoch). */
+  updatedAt: number;
 }
 
+/** A room nobody has touched for this long is deleted. */
+export const ROOM_EXPIRY_MS = 14 * 24 * 60 * 60 * 1000;
+
 /**
- * In-memory room store. Redis replaces this at TDD P0-05.
+ * Live rooms, backed by a RoomStore so games survive a server restart or
+ * sleep and can be finished over several days.
  * Every rule decision goes through game-core. Clients only send intents.
  */
 export class RoomManager {
   private rooms = new Map<string, Room>();
+
+  constructor(
+    private readonly store: RoomStore = new MemoryStore(),
+    private readonly now: () => number = Date.now,
+  ) {
+    for (const room of store.loadAll()) this.rooms.set(room.id, room);
+    this.expireOld();
+  }
+
+  /** Deletes rooms idle longer than ROOM_EXPIRY_MS. */
+  expireOld(): void {
+    const cutoff = this.now() - ROOM_EXPIRY_MS;
+    for (const room of this.rooms.values()) {
+      if (room.updatedAt >= cutoff) continue;
+      this.rooms.delete(room.id);
+      this.store.remove(room.id);
+    }
+  }
+
+  private touch(room: Room): void {
+    room.updatedAt = this.now();
+    this.store.save(room);
+  }
 
   create(): RoomAck {
     const id = this.newRoomId();
@@ -48,8 +80,10 @@ export class RoomManager {
       state: chessEngine.beginTurn(chessEngine.getInitialState()),
       seats: { white: { token, connected: true } },
       drawOffer: null,
+      updatedAt: this.now(),
     };
     this.rooms.set(id, room);
+    this.store.save(room);
     return { ok: true, roomId: id, color: 'white', token };
   }
 
@@ -71,6 +105,7 @@ export class RoomManager {
     if (room.seats.black) return { ok: false, reason: 'That room is full.' };
     const seatToken = randomUUID();
     room.seats.black = { token: seatToken, connected: true };
+    this.touch(room);
     return { ok: true, roomId: room.id, color: 'black', token: seatToken };
   }
 
@@ -92,6 +127,7 @@ export class RoomManager {
 
     room.state = chessEngine.applyMove(state, move);
     room.drawOffer = null;
+    this.touch(room);
     return { ok: true };
   }
 
@@ -102,6 +138,7 @@ export class RoomManager {
     if (!chessEngine.canShooGerald(room.state)) return { ok: false, reason: 'Gerald cannot be shooed right now.' };
     room.state = chessEngine.shooGerald(room.state);
     room.drawOffer = null;
+    this.touch(room);
     return { ok: true };
   }
 
@@ -110,6 +147,7 @@ export class RoomManager {
     if (!room.ok) return room;
     room.room.state = resign(room.room.state, color);
     room.room.drawOffer = null;
+    this.touch(room.room);
     return { ok: true };
   }
 
@@ -123,6 +161,7 @@ export class RoomManager {
     if (req.accept === false) {
       if (!opponentOffered) return { ok: false, reason: 'There is no draw offer to decline.' };
       room.drawOffer = null;
+      this.touch(room);
       return { ok: true };
     }
     if (req.accept === true && !opponentOffered) {
@@ -131,10 +170,12 @@ export class RoomManager {
     if (opponentOffered) {
       room.state = drawByAgreement(room.state);
       room.drawOffer = null;
+      this.touch(room);
       return { ok: true };
     }
     if (room.drawOffer === color) return { ok: false, reason: 'You already offered a draw.' };
     room.drawOffer = color;
+    this.touch(room);
     return { ok: true };
   }
 
@@ -151,12 +192,39 @@ export class RoomManager {
     if (seat) seat.connected = connected;
   }
 
-  /** Drops a room once nobody is left in it. */
+  /**
+   * Drops a room once nobody is left in it, but only if it can't be resumed:
+   * a room that never got an opponent. Started games wait for their players
+   * until they expire.
+   */
   closeIfEmpty(roomId: string): void {
     const room = this.rooms.get(roomId);
     if (!room) return;
     const anyone = Object.values(room.seats).some(seat => seat?.connected);
-    if (!anyone) this.rooms.delete(roomId);
+    if (anyone || room.seats.black) return;
+    this.rooms.delete(roomId);
+    this.store.remove(roomId);
+  }
+
+  /** Summaries for the seats a browser remembers. A wrong token reveals nothing. */
+  summaries(seats: SeatRef[]): GameSummary[] {
+    const games: GameSummary[] = [];
+    for (const ref of seats.slice(0, 50)) {
+      const room = this.rooms.get(String(ref?.roomId ?? '').toUpperCase());
+      if (!room) continue;
+      const color = (['white', 'black'] as const).find(c => room.seats[c]?.token === ref.token);
+      if (!color) continue;
+      games.push({
+        roomId: room.id,
+        color,
+        turn: room.state.turn,
+        status: room.state.status,
+        opponentJoined: Boolean(room.seats.white && room.seats.black),
+        moveCount: room.state.moveHistory.length,
+        updatedAt: room.updatedAt,
+      });
+    }
+    return games;
   }
 
   snapshot(roomId: string): RoomSnapshot | null {
