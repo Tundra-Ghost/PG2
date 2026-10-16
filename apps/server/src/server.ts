@@ -11,6 +11,7 @@ import type {
 } from '@pigeon-chess/game-core';
 import { registerAccountRoutes, type Accounts } from './accounts';
 import { createFeedbackStore, registerFeedbackRoutes } from './feedback';
+import { createSurveyStore, registerSurveyRoutes } from './survey';
 import { attachSocial, type Presence } from './social';
 import { RoomManager, type Player } from './rooms';
 import type { RoomStore } from './store';
@@ -90,6 +91,7 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
     });
     registerAccountRoutes(app, options.accounts);
     registerFeedbackRoutes(app, createFeedbackStore(options.accounts.db), options.accounts);
+    registerSurveyRoutes(app, createSurveyStore(options.accounts.db), options.accounts);
   }
 
   const broadcast = (roomId: string) => {

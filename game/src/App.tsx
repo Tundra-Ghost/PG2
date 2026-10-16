@@ -6,10 +6,12 @@ import { getBotReaction, getBotSpeaker } from './botChat';
 import type { BotId } from './opponents';
 import { unlockBgm, playClick, playGameBgm, playMenuBgm } from './sound';
 import type { AppSettings } from './settings';
-import { applySettings, loadSettings } from './settings';
+import { applySettings, loadSettings, saveSettings } from './settings';
 import { useAccount } from './online/useAccount';
 import { useSocial } from './online/useSocial';
 import Friends from './components/Friends/Friends';
+import PostGameSurvey from './components/PostGameSurvey/PostGameSurvey';
+import { isFinished, resultFor, type GameSurveyContext } from './online/survey';
 import {
   getDerivedFeedOrder,
   getModifierEventBannerMessage,
@@ -118,6 +120,9 @@ export default function App() {
   /** A room the Online screen should sit down in when it opens. */
   const [pendingRoomId, setPendingRoomId] = useState<string | null>(null);
   const clearPendingRoom = useCallback(() => setPendingRoomId(null), []);
+  /** The finished game the debrief is about, while it is open. */
+  const [surveyFor, setSurveyFor] = useState<GameSurveyContext | null>(null);
+  const surveyedIds = useRef(new Set<string>());
 
   useEffect(() => {
     // A new screen starts at the top. Without this, mobile kept the draft
@@ -257,6 +262,38 @@ export default function App() {
     vsBot,
     activePlayerModifierIds,
   ]);
+
+  // Offer the optional debrief shortly after a local game ends, once per game.
+  useEffect(() => {
+    if (screen !== 'game' || !settings.postGameSurveys) return;
+    if (!isFinished(gameState) || surveyedIds.current.has(gameState.id)) return;
+    surveyedIds.current.add(gameState.id);
+    const context: GameSurveyContext = {
+      mode: vsBot ? 'bot' : 'local',
+      modifierIds: gameState.activeModifiers.map(mod => mod.id),
+      result: resultFor(gameState, 'white'),
+      details: {
+        matchMode: currentMatchMode,
+        bot: vsBot ? selectedBot : null,
+        moves: gameState.moveHistory.length,
+        ending: gameState.status,
+      },
+    };
+    const timer = setTimeout(() => setSurveyFor(context), 1500);
+    return () => clearTimeout(timer);
+  }, [screen, settings.postGameSurveys, gameState, vsBot, selectedBot, currentMatchMode]);
+
+  const surveyOverlay = surveyFor ? (
+    <PostGameSurvey
+      context={surveyFor}
+      onClose={() => setSurveyFor(null)}
+      onStopAsking={() => {
+        const next = { ...settings, postGameSurveys: false };
+        saveSettings(next);
+        setSettings(next);
+      }}
+    />
+  ) : null;
 
   function commitAbandonmentIfNeeded() {
     if (!profile) return;
@@ -549,6 +586,11 @@ export default function App() {
           account={account.account?.username ?? null}
           joinRoomId={pendingRoomId}
           onJoined={clearPendingRoom}
+          onStopSurveys={() => {
+            const next = { ...settings, postGameSurveys: false };
+            saveSettings(next);
+            setSettings(next);
+          }}
           settings={settings}
           onBack={() => setScreen('menu')}
           onSettings={goToSettings}
@@ -711,6 +753,7 @@ export default function App() {
       </main>
 
       {settingsOverlay}
+      {surveyOverlay}
       {viewedProfileOverlay}
     </div>
   );

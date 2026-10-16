@@ -244,6 +244,12 @@ export default function Settings({ settings: initial, onSave, onBack, account, f
                 value={s.confirmResign}
                 onChange={v => update({ confirmResign: v })}
               />
+              <Toggle
+                label="Post-game Surveys"
+                sub="A short optional debrief after each finished game"
+                value={s.postGameSurveys}
+                onChange={v => update({ postGameSurveys: v })}
+              />
               <LockedRow label="Clock" sub="Time controls for Quick Play and ranked" />
             </>
           )}
