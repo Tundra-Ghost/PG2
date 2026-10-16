@@ -9,7 +9,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: url('../../assets/menu/menu-background.png') center bottom / cover no-repeat;
+  background: url('../../assets/menu/menu-background.webp') center bottom / cover no-repeat;
   pointer-events: none;
 }
 
@@ -466,7 +466,7 @@
 }
 
 .artStory {
-  --card-image: url('../../assets/menu/play-card.png');
+  --card-image: url('../../assets/menu/play-card.webp');
   width: 74%;
   background-position: 60% center;
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 18%);
@@ -487,21 +487,21 @@
 }
 
 .artPuzzles {
-  --card-image: url('../../assets/menu/puzzles-card.png');
+  --card-image: url('../../assets/menu/puzzles-card.webp');
 }
 
 .artStats {
-  --card-image: url('../../assets/menu/stats-card.png');
+  --card-image: url('../../assets/menu/stats-card.webp');
   background-position: 48% center;
 }
 
 .artCollection {
-  --card-image: url('../../assets/menu/collection-card.png');
+  --card-image: url('../../assets/menu/collection-card.webp');
   background-position: 52% center;
 }
 
 .artOnline {
-  --card-image: url('../../assets/menu/online-card.png');
+  --card-image: url('../../assets/menu/online-card.webp');
   background-position: center;
 }
 
@@ -518,7 +518,7 @@
 }
 
 .sizeSettings .artSettings {
-  --card-image: url('../../assets/menu/settings-card.png');
+  --card-image: url('../../assets/menu/settings-card.webp');
   inset: 0;
   width: 100%;
   background-image:
