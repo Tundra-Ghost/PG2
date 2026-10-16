@@ -174,6 +174,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Every 7 turns, one of YOUR pieces chooses its own legal move autonomously. You have no input. The piece has decided. It counts as your turn. The screen briefly flashes "A PIECE MOVED" in large red letters.',
     flavor: '"A piece moved itself to h4. Viktor stared at the screen for a long time. The letters were not helpful."',
+    prototypeRules:
+      'Every 7th turn of the owner is played for them: a random legal move, never one that leaves the king in check. It counts as the turn. Abilities are never used.',
   },
   {
     id: 'MOD-B002',

@@ -11,6 +11,7 @@
 }
 
 .board {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
@@ -212,4 +213,29 @@
   .coordLabel {
     font-size: 0.48rem;
   }
+}
+
+/* MOD-B001: large red letters, because atmosphere matters */
+.pieceMovedFlash {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 0, 0, 0.45);
+  color: #e0201a;
+  font-family: var(--font-display, serif);
+  font-size: clamp(1.6rem, 7vmin, 3.4rem);
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 18px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+  animation: pieceMovedFade 1.4s ease-out forwards;
+}
+
+@keyframes pieceMovedFade {
+  0% { opacity: 0; }
+  12% { opacity: 1; }
+  75% { opacity: 1; }
+  100% { opacity: 0; }
 }

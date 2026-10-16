@@ -84,6 +84,19 @@ export default function Board({
   // A new selection (or none) always disarms the ability.
   useEffect(() => setAbilityMode(null), [selected, state]);
 
+  // MOD-B001: flash "A PIECE MOVED" when a piece moved on its own.
+  const [pieceMovedFlash, setPieceMovedFlash] = useState(false);
+  const plies = state.moveHistory.length;
+  const pieceMovedNow = state.eventHistory.some(
+    event => event.modifierId === MODIFIER_IDS.youDied && event.ply === plies,
+  );
+  useEffect(() => {
+    if (!pieceMovedNow) return;
+    setPieceMovedFlash(true);
+    const timer = window.setTimeout(() => setPieceMovedFlash(false), 1400);
+    return () => window.clearTimeout(timer);
+  }, [plies, pieceMovedNow]);
+
   const abilitySide = controlColor ?? state.turn;
   const hasAbilityCards = state.activeModifiers.some(
     mod => modifierRegistry.get(mod.id)?.ability && (mod.sourceColor == null || mod.sourceColor === abilitySide),
@@ -302,6 +315,9 @@ export default function Board({
 
           {/* Board grid */}
           <div className={styles.board}>
+            {pieceMovedFlash && (
+              <div className={styles.pieceMovedFlash} role="status">A PIECE MOVED</div>
+            )}
             {rankOrder.map(rank =>
               fileOrder.map(file => {
                 const square = `${file}${rank}` as Square;

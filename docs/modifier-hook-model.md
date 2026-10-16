@@ -286,6 +286,11 @@ Assessment:
 - `isVoid` tiles are off the board in the move generator: nothing lands on or slides through them. Future Storm can reuse this.
 - The vent jams (stays hidden, piece stays) if the exit holds a king or the jump would expose the mover's king.
 
+## Turn takeover
+
+- `takeOverTurn(state)` lets a modifier play the side to move's turn for them. `applyMove` and `passTurn` call it after the turn begins and play the returned move through the full pipeline, so it can chain.
+- Shipped: `MOD-B001` YOU DIED plays every 7th owner turn with a random valid move. The board flashes "A PIECE MOVED".
+
 ## Active abilities (category C)
 
 - A definition with `ability` (see `AbilitySpec` in `modifiers/types.ts`) gives a piece type a button ability.
