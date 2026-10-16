@@ -15,6 +15,8 @@ export interface RoomSnapshot {
   state: WireGameState;
   /** The side with an open draw offer, if any. Any move clears it. */
   drawOffer: Color | null;
+  /** Account usernames per seat. Null for an empty seat or a guest. */
+  names: Record<Color, string | null>;
 }
 
 export type RoomAck =
@@ -25,7 +27,8 @@ export type ActionAck = { ok: true } | { ok: false; reason: string };
 
 export interface JoinRequest {
   roomId: string;
-  /** Seat token from an earlier join. Reclaims that seat after a reconnect. */
+  /** Seat token from an earlier join. Reclaims that seat after a reconnect.
+   * A signed-in player reclaims their own seat without one. */
   token?: string;
 }
 
@@ -56,6 +59,8 @@ export interface GameSummary {
   turn: Color;
   status: GameState['status'];
   opponentJoined: boolean;
+  /** The opponent's account username, or null for a guest or an empty seat. */
+  opponentName: string | null;
   moveCount: number;
   updatedAt: number;
 }
@@ -63,7 +68,11 @@ export interface GameSummary {
 export interface ClientToServerEvents {
   'room:create': (ack: (res: RoomAck) => void) => void;
   'room:join': (req: JoinRequest, ack: (res: RoomAck) => void) => void;
-  /** Summaries of the saved games these seats belong to. Unknown seats are skipped. */
+  /**
+   * Summaries of the saved games these seats belong to. Unknown seats are skipped.
+   * For a signed-in player this also lists every game their account holds a seat
+   * in, and links these seats to the account.
+   */
   'room:list': (seats: SeatRef[], ack: (games: GameSummary[]) => void) => void;
   'game:move': (req: MoveRequest, ack: (res: ActionAck) => void) => void;
   'game:shoo_gerald': (ack: (res: ActionAck) => void) => void;

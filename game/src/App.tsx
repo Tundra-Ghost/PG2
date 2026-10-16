@@ -495,6 +495,7 @@ export default function App() {
       <div onClick={handleUnlock}>
         <OnlineMatch
           playerName={playerName}
+          account={account.account?.username ?? null}
           settings={settings}
           onBack={() => setScreen('menu')}
           onSettings={goToSettings}

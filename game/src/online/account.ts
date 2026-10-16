@@ -18,7 +18,8 @@ function placeholderEmail(username: string): string {
   return `${username.toLowerCase()}@players.pigeon-chess.invalid`;
 }
 
-function readToken(): string | null {
+/** The signed-in session token, or null for a guest. */
+export function readToken(): string | null {
   try {
     return localStorage.getItem(TOKEN_KEY);
   } catch {

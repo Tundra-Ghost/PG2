@@ -4,6 +4,7 @@ import { betterAuth, type BetterAuthOptions } from 'better-auth';
 import { getMigrations } from 'better-auth/db/migration';
 import { bearer, username } from 'better-auth/plugins';
 import type { FastifyInstance, FastifyRequest } from 'fastify';
+import type { Player } from './rooms';
 
 /**
  * Player accounts: username + password, no email. Better Auth owns users and
@@ -80,6 +81,8 @@ export interface Accounts {
   auth: Auth;
   /** Account id for the request's bearer token, or null when signed out. */
   userIdFor(headers: FastifyRequest['headers']): Promise<string | null>;
+  /** The player a bearer token belongs to, or null for a missing or dead session. */
+  playerFor(token: string): Promise<Player | null>;
   getProfile(userId: string): unknown;
   saveProfile(userId: string, profile: unknown): void;
   /** Replaces the player's recovery code and returns the new one. */
@@ -130,6 +133,11 @@ export async function createAccounts(options: AccountOptions): Promise<Accounts>
     async userIdFor(headers) {
       const session = await auth.api.getSession({ headers: toHeaders(headers) });
       return session?.user.id ?? null;
+    },
+    async playerFor(token) {
+      const session = await auth.api.getSession({ headers: new Headers({ authorization: `Bearer ${token}` }) });
+      if (!session) return null;
+      return { id: session.user.id, username: session.user.username ?? session.user.name };
     },
     getProfile(userId) {
       const row = readProfile.get(userId) as { data: string } | undefined;

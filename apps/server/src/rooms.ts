@@ -23,9 +23,17 @@ import { MemoryStore, type RoomStore } from './store';
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const CODE_LENGTH = 5;
 
+/** A signed-in player. Guests have none. */
+export interface Player {
+  id: string;
+  username: string;
+}
+
 interface Seat {
   token: string;
   connected: boolean;
+  /** The account holding this seat. They can reclaim it from any device. */
+  player?: Player;
 }
 
 export interface Room {
@@ -72,13 +80,13 @@ export class RoomManager {
     this.store.save(room);
   }
 
-  create(): RoomAck {
+  create(player?: Player): RoomAck {
     const id = this.newRoomId();
     const token = randomUUID();
     const room: Room = {
       id,
       state: chessEngine.beginTurn(chessEngine.getInitialState()),
-      seats: { white: { token, connected: true } },
+      seats: { white: { token, connected: true, ...(player ? { player } : {}) } },
       drawOffer: null,
       updatedAt: this.now(),
     };
@@ -87,24 +95,31 @@ export class RoomManager {
     return { ok: true, roomId: id, color: 'white', token };
   }
 
-  /** Takes the open black seat, or reclaims a seat with its token. */
-  join(rawRoomId: string, token?: string): RoomAck {
+  /**
+   * Reclaims a seat by its token or, for a signed-in player, by their account.
+   * Otherwise takes the open black seat.
+   */
+  join(rawRoomId: string, token?: string, player?: Player): RoomAck {
     const room = this.rooms.get(rawRoomId.trim().toUpperCase());
     if (!room) return { ok: false, reason: 'No room with that code.' };
 
-    if (token) {
-      for (const color of ['white', 'black'] as const) {
-        const seat = room.seats[color];
-        if (seat?.token === token) {
-          seat.connected = true;
-          return { ok: true, roomId: room.id, color, token };
-        }
+    for (const color of ['white', 'black'] as const) {
+      const seat = room.seats[color];
+      if (!seat) continue;
+      const byToken = Boolean(token) && seat.token === token;
+      const byAccount = player !== undefined && seat.player?.id === player.id;
+      if (!byToken && !byAccount) continue;
+      seat.connected = true;
+      if (player && !seat.player) {
+        seat.player = player;
+        this.store.save(room);
       }
+      return { ok: true, roomId: room.id, color, token: seat.token };
     }
 
     if (room.seats.black) return { ok: false, reason: 'That room is full.' };
     const seatToken = randomUUID();
-    room.seats.black = { token: seatToken, connected: true };
+    room.seats.black = { token: seatToken, connected: true, ...(player ? { player } : {}) };
     this.touch(room);
     return { ok: true, roomId: room.id, color: 'black', token: seatToken };
   }
@@ -206,25 +221,41 @@ export class RoomManager {
     this.store.remove(roomId);
   }
 
-  /** Summaries for the seats a browser remembers. A wrong token reveals nothing. */
-  summaries(seats: SeatRef[]): GameSummary[] {
-    const games: GameSummary[] = [];
+  /**
+   * Summaries for the seats a browser remembers, plus, for a signed-in
+   * player, every game their account sits in. Remembered seats nobody owns
+   * yet are linked to that player. A wrong token reveals nothing.
+   */
+  summaries(seats: SeatRef[], player?: Player): GameSummary[] {
+    const found = new Map<string, { room: Room; color: Color }>();
     for (const ref of seats.slice(0, 50)) {
       const room = this.rooms.get(String(ref?.roomId ?? '').toUpperCase());
       if (!room) continue;
       const color = (['white', 'black'] as const).find(c => room.seats[c]?.token === ref.token);
       if (!color) continue;
-      games.push({
-        roomId: room.id,
-        color,
-        turn: room.state.turn,
-        status: room.state.status,
-        opponentJoined: Boolean(room.seats.white && room.seats.black),
-        moveCount: room.state.moveHistory.length,
-        updatedAt: room.updatedAt,
-      });
+      const seat = room.seats[color]!;
+      if (player && !seat.player) {
+        seat.player = player;
+        this.store.save(room);
+      }
+      found.set(room.id, { room, color });
     }
-    return games;
+    if (player) {
+      for (const room of this.rooms.values()) {
+        const color = (['white', 'black'] as const).find(c => room.seats[c]?.player?.id === player.id);
+        if (color && !found.has(room.id)) found.set(room.id, { room, color });
+      }
+    }
+    return [...found.values()].map(({ room, color }) => ({
+      roomId: room.id,
+      color,
+      turn: room.state.turn,
+      status: room.state.status,
+      opponentJoined: Boolean(room.seats.white && room.seats.black),
+      opponentName: room.seats[color === 'white' ? 'black' : 'white']?.player?.username ?? null,
+      moveCount: room.state.moveHistory.length,
+      updatedAt: room.updatedAt,
+    }));
   }
 
   snapshot(roomId: string): RoomSnapshot | null {
@@ -237,6 +268,10 @@ export class RoomManager {
       seats: { white: seatStatus(room.seats.white), black: seatStatus(room.seats.black) },
       state: toWire(room.state),
       drawOffer: room.drawOffer,
+      names: {
+        white: room.seats.white?.player?.username ?? null,
+        black: room.seats.black?.player?.username ?? null,
+      },
     };
   }
 
