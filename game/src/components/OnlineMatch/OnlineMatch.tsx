@@ -15,6 +15,9 @@ interface OnlineMatchProps {
   playerName: string;
   /** The signed-in account, or null for a guest. */
   account: string | null;
+  /** A room to sit down in once connected (from a friend's invite or a challenge). */
+  joinRoomId?: string | null;
+  onJoined?: () => void;
   settings: AppSettings;
   onBack: () => void;
   onSettings: () => void;
@@ -24,8 +27,22 @@ interface OnlineMatchProps {
  * Online two-player match (TDD P0-03 slice). Standard rules, no draft yet.
  * Every move goes to the server; the board only shows what the server sends.
  */
-export default function OnlineMatch({ playerName, account, settings, onBack, onSettings }: OnlineMatchProps) {
+export default function OnlineMatch({
+  playerName,
+  account,
+  joinRoomId,
+  onJoined,
+  settings,
+  onBack,
+  onSettings,
+}: OnlineMatchProps) {
   const room = useOnlineRoom(account);
+
+  useEffect(() => {
+    if (!joinRoomId || room.connection !== 'online') return;
+    room.resumeGame(joinRoomId);
+    onJoined?.();
+  }, [joinRoomId, room.connection, room.resumeGame, onJoined]);
   const [code, setCode] = useState('');
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);

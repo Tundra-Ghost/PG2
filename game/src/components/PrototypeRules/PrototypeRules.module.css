@@ -1,7 +1,7 @@
 .box {
   margin: 0.5rem 0 0;
   padding: 0.45rem 0.6rem;
-  border-left: 2px solid var(--ui-gold, var(--ui-gold));
+  border-left: 2px solid var(--ui-gold);
 }
 
 .dark {
@@ -20,7 +20,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ui-gold, var(--ui-gold));
+  color: var(--ui-gold);
 }
 
 .light .label {
