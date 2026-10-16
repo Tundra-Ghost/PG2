@@ -101,6 +101,7 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
     const takeSeat = (roomId: string, color: Color) => {
       seat = { roomId, color };
       void socket.join(roomId);
+      socket.emit('chat:history', rooms.chatHistory(roomId));
       broadcast(roomId);
     };
 
@@ -159,6 +160,15 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
       const res = rooms.drawOffer(seat.roomId, seat.color, { accept });
       ack(res);
       if (res.ok) broadcast(seat.roomId);
+    });
+
+    socket.on('chat:send', (req, rawAck) => {
+      const ack = safeAck<ActionAck>(rawAck);
+      if (!seat) return ack({ ok: false, reason: 'Join a room first.' });
+      const res = rooms.chat(seat.roomId, seat.color, req?.text);
+      if (!res.ok) return ack(res);
+      ack({ ok: true });
+      io.to(seat.roomId).emit('chat:message', res.message);
     });
 
     socket.on('disconnect', () => {

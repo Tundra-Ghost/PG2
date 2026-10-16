@@ -98,4 +98,13 @@ describe('saved rooms', () => {
     expect(after.join(created.roomId, undefined, alice)).toMatchObject({ ok: true, color: 'white' });
     expect(after.snapshot(created.roomId)?.names).toEqual({ white: 'alice', black: null });
   });
+
+  it('chat survives a restart', () => {
+    const before = new RoomManager(new FileStore(dir));
+    const { roomId } = startedRoom(before);
+    expect(before.chat(roomId, 'white', 'see you tomorrow').ok).toBe(true);
+
+    const after = new RoomManager(new FileStore(dir));
+    expect(after.chatHistory(roomId).map(m => m.text)).toEqual(['see you tomorrow']);
+  });
 });

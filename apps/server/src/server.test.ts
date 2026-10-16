@@ -4,6 +4,7 @@ import {
   fromWire,
   type ActionAck,
   type ClientToServerEvents,
+  type ChatMessage,
   type MoveRequest,
   type RoomAck,
   type RoomSnapshot,
@@ -167,3 +168,42 @@ describe('game server', () => {
     expect(await drawOffer(black, true)).toMatchObject({ ok: false });
   });
 });
+
+describe('match chat', () => {
+  const say = (c: Client, text: unknown) =>
+    new Promise<ActionAck>(resolve => c.emit('chat:send', { text } as { text: string }, resolve));
+  const heard = (c: Client) => new Promise<ChatMessage>(resolve => c.once('chat:message', resolve));
+
+  it('reaches both players, tagged with the seat and the move it was sent on', async () => {
+    const { white, black } = await startGame();
+    await move(white, { from: 'e2', to: 'e4' });
+
+    const atWhite = heard(white);
+    const atBlack = heard(black);
+    expect(await say(black, '  nice   opening  ')).toEqual({ ok: true });
+    const [mine, theirs] = await Promise.all([atBlack, atWhite]);
+    expect(theirs).toEqual(mine);
+    expect(mine).toMatchObject({ color: 'black', author: 'Black', text: 'nice opening', ply: 1 });
+  });
+
+  it('replays the history to a player who comes back', async () => {
+    const { white, roomId, blackToken } = await startGame();
+    await say(white, 'gl hf');
+
+    const returning = client();
+    const history = new Promise<ChatMessage[]>(resolve => returning.once('chat:history', resolve));
+    expect((await join(returning, roomId, blackToken)).ok).toBe(true);
+    expect((await history).map(m => m.text)).toEqual(['gl hf']);
+  });
+
+  it('turns away empty, oversized and flooding messages, and players without a seat', async () => {
+    const { white } = await startGame();
+    expect((await say(white, '   ')).ok).toBe(false);
+    expect((await say(white, 42)).ok).toBe(false);
+    expect((await say(white, 'x'.repeat(201))).ok).toBe(false);
+    for (let i = 0; i < 5; i++) expect((await say(white, `msg ${i}`)).ok).toBe(true);
+    expect(await say(white, 'one too many')).toEqual({ ok: false, reason: 'Slow down a little.' });
+    expect((await say(client(), 'hello?')).ok).toBe(false);
+  });
+});
+

@@ -44,8 +44,10 @@ export { MAX_TEMPO_TOKENS } from './modifiers/definitions/the-snap';
 
 export { fromWire, toWire } from './net/wire';
 export type { WireGameState } from './net/wire';
+export { MAX_CHAT_CHARS } from './net/protocol';
 export type {
   ActionAck,
+  ChatMessage,
   ClientToServerEvents,
   DrawOfferRequest,
   GameSummary,

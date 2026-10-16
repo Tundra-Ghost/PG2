@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { GameSummary } from '@pigeon-chess/game-core';
+import type { ChatMessage, Color, GameSummary } from '@pigeon-chess/game-core';
+import type { MatchChatEntry } from '../../matchFeed';
 import type { AppSettings } from '../../settings';
 import { playClick } from '../../sound';
 import { useOnlineRoom } from '../../online/useOnlineRoom';
@@ -139,6 +140,7 @@ export default function OnlineMatch({ playerName, account, settings, onBack, onS
   const myColor = room.color!;
   const opponentAway = opponentSeat === 'disconnected';
   const opponentName = room.names?.[opponentColor] ?? 'Opponent';
+  const chatEntries = toChatEntries(room.chat, myColor, playerName, opponentName);
 
   return (
     <div className={appStyles.app}>
@@ -175,6 +177,8 @@ export default function OnlineMatch({ playerName, account, settings, onBack, onS
                 state={state}
                 whiteLabel={myColor === 'white' ? playerName : opponentName}
                 blackLabel={myColor === 'black' ? playerName : opponentName}
+                chatEntries={chatEntries}
+                onSendChat={room.sendChat}
                 viewerColor={myColor}
               />
             </div>
@@ -218,6 +222,29 @@ export default function OnlineMatch({ playerName, account, settings, onBack, onS
       </main>
     </div>
   );
+}
+
+/** Server chat as match-log entries, placed after the move they were sent on. */
+function toChatEntries(messages: ChatMessage[], myColor: Color, myName: string, opponentName: string): MatchChatEntry[] {
+  const perPly = new Map<number, number>();
+  return messages.map(message => {
+    const index = perPly.get(message.ply) ?? 0;
+    perPly.set(message.ply, index + 1);
+    const mine = message.color === myColor;
+    const author = mine ? myName : opponentName;
+    return {
+      id: message.id,
+      // Moves sit at ply * 100 and modifier events just after; chat follows them.
+      order: message.ply * 100 + 60 + Math.min(index, 39),
+      ply: message.ply,
+      author,
+      text: message.text,
+      source: mine ? 'player' : 'bot',
+      sourceLabel: 'Opponent',
+      avatarLabel: author.slice(0, 1).toUpperCase(),
+      shownInDialogue: true,
+    };
+  });
 }
 
 function moveLabel(plies: number): string {

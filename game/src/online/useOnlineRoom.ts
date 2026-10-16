@@ -3,6 +3,7 @@ import { io, type Socket } from 'socket.io-client';
 import {
   fromWire,
   type ActionAck,
+  type ChatMessage,
   type ClientToServerEvents,
   type Color,
   type GameSummary,
@@ -60,6 +61,9 @@ export interface OnlineRoom {
   drawOffer: Color | null;
   /** Account usernames per seat; null for guests. */
   names: Record<Color, string | null> | null;
+  /** This match's chat, oldest first. */
+  chat: ChatMessage[];
+  sendChat: (text: string) => void;
   createRoom: () => void;
   joinRoom: (code: string) => void;
   sendMove: (move: Move) => void;
@@ -90,6 +94,7 @@ export function useOnlineRoom(account: string | null = null): OnlineRoom {
   const [snapshot, setSnapshot] = useState<RoomSnapshot | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savedGames, setSavedGames] = useState<GameSummary[]>([]);
+  const [chat, setChat] = useState<ChatMessage[]>([]);
 
   const refreshSavedGames = useCallback(() => {
     const seats = readSavedSeats();
@@ -139,6 +144,10 @@ export function useOnlineRoom(account: string | null = null): OnlineRoom {
     socket.on('disconnect', () => setConnection('offline'));
     socket.on('connect_error', () => setConnection('offline'));
     socket.on('game:state', next => setSnapshot(next));
+    socket.on('chat:history', messages => setChat(messages));
+    socket.on('chat:message', message =>
+      setChat(current => (current.some(m => m.id === message.id) ? current : [...current, message])),
+    );
 
     return () => {
       socket.disconnect();
@@ -161,6 +170,8 @@ export function useOnlineRoom(account: string | null = null): OnlineRoom {
     error,
     drawOffer: snapshot?.drawOffer ?? null,
     names: snapshot?.names ?? null,
+    chat,
+    sendChat: text => socketRef.current?.emit('chat:send', { text }, actionAck),
     createRoom: () => socketRef.current?.emit('room:create', onSeat),
     joinRoom: code => socketRef.current?.emit('room:join', { roomId: code }, onSeat),
     sendMove: move =>
@@ -187,6 +198,7 @@ export function useOnlineRoom(account: string | null = null): OnlineRoom {
     leave: () => {
       seatRef.current = null;
       writeSeat(null);
+      setChat([]);
     },
   };
 }

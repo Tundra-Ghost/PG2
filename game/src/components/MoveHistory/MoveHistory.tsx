@@ -189,7 +189,7 @@ export default function MoveHistory({
         kind: 'chat',
         actor: chat.author,
         text: chat.text,
-        detail: chat.source === 'player' ? 'You' : 'Bot',
+        detail: chat.source === 'player' ? 'You' : (chat.sourceLabel ?? 'Bot'),
         emphasis: chat.source === 'player' ? 'player' : 'opponent',
         order: chat.order,
         avatarLabel: chat.avatarLabel,

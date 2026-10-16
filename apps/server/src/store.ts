@@ -1,6 +1,6 @@
 import { mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { fromWire, toWire, type Color, type WireGameState } from '@pigeon-chess/game-core';
+import { fromWire, toWire, type ChatMessage, type Color, type WireGameState } from '@pigeon-chess/game-core';
 import type { Player, Room } from './rooms';
 
 /**
@@ -28,6 +28,8 @@ interface SavedRoom {
   seats: Partial<Record<Color, { token: string; player?: Player }>>;
   drawOffer: Color | null;
   updatedAt: number;
+  /** Missing in saves from before chat. */
+  chat?: ChatMessage[];
 }
 
 /** One JSON file per room. Writes go to a temp file first, then rename. */
@@ -54,6 +56,7 @@ export class FileStore implements RoomStore {
           ),
           drawOffer: saved.drawOffer,
           updatedAt: saved.updatedAt,
+          chat: saved.chat ?? [],
         });
       } catch {
         // A damaged file loses one game, not the whole server.
@@ -74,6 +77,7 @@ export class FileStore implements RoomStore {
       ),
       drawOffer: room.drawOffer,
       updatedAt: room.updatedAt,
+      chat: room.chat,
     };
     const file = this.file(room.id);
     writeFileSync(`${file}.tmp`, JSON.stringify(saved));

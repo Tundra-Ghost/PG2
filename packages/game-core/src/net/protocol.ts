@@ -46,6 +46,21 @@ export interface DrawOfferRequest {
   accept?: boolean;
 }
 
+/** Longest chat message the server accepts. */
+export const MAX_CHAT_CHARS = 200;
+
+/** One line of match chat. The server sets everything but the text. */
+export interface ChatMessage {
+  id: string;
+  color: Color;
+  /** Account username, or "White"/"Black" for a guest. */
+  author: string;
+  text: string;
+  /** Moves played when it was sent, so the log can place it between moves. */
+  ply: number;
+  at: number;
+}
+
 /** A seat this browser holds: enough to rejoin a saved game. */
 export interface SeatRef {
   roomId: string;
@@ -78,8 +93,12 @@ export interface ClientToServerEvents {
   'game:shoo_gerald': (ack: (res: ActionAck) => void) => void;
   'game:resign': (ack: (res: ActionAck) => void) => void;
   'game:draw_offer': (req: DrawOfferRequest, ack: (res: ActionAck) => void) => void;
+  'chat:send': (req: { text: string }, ack: (res: ActionAck) => void) => void;
 }
 
 export interface ServerToClientEvents {
   'game:state': (snapshot: RoomSnapshot) => void;
+  /** The room's chat so far, sent when you take or reclaim a seat. */
+  'chat:history': (messages: ChatMessage[]) => void;
+  'chat:message': (message: ChatMessage) => void;
 }
