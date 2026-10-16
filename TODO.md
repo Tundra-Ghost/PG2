@@ -68,7 +68,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] Online: modifier draft over sockets (TDD P1-03)
 - [x] Site: publish to GitHub Pages from Actions on every merge (`.github/workflows/pages.yml`)
 - [ ] Site: stop committing `game/dist` once the Actions deploy is confirmed live
-- [ ] Online: host the server so the Pages build can reach it (Fly.io config added; first `fly deploy` pending)
+- [x] Online: host the server so the Pages build can reach it (Fly.io: pigeon-chess-server.fly.dev, region sjc)
 - [ ] Persist rooms in Redis and results in Postgres (TDD P0-05)
 - [ ] Reconcile current menu promises with actual scope so the prototype does not over-claim
 

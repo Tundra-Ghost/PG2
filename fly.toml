@@ -1,7 +1,7 @@
 # Fly.io config for the game server (apps/server).
 # Deploy from the repo root: fly deploy
 app = "pigeon-chess-server"
-primary_region = "sea"
+primary_region = "sjc"
 
 [build]
   dockerfile = "apps/server/Dockerfile"
