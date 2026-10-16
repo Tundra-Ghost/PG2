@@ -91,6 +91,9 @@ export default function Board({
 
   // A new selection (or none) always disarms the ability.
   useEffect(() => setAbilityMode(null), [selected, state]);
+  /** MOD-C007: the next normal move spends a tempo token and keeps the turn. */
+  const [extraMode, setExtraMode] = useState(false);
+  useEffect(() => setExtraMode(false), [state]);
 
   // MOD-B001: flash "A PIECE MOVED" when a piece moved on its own.
   const [pieceMovedFlash, setPieceMovedFlash] = useState(false);
@@ -108,6 +111,7 @@ export default function Board({
   const quietZones = useMemo(() => getQuietZoneSquares(state), [state]);
   const noFlySquares = useMemo(() => getNoFlySquares(state), [state]);
   const abilitySide = controlColor ?? state.turn;
+  const tempoTokens = state.tempoTokens[abilitySide] ?? 0;
   const hasAbilityCards = state.activeModifiers.some(
     mod => modifierRegistry.get(mod.id)?.ability && (mod.sourceColor == null || mod.sourceColor === abilitySide),
   );
@@ -129,6 +133,10 @@ export default function Board({
       setLegalMoves(option.targets);
     },
     [abilityMode, selected, state],
+  );
+  const withTempo = useCallback(
+    (move: Move): Move => (extraMode ? { ...move, extraTurn: true } : move),
+    [extraMode],
   );
   const commitMove = useCallback(
     (move: Move) => {
@@ -165,7 +173,7 @@ export default function Board({
   const handlePromotionChoice = useCallback(
     (type: PieceType) => {
       if (!pendingPromotion) return;
-      const move = buildMove(state, pendingPromotion.from, pendingPromotion.to);
+      const move = withTempo(buildMove(state, pendingPromotion.from, pendingPromotion.to));
       move.promotion = type;
       const validation = chessEngine.validateMove(state, move);
       if (validation.valid) {
@@ -176,7 +184,7 @@ export default function Board({
       setSelected(null);
       setLegalMoves([]);
     },
-    [commitMove, pendingPromotion, state],
+    [commitMove, pendingPromotion, state, withTempo],
   );
 
   const shooGeraldOrWarn = useCallback(() => {
@@ -261,7 +269,7 @@ export default function Board({
         if (chessEngine.isPromotionMove(state, selected, square)) {
           if (autoQueen) {
             // Skip modal: promote to the best piece the modifiers allow
-            const move = buildMove(state, selected, square);
+            const move = withTempo(buildMove(state, selected, square));
             move.promotion = getValidPromotionTypes(state, selected, square)[0] ?? 'queen';
             const validation = chessEngine.validateMove(state, move);
             if (validation.valid) {
@@ -278,7 +286,7 @@ export default function Board({
           return;
         }
 
-        const move = buildMove(state, selected, square);
+        const move = withTempo(buildMove(state, selected, square));
         const validation = chessEngine.validateMove(state, move);
         if (validation.valid) {
           playSfxForMove(state, selected, square, !!move.isCastle);
@@ -295,7 +303,7 @@ export default function Board({
       setSelected(null);
       setLegalMoves([]);
     },
-    [abilityMode, autoQueen, commitMove, controlColor, legalMoves, onInfo, pendingPromotion, selected, shooGeraldOrWarn, state],
+    [abilityMode, autoQueen, commitMove, controlColor, legalMoves, onInfo, pendingPromotion, selected, shooGeraldOrWarn, state, withTempo],
   );
 
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
@@ -387,6 +395,21 @@ export default function Board({
 
         {hasAbilityCards && (
           <div className={styles.abilityBar} aria-label="Abilities">
+            {tempoTokens > 0 && (
+              <button
+                type="button"
+                className={`${styles.abilityButton} ${extraMode ? styles.abilityArmed : ''}`}
+                disabled={state.turn !== abilitySide}
+                aria-pressed={extraMode}
+                title="Spend a tempo token: your next move does not end your turn. It cannot give check."
+                onClick={() => setExtraMode(on => !on)}
+              >
+                {extraMode ? 'Cancel extra move' : 'Extra move'}
+                <span className={styles.abilityState}>
+                  {extraMode ? 'make your move' : `${tempoTokens} token${tempoTokens === 1 ? '' : 's'}`}
+                </span>
+              </button>
+            )}
             {abilityOptions.length === 0 ? (
               <span className={styles.abilityHint}>
                 {selected ? 'This piece has no ability.' : 'Select a piece to see its ability.'}

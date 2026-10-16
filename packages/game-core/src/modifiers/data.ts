@@ -381,6 +381,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Sacrifice any non-King piece to gain a Tempo Token. Spend a Token to take an additional turn immediately. Max 2 Tokens held at once.',
     flavor: '"The knight volunteered. \'This is necessary,\' it communicated. The knight was not wrong."',
+    prototypeRules:
+      'Select any non-king piece and press Sacrifice. It leaves the board and you gain a tempo token (max 2). That costs your turn. Later, press Extra move under the board before a move: you move again right after. A move that gives check cannot use a token.',
   },
   {
     id: 'MOD-C008',

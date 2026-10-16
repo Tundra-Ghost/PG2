@@ -25,6 +25,7 @@ import { bankedEnPassantDef } from './definitions/banked-en-passant';
 import { threeKingsDef } from './definitions/three-kings';
 import { fiftyFirstMovesDef } from './definitions/fifty-first-moves';
 import { noFlyZoneDef } from './definitions/no-fly-zone';
+import { theSnapDef } from './definitions/the-snap';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -48,3 +49,4 @@ modifierRegistry.register(bankedEnPassantDef);
 modifierRegistry.register(threeKingsDef);
 modifierRegistry.register(fiftyFirstMovesDef);
 modifierRegistry.register(noFlyZoneDef);
+modifierRegistry.register(theSnapDef);

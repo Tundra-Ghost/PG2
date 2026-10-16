@@ -40,6 +40,7 @@ export { getQuietZoneSquares } from './modifiers/definitions/quiet-quitting';
 export { getBankedEnPassant } from './modifiers/definitions/banked-en-passant';
 export { isHistoryBlackout, blackoutMovesLeft } from './modifiers/definitions/fifty-first-moves';
 export { getNoFlySquares } from './modifiers/definitions/no-fly-zone';
+export { MAX_TEMPO_TOKENS } from './modifiers/definitions/the-snap';
 
 export { fromWire, toWire } from './net/wire';
 export type { WireGameState } from './net/wire';

@@ -132,6 +132,8 @@ export interface Move {
   isEnPassant?: boolean;
   /** Set when the move is an active ability (C cards) instead of a normal move. */
   ability?: ModifierID;
+  /** MOD-C007: spend a tempo token so the same side moves again right after. */
+  extraTurn?: boolean;
 }
 
 export interface ValidationResult {

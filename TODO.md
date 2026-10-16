@@ -7,7 +7,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Phase 0 prototype is playable locally in `game/`
 - Architecture is client-side today
 - TDD target architecture is server-authoritative shared game-core
-- 22 modifier definitions are registered, while the modifier bible defines 40 cards
+- 23 modifier definitions are registered, while the modifier bible defines 40 cards
 - Vitest is now installed in `game/` and baseline engine tests are passing
 - Engine tests now cover opening movement, wrong-turn rejection, self-check rejection, castling safety/rights, en passant, promotion, checkmate, stalemate, threefold repetition, 50-move rule, and insufficient material
 - Engine rule-regression coverage now also includes rook-capture castling-rights loss, en-passant expiry, pinned-piece legal movement along the pin line, and SAN disambiguation/capture notation

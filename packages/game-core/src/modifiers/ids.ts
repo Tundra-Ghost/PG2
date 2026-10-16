@@ -14,6 +14,7 @@ export const MODIFIER_IDS = {
   retaliatorySwipe: 'MOD-C004',
   quietQuitting: 'MOD-C005',
   forTheEmperor: 'MOD-C006',
+  theSnap: 'MOD-C007',
   bankedEnPassant: 'MOD-C008',
   smallCouncil: 'MOD-E002',
   threeKings: 'MOD-E003',

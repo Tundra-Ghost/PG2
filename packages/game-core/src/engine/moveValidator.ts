@@ -51,6 +51,11 @@ export function validateMove(state: GameState, move: Move): ValidationResult {
     return { valid: false, reason: 'not your piece' };
   }
 
+  // A tempo token (MOD-C007) buys an extra move, never an extra ability.
+  if (move.extraTurn && (move.ability || (state.tempoTokens[move.playerColor] ?? 0) < 1)) {
+    return { valid: false, reason: 'No tempo token to spend.' };
+  }
+
   // ─── Stage 3: Pre-move modifier hooks (stub) ──────────────────────────────
   const hookResult = runPreMoveHooks(state, move);
   if (hookResult.blocked) {
