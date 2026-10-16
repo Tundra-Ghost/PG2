@@ -262,3 +262,26 @@
 .forget:hover {
   color: rgb(var(--parchment-rgb) / 0.9);
 }
+
+/* Phone-only copy of the draw offer, shown above the board. */
+.drawBanner {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .drawBanner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--ui-gold, #c8973a);
+    background: rgba(200, 151, 58, 0.12);
+    font-size: 0.9rem;
+    color: rgba(242, 234, 216, 0.95);
+  }
+
+  .drawBanner span {
+    flex: 1 1 100%;
+  }
+}

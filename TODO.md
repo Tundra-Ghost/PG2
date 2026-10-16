@@ -64,6 +64,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] If migrating, extract pure game logic into a shared package boundary (`packages/game-core`)
 - [x] Define the smallest viable multiplayer slice: room code, two seats, standard rules, server-validated moves (`apps/server`)
 - [x] Online: resign and draw offer (TDD §05 game:resign, game:draw_offer)
+- [x] Online: phones show draw offers in a banner above the board
 - [x] Online: save games to a Fly volume after every action; resume from a Your games list (games last for days, expire after 14 idle days)
 - [ ] Online: live mode with the 30s reconnect / forfeit rule from TDD §05 (saved games never forfeit for being away)
 - [ ] Online: modifier draft over sockets (TDD P1-03)
