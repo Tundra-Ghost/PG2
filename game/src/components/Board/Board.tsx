@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
 import { buildMove } from '@pigeon-chess/game-core';
-import { getAbilityOptions, getValidPromotionTypes, isFrozenZoneSquare, modifierRegistry } from '@pigeon-chess/game-core';
+import { getAbilityOptions, getQuietZoneSquares, getValidPromotionTypes, isFrozenZoneSquare, modifierRegistry } from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import { playCapture, playCastle, playMove } from '../../sound';
 import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
@@ -97,6 +97,7 @@ export default function Board({
     return () => window.clearTimeout(timer);
   }, [plies, pieceMovedNow]);
 
+  const quietZones = useMemo(() => getQuietZoneSquares(state), [state]);
   const abilitySide = controlColor ?? state.turn;
   const hasAbilityCards = state.activeModifiers.some(
     mod => modifierRegistry.get(mod.id)?.ability && (mod.sourceColor == null || mod.sourceColor === abilitySide),
@@ -327,6 +328,7 @@ export default function Board({
                 const frozenZone = winterActive && isFrozenZoneSquare(square);
                 const swamp = state.tiles.get(square)?.isSwamp === true;
                 const shaft = state.tiles.get(square)?.isVoid === true;
+                const quietZone = quietZones.get(square);
                 return (
                   <SquareComponent
                     key={square}
@@ -341,6 +343,7 @@ export default function Board({
                     isFrozenZone={frozenZone}
                     isSwamp={swamp}
                     isShaft={shaft}
+                    quietZone={quietZone}
                     onClick={handleSquareClick}
                   />
                 );

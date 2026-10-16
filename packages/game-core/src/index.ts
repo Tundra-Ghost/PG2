@@ -36,6 +36,8 @@ export type { DraftScope } from './modifiers/scope';
 export * from './modifiers/data';
 export { isFrozenZoneSquare } from './modifiers/definitions/winter';
 export { isSwampSquare, SWAMP_SQUARES } from './modifiers/definitions/swamp';
+export { getQuietZoneSquares } from './modifiers/definitions/quiet-quitting';
+export { getBankedEnPassant } from './modifiers/definitions/banked-en-passant';
 
 export { fromWire, toWire } from './net/wire';
 export type { WireGameState } from './net/wire';
