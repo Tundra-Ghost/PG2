@@ -1,4 +1,4 @@
-import type { Color, PieceType, Square } from '../engine/types';
+import type { Color, GameState, PieceType, Square } from '../engine/types';
 import type { WireGameState } from './wire';
 
 /**
@@ -43,9 +43,28 @@ export interface DrawOfferRequest {
   accept?: boolean;
 }
 
+/** A seat this browser holds: enough to rejoin a saved game. */
+export interface SeatRef {
+  roomId: string;
+  token: string;
+}
+
+/** One saved game in the player's "Your games" list. */
+export interface GameSummary {
+  roomId: string;
+  color: Color;
+  turn: Color;
+  status: GameState['status'];
+  opponentJoined: boolean;
+  moveCount: number;
+  updatedAt: number;
+}
+
 export interface ClientToServerEvents {
   'room:create': (ack: (res: RoomAck) => void) => void;
   'room:join': (req: JoinRequest, ack: (res: RoomAck) => void) => void;
+  /** Summaries of the saved games these seats belong to. Unknown seats are skipped. */
+  'room:list': (seats: SeatRef[], ack: (games: GameSummary[]) => void) => void;
   'game:move': (req: MoveRequest, ack: (res: ActionAck) => void) => void;
   'game:shoo_gerald': (ack: (res: ActionAck) => void) => void;
   'game:resign': (ack: (res: ActionAck) => void) => void;

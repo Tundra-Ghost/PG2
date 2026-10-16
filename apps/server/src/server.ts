@@ -4,15 +4,19 @@ import type {
   ActionAck,
   ClientToServerEvents,
   Color,
+  GameSummary,
   RoomAck,
   ServerToClientEvents,
 } from '@pigeon-chess/game-core';
 import { RoomManager } from './rooms';
+import type { RoomStore } from './store';
 
 export interface ServerOptions {
   /** Origins allowed to open a socket. The Vite dev server by default. */
   corsOrigin?: string | string[];
   logger?: boolean;
+  /** Where rooms are saved between restarts. In-memory when left out. */
+  store?: RoomStore;
 }
 
 export interface GameServer {
@@ -35,7 +39,11 @@ interface SocketSeat {
 
 export function createGameServer(options: ServerOptions = {}): GameServer {
   const app = Fastify({ logger: options.logger ?? false });
-  const rooms = new RoomManager();
+  const rooms = new RoomManager(options.store);
+  // Sweep long-idle rooms once an hour.
+  const sweep = setInterval(() => rooms.expireOld(), 60 * 60 * 1000);
+  sweep.unref();
+  app.addHook('onClose', async () => clearInterval(sweep));
   const io = new Server<ClientToServerEvents, ServerToClientEvents>(app.server, {
     cors: { origin: options.corsOrigin ?? 'http://localhost:5173' },
   });
@@ -70,6 +78,11 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
       const res = rooms.join(String(req?.roomId ?? ''), req?.token);
       ack(res);
       if (res.ok) takeSeat(res.roomId, res.color);
+    });
+
+    socket.on('room:list', (seats, rawAck) => {
+      const ack = safeAck<GameSummary[]>(rawAck);
+      ack(Array.isArray(seats) ? rooms.summaries(seats) : []);
     });
 
     socket.on('game:move', (req, rawAck) => {

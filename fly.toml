@@ -11,12 +11,20 @@ primary_region = "sjc"
   PORT = "8080"
   # The Pages site and the local Vite dev server.
   CORS_ORIGIN = "https://tundra-ghost.github.io,http://localhost:5173,http://127.0.0.1:5173"
+  # Saved games live on the volume below, so they survive sleep and deploys.
+  DATA_DIR = "/data/rooms"
+
+# One machine, one volume: rooms are files on this disk.
+# First time: fly volumes create pg2_data --region sjc --size 1
+[mounts]
+  source = "pg2_data"
+  destination = "/data"
 
 [http_service]
   internal_port = 8080
   force_https = true
-  # Rooms live in memory, so a stopped machine drops open rooms.
   # Idle stop keeps the free allowance; any request wakes it again.
+  # Rooms are reloaded from the volume on wake.
   auto_stop_machines = "stop"
   auto_start_machines = true
   min_machines_running = 0

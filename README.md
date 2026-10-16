@@ -37,6 +37,8 @@ pnpm test           # all packages
 pnpm typecheck
 ```
 
+Online games are saved after every move when `DATA_DIR` is set (a Fly volume in production), so a game can be resumed days later from the Your games list. Locally, with no `DATA_DIR`, games live in memory.
+
 To try online play, run both, open the web app in two tabs, create a room in one and join with the code in the other.
 
 The live site (tundra-ghost.github.io/PG2/) is built and published by `.github/workflows/pages.yml` on every merge to main. Online play there connects to the game server on Fly.io at `https://pigeon-chess-server.fly.dev` (`fly.toml`, `apps/server/Dockerfile`). Deploy the server from the repo root with `fly deploy`.

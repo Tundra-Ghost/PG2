@@ -45,6 +45,8 @@ export type {
   ActionAck,
   ClientToServerEvents,
   DrawOfferRequest,
+  GameSummary,
+  SeatRef,
   JoinRequest,
   MoveRequest,
   RoomAck,

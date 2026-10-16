@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type { GameSummary } from '@pigeon-chess/game-core';
 import type { AppSettings } from '../../settings';
 import { playClick } from '../../sound';
 import { useOnlineRoom } from '../../online/useOnlineRoom';
@@ -113,6 +114,10 @@ export default function OnlineMatch({ playerName, settings, onBack, onSettings }
             </>
           )}
 
+          {!room.roomId && room.savedGames.length > 0 && (
+            <SavedGames games={room.savedGames} onResume={room.resumeGame} onForget={room.forgetGame} />
+          )}
+
           {room.error && <p className={styles.error}>{room.error}</p>}
         </div>
       </div>
@@ -199,6 +204,59 @@ export default function OnlineMatch({ playerName, settings, onBack, onSettings }
         </section>
       </main>
     </div>
+  );
+}
+
+function moveLabel(plies: number): string {
+  const moves = Math.ceil(plies / 2);
+  return moves === 1 ? '1 move' : `${moves} moves`;
+}
+
+function gameStatusText(game: GameSummary): { text: string; yourTurn: boolean } {
+  if (game.status !== 'active') return { text: 'Finished', yourTurn: false };
+  if (!game.opponentJoined) return { text: 'Waiting for opponent', yourTurn: false };
+  return game.turn === game.color
+    ? { text: 'Your turn', yourTurn: true }
+    : { text: 'Their turn', yourTurn: false };
+}
+
+interface SavedGamesProps {
+  games: GameSummary[];
+  onResume: (roomId: string) => void;
+  onForget: (roomId: string) => void;
+}
+
+/** Games this browser can pick back up, so a match can run over several days. */
+function SavedGames({ games, onResume, onForget }: SavedGamesProps) {
+  return (
+    <section className={styles.savedGames} aria-label="Your games">
+      <div className={styles.divider}><span>your games</span></div>
+      {games.map(game => {
+        const status = gameStatusText(game);
+        return (
+          <div key={game.roomId} className={styles.savedRow}>
+            <div className={styles.savedInfo}>
+              <span className={styles.savedCode}>{game.roomId}</span>
+              <span className={styles.savedMeta}>
+                {game.color === 'white' ? 'White' : 'Black'} · {moveLabel(game.moveCount)}
+              </span>
+            </div>
+            <span className={status.yourTurn ? styles.yourTurn : styles.savedStatus}>{status.text}</span>
+            <button className={styles.secondary} onClick={() => { playClick(); onResume(game.roomId); }}>
+              {game.status === 'active' ? 'Resume' : 'View'}
+            </button>
+            <button
+              className={styles.forget}
+              aria-label={`Remove game ${game.roomId}`}
+              onClick={() => onForget(game.roomId)}
+            >
+              ×
+            </button>
+          </div>
+        );
+      })}
+      <p className={styles.hint}>Games are saved after every move. A game with no moves for 14 days is deleted.</p>
+    </section>
   );
 }
 
