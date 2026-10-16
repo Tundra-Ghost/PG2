@@ -11,7 +11,9 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@fastify/cors": "11.3.0",
     "@pigeon-chess/game-core": "workspace:*",
+    "better-auth": "1.7.7",
     "fastify": "^5.6.1",
     "socket.io": "^4.8.1"
   },

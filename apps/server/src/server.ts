@@ -1,3 +1,4 @@
+import cors from '@fastify/cors';
 import Fastify, { type FastifyInstance } from 'fastify';
 import { Server } from 'socket.io';
 import type {
@@ -8,6 +9,7 @@ import type {
   RoomAck,
   ServerToClientEvents,
 } from '@pigeon-chess/game-core';
+import { registerAccountRoutes, type Accounts } from './accounts';
 import { RoomManager } from './rooms';
 import type { RoomStore } from './store';
 
@@ -17,6 +19,8 @@ export interface ServerOptions {
   logger?: boolean;
   /** Where rooms are saved between restarts. In-memory when left out. */
   store?: RoomStore;
+  /** Player accounts and profile sync. Left out, the account routes don't exist. */
+  accounts?: Accounts;
 }
 
 export interface GameServer {
@@ -49,6 +53,18 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
   });
 
   app.get('/health', async () => ({ ok: true }));
+
+  if (options.accounts) {
+    // Sessions travel in the Authorization header, so the browser needs CORS
+    // for it; set-auth-token is how Better Auth hands back a fresh token.
+    void app.register(cors, {
+      origin: options.corsOrigin ?? 'http://localhost:5173',
+      methods: ['GET', 'POST', 'PUT'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      exposedHeaders: ['set-auth-token'],
+    });
+    registerAccountRoutes(app, options.accounts);
+  }
 
   const broadcast = (roomId: string) => {
     const snapshot = rooms.snapshot(roomId);
