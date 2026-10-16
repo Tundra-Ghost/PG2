@@ -7,11 +7,14 @@
   "scripts": {
     "dev": "tsx watch src/main.ts",
     "start": "tsx src/main.ts",
+    "feedback": "tsx src/feedback-cli.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
+    "@fastify/cors": "11.3.0",
     "@pigeon-chess/game-core": "workspace:*",
+    "better-auth": "1.7.7",
     "fastify": "^5.6.1",
     "socket.io": "^4.8.1"
   },

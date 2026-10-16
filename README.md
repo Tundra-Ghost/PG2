@@ -39,9 +39,11 @@ pnpm typecheck
 
 Online games are saved after every move when `DATA_DIR` is set (a Fly volume in production), so a game can be resumed days later from the Your games list. Locally, with no `DATA_DIR`, games live in memory.
 
+Players can create an account under Settings > Account (username + password, no email). Their profile, stats and titles then sync to the server and follow them to other devices. Accounts live in a SQLite file at `DB_PATH` (on the Fly volume in production) and need `BETTER_AUTH_SECRET` set; locally, with no `DB_PATH`, they live in memory and vanish when the server restarts.
+
 To try online play, run both, open the web app in two tabs, create a room in one and join with the code in the other.
 
-The live site (tundra-ghost.github.io/PG2/) is built and published by `.github/workflows/pages.yml` on every merge to main. Online play there connects to the game server on Fly.io at `https://pigeon-chess-server.fly.dev` (`fly.toml`, `apps/server/Dockerfile`). Deploy the server from the repo root with `fly deploy`.
+The live site (tundra-ghost.github.io/PG2/) is built and published by `.github/workflows/pages.yml` on every merge to main. Online play there connects to the game server on Fly.io at `https://pigeon-chess-server.fly.dev` (`fly.toml`, `apps/server/Dockerfile`). The server deploys itself from `.github/workflows/fly-deploy.yml` when server code reaches main (needs the `FLY_API_TOKEN` repo secret); it can also be run by hand from the Actions tab, or with `fly deploy` from the repo root.
 
 ## Repo Map
 
@@ -50,7 +52,7 @@ The live site (tundra-ghost.github.io/PG2/) is built and published by `.github/w
 - `packages/game-core/src/engine/`: chess rules and game loop
 - `packages/game-core/src/modifiers/`: modifier data, registry, definitions
 - `packages/game-core/src/net/`: wire format and Socket.IO protocol types
-- `apps/server/src/`: rooms and socket wiring
+- `apps/server/src/`: rooms, socket wiring, and accounts (`accounts.ts`)
 - `game/src/components/`: gameplay and menu UI
 - `game/src/online/`: client socket hook
 

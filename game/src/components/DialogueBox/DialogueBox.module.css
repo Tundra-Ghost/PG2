@@ -53,8 +53,8 @@
   background:
     radial-gradient(ellipse at 4% 0%, rgba(255, 246, 210, 0.055) 0%, transparent 45%),
     linear-gradient(180deg, rgba(22, 14, 7, 0.98) 0%, rgba(12, 8, 3, 0.99) 100%);
-  border: 1px solid rgba(200, 151, 58, 0.28);
-  border-top: 2px solid rgba(200, 151, 58, 0.52);
+  border: 1px solid rgb(var(--gold-rgb) / 0.28);
+  border-top: 2px solid rgb(var(--gold-rgb) / 0.52);
   border-radius: 16px;
   cursor: pointer;
   text-align: left;
@@ -62,11 +62,11 @@
   position: relative;
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.48),
-    0 2px 8px rgba(200, 151, 58, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    0 2px 8px rgb(var(--gold-rgb) / 0.07),
+    inset 0 1px 0 rgb(var(--cream-rgb) / 0.03);
 
   /* Default theme (npc) */
-  --dlg-accent: rgba(200, 151, 58, 0.95);
+  --dlg-accent: rgb(var(--gold-rgb) / 0.95);
   --dlg-nameplate-bg: linear-gradient(90deg, rgba(92, 52, 16, 0.9), rgba(54, 30, 8, 0.9));
 }
 
@@ -102,7 +102,7 @@
 }
 
 .themeNpc {
-  --dlg-accent: rgba(200, 151, 58, 0.95);
+  --dlg-accent: rgb(var(--gold-rgb) / 0.95);
   --dlg-nameplate-bg: linear-gradient(90deg, rgba(92, 52, 16, 0.9), rgba(54, 30, 8, 0.9));
 }
 
@@ -152,7 +152,7 @@
   height: 2rem;
   border-radius: 999px;
   background: var(--dlg-nameplate-bg);
-  border: 1px solid rgba(200, 151, 58, 0.28);
+  border: 1px solid rgb(var(--gold-rgb) / 0.28);
   font-family: var(--font-display);
   font-size: 0.9rem;
   color: var(--dlg-accent);
@@ -163,7 +163,7 @@
   height: 2.2rem;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid rgba(200, 151, 58, 0.28);
+  border: 1px solid rgb(var(--gold-rgb) / 0.28);
 }
 
 /* ---- Nameplate label ---- */
@@ -174,10 +174,10 @@
   padding: 0.18rem 0.9rem 0.18rem 0.65rem;
   border-radius: 2px 999px 999px 2px;
   background: var(--dlg-nameplate-bg);
-  border: 1px solid rgba(200, 151, 58, 0.26);
+  border: 1px solid rgb(var(--gold-rgb) / 0.26);
   color: var(--dlg-accent);
   font-family: var(--font-display);
-  font-size: 0.82rem;
+  font-size: 0.875rem;
   letter-spacing: 0.04em;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
 }
@@ -228,7 +228,7 @@
   font-size: 0.48rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(200, 151, 58, 0.36);
+  color: rgb(var(--gold-rgb) / 0.36);
   align-self: flex-end;
 }
 
@@ -244,7 +244,7 @@
     border-top: none;
     box-shadow:
       0 10px 26px rgba(0, 0, 0, 0.34),
-      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      inset 0 1px 0 rgb(var(--cream-rgb) / 0.03);
   }
 
   .text {

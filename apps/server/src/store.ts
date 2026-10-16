@@ -1,7 +1,7 @@
 import { mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fromWire, toWire, type Color, type WireGameState } from '@pigeon-chess/game-core';
-import type { Room } from './rooms';
+import type { Player, Room } from './rooms';
 
 /**
  * Where rooms are kept between server restarts. The Fly machine sleeps when
@@ -25,7 +25,7 @@ export class MemoryStore implements RoomStore {
 interface SavedRoom {
   id: string;
   state: WireGameState;
-  seats: Partial<Record<Color, { token: string }>>;
+  seats: Partial<Record<Color, { token: string; player?: Player }>>;
   drawOffer: Color | null;
   updatedAt: number;
 }
@@ -47,7 +47,10 @@ export class FileStore implements RoomStore {
           state: fromWire(saved.state),
           // Nobody is connected right after a restart.
           seats: Object.fromEntries(
-            Object.entries(saved.seats).map(([color, seat]) => [color, { token: seat!.token, connected: false }]),
+            Object.entries(saved.seats).map(([color, seat]) => [
+              color,
+              { token: seat!.token, connected: false, ...(seat!.player ? { player: seat!.player } : {}) },
+            ]),
           ),
           drawOffer: saved.drawOffer,
           updatedAt: saved.updatedAt,
@@ -64,7 +67,10 @@ export class FileStore implements RoomStore {
       id: room.id,
       state: toWire(room.state),
       seats: Object.fromEntries(
-        Object.entries(room.seats).map(([color, seat]) => [color, { token: seat!.token }]),
+        Object.entries(room.seats).map(([color, seat]) => [
+          color,
+          { token: seat!.token, ...(seat!.player ? { player: seat!.player } : {}) },
+        ]),
       ),
       drawOffer: room.drawOffer,
       updatedAt: room.updatedAt,

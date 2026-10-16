@@ -12,6 +12,8 @@ import styles from './OnlineMatch.module.css';
 
 interface OnlineMatchProps {
   playerName: string;
+  /** The signed-in account, or null for a guest. */
+  account: string | null;
   settings: AppSettings;
   onBack: () => void;
   onSettings: () => void;
@@ -21,8 +23,8 @@ interface OnlineMatchProps {
  * Online two-player match (TDD P0-03 slice). Standard rules, no draft yet.
  * Every move goes to the server; the board only shows what the server sends.
  */
-export default function OnlineMatch({ playerName, settings, onBack, onSettings }: OnlineMatchProps) {
-  const room = useOnlineRoom();
+export default function OnlineMatch({ playerName, account, settings, onBack, onSettings }: OnlineMatchProps) {
+  const room = useOnlineRoom(account);
   const [code, setCode] = useState('');
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -55,6 +57,11 @@ export default function OnlineMatch({ playerName, settings, onBack, onSettings }
           <p className={styles.lede}>Standard chess against a friend. Modifier drafts come next.</p>
 
           <ConnectionLine connection={room.connection} />
+          <p className={styles.hint}>
+            {account
+              ? `Signed in as ${account}. Your games follow you to any device.`
+              : 'Playing as a guest: games are saved on this device. Sign in under Settings > Account to keep them on every device.'}
+          </p>
 
           {room.roomId ? (
             <div className={styles.waiting}>
@@ -115,7 +122,11 @@ export default function OnlineMatch({ playerName, settings, onBack, onSettings }
           )}
 
           {!room.roomId && room.savedGames.length > 0 && (
-            <SavedGames games={room.savedGames} onResume={room.resumeGame} onForget={room.forgetGame} />
+            <SavedGames
+              games={room.savedGames}
+              onResume={room.resumeGame}
+              onForget={account ? undefined : room.forgetGame}
+            />
           )}
 
           {room.error && <p className={styles.error}>{room.error}</p>}
@@ -127,6 +138,7 @@ export default function OnlineMatch({ playerName, settings, onBack, onSettings }
   const state = room.state!;
   const myColor = room.color!;
   const opponentAway = opponentSeat === 'disconnected';
+  const opponentName = room.names?.[opponentColor] ?? 'Opponent';
 
   return (
     <div className={appStyles.app}>
@@ -149,10 +161,10 @@ export default function OnlineMatch({ playerName, settings, onBack, onSettings }
             />
             <PlayerBanner
               role={`Opponent · ${opponentColor === 'white' ? 'White' : 'Black'}`}
-              name="Opponent"
+              name={opponentName}
               subtitle={opponentAway ? 'Disconnected. Their seat is held for them.' : 'Connected'}
               badge={state.turn === opponentColor ? 'To Move' : 'Standing By'}
-              portraitLabel="O"
+              portraitLabel={opponentName.slice(0, 1).toUpperCase()}
               align="right"
             />
           </div>
@@ -161,8 +173,8 @@ export default function OnlineMatch({ playerName, settings, onBack, onSettings }
             <div className={appStyles.logDock}>
               <MoveHistory
                 state={state}
-                whiteLabel={myColor === 'white' ? playerName : 'Opponent'}
-                blackLabel={myColor === 'black' ? playerName : 'Opponent'}
+                whiteLabel={myColor === 'white' ? playerName : opponentName}
+                blackLabel={myColor === 'black' ? playerName : opponentName}
                 viewerColor={myColor}
               />
             </div>
@@ -224,10 +236,11 @@ function gameStatusText(game: GameSummary): { text: string; yourTurn: boolean } 
 interface SavedGamesProps {
   games: GameSummary[];
   onResume: (roomId: string) => void;
-  onForget: (roomId: string) => void;
+  /** Left out for signed-in players: their games live on the account until they expire. */
+  onForget?: (roomId: string) => void;
 }
 
-/** Games this browser can pick back up, so a match can run over several days. */
+/** Games this browser or account can pick back up, so a match can run over several days. */
 function SavedGames({ games, onResume, onForget }: SavedGamesProps) {
   return (
     <section className={styles.savedGames} aria-label="Your games">
@@ -239,20 +252,23 @@ function SavedGames({ games, onResume, onForget }: SavedGamesProps) {
             <div className={styles.savedInfo}>
               <span className={styles.savedCode}>{game.roomId}</span>
               <span className={styles.savedMeta}>
-                {game.color === 'white' ? 'White' : 'Black'} · {moveLabel(game.moveCount)}
+                {game.color === 'white' ? 'White' : 'Black'}
+                {game.opponentName ? ` vs ${game.opponentName}` : ''} · {moveLabel(game.moveCount)}
               </span>
             </div>
             <span className={status.yourTurn ? styles.yourTurn : styles.savedStatus}>{status.text}</span>
             <button className={styles.secondary} onClick={() => { playClick(); onResume(game.roomId); }}>
               {game.status === 'active' ? 'Resume' : 'View'}
             </button>
-            <button
-              className={styles.forget}
-              aria-label={`Remove game ${game.roomId}`}
-              onClick={() => onForget(game.roomId)}
-            >
-              ×
-            </button>
+            {onForget && (
+              <button
+                className={styles.forget}
+                aria-label={`Remove game ${game.roomId}`}
+                onClick={() => onForget(game.roomId)}
+              >
+                ×
+              </button>
+            )}
           </div>
         );
       })}

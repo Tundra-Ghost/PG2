@@ -1,0 +1,39 @@
+name: Deploy server
+
+# Deploys the game server (apps/server) to Fly.io when server code reaches
+# main, or on demand from the Actions tab (Run workflow, any branch).
+# Needs the repo secret FLY_API_TOKEN: a Fly deploy token for
+# pigeon-chess-server.
+on:
+  push:
+    branches: [main]
+    paths:
+      - apps/server/**
+      - packages/game-core/**
+      - fly.toml
+      - pnpm-lock.yaml
+      - .github/workflows/fly-deploy.yml
+  workflow_dispatch:
+
+concurrency:
+  group: fly-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Never ship a server that fails its own checks.
+      - run: pnpm --filter @pigeon-chess/game-core --filter @pigeon-chess/server typecheck
+      - run: pnpm --filter @pigeon-chess/game-core --filter @pigeon-chess/server test
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

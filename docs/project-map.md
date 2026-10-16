@@ -110,7 +110,8 @@ Current repo (2026-10-15):
 - `apps/server` runs Fastify + Socket.IO rooms and validates every online move with game-core
 - Online play (standard rules) renders server state only
 - Local bot play and the modifier draft still run in the client
-- Still missing from the TDD stack: Redis/Postgres (P0-05), Clerk auth (P0-06), Phaser renderer (P0-04), Turborepo, draft over sockets (P1-03)
+- Player accounts (username + password, Better Auth on SQLite) sync the local profile across devices; Clerk (P0-06) waits on a custom domain
+- Still missing from the TDD stack: Redis/Postgres (P0-05), Phaser renderer (P0-04), Turborepo, draft over sockets (P1-03)
 
 ### Gap 2: Test discipline
 

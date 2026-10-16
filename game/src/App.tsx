@@ -7,6 +7,7 @@ import type { BotId } from './opponents';
 import { unlockBgm, playClick, playGameBgm, playMenuBgm } from './sound';
 import type { AppSettings } from './settings';
 import { applySettings, loadSettings } from './settings';
+import { useAccount } from './online/useAccount';
 import {
   getDerivedFeedOrder,
   getModifierEventBannerMessage,
@@ -109,6 +110,7 @@ export default function App() {
     return loaded;
   });
   const [profile, setProfile] = useState<LocalProfile | null>(() => loadProfile());
+  const account = useAccount(profile, setProfile);
 
   useEffect(() => {
     // A new screen starts at the top. Without this, mobile kept the draft
@@ -410,6 +412,7 @@ export default function App() {
         settings={settings}
         onSave={handleSettingsSave}
         onBack={() => setScreen(prevScreen)}
+        account={account}
       />
     ) : null;
 
@@ -492,6 +495,7 @@ export default function App() {
       <div onClick={handleUnlock}>
         <OnlineMatch
           playerName={playerName}
+          account={account.account?.username ?? null}
           settings={settings}
           onBack={() => setScreen('menu')}
           onSettings={goToSettings}

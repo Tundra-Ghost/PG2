@@ -1,13 +1,16 @@
 import { useState } from 'react';
+import type { AccountControls } from '../../online/useAccount';
 import type { AppSettings } from '../../settings';
 import { saveSettings } from '../../settings';
 import { playClick } from '../../sound';
+import AccountPanel from './AccountPanel';
 import styles from './Settings.module.css';
 
 interface SettingsProps {
   settings: AppSettings;
   onSave: (s: AppSettings) => void;
   onBack: () => void;
+  account: AccountControls;
 }
 
 // ── Primitive controls ──────────────────────────────────────────────────────
@@ -101,9 +104,10 @@ function StaticRow({ label, sub }: { label: string; sub?: string }) {
 
 // ── Tab definitions ─────────────────────────────────────────────────────────
 
-type TabId = 'audio' | 'display' | 'gameplay' | 'accessibility' | 'about';
+type TabId = 'account' | 'audio' | 'display' | 'gameplay' | 'accessibility' | 'about';
 
 const TABS: { id: TabId; label: string }[] = [
+  { id: 'account',       label: 'Account' },
   { id: 'audio',         label: 'Audio' },
   { id: 'display',       label: 'Display' },
   { id: 'gameplay',      label: 'Gameplay' },
@@ -113,9 +117,9 @@ const TABS: { id: TabId; label: string }[] = [
 
 // ── Main component ──────────────────────────────────────────────────────────
 
-export default function Settings({ settings: initial, onSave, onBack }: SettingsProps) {
+export default function Settings({ settings: initial, onSave, onBack, account }: SettingsProps) {
   const [s, setS] = useState<AppSettings>(initial);
-  const [activeTab, setActiveTab] = useState<TabId>('audio');
+  const [activeTab, setActiveTab] = useState<TabId>(account.account ? 'audio' : 'account');
 
   function update(partial: Partial<AppSettings>) {
     const next = { ...s, ...partial };
@@ -171,6 +175,8 @@ export default function Settings({ settings: initial, onSave, onBack }: Settings
 
         {/* ── Tab panels ─────────────────────────────────────── */}
         <div className={styles.panel} role="tabpanel">
+
+          {activeTab === 'account' && <AccountPanel controls={account} />}
 
           {activeTab === 'audio' && (
             <>

@@ -253,6 +253,13 @@ export function loadProfile(): LocalProfile | null {
   }
 }
 
+/** Takes a profile saved on the player's account and makes it this browser's profile. */
+export function adoptProfile(raw: unknown): LocalProfile | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const normalized = normalizeProfile(raw as Partial<LocalProfile>);
+  return normalized ? persistProfile(normalized) : null;
+}
+
 export function createProfile(input?: Partial<ProfileInput>): LocalProfile {
   const now = new Date().toISOString();
   return {

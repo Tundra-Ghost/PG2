@@ -28,6 +28,24 @@
   --ui-parchment2:#e8ddc4;
   --ui-cursed:    #5a2850;
 
+  /* Art Direction foundation colours not covered above */
+  --board-mid:    #3a2818;   /* mid-dark UI surfaces, panels */
+  --ui-cream:     #faf7f0;   /* the brightest tone allowed: never pure white */
+
+  /* Channels for translucent variants: rgb(var(--gold-rgb) / 0.2) */
+  --gold-rgb:      200 151 58;
+  --parchment-rgb: 242 234 216;
+  --cream-rgb:     250 247 240;
+  --ink-rgb:       24 18 10;
+  --chaos-rgb:     184 50 40;
+
+  /* Modifier category colours (Art Direction §02): exclusive to their category */
+  --cat-board:   #e8a23a;   /* A: Board Mutations */
+  --cat-curse:   #c0392b;   /* B: Cursed */
+  --cat-ability: #3a9de8;   /* C: Active Abilities */
+  --cat-fog:     #7c3ae8;   /* D: Fog of War */
+  --cat-army:    #3ae87c;   /* E: Asymmetric Armies */
+
   /* Pigeon brand palette */
   --pigeon-grey:  #8a8298;
   --pigeon-neck:  #6a7d5a;

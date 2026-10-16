@@ -85,4 +85,17 @@ describe('saved rooms', () => {
     expect(rooms.summaries([{ roomId, token: 'wrong' }])).toEqual([]);
     expect(rooms.summaries([{ roomId: 'NOPE1', token: whiteToken }])).toEqual([]);
   });
+
+  it('a seat stays tied to its account after a restart', () => {
+    const before = new RoomManager(new FileStore(dir));
+    const alice = { id: 'user-a', username: 'alice' };
+    const created = before.create(alice);
+    if (!created.ok) throw new Error(created.reason);
+    before.join(created.roomId);
+
+    const after = new RoomManager(new FileStore(dir));
+    expect(after.summaries([], alice)).toMatchObject([{ roomId: created.roomId, color: 'white' }]);
+    expect(after.join(created.roomId, undefined, alice)).toMatchObject({ ok: true, color: 'white' });
+    expect(after.snapshot(created.roomId)?.names).toEqual({ white: 'alice', black: null });
+  });
 });

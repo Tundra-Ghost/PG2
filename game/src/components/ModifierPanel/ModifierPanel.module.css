@@ -56,7 +56,7 @@
   width: 26px;
   height: 26px;
   flex-shrink: 0;
-  border: 1px solid rgba(200, 151, 58, 0.18);
+  border: 1px solid rgb(var(--gold-rgb) / 0.18);
   background: rgba(84, 48, 18, 0.05);
   color: rgba(84, 48, 18, 0.7);
   font-family: var(--font-mono);
@@ -66,7 +66,7 @@
 }
 
 .collapseBtn:hover {
-  border-color: rgba(200, 151, 58, 0.45);
+  border-color: rgb(var(--gold-rgb) / 0.45);
   color: rgba(58, 30, 11, 0.92);
   background: rgba(84, 48, 18, 0.12);
 }
@@ -176,7 +176,7 @@
 /* ---- Compact card (clickable, default state) ---- */
 
 .modCard {
-  --accent-color: rgba(200, 151, 58, 0.22);
+  --accent-color: rgb(var(--gold-rgb) / 0.22);
   width: 100%;
   text-align: left;
   position: relative;
@@ -201,7 +201,7 @@
 /* ---- Expanded card (fills body) ---- */
 
 .expandedCard {
-  --accent-color: rgba(200, 151, 58, 0.22);
+  --accent-color: rgb(var(--gold-rgb) / 0.22);
   flex: 1;
   display: flex;
   flex-direction: column;

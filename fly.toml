@@ -13,6 +13,10 @@ primary_region = "sjc"
   CORS_ORIGIN = "https://tundra-ghost.github.io,http://localhost:5173,http://127.0.0.1:5173"
   # Saved games live on the volume below, so they survive sleep and deploys.
   DATA_DIR = "/data/rooms"
+  # Player accounts and synced profiles (SQLite, same volume).
+  # BETTER_AUTH_SECRET is a Fly secret: fly secrets list -a pigeon-chess-server
+  DB_PATH = "/data/pigeon-chess.db"
+  BETTER_AUTH_URL = "https://pigeon-chess-server.fly.dev"
 
 # One machine, one volume: rooms are files on this disk.
 # First time: fly volumes create pg2_data --region sjc --size 1

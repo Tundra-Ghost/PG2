@@ -70,6 +70,10 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Site: publish to GitHub Pages from Actions on every merge (`.github/workflows/pages.yml`)
 - [ ] Site: stop committing `game/dist` once the Actions deploy is confirmed live
 - [x] Online: host the server so the Pages build can reach it (Fly.io: pigeon-chess-server.fly.dev, region sjc)
+- [x] Accounts for playtesting: username + password (Better Auth, SQLite on the Fly volume); profiles sync to the account (Settings > Account). Replaces Clerk (P0-06) for now; no custom domain needed
+- [x] Accounts: password reset with a one-time recovery code (no email)
+- [x] Online: seats belong to the signed-in account, so Your games follows the player across devices; opponents show by username
+- [ ] Accounts: record online results (win/loss, ELO) on the server instead of trusting the client profile
 - [ ] Persist rooms in Redis and results in Postgres (TDD P0-05)
 - [ ] Reconcile current menu promises with actual scope so the prototype does not over-claim
 

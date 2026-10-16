@@ -43,7 +43,7 @@
 
 .abilityHint {
   font-size: 0.75rem;
-  color: rgba(242, 234, 216, 0.6);
+  color: rgb(var(--parchment-rgb) / 0.6);
 }
 
 .abilityButton {
@@ -54,7 +54,7 @@
   border: 1px solid #3a9de8;
   border-radius: 4px;
   background: rgba(58, 157, 232, 0.16);
-  color: #f2ead8;
+  color: var(--ui-parchment);
   font-family: var(--font-body);
   font-size: 0.8rem;
   cursor: pointer;
@@ -91,7 +91,7 @@
   border-top: 1px solid rgba(200, 168, 75, 0.15);
   font-family: var(--font-body);
   font-size: 0.7rem;
-  color: rgba(242, 234, 216, 0.8);
+  color: rgb(var(--parchment-rgb) / 0.8);
 }
 
 .legendItem {
@@ -109,7 +109,7 @@
   justify-content: center;
   font-family: var(--font-mono);
   font-size: 0.62rem;
-  color: #18120a;
+  color: var(--ui-ink);
   background: rgba(245, 232, 192, 0.95);
 }
 
