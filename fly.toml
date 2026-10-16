@@ -1,0 +1,33 @@
+# Fly.io config for the game server (apps/server).
+# Deploy from the repo root: fly deploy
+app = "pigeon-chess-server"
+primary_region = "sea"
+
+[build]
+  dockerfile = "apps/server/Dockerfile"
+
+[env]
+  HOST = "0.0.0.0"
+  PORT = "8080"
+  # The Pages site and the local Vite dev server.
+  CORS_ORIGIN = "https://tundra-ghost.github.io,http://localhost:5173,http://127.0.0.1:5173"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # Rooms live in memory, so a stopped machine drops open rooms.
+  # Idle stop keeps the free allowance; any request wakes it again.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    path = "/health"
+    timeout = "5s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

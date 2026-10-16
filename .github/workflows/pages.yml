@@ -32,6 +32,9 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @pigeon-chess/web build
+        env:
+          # Online play connects to the Fly.io game server (fly.toml).
+          VITE_SERVER_URL: https://pigeon-chess-server.fly.dev
       - name: Assemble site
         run: |
           mkdir -p _site/docs _site/game

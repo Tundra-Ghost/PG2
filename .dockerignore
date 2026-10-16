@@ -1,0 +1,8 @@
+**/node_modules
+**/dist
+.git
+.github
+docs
+game/src
+game/public
+*.log
