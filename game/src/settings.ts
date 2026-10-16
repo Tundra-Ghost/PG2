@@ -13,6 +13,8 @@ export interface AppSettings {
   showCoordinates: boolean;
   // Accessibility / Display
   highContrast: boolean;
+  // Feedback
+  postGameSurveys: boolean;
 }
 
 const DEFAULTS: AppSettings = {
@@ -25,6 +27,7 @@ const DEFAULTS: AppSettings = {
   confirmResign: true,
   showCoordinates: true,
   highContrast: false,
+  postGameSurveys: true,
 };
 
 const KEY = 'pg2-settings';

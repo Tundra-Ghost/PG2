@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { ChatMessage, Color, GameSummary } from '@pigeon-chess/game-core';
 import type { MatchChatEntry } from '../../matchFeed';
 import type { AppSettings } from '../../settings';
 import { playClick } from '../../sound';
 import { useOnlineRoom } from '../../online/useOnlineRoom';
+import { isFinished, resultFor, type GameSurveyContext } from '../../online/survey';
+import PostGameSurvey from '../PostGameSurvey/PostGameSurvey';
 import Board from '../Board/Board';
 import GameStatus from '../GameStatus/GameStatus';
 import MoveHistory from '../MoveHistory/MoveHistory';
@@ -18,6 +20,8 @@ interface OnlineMatchProps {
   /** A room to sit down in once connected (from a friend's invite or a challenge). */
   joinRoomId?: string | null;
   onJoined?: () => void;
+  /** Turns post-game surveys off (from the survey's "don't ask" link). */
+  onStopSurveys: () => void;
   settings: AppSettings;
   onBack: () => void;
   onSettings: () => void;
@@ -32,11 +36,32 @@ export default function OnlineMatch({
   account,
   joinRoomId,
   onJoined,
+  onStopSurveys,
   settings,
   onBack,
   onSettings,
 }: OnlineMatchProps) {
   const room = useOnlineRoom(account);
+  const [surveyFor, setSurveyFor] = useState<GameSurveyContext | null>(null);
+  /** The last status seen per room, so only a game that ends while watched asks. */
+  const lastStatus = useRef<{ roomId: string; status: string } | null>(null);
+
+  useEffect(() => {
+    const state = room.state;
+    if (!state || !room.roomId || !room.color) return;
+    const previous = lastStatus.current;
+    lastStatus.current = { roomId: room.roomId, status: state.status };
+    if (!settings.postGameSurveys || !isFinished(state)) return;
+    if (!previous || previous.roomId !== room.roomId || previous.status !== 'active') return;
+    const context: GameSurveyContext = {
+      mode: 'online',
+      modifierIds: state.activeModifiers.map(mod => mod.id),
+      result: resultFor(state, room.color),
+      details: { room: room.roomId, moves: state.moveHistory.length, ending: state.status, signedIn: Boolean(account) },
+    };
+    const timer = setTimeout(() => setSurveyFor(context), 1500);
+    return () => clearTimeout(timer);
+  }, [room.state, room.roomId, room.color, settings.postGameSurveys, account]);
 
   useEffect(() => {
     if (!joinRoomId || room.connection !== 'online') return;
@@ -237,6 +262,9 @@ export default function OnlineMatch({
           </div>
         </section>
       </main>
+      {surveyFor && (
+        <PostGameSurvey context={surveyFor} onClose={() => setSurveyFor(null)} onStopAsking={onStopSurveys} />
+      )}
     </div>
   );
 }

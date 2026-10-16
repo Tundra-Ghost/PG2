@@ -41,6 +41,13 @@ Online games are saved after every move when `DATA_DIR` is set (a Fly volume in 
 
 Players can create an account under Settings > Account (username + password, no email). Their profile, stats and titles then sync to the server and follow them to other devices. Accounts live in a SQLite file at `DB_PATH` (on the Fly volume in production) and need `BETTER_AUTH_SECRET` set; locally, with no `DB_PATH`, they live in memory and vanish when the server restarts.
 
+Playtest feedback lands in the same database: players send notes from Settings > Feedback, and an optional survey follows each finished game. Read them on the server with:
+
+```
+fly ssh console -C "pnpm --filter @pigeon-chess/server feedback"          # open feedback
+fly ssh console -C "pnpm --filter @pigeon-chess/server feedback surveys"  # survey summary
+```
+
 To try online play, run both, open the web app in two tabs, create a room in one and join with the code in the other.
 
 The live site (tundra-ghost.github.io/PG2/) is built and published by `.github/workflows/pages.yml` on every merge to main. Online play there connects to the game server on Fly.io at `https://pigeon-chess-server.fly.dev` (`fly.toml`, `apps/server/Dockerfile`). The server deploys itself from `.github/workflows/fly-deploy.yml` when server code reaches main (needs the `FLY_API_TOKEN` repo secret); it can also be run by hand from the Actions tab, or with `fly deploy` from the repo root.
