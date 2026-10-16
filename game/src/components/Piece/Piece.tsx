@@ -20,6 +20,7 @@ const SYMBOLS: Partial<Record<PieceType, string>> = {
 
 const GERALD_ID = MODIFIER_IDS.gerald;
 const WINTER_ID = MODIFIER_IDS.winterIsComing;
+const SWAMP_ID = MODIFIER_IDS.thisIsMySwamp;
 
 export default function Piece({ piece }: PieceProps) {
   const { type, color, cooldowns, isPacifist, isBerserker } = piece;
@@ -28,12 +29,14 @@ export default function Piece({ piece }: PieceProps) {
 
   if ((cooldowns[GERALD_ID] ?? 0) > 0) markers.push('G');
   if ((cooldowns[WINTER_ID] ?? 0) > 0) markers.push('❄');
+  if ((cooldowns[SWAMP_ID] ?? 0) > 0) markers.push('≈');
   if (isPacifist) markers.push('O');
   if (isBerserker) markers.push('B');
 
   const markerLabel = [
     (cooldowns[GERALD_ID] ?? 0) > 0 ? 'gerald blocked' : null,
     (cooldowns[WINTER_ID] ?? 0) > 0 ? 'frozen' : null,
+    (cooldowns[SWAMP_ID] ?? 0) > 0 ? 'stuck in the swamp' : null,
     isPacifist ? 'pacifist' : null,
     isBerserker ? 'berserker' : null,
   ]

@@ -46,7 +46,10 @@ function clearAllLava(state: GameState): GameState {
   const next = cloneState(state);
   for (const [sq, tile] of next.tiles) {
     const effects = tile.effects.filter(e => e.type !== 'lava');
-    if (effects.length === 0) next.tiles.delete(sq);
+    // Keep tiles that carry other modifier flags (Swamp, vents, ...).
+    const { square: _square, effects: _effects, ...flags } = tile;
+    const hasFlags = Object.values(flags).some(Boolean);
+    if (effects.length === 0 && !hasFlags) next.tiles.delete(sq);
     else next.tiles.set(sq, { ...tile, effects });
   }
   return next;

@@ -31,6 +31,7 @@ export { getDraftScope, isSharedDraftModifier } from './modifiers/scope';
 export type { DraftScope } from './modifiers/scope';
 export * from './modifiers/data';
 export { isFrozenZoneSquare } from './modifiers/definitions/winter';
+export { isSwampSquare, SWAMP_SQUARES } from './modifiers/definitions/swamp';
 
 export { fromWire, toWire } from './net/wire';
 export type { WireGameState } from './net/wire';

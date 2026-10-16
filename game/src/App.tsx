@@ -10,6 +10,7 @@ import { applySettings, loadSettings } from './settings';
 import {
   getDerivedFeedOrder,
   getModifierEventBannerMessage,
+  pickBannerEvent,
   type MatchChatEntry,
 } from './matchFeed';
 import { buildBotProfile } from './matchProfiles';
@@ -198,8 +199,9 @@ export default function App() {
     }
     if (latestEvent.id === lastAnnouncedEventId.current) return;
 
+    const bannerEvent = pickBannerEvent(gameState.eventHistory, lastAnnouncedEventId.current);
     lastAnnouncedEventId.current = latestEvent.id;
-    setInfoMessage(getModifierEventBannerMessage(latestEvent));
+    if (bannerEvent) setInfoMessage(getModifierEventBannerMessage(bannerEvent));
   }, [gameState.eventHistory]);
 
   useEffect(() => {

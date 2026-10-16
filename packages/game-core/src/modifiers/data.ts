@@ -128,6 +128,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'The four central squares (d4, d5, e4, e5) are the Swamp. Any piece in the Swamp moves at 1 square per turn. Knights are trapped for 2 turns upon entering.',
     flavor: '"Viktor entered the Swamp to seize the centre. The Swamp seized Viktor. They are negotiating terms."',
+    prototypeRules:
+      'A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight that lands in the Swamp is stuck for 2 turns, then leaps out normally. Swamp pieces still give check at full range.',
   },
   {
     id: 'MOD-A007',
@@ -265,6 +267,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'After every move you make, pigeon critic Reginald Beak appears with a 200ms review of your decision. Reginald has no gameplay effect. He has many opinions.',
     flavor: '"Reginald gave Viktor\'s en passant a 3/10. Viktor has given Reginald a 0/10. Reginald was unaffected."',
+    prototypeRules:
+      'Reginald reviews every move the owner makes in the match feed. About 30 review lines so far. No gameplay effect.',
   },
 
   // ── CATEGORY C — ACTIVE ABILITIES ──────────────────────────────────────────
@@ -508,6 +512,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Replace Knights and Bishops with 4 extra Pawns — total: 12 Pawns, King, Queen, 2 Rooks. No Knights, no Bishops. The 12-pawn side starts one rank forward (Rank 3).',
     flavor: '"The pawns are singing. Viktor is uncomfortable with the energy this brings to an otherwise professional match."',
+    prototypeRules:
+      'The owner starts with 8 pawns on their third rank and 4 more behind them on b, c, f and g. Pawns on the third rank cannot double step.',
   },
   {
     id: 'MOD-E003',
