@@ -10,6 +10,7 @@ import type {
   ServerToClientEvents,
 } from '@pigeon-chess/game-core';
 import { registerAccountRoutes, type Accounts } from './accounts';
+import { createFeedbackStore, registerFeedbackRoutes } from './feedback';
 import { RoomManager, type Player } from './rooms';
 import type { RoomStore } from './store';
 
@@ -86,6 +87,7 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
       exposedHeaders: ['set-auth-token'],
     });
     registerAccountRoutes(app, options.accounts);
+    registerFeedbackRoutes(app, createFeedbackStore(options.accounts.db), options.accounts);
   }
 
   const broadcast = (roomId: string) => {

@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "tsx watch src/main.ts",
     "start": "tsx src/main.ts",
+    "feedback": "tsx src/feedback-cli.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

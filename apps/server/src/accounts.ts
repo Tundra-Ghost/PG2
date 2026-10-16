@@ -79,10 +79,14 @@ export type Auth = ReturnType<typeof createAuth>;
 
 export interface Accounts {
   auth: Auth;
+  /** The shared SQLite database. Feedback and social tables live here too. */
+  db: DatabaseSync;
   /** Account id for the request's bearer token, or null when signed out. */
   userIdFor(headers: FastifyRequest['headers']): Promise<string | null>;
   /** The player a bearer token belongs to, or null for a missing or dead session. */
   playerFor(token: string): Promise<Player | null>;
+  /** The player behind a request's Authorization header, or null for a guest. */
+  playerFromHeaders(headers: FastifyRequest['headers']): Promise<Player | null>;
   getProfile(userId: string): unknown;
   saveProfile(userId: string, profile: unknown): void;
   /** Replaces the player's recovery code and returns the new one. */
@@ -128,16 +132,21 @@ export async function createAccounts(options: AccountOptions): Promise<Accounts>
     return code;
   };
 
+  const playerFromSession = (session: Awaited<ReturnType<Auth['api']['getSession']>>): Player | null =>
+    session ? { id: session.user.id, username: session.user.username ?? session.user.name } : null;
+
   return {
     auth,
+    db,
     async userIdFor(headers) {
       const session = await auth.api.getSession({ headers: toHeaders(headers) });
       return session?.user.id ?? null;
     },
     async playerFor(token) {
-      const session = await auth.api.getSession({ headers: new Headers({ authorization: `Bearer ${token}` }) });
-      if (!session) return null;
-      return { id: session.user.id, username: session.user.username ?? session.user.name };
+      return playerFromSession(await auth.api.getSession({ headers: new Headers({ authorization: `Bearer ${token}` }) }));
+    },
+    async playerFromHeaders(headers) {
+      return playerFromSession(await auth.api.getSession({ headers: toHeaders(headers) }));
     },
     getProfile(userId) {
       const row = readProfile.get(userId) as { data: string } | undefined;
