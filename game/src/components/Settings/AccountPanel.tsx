@@ -70,6 +70,7 @@ export default function AccountPanel({ controls }: { controls: AccountControls }
             className={styles.accountSecondary}
             onClick={() => {
               playClick();
+              setMode('signin');
               void controls.signOut();
             }}
           >
@@ -112,6 +113,7 @@ export default function AccountPanel({ controls }: { controls: AccountControls }
     if (result.ok) {
       setPassword('');
       setCode('');
+      setMode('signin');
     } else {
       setError(result.reason);
     }

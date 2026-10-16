@@ -1,17 +1,17 @@
 .box {
   margin: 0.5rem 0 0;
   padding: 0.45rem 0.6rem;
-  border-left: 2px solid var(--ui-gold, #c8973a);
+  border-left: 2px solid var(--ui-gold, var(--ui-gold));
 }
 
 .dark {
-  background: rgba(200, 151, 58, 0.1);
-  color: rgba(242, 234, 216, 0.88);
+  background: rgb(var(--gold-rgb) / 0.1);
+  color: rgb(var(--parchment-rgb) / 0.88);
 }
 
 .light {
-  background: rgba(200, 151, 58, 0.14);
-  color: #3a2818;
+  background: rgb(var(--gold-rgb) / 0.14);
+  color: var(--board-mid);
 }
 
 .label {
@@ -20,7 +20,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ui-gold, #c8973a);
+  color: var(--ui-gold, var(--ui-gold));
 }
 
 .light .label {

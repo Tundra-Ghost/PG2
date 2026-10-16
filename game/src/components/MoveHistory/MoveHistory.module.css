@@ -250,11 +250,11 @@
     linear-gradient(90deg, var(--dialogue-accent-start, rgba(83, 50, 92, 0.94)), var(--dialogue-accent-end, rgba(52, 30, 61, 0.9)));
   color: rgba(247, 241, 229, 0.96);
   font-family: var(--font-display);
-  font-size: 0.72rem;
+  font-size: 0.875rem;
   letter-spacing: 0.03em;
   box-shadow:
     0 6px 14px rgba(0, 0, 0, 0.18),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    inset 0 0 0 1px rgb(var(--cream-rgb) / 0.08);
 }
 
 .dialogueBody {
@@ -286,7 +286,7 @@
   padding: 0.68rem 0.82rem;
   border-radius: 16px;
   border: 1px solid rgba(84, 48, 18, 0.14);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgb(var(--cream-rgb) / 0.08);
 }
 
 .typewriterButton {
@@ -307,7 +307,7 @@
     linear-gradient(180deg, var(--bubble-bg-start, rgba(255, 252, 244, 0.96)), var(--bubble-bg-end, rgba(243, 233, 211, 0.94)));
   box-shadow:
     0 10px 24px rgba(0, 0, 0, 0.14),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.24);
+    inset 0 0 0 1px rgb(var(--cream-rgb) / 0.24);
 }
 
 .dialogueCardPlayer .bubbleDialogue {
