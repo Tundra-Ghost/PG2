@@ -188,6 +188,16 @@ export default function OnlineMatch({
             />
           </div>
 
+          {room.drawOffer === opponentColor && state.status === 'active' && (
+            // On phones the status bar sits below the board and chat, so the
+            // offer is repeated right above the board where it can't be missed.
+            <div className={styles.drawBanner} role="alert">
+              <span>{opponentName} offers a draw.</span>
+              <button className={styles.controlBtn} onClick={() => { playClick(); room.answerDraw(true); }}>Accept</button>
+              <button className={styles.controlBtn} onClick={() => { playClick(); room.answerDraw(false); }}>Decline</button>
+            </div>
+          )}
+
           <div className={styles.stageRow}>
             <div className={appStyles.logDock}>
               <MoveHistory
