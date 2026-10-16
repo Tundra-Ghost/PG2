@@ -65,7 +65,7 @@ function getEventCounter(value: unknown): number {
 }
 
 /** Find the highest-value capture available from a given square. */
-function getBestCaptureTarget(state: GameState, from: Square): Square | null {
+export function getBestCaptureTarget(state: GameState, from: Square): Square | null {
   const piece = state.pieces.get(from);
   if (!piece) return null;
 

@@ -17,7 +17,9 @@ export {
   applyMoveInternal,
   buildMove,
   cloneState,
+  getValidPromotionTypes,
   isPromotionMove,
+  PROMOTION_TYPES,
 } from './engine/gameLoop';
 export { getChickBotMove } from './engine/bot';
 export { drawByAgreement, getWinner, resign } from './engine/result';

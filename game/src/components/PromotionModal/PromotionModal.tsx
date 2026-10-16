@@ -4,6 +4,8 @@ import styles from './PromotionModal.module.css';
 
 interface PromotionModalProps {
   color: Color;
+  /** Pieces the modifiers allow. Defaults to all four. */
+  allowed?: readonly PieceType[];
   onChoose: (piece: PieceType) => void;
 }
 
@@ -14,14 +16,15 @@ const CHOICES: { type: PieceType; whiteSymbol: string; blackSymbol: string; labe
   { type: 'knight', whiteSymbol: '♘', blackSymbol: '♞', label: 'Knight' },
 ];
 
-export default function PromotionModal({ color, onChoose }: PromotionModalProps) {
+export default function PromotionModal({ color, allowed, onChoose }: PromotionModalProps) {
+  const choices = allowed ? CHOICES.filter(choice => allowed.includes(choice.type)) : CHOICES;
   return (
     <div className={styles.backdrop} role="dialog" aria-modal="true" aria-label="Choose promotion piece">
       <div className={styles.card}>
         <p className={styles.heading}>Promote Pawn</p>
         <p className={styles.sub}>{color === 'white' ? 'White' : 'Black'} — choose a piece</p>
         <div className={styles.choices}>
-          {CHOICES.map(({ type, whiteSymbol, blackSymbol, label }) => (
+          {choices.map(({ type, whiteSymbol, blackSymbol, label }) => (
             <button
               key={type}
               className={`${styles.choice} ${styles[color]}`}

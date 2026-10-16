@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
 import { buildMove } from '@pigeon-chess/game-core';
-import { isFrozenZoneSquare } from '@pigeon-chess/game-core';
+import { getValidPromotionTypes, isFrozenZoneSquare } from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import { playCapture, playCastle, playMove } from '../../sound';
 import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
@@ -44,11 +44,10 @@ interface PendingPromotion {
 function getDisplayLegalMoves(state: GameState, from: Square): Square[] {
   const legalMoves = chessEngine.getLegalMoves(state, from);
   return legalMoves.filter(to => {
-    const move = buildMove(state, from, to);
     if (chessEngine.isPromotionMove(state, from, to)) {
-      move.promotion = 'queen';
+      return getValidPromotionTypes(state, from, to).length > 0;
     }
-    return chessEngine.validateMove(state, move).valid;
+    return chessEngine.validateMove(state, buildMove(state, from, to)).valid;
   });
 }
 
@@ -191,9 +190,9 @@ export default function Board({
         // Promotion
         if (chessEngine.isPromotionMove(state, selected, square)) {
           if (autoQueen) {
-            // Skip modal — auto-promote to queen
+            // Skip modal: promote to the best piece the modifiers allow
             const move = buildMove(state, selected, square);
-            move.promotion = 'queen';
+            move.promotion = getValidPromotionTypes(state, selected, square)[0] ?? 'queen';
             const validation = chessEngine.validateMove(state, move);
             if (validation.valid) {
               playSfxForMove(state, selected, square, false);
@@ -321,7 +320,11 @@ export default function Board({
 
       {/* Promotion modal — rendered outside the board frame so it overlays everything */}
       {pendingPromotion && (
-        <PromotionModal color={state.turn} onChoose={handlePromotionChoice} />
+        <PromotionModal
+          color={state.turn}
+          allowed={getValidPromotionTypes(state, pendingPromotion.from, pendingPromotion.to)}
+          onChoose={handlePromotionChoice}
+        />
       )}
     </>
   );
