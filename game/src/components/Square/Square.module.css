@@ -66,6 +66,10 @@
   background: rgba(150, 205, 255, 0.2);
 }
 
+.shaft {
+  background: radial-gradient(circle, #050403 0%, #050403 42%, rgba(30, 24, 18, 0.9) 58%, rgba(30, 24, 18, 0.35) 75%);
+}
+
 .swampTint {
   background: rgba(92, 140, 60, 0.32);
 }

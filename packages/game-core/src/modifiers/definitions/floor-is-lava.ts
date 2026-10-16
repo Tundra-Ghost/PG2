@@ -19,8 +19,9 @@ const ALL_SQUARES: Square[] = (() => {
 function placeLava(state: GameState, count: number, blockedSquares: Square[] = []): GameState {
   const next = cloneState(state);
   const blocked = new Set(blockedSquares);
-  const preferred = ALL_SQUARES.filter(sq => !next.pieces.has(sq) && !blocked.has(sq));
-  const fallback = ALL_SQUARES.filter(sq => !next.pieces.has(sq) && blocked.has(sq));
+  const open = ALL_SQUARES.filter(sq => !next.pieces.has(sq) && !next.tiles.get(sq)?.isVoid);
+  const preferred = open.filter(sq => !blocked.has(sq));
+  const fallback = open.filter(sq => blocked.has(sq));
   const available = [...preferred, ...fallback];
   let prngState = next.prngState;
 

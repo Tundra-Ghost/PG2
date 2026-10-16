@@ -16,6 +16,14 @@ function toSquare(f: number, r: number): Square | null {
   return `${FILES[f]}${RANKS[r]}` as Square;
 }
 
+/**
+ * Void tiles are off the board: nothing may stand on, land on, or slide
+ * through them (MOD-A003 used vents, future MOD-A005 storm).
+ */
+export function isVoidSquare(state: GameState, sq: Square): boolean {
+  return state.tiles.get(sq)?.isVoid === true;
+}
+
 /** Pseudo-legal squares a sliding piece can reach (stops at blockers/captures). */
 function slidingMoves(
   state: GameState,
@@ -30,6 +38,7 @@ function slidingMoves(
     let cr = r + dr;
     while (cf >= 0 && cf <= 7 && cr >= 0 && cr <= 7) {
       const sq = toSquare(cf, cr)!;
+      if (isVoidSquare(state, sq)) break;
       const occupant = state.pieces.get(sq);
       if (occupant) {
         if (occupant.color !== piece.color) result.push(sq); // capture
@@ -126,7 +135,7 @@ function pawnMoves(state: GameState, piece: Piece): Square[] {
 
   // Single push
   const oneAhead = toSquare(f, r + dir);
-  if (oneAhead && !state.pieces.has(oneAhead)) {
+  if (oneAhead && !state.pieces.has(oneAhead) && !isVoidSquare(state, oneAhead)) {
     result.push(oneAhead);
     // Double push from starting rank
     if (r === startRank) {
@@ -159,6 +168,10 @@ function pawnMoves(state: GameState, piece: Piece): Square[] {
  * Used by moveValidator Stage 4 and checkmate/stalemate detection.
  */
 export function getLegalMovesForPiece(state: GameState, piece: Piece): Square[] {
+  return pieceMoves(state, piece).filter(sq => !isVoidSquare(state, sq));
+}
+
+function pieceMoves(state: GameState, piece: Piece): Square[] {
   switch (piece.type) {
     case 'king':
       return kingMoves(state, piece);
@@ -175,9 +188,14 @@ export function getLegalMovesForPiece(state: GameState, piece: Piece): Square[] 
       return knightMoves(state, piece);
     case 'pawn':
       return pawnMoves(state, piece);
+    case 'chancellor':
+      // MOD-E004: rook or knight movement
+      return [
+        ...slidingMoves(state, piece, [[1, 0], [-1, 0], [0, 1], [0, -1]]),
+        ...knightMoves(state, piece),
+      ];
     // Future piece types — no moves for now
     case 'pigeon':
-    case 'chancellor':
     case 'royal_guard':
       return [];
   }

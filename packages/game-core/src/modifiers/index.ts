@@ -13,6 +13,9 @@ import { reginaldBeakDef } from './definitions/reginald-beak';
 import { smallCouncilDef } from './definitions/small-council';
 import { traitorDef } from './definitions/traitor';
 import { rejectQueenDef } from './definitions/reject-queen';
+import { chancellorDef } from './definitions/chancellor';
+import { twinTelepathyDef } from './definitions/twin-telepathy';
+import { ventTilesDef } from './definitions/vent-tiles';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -24,3 +27,6 @@ modifierRegistry.register(reginaldBeakDef);
 modifierRegistry.register(smallCouncilDef);
 modifierRegistry.register(traitorDef);
 modifierRegistry.register(rejectQueenDef);
+modifierRegistry.register(chancellorDef);
+modifierRegistry.register(twinTelepathyDef);
+modifierRegistry.register(ventTilesDef);
