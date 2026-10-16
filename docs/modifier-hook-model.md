@@ -261,6 +261,16 @@ Assessment:
 - Owner loses knights and bishops and gets 12 pawns: rank 3 (or 6) full, plus b, c, f and g on rank 2 (or 7).
 - Third-rank pawns cannot double step.
 
+### `MOD-E007` Reject Queen, Embrace Knight
+
+- `onPreMoveValidate` refuses queen promotion for the owner. `getValidPromotionTypes` lists what is allowed; the bot, the board highlights, auto-queen and the promotion menu all use it.
+- `onPromotion` gives the new piece `hasPromotionChain`. Its next capture chains one extra capture (same picker as the Berserker).
+
+### `MOD-B006` They Were The Traitor
+
+- From turn 21 (move 11), each owner turn start has a 25% chance to warn: the highest-value non-king piece gets `isTraitor`.
+- At the owner's next turn start it changes colour. A home-corner rook takes its castling right with it. If the traitor was captured first, the search starts over. Once per match.
+
 ## Recommended Next Modifier Work
 
 `TDD`-aligned next steps:

@@ -31,6 +31,8 @@ export interface Piece {
   isBerserker?: boolean; // future: MOD-E006
   isPacifist?: boolean;  // future: MOD-B007
   isRealKing?: boolean;  // future: MOD-E003
+  isTraitor?: boolean;   // MOD-B006: warned, defects next turn
+  hasPromotionChain?: boolean; // MOD-E007: chain-captures on its next capture
   cooldowns: Record<ModifierID, number>;
   bannedEP?: Square;     // future: MOD-C008
 }

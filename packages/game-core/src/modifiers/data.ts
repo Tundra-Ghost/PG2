@@ -239,6 +239,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'After turn 10, at a random point, one of your non-King pieces defects to the opponent — weighted toward your highest-value piece. You are warned 1 turn in advance. The ejection screen appears briefly.',
     flavor: '"Queen was The Traitor. 7 pieces remain. Viktor stares at the screen. Viktor voted wrong."',
+    prototypeRules:
+      'From move 11 on, each of your turns has a 1 in 4 chance to pick a traitor: your most valuable non-king piece. It is marked with ! and defects at the start of your next turn. Trade it off first and the search starts again. Happens once per match.',
   },
   {
     id: 'MOD-B007',
@@ -581,6 +583,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your pawns cannot promote to Queen. Knight, Bishop, or Rook only. However, any promoted piece gains chain-capture for their first capture after promotion.',
     flavor: '"It became a knight. Everyone in the room was surprised. The knight had been training."',
+    prototypeRules:
+      'Your pawns promote to a knight, bishop or rook only. The promoted piece chains one extra capture on its first capture after promotion.',
   },
   {
     id: 'MOD-E008',

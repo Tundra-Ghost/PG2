@@ -39,6 +39,12 @@ function getPieceTooltipLines(piece: PieceType | undefined): string[] {
   if (piece.isPacifist) {
     lines.push('Conscientious Objector: This piece refuses to capture.');
   }
+  if (piece.isTraitor) {
+    lines.push('They Were The Traitor: This piece defects at the start of its owner\'s next turn.');
+  }
+  if (piece.hasPromotionChain) {
+    lines.push('Reject Queen: This piece chains one extra capture on its next capture.');
+  }
   if (piece.isBerserker) {
     lines.push('Berserker: This piece chain-captures when another capture exists.');
   }

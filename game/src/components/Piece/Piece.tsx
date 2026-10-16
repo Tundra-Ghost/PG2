@@ -23,7 +23,7 @@ const WINTER_ID = MODIFIER_IDS.winterIsComing;
 const SWAMP_ID = MODIFIER_IDS.thisIsMySwamp;
 
 export default function Piece({ piece }: PieceProps) {
-  const { type, color, cooldowns, isPacifist, isBerserker } = piece;
+  const { type, color, cooldowns, isPacifist, isBerserker, isTraitor, hasPromotionChain } = piece;
   const symbol = SYMBOLS[type] ?? '?';
   const markers: string[] = [];
 
@@ -32,6 +32,8 @@ export default function Piece({ piece }: PieceProps) {
   if ((cooldowns[SWAMP_ID] ?? 0) > 0) markers.push('≈');
   if (isPacifist) markers.push('O');
   if (isBerserker) markers.push('B');
+  if (isTraitor) markers.push('!');
+  if (hasPromotionChain) markers.push('»');
 
   const markerLabel = [
     (cooldowns[GERALD_ID] ?? 0) > 0 ? 'gerald blocked' : null,
@@ -39,6 +41,8 @@ export default function Piece({ piece }: PieceProps) {
     (cooldowns[SWAMP_ID] ?? 0) > 0 ? 'stuck in the swamp' : null,
     isPacifist ? 'pacifist' : null,
     isBerserker ? 'berserker' : null,
+    isTraitor ? 'traitor' : null,
+    hasPromotionChain ? 'chain ready' : null,
   ]
     .filter(Boolean)
     .join(', ');
@@ -49,6 +53,7 @@ export default function Piece({ piece }: PieceProps) {
         styles.piece,
         styles[color],
         isBerserker ? styles.berserker : '',
+        isTraitor ? styles.traitor : '',
       ].filter(Boolean).join(' ')}
       aria-label={markerLabel ? `${color} ${type}, ${markerLabel}` : `${color} ${type}`}
     >
@@ -61,6 +66,7 @@ export default function Piece({ piece }: PieceProps) {
               className={[
                 styles.marker,
                 marker === 'B' ? styles.markerBerserker : '',
+                marker === '!' ? styles.markerTraitor : '',
               ].filter(Boolean).join(' ')}
             >
               {marker}

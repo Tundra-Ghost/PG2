@@ -25,6 +25,8 @@ const MARKER_LEGEND: Array<{ modifierId: string } & MarkerLegendEntry> = [
   { modifierId: MODIFIER_IDS.gerald, mark: 'G', label: 'Gerald' },
   { modifierId: MODIFIER_IDS.conscientiousObjector, mark: 'O', label: 'Pacifist' },
   { modifierId: MODIFIER_IDS.berserker, mark: 'B', label: 'Berserker' },
+  { modifierId: MODIFIER_IDS.traitor, mark: '!', label: 'Traitor' },
+  { modifierId: MODIFIER_IDS.rejectQueen, mark: '»', label: 'Chain ready' },
 ];
 
 /** Legend rows for the markers that can appear in this match. */

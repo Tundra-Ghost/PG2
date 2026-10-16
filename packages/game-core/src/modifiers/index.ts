@@ -11,6 +11,8 @@ import { berserkerDef } from './definitions/berserker';
 import { thisIsMySwampDef } from './definitions/this-is-my-swamp';
 import { reginaldBeakDef } from './definitions/reginald-beak';
 import { smallCouncilDef } from './definitions/small-council';
+import { traitorDef } from './definitions/traitor';
+import { rejectQueenDef } from './definitions/reject-queen';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -20,3 +22,5 @@ modifierRegistry.register(berserkerDef);
 modifierRegistry.register(thisIsMySwampDef);
 modifierRegistry.register(reginaldBeakDef);
 modifierRegistry.register(smallCouncilDef);
+modifierRegistry.register(traitorDef);
+modifierRegistry.register(rejectQueenDef);

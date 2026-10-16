@@ -634,12 +634,28 @@ export function hasAnyValidMove(state: GameState): boolean {
   for (const piece of state.pieces.values()) {
     if (piece.color !== state.turn) continue;
     for (const to of getLegalMovesForPiece(state, piece)) {
-      const move = buildMove(state, piece.square, to);
-      if (isPromotionMove(state, piece.square, to)) move.promotion = 'queen';
-      if (validateMove(state, move).valid) return true;
+      if (isPromotionMove(state, piece.square, to)) {
+        if (getValidPromotionTypes(state, piece.square, to).length > 0) return true;
+        continue;
+      }
+      if (validateMove(state, buildMove(state, piece.square, to)).valid) return true;
     }
   }
   return false;
+}
+
+export const PROMOTION_TYPES: readonly PieceType[] = ['queen', 'rook', 'bishop', 'knight'];
+
+/**
+ * The promotion pieces that pass full validation for this pawn move, best
+ * first. Modifiers can forbid some (Reject Queen forbids the queen).
+ */
+export function getValidPromotionTypes(state: GameState, from: Square, to: Square): PieceType[] {
+  return PROMOTION_TYPES.filter(type => {
+    const move = buildMove(state, from, to);
+    move.promotion = type;
+    return validateMove(state, move).valid;
+  });
 }
 
 /** The side to move may shoo Gerald (spending its turn) unless it is in check. */

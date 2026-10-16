@@ -1,6 +1,6 @@
 import type { Color, GameState, Move } from './types';
 import { chessEngine } from './ChessEngine';
-import { applyMoveInternal, buildMove, cloneState } from './gameLoop';
+import { applyMoveInternal, buildMove, cloneState, getValidPromotionTypes } from './gameLoop';
 
 /**
  * Chick Bot — depth-1 material evaluator.
@@ -32,9 +32,11 @@ export function getChickBotMove(state: GameState, color: Color): Move | null {
     for (const to of legal) {
       const move = buildMove(state, piece.square, to);
 
-      // Auto-queen for promotions
+      // Promote to the best piece the modifiers allow
       if (chessEngine.isPromotionMove(state, piece.square, to)) {
-        move.promotion = 'queen';
+        const [best] = getValidPromotionTypes(state, piece.square, to);
+        if (!best) continue;
+        move.promotion = best;
       }
 
       // Respect modifier constraints (Gerald, pacifist, frozen, etc.)
