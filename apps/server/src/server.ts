@@ -11,6 +11,7 @@ import type {
 } from '@pigeon-chess/game-core';
 import { registerAccountRoutes, type Accounts } from './accounts';
 import { createFeedbackStore, registerFeedbackRoutes } from './feedback';
+import { attachSocial, type Presence } from './social';
 import { RoomManager, type Player } from './rooms';
 import type { RoomStore } from './store';
 
@@ -61,6 +62,7 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
   // A signed-in client sends its session token on connect. A missing or
   // dead token just means a guest: guests can still play by room code.
   const accounts = options.accounts;
+  const presence: Presence | null = accounts ? attachSocial(io, accounts, rooms) : null;
   if (accounts) {
     io.use((socket, next) => {
       const token: unknown = socket.handshake.auth?.token;
@@ -100,6 +102,7 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
 
     const takeSeat = (roomId: string, color: Color) => {
       seat = { roomId, color };
+      if (socket.data.player) presence?.seatChanged(socket.data.player.id, 1);
       void socket.join(roomId);
       socket.emit('chat:history', rooms.chatHistory(roomId));
       broadcast(roomId);
@@ -173,6 +176,7 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
 
     socket.on('disconnect', () => {
       if (!seat) return;
+      if (socket.data.player) presence?.seatChanged(socket.data.player.id, -1);
       rooms.setConnected(seat.roomId, seat.color, false);
       broadcast(seat.roomId);
       rooms.closeIfEmpty(seat.roomId);

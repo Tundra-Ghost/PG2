@@ -59,3 +59,14 @@ export type {
   SeatStatus,
   ServerToClientEvents,
 } from './net/protocol';
+
+export { MAX_DM_CHARS } from './net/social';
+export type {
+  DirectMessage,
+  Friend,
+  FriendList,
+  FriendStatus,
+  SocialAck,
+  SocialClientEvents,
+  SocialServerEvents,
+} from './net/social';
