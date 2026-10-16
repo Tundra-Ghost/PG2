@@ -11,10 +11,16 @@ import { isSharedDraftModifier } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './DraftScreen.module.css';
 import PrototypeRules from '../PrototypeRules/PrototypeRules';
+import {
+  BUDGET,
+  MAX_COUNT,
+  MAX_PER_CATEGORY,
+  getSelectedCards,
+  getValidOptions,
+  pickRandomCard,
+  runRandomDraft,
+} from './draftRules';
 
-const BUDGET = 8;
-const MAX_COUNT = 5;
-const MAX_PER_CATEGORY = 2;
 
 interface DraftScreenProps {
   onStartMatch: (playerSelectedIds: string[], opponentSelectedIds: string[]) => void;
@@ -54,43 +60,6 @@ function CursePips({ level }: { level: 0 | 1 | 2 | 3 }) {
   );
 }
 
-function getSelectedCards(ids: string[]) {
-  return ALL_MODIFIERS.filter(mod => ids.includes(mod.id));
-}
-
-function getCategoryCounts(cards: ModifierCard[]): Record<string, number> {
-  const counts: Record<string, number> = {};
-  for (const card of cards) {
-    counts[card.category] = (counts[card.category] ?? 0) + 1;
-  }
-  return counts;
-}
-
-function getValidOptions(
-  ownIds: string[],
-  otherIds: string[],
-  implementedIds: Set<string>,
-): ModifierCard[] {
-  const ownCards = getSelectedCards(ownIds);
-  const ownCounts = getCategoryCounts(ownCards);
-  const totalCost = ownCards.reduce((sum, card) => sum + card.cost, 0);
-
-  return ALL_MODIFIERS.filter(card => {
-    if (!implementedIds.has(card.id)) return false;
-    if (ownIds.includes(card.id)) return false;
-    if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return false;
-    if (ownCards.length >= MAX_COUNT) return false;
-    if (totalCost + card.cost > BUDGET) return false;
-    if ((ownCounts[card.category] ?? 0) >= MAX_PER_CATEGORY) return false;
-    return true;
-  });
-}
-
-function pickRandomCard(cards: ModifierCard[]): ModifierCard | null {
-  if (cards.length === 0) return null;
-  return cards[Math.floor(Math.random() * cards.length)] ?? null;
-}
-
 export default function DraftScreen({
   onStartMatch,
   onBack,
@@ -104,6 +73,8 @@ export default function DraftScreen({
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [hideUnavailable, setHideUnavailable] = useState(true);
   const [draftTurn, setDraftTurn] = useState<DraftTurn>('player');
+  /** Set by the random draft. The picks cannot be changed afterwards. */
+  const [randomLocked, setRandomLocked] = useState(false);
   const implementedIds = useMemo(() => new Set(modifierRegistry.getAll().map(mod => mod.id)), []);
 
   const playerSelected = useMemo(() => getSelectedCards(playerSelectedIds), [playerSelectedIds]);
@@ -202,12 +173,25 @@ export default function DraftScreen({
     setDraftTurn('opponent');
   }
 
+  function handleRandomDraft() {
+    if (draftTurn !== 'player' || playerSelectedIds.length > 0) return;
+    playClick();
+    const result = runRandomDraft(playerSelectedIds, botSelectedIds, implementedIds);
+    setPlayerSelectedIds(result.playerIds);
+    setBotSelectedIds(result.botIds);
+    setRandomLocked(true);
+    setDraftTurn('done');
+  }
+
   function handleFinishDraft() {
     playClick();
     onStartMatch(playerSelectedIds, botSelectedIds);
   }
 
   function getStatusCopy(): string {
+    if (randomLocked) {
+      return 'Random draft locked in. You are stuck with it.';
+    }
     if (draftTurn === 'done') {
       return 'Draft complete. Start when ready.';
     }
@@ -497,6 +481,16 @@ export default function DraftScreen({
           </div>
 
           <div className={styles.actions}>
+            {!draftFinished && playerSelectedIds.length === 0 && (
+              <button
+                className={styles.randomBtn}
+                onClick={handleRandomDraft}
+                disabled={draftTurn !== 'player'}
+                title="Both sides get random picks. You cannot change them."
+              >
+                Random Draft (locked)
+              </button>
+            )}
             <button className={styles.startBtn} onClick={handleFinishDraft}>
               {draftFinished ? 'Start Match' : 'Finish Draft & Start Match'}
             </button>
