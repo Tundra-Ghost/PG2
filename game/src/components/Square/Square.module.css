@@ -83,6 +83,14 @@
   color: rgba(196, 230, 150, 0.85);
 }
 
+.noFlyZone {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(214, 64, 52, 0.22) 0 6px,
+    transparent 6px 12px
+  );
+}
+
 .quietZone {
   inset: 4%;
   border: 2px dashed rgba(220, 170, 255, 0.85);

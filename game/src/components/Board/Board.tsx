@@ -2,7 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
 import { buildMove } from '@pigeon-chess/game-core';
-import { getAbilityOptions, getQuietZoneSquares, getValidPromotionTypes, isFrozenZoneSquare, modifierRegistry } from '@pigeon-chess/game-core';
+import {
+  getAbilityOptions,
+  getNoFlySquares,
+  getQuietZoneSquares,
+  getValidPromotionTypes,
+  isFrozenZoneSquare,
+  isHistoryBlackout,
+  modifierRegistry,
+} from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import { playCapture, playCastle, playMove } from '../../sound';
 import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
@@ -98,6 +106,7 @@ export default function Board({
   }, [plies, pieceMovedNow]);
 
   const quietZones = useMemo(() => getQuietZoneSquares(state), [state]);
+  const noFlySquares = useMemo(() => getNoFlySquares(state), [state]);
   const abilitySide = controlColor ?? state.turn;
   const hasAbilityCards = state.activeModifiers.some(
     mod => modifierRegistry.get(mod.id)?.ability && (mod.sourceColor == null || mod.sourceColor === abilitySide),
@@ -132,7 +141,9 @@ export default function Board({
   const winterActive = state.activeModifiers.some(mod => mod.id === WINTER_ID);
   const markerLegend = getMarkerLegend(state.activeModifiers.map(mod => mod.id));
 
-  const lastMove = state.moveHistory[state.moveHistory.length - 1];
+  // MOD-B005: during a blackout the cursed side does not see the last move either.
+  const forgetsLastMove = isHistoryBlackout(state, controlColor ?? state.turn);
+  const lastMove = forgetsLastMove ? undefined : state.moveHistory[state.moveHistory.length - 1];
   const lastFrom = lastMove?.move.from;
   const lastTo   = lastMove?.move.to;
 
@@ -329,6 +340,7 @@ export default function Board({
                 const swamp = state.tiles.get(square)?.isSwamp === true;
                 const shaft = state.tiles.get(square)?.isVoid === true;
                 const quietZone = quietZones.get(square);
+                const noFly = noFlySquares.get(square);
                 return (
                   <SquareComponent
                     key={square}
@@ -344,6 +356,7 @@ export default function Board({
                     isSwamp={swamp}
                     isShaft={shaft}
                     quietZone={quietZone}
+                    noFlyZone={noFly}
                     onClick={handleSquareClick}
                   />
                 );

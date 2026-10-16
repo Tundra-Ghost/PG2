@@ -22,6 +22,9 @@ import { forTheEmperorDef } from './definitions/for-the-emperor';
 import { youDiedDef } from './definitions/you-died';
 import { quietQuittingDef } from './definitions/quiet-quitting';
 import { bankedEnPassantDef } from './definitions/banked-en-passant';
+import { threeKingsDef } from './definitions/three-kings';
+import { fiftyFirstMovesDef } from './definitions/fifty-first-moves';
+import { noFlyZoneDef } from './definitions/no-fly-zone';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -42,3 +45,6 @@ modifierRegistry.register(forTheEmperorDef);
 modifierRegistry.register(youDiedDef);
 modifierRegistry.register(quietQuittingDef);
 modifierRegistry.register(bankedEnPassantDef);
+modifierRegistry.register(threeKingsDef);
+modifierRegistry.register(fiftyFirstMovesDef);
+modifierRegistry.register(noFlyZoneDef);
