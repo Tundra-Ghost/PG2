@@ -347,6 +347,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'The Queen refuses to move this turn. Instead, she establishes a 3×3 Zone of Control. Any opponent piece entering the zone is pushed back 1 square. Duration: 2 turns.',
     flavor: '"The queen established her zone and sat quietly within it. This turned out to be extremely effective."',
+    prototypeRules:
+      'Select the queen and press the ability button, then click the queen. She stays put. Enemy pieces cannot move into the 3x3 around her for 2 of their turns, and cannot capture her. The zone ends early if she moves. Then she waits 10 of your turns.',
   },
   {
     id: 'MOD-C006',
@@ -388,6 +390,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'En passant is no longer a one-turn window. Bank it. Store the capture for up to 3 turns. Execute it whenever the moment is right. One banked en passant per pawn.',
     flavor: '"The pawn remembered. The pawn waited three turns. The pawn struck. \'I\'ve been waiting for this.\'"',
+    prototypeRules:
+      'When an enemy pawn double-steps past your pawn, your pawn banks the en passant. For 3 of your turns, select it and press the ability button to take it, as long as both pawns stay put. Then that pawn waits 3 of your turns.',
   },
 
   // ── CATEGORY D — FOG OF WAR ─────────────────────────────────────────────────

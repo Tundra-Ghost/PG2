@@ -20,6 +20,8 @@ import { didIDoThatDef } from './definitions/oops-knight';
 import { retaliatorySwipeDef } from './definitions/retaliatory-swipe';
 import { forTheEmperorDef } from './definitions/for-the-emperor';
 import { youDiedDef } from './definitions/you-died';
+import { quietQuittingDef } from './definitions/quiet-quitting';
+import { bankedEnPassantDef } from './definitions/banked-en-passant';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -38,3 +40,5 @@ modifierRegistry.register(didIDoThatDef);
 modifierRegistry.register(retaliatorySwipeDef);
 modifierRegistry.register(forTheEmperorDef);
 modifierRegistry.register(youDiedDef);
+modifierRegistry.register(quietQuittingDef);
+modifierRegistry.register(bankedEnPassantDef);
