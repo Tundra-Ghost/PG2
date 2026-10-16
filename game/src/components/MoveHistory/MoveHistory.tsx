@@ -1,5 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { getWinner, type GameEvent, type GameState } from '@pigeon-chess/game-core';
+import {
+  MODIFIER_IDS,
+  blackoutMovesLeft,
+  getWinner,
+  isHistoryBlackout,
+  type Color,
+  type GameEvent,
+  type GameState,
+} from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import type { MatchChatEntry } from '../../matchFeed';
 import styles from './MoveHistory.module.css';
@@ -18,6 +26,8 @@ interface MoveHistoryProps {
   opponentAvatarIcon?: string | null;
   pendingDialogue?: MatchChatEntry | null;
   onDismissDialogue?: () => void;
+  /** The side reading the feed. Defaults to the side to move (hotseat). */
+  viewerColor?: Color;
 }
 
 interface FeedEntry {
@@ -104,8 +114,12 @@ export default function MoveHistory({
   opponentAvatarIcon = null,
   pendingDialogue = null,
   onDismissDialogue,
+  viewerColor,
 }: MoveHistoryProps) {
   const { moveHistory, eventHistory, status, turn, flags } = state;
+  // MOD-B005: the cursed side forgets the moves and events for a while.
+  const blackout = status === 'active' && isHistoryBlackout(state, viewerColor ?? turn);
+  const blackoutLeft = blackout ? blackoutMovesLeft(state) : 0;
   const [draftChat, setDraftChat] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -128,8 +142,9 @@ export default function MoveHistory({
       const isWhite = move.pieceMoved.color === 'white';
       const actor = isWhite ? whiteLabel : blackLabel;
       const emphasis = isWhite ? 'player' : 'opponent';
+      const visibleEvents = (eventsByPly.get(ply) ?? []).filter(event => !blackout || event.modifierId === MODIFIER_IDS.fiftyFirstMoves);
 
-      feedEntries.push({
+      if (!blackout) feedEntries.push({
         key: `move-${ply}`,
         kind: 'move',
         actor,
@@ -142,7 +157,7 @@ export default function MoveHistory({
         portraitSrc: isWhite ? playerAvatarSrc : null,
       });
 
-      for (const [eventIndex, event] of (eventsByPly.get(ply) ?? []).entries()) {
+      for (const [eventIndex, event] of visibleEvents.entries()) {
         feedEntries.push({
           key: event.id,
           kind: 'event',
@@ -155,6 +170,18 @@ export default function MoveHistory({
         });
       }
     });
+
+    if (blackout) {
+      feedEntries.push({
+        key: 'blackout',
+        kind: 'event',
+        actor: '50 First Moves',
+        text: `You cannot remember any moves. Your memory returns in ${blackoutLeft} move${blackoutLeft === 1 ? '' : 's'}.`,
+        emphasis: 'opponent',
+        order: moveHistory.length * 100 + 99,
+        avatarLabel: '?',
+      });
+    }
 
     for (const chat of chatEntries) {
       feedEntries.push({
@@ -177,6 +204,8 @@ export default function MoveHistory({
 
     return feedEntries.sort((a, b) => a.order - b.order);
   }, [
+    blackout,
+    blackoutLeft,
     blackLabel,
     chatEntries,
     eventHistory,

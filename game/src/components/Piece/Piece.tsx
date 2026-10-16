@@ -17,6 +17,7 @@ const SYMBOLS: Partial<Record<PieceType, string>> = {
   knight: '♞',
   pawn: '♟',
   chancellor: '♜', // MOD-E004: a rook glyph with a C badge
+  royal_guard: '♚', // MOD-E003: a king glyph with a shield badge
 };
 
 const GERALD_ID = MODIFIER_IDS.gerald;
@@ -29,6 +30,7 @@ export default function Piece({ piece }: PieceProps) {
   const markers: string[] = [];
 
   if (type === 'chancellor') markers.push('C');
+  if (type === 'royal_guard') markers.push('⛨');
   if ((cooldowns[GERALD_ID] ?? 0) > 0) markers.push('G');
   if ((cooldowns[WINTER_ID] ?? 0) > 0) markers.push('❄');
   if ((cooldowns[SWAMP_ID] ?? 0) > 0) markers.push('≈');
@@ -57,7 +59,7 @@ export default function Piece({ piece }: PieceProps) {
         isBerserker ? styles.berserker : '',
         isTraitor ? styles.traitor : '',
       ].filter(Boolean).join(' ')}
-      aria-label={markerLabel ? `${color} ${type}, ${markerLabel}` : `${color} ${type}`}
+      aria-label={`${color} ${type === 'royal_guard' ? 'royal guard' : type}${markerLabel ? `, ${markerLabel}` : ''}`}
     >
       <span className={styles.symbol}>{symbol}</span>
       {markers.length > 0 && (

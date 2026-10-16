@@ -610,6 +610,7 @@ export default function App() {
                 opponentAvatarIcon={selectedBotProfile?.icon ?? null}
                 pendingDialogue={pendingDialogue}
                 onDismissDialogue={handleDialogueDismiss}
+                viewerColor={vsBot ? 'white' : undefined}
               />
             </div>
 

@@ -230,6 +230,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Every 6 turns, the move history wipes and becomes unreadable for 3 turns. En passant cannot be claimed during a blackout. Opponent history is also hidden.',
     flavor: '"Viktor cannot remember what his opponent did three turns ago. He is framing this as a fresh start."',
+    prototypeRules:
+      'From move 6, and every 6 moves after, your move history is hidden for 3 moves, including the last-move highlight. You cannot take en passant during a blackout.',
   },
   {
     id: 'MOD-B006',
@@ -291,6 +293,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'The King declares a No-Fly Zone on any one row or column. No opponent piece may cross that line for 3 turns. Pigeons are exempt — they cannot read executive orders.',
     flavor: '"The King has issued an executive order banning rooks from the d-file. Enforcement is ongoing."',
+    prototypeRules:
+      'Select your king and press the ability button, then click a square on his column or row. That line closes: for 3 of their turns, enemy pieces cannot land on it or move across it. Pieces can still attack across it. Then the king waits 8 of your turns.',
   },
   {
     id: 'MOD-C002',
@@ -543,6 +547,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'No Queen. Instead: 2 additional Kings (Royal Guards). Guards can be checkmated and removed from play without ending the game. The real King must still be protected normally.',
     flavor: '"Three kings on the board. \'Yeah,\' Viktor said, \'there are three of them.\'"',
+    prototypeRules:
+      'Your queen becomes a Royal Guard and a second Guard stands on your third rank. Guards step one square like a king and never castle. They can be captured like any piece. Only the real king matters for check.',
   },
   {
     id: 'MOD-E004',

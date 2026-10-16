@@ -163,6 +163,7 @@ export default function OnlineMatch({ playerName, settings, onBack, onSettings }
                 state={state}
                 whiteLabel={myColor === 'white' ? playerName : 'Opponent'}
                 blackLabel={myColor === 'black' ? playerName : 'Opponent'}
+                viewerColor={myColor}
               />
             </div>
 

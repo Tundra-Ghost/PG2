@@ -109,6 +109,22 @@ function kingMoves(state: GameState, piece: Piece): Square[] {
   return result;
 }
 
+function stepMoves(state: GameState, piece: Piece): Square[] {
+  const result: Square[] = [];
+  const f = fileIndex(piece.square);
+  const r = rankIndex(piece.square);
+  for (let df = -1; df <= 1; df++) {
+    for (let dr = -1; dr <= 1; dr++) {
+      if (df === 0 && dr === 0) continue;
+      const sq = toSquare(f + df, r + dr);
+      if (!sq) continue;
+      const occupant = state.pieces.get(sq);
+      if (!occupant || occupant.color !== piece.color) result.push(sq);
+    }
+  }
+  return result;
+}
+
 function knightMoves(state: GameState, piece: Piece): Square[] {
   const result: Square[] = [];
   const f = fileIndex(piece.square);
@@ -194,9 +210,11 @@ function pieceMoves(state: GameState, piece: Piece): Square[] {
         ...slidingMoves(state, piece, [[1, 0], [-1, 0], [0, 1], [0, -1]]),
         ...knightMoves(state, piece),
       ];
+    case 'royal_guard':
+      // MOD-E003: steps like a king, never castles, can be captured
+      return stepMoves(state, piece);
     // Future piece types — no moves for now
     case 'pigeon':
-    case 'royal_guard':
       return [];
   }
 }

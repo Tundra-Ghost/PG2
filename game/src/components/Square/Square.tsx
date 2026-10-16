@@ -18,6 +18,8 @@ interface SquareProps {
   isShaft: boolean;
   /** MOD-C005: the side whose queen guards this square, if any. */
   quietZone?: 'white' | 'black';
+  /** MOD-C001: the side whose king closed this square's line, if any. */
+  noFlyZone?: 'white' | 'black';
   onClick: (square: SquareType) => void;
 }
 
@@ -45,6 +47,9 @@ function getPieceTooltipLines(piece: PieceType | undefined): string[] {
   if (piece.type === 'chancellor') {
     lines.push('Chancellor: Moves like a rook or a knight.');
   }
+  if (piece.type === 'royal_guard') {
+    lines.push('Royal Guard: Steps one square like a king. Losing it does not lose the game.');
+  }
   if (piece.isTraitor) {
     lines.push('They Were The Traitor: This piece defects at the start of its owner\'s next turn.');
   }
@@ -64,6 +69,7 @@ function getTileTooltipLines(
   isSwamp: boolean,
   isShaft: boolean,
   quietZone: 'white' | 'black' | undefined,
+  noFlyZone: 'white' | 'black' | undefined,
 ): string[] {
   const lines: string[] = [];
 
@@ -80,6 +86,9 @@ function getTileTooltipLines(
     lines.push('This Is My Swamp: Pieces here move only 1 square. Knights landing here are stuck for 2 turns.');
   }
 
+  if (noFlyZone) {
+    lines.push(`I Hereby Declare: The ${noFlyZone} king closed this line. Enemy pieces cannot land on or cross it.`);
+  }
   if (quietZone) {
     lines.push(`Quiet Quitting: The ${quietZone} queen's zone. Enemy pieces cannot enter.`);
   }
@@ -100,6 +109,7 @@ export default function Square({
   isSwamp,
   isShaft,
   quietZone,
+  noFlyZone,
   onClick,
 }: SquareProps) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -109,7 +119,7 @@ export default function Square({
   const colorClass = isLight ? styles.light : styles.dark;
   const hasLava = tileEffects.includes('lava');
   const pieceTooltipLines = getPieceTooltipLines(piece);
-  const tileTooltipLines = getTileTooltipLines(tileEffects, isFrozenZone, isSwamp, isShaft, quietZone);
+  const tileTooltipLines = getTileTooltipLines(tileEffects, isFrozenZone, isSwamp, isShaft, quietZone, noFlyZone);
   const tooltipLines = [...pieceTooltipLines, ...tileTooltipLines];
   const hasTooltip = tooltipLines.length > 0;
 
@@ -179,6 +189,10 @@ export default function Square({
         <div className={`${styles.tileEffectLayer} ${styles.swampTint}`} aria-hidden="true">
           <div className={styles.swampIcon}>≈</div>
         </div>
+      )}
+
+      {noFlyZone && (
+        <div className={`${styles.tileEffectLayer} ${styles.noFlyZone}`} aria-hidden="true" />
       )}
 
       {quietZone && (
