@@ -265,6 +265,7 @@ export default function Board({
                   state.tiles.get(square)?.effects.map(effect => effect.type) ?? [];
                 const frozenZone = winterActive && isFrozenZoneSquare(square);
                 const swamp = state.tiles.get(square)?.isSwamp === true;
+                const shaft = state.tiles.get(square)?.isVoid === true;
                 return (
                   <SquareComponent
                     key={square}
@@ -278,6 +279,7 @@ export default function Board({
                     tileEffects={tileEffects}
                     isFrozenZone={frozenZone}
                     isSwamp={swamp}
+                    isShaft={shaft}
                     onClick={handleSquareClick}
                   />
                 );

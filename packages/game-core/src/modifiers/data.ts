@@ -87,6 +87,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Three tiles are secretly Vents at match start. The first piece landing on a Vent teleports to the diametrically opposite square, capturing whatever is there. Once used, Vents become impassable shafts.',
     flavor: '"Viktor\'s bishop vanished and reappeared behind enemy lines. Viktor did not do that on purpose."',
+    prototypeRules:
+      'Three hidden vents spawn on ranks 3 to 6. The first non-king piece to land on one jumps to the opposite square and captures whatever is there, either colour. Then the vent becomes a shaft no piece can enter or cross. A vent jams (and stays hidden) if the exit holds a king or the jump would expose your king.',
   },
   {
     id: 'MOD-A004',
@@ -542,6 +544,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Replace one Rook with The Chancellor — combining Rook and Knight movement. Each turn choose: move like a Rook OR like a Knight. Not both.',
     flavor: '"The Chancellor can go anywhere. The Chancellor chose here. Viktor is now scared."',
+    prototypeRules:
+      'One random rook becomes The Chancellor. It moves like a rook or a knight. That side loses castling on the Chancellor side.',
   },
   {
     id: 'MOD-E005',
@@ -555,6 +559,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Both players\' Bishops are telepathically linked. When one Bishop moves, the other automatically mirrors the direction as far as legally possible. Applies to both players equally.',
     flavor: '"Viktor moved his bishop. His other bishop also moved. They did this without communicating. The bishops find it natural."',
+    prototypeRules:
+      'When a bishop moves, its twin of the same colour slides the same way up to the same distance. It stops before any piece, never captures, and stays put if blocked by another modifier or if the slide would expose its king.',
   },
   {
     id: 'MOD-E006',

@@ -15,6 +15,7 @@ interface SquareProps {
   tileEffects: TileEffectType[];
   isFrozenZone: boolean;
   isSwamp: boolean;
+  isShaft: boolean;
   onClick: (square: SquareType) => void;
 }
 
@@ -39,6 +40,9 @@ function getPieceTooltipLines(piece: PieceType | undefined): string[] {
   if (piece.isPacifist) {
     lines.push('Conscientious Objector: This piece refuses to capture.');
   }
+  if (piece.type === 'chancellor') {
+    lines.push('Chancellor: Moves like a rook or a knight.');
+  }
   if (piece.isTraitor) {
     lines.push('They Were The Traitor: This piece defects at the start of its owner\'s next turn.');
   }
@@ -56,6 +60,7 @@ function getTileTooltipLines(
   tileEffects: TileEffectType[],
   isFrozenZone: boolean,
   isSwamp: boolean,
+  isShaft: boolean,
 ): string[] {
   const lines: string[] = [];
 
@@ -64,6 +69,9 @@ function getTileTooltipLines(
   }
   if (isFrozenZone) {
     lines.push('Winter Is Coming: Pieces entering this zone must thaw before moving again.');
+  }
+  if (isShaft) {
+    lines.push('Vent Tiles: An empty shaft. No piece can enter or cross it.');
   }
   if (isSwamp) {
     lines.push('This Is My Swamp: Pieces here move only 1 square. Knights landing here are stuck for 2 turns.');
@@ -83,6 +91,7 @@ export default function Square({
   tileEffects,
   isFrozenZone,
   isSwamp,
+  isShaft,
   onClick,
 }: SquareProps) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -92,7 +101,7 @@ export default function Square({
   const colorClass = isLight ? styles.light : styles.dark;
   const hasLava = tileEffects.includes('lava');
   const pieceTooltipLines = getPieceTooltipLines(piece);
-  const tileTooltipLines = getTileTooltipLines(tileEffects, isFrozenZone, isSwamp);
+  const tileTooltipLines = getTileTooltipLines(tileEffects, isFrozenZone, isSwamp, isShaft);
   const tooltipLines = [...pieceTooltipLines, ...tileTooltipLines];
   const hasTooltip = tooltipLines.length > 0;
 
@@ -152,6 +161,10 @@ export default function Square({
     >
       {isFrozenZone && (
         <div className={`${styles.tileEffectLayer} ${styles.frozenTint}`} aria-hidden="true" />
+      )}
+
+      {isShaft && (
+        <div className={`${styles.tileEffectLayer} ${styles.shaft}`} aria-hidden="true" />
       )}
 
       {isSwamp && (

@@ -16,6 +16,7 @@ const SYMBOLS: Partial<Record<PieceType, string>> = {
   bishop: '♝',
   knight: '♞',
   pawn: '♟',
+  chancellor: '♜', // MOD-E004: a rook glyph with a C badge
 };
 
 const GERALD_ID = MODIFIER_IDS.gerald;
@@ -27,6 +28,7 @@ export default function Piece({ piece }: PieceProps) {
   const symbol = SYMBOLS[type] ?? '?';
   const markers: string[] = [];
 
+  if (type === 'chancellor') markers.push('C');
   if ((cooldowns[GERALD_ID] ?? 0) > 0) markers.push('G');
   if ((cooldowns[WINTER_ID] ?? 0) > 0) markers.push('❄');
   if ((cooldowns[SWAMP_ID] ?? 0) > 0) markers.push('≈');

@@ -18,7 +18,7 @@ import { MODIFIER_IDS } from '../ids';
 const ID = MODIFIER_IDS.berserker;
 
 const PIECE_VALUE: Partial<Record<string, number>> = {
-  queen: 900, rook: 500, bishop: 320, knight: 310, pawn: 100,
+  queen: 900, chancellor: 800, rook: 500, bishop: 320, knight: 310, pawn: 100,
 };
 
 function findBerserker(state: GameState): Piece | undefined {

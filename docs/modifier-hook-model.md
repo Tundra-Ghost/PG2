@@ -271,6 +271,21 @@ Assessment:
 - From turn 21 (move 11), each owner turn start has a 25% chance to warn: the highest-value non-king piece gets `isTraitor`.
 - At the owner's next turn start it changes colour. A home-corner rook takes its castling right with it. If the traitor was captured first, the search starts over. Once per match.
 
+### `MOD-E004` Equivalent Exchange (The Chancellor)
+
+- `onActivate` turns one random owner rook into `chancellor`. The move generator gives it rook plus knight moves, so check detection sees it too. Castling on that side is lost. SAN letter is `C`.
+
+### `MOD-E005` Twin Telepathy
+
+- `onPostMove`: after a bishop moves, each same-colour twin slides the same direction up to the same distance. It stops before pieces and void tiles, never captures, skips if it has any active cooldown, and shortens the slide until its own king is safe (or stays put).
+
+### `MOD-A003` Vent Tiles
+
+- `onActivate` hides 3 vents (`isVent`) on empty ranks 3 to 6, never opposite each other.
+- `onPostMove`: the first non-king piece to land on a vent jumps to the point-reflected square and captures anything there. The vent becomes `isVoid`.
+- `isVoid` tiles are off the board in the move generator: nothing lands on or slides through them. Future Storm can reuse this.
+- The vent jams (stays hidden, piece stays) if the exit holds a king or the jump would expose the mover's king.
+
 ## Recommended Next Modifier Work
 
 `TDD`-aligned next steps:

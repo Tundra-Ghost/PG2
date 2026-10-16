@@ -10,7 +10,7 @@ export type PieceType =
   | 'knight'
   | 'pawn'
   | 'pigeon'       // future: MOD-E001 Hatoful Gambit
-  | 'chancellor'   // future: MOD-E004 Equivalent Exchange
+  | 'chancellor'   // MOD-E004 Equivalent Exchange
   | 'royal_guard'; // future: MOD-E003 Royal Guard
 
 export type Color = 'white' | 'black';
@@ -40,9 +40,9 @@ export interface Piece {
 export interface TileState {
   square: Square;
   effects: TileEffect[];
-  isVent?: boolean;       // future: MOD-A003
+  isVent?: boolean;       // MOD-A003: hidden, unused vent
+  isVoid?: boolean;       // off the board: used vent shafts, storm
   isSwamp?: boolean;      // future: MOD-A006
-  isVoid?: boolean;       // future: MOD-A005
   isSurveilled?: boolean; // future: MOD-D008
   noFlyZone?: Color;      // future: MOD-C001
 }

@@ -9,7 +9,7 @@ import { applyMoveInternal, buildMove, cloneState, getValidPromotionTypes } from
  */
 
 const PIECE_VALUE: Record<string, number> = {
-  king: 0, queen: 900, rook: 500, bishop: 320, knight: 310, pawn: 100,
+  king: 0, queen: 900, chancellor: 800, rook: 500, bishop: 320, knight: 310, pawn: 100,
 };
 
 function materialScore(state: GameState, color: Color): number {

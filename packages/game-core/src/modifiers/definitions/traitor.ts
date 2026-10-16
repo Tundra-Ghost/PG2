@@ -13,7 +13,7 @@ export const TRAITOR_EARLIEST_TURN = 21;
 export const TRAITOR_CHANCE = 0.25;
 
 const VALUE: Partial<Record<Piece['type'], number>> = {
-  queen: 9, rook: 5, bishop: 3, knight: 3, pawn: 1,
+  queen: 9, chancellor: 8, rook: 5, bishop: 3, knight: 3, pawn: 1,
 };
 
 type TraitorPhase = 'waiting' | 'warned' | 'done';
