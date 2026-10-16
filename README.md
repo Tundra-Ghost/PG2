@@ -43,7 +43,7 @@ Players can create an account under Settings > Account (username + password, no 
 
 To try online play, run both, open the web app in two tabs, create a room in one and join with the code in the other.
 
-The live site (tundra-ghost.github.io/PG2/) is built and published by `.github/workflows/pages.yml` on every merge to main. Online play there connects to the game server on Fly.io at `https://pigeon-chess-server.fly.dev` (`fly.toml`, `apps/server/Dockerfile`). Deploy the server from the repo root with `fly deploy`.
+The live site (tundra-ghost.github.io/PG2/) is built and published by `.github/workflows/pages.yml` on every merge to main. Online play there connects to the game server on Fly.io at `https://pigeon-chess-server.fly.dev` (`fly.toml`, `apps/server/Dockerfile`). The server deploys itself from `.github/workflows/fly-deploy.yml` when server code reaches main (needs the `FLY_API_TOKEN` repo secret); it can also be run by hand from the Actions tab, or with `fly deploy` from the repo root.
 
 ## Repo Map
 
