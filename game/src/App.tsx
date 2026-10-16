@@ -8,6 +8,8 @@ import { unlockBgm, playClick, playGameBgm, playMenuBgm } from './sound';
 import type { AppSettings } from './settings';
 import { applySettings, loadSettings } from './settings';
 import { useAccount } from './online/useAccount';
+import { useSocial } from './online/useSocial';
+import Friends from './components/Friends/Friends';
 import {
   getDerivedFeedOrder,
   getModifierEventBannerMessage,
@@ -49,7 +51,8 @@ type Screen =
   | 'profile'
   | 'roost'
   | 'collection'
-  | 'online';
+  | 'online'
+  | 'friends';
 type BotSelectMode = 'run' | 'quick' | null;
 
 interface ProfileViewerState {
@@ -111,6 +114,10 @@ export default function App() {
   });
   const [profile, setProfile] = useState<LocalProfile | null>(() => loadProfile());
   const account = useAccount(profile, setProfile);
+  const social = useSocial(account.account?.username ?? null);
+  /** A room the Online screen should sit down in when it opens. */
+  const [pendingRoomId, setPendingRoomId] = useState<string | null>(null);
+  const clearPendingRoom = useCallback(() => setPendingRoomId(null), []);
 
   useEffect(() => {
     // A new screen starts at the top. Without this, mobile kept the draft
@@ -388,6 +395,29 @@ export default function App() {
     setScreen('menu');
   }
 
+  /** Attached to feedback so a report can be reproduced. */
+  function feedbackContext(): Record<string, unknown> {
+    const inMatch = prevScreen === 'game';
+    return {
+      screen: prevScreen,
+      account: account.account?.username ?? null,
+      ...(inMatch
+        ? {
+            mode: currentMatchMode,
+            bot: vsBot ? selectedBot : null,
+            modifiers: activePlayerModifierIds,
+            moves: gameState.moveHistory.length,
+            status: gameState.status,
+            turn: gameState.turn,
+          }
+        : {}),
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+      userAgent: navigator.userAgent,
+      url: window.location.href,
+      sentAt: new Date().toISOString(),
+    };
+  }
+
   function handleSettingsSave(nextSettings: AppSettings) {
     setSettings(nextSettings);
   }
@@ -413,6 +443,7 @@ export default function App() {
         onSave={handleSettingsSave}
         onBack={() => setScreen(prevScreen)}
         account={account}
+        feedbackContext={feedbackContext}
       />
     ) : null;
 
@@ -441,6 +472,8 @@ export default function App() {
             playClick();
             setScreen('online');
           }}
+          onFriends={() => setScreen('friends')}
+          friendsBadge={social.unread + social.list.incoming.length}
           profile={profile}
         />
         {settingsOverlay}
@@ -490,12 +523,32 @@ export default function App() {
     );
   }
 
+  if (baseScreen === 'friends') {
+    return (
+      <div onClick={handleUnlock}>
+        <Friends
+          account={account.account?.username ?? null}
+          social={social}
+          onBack={() => setScreen('menu')}
+          onSignIn={goToSettings}
+          onPlay={roomId => {
+            setPendingRoomId(roomId);
+            setScreen('online');
+          }}
+        />
+        {settingsOverlay}
+      </div>
+    );
+  }
+
   if (baseScreen === 'online') {
     return (
       <div onClick={handleUnlock}>
         <OnlineMatch
           playerName={playerName}
           account={account.account?.username ?? null}
+          joinRoomId={pendingRoomId}
+          onJoined={clearPendingRoom}
           settings={settings}
           onBack={() => setScreen('menu')}
           onSettings={goToSettings}

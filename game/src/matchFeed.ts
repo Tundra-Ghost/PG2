@@ -8,6 +8,8 @@ export interface MatchChatEntry {
   author: string;
   text: string;
   source: 'player' | 'bot';
+  /** Shown under a non-player line instead of "Bot", e.g. "Opponent" online. */
+  sourceLabel?: string;
   avatarLabel: string;
   avatarIcon?: string | null;
   portraitSrc?: string | null;

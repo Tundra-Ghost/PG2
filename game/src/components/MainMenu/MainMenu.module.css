@@ -735,3 +735,38 @@
     width: 42%;
   }
 }
+
+.friendsButton {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 360px);
+  margin: 0.65rem auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.85rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--ui-ink);
+  background: rgb(var(--cream-rgb) / 0.34);
+  border: 1px solid rgb(var(--ink-rgb) / 0.16);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.16s ease;
+}
+
+.friendsButton:hover {
+  transform: translateY(-1px);
+}
+
+.friendsBadge {
+  min-width: 1.4rem;
+  padding: 0.1rem 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-align: center;
+  color: var(--ui-cream);
+  background: var(--ui-chaos);
+  border-radius: 999px;
+}

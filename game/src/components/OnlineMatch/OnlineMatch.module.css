@@ -16,7 +16,7 @@
   flex-direction: column;
   gap: 0.9rem;
   padding: 1.75rem;
-  background: var(--board-dark-sq, var(--board-dark-sq));
+  background: var(--board-dark-sq);
   border: 1px solid rgb(var(--gold-rgb) / 0.25);
   box-shadow: 0 24px 52px rgba(0, 0, 0, 0.4);
 }
@@ -37,7 +37,7 @@
   margin: 0;
   font-family: var(--font-display);
   font-size: 2rem;
-  color: var(--ui-gold, var(--ui-gold));
+  color: var(--ui-gold);
 }
 
 .lede,
@@ -72,13 +72,13 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
-  border: 1px solid var(--ui-gold, var(--ui-gold));
+  border: 1px solid var(--ui-gold);
 }
 
 .primary {
   padding: 0.85rem 1rem;
   font-size: 0.85rem;
-  background: var(--ui-gold, var(--ui-gold));
+  background: var(--ui-gold);
   color: var(--ui-ink);
 }
 
@@ -86,7 +86,7 @@
   padding: 0.6rem 1rem;
   font-size: 0.75rem;
   background: transparent;
-  color: var(--ui-gold, var(--ui-gold));
+  color: var(--ui-gold);
 }
 
 .primary:disabled,
@@ -235,7 +235,7 @@
   font-family: var(--font-mono);
   font-size: 0.95rem;
   letter-spacing: 0.12em;
-  color: var(--ui-gold, var(--ui-gold));
+  color: var(--ui-gold);
 }
 
 .savedMeta,

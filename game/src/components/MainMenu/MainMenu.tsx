@@ -15,6 +15,9 @@ interface MainMenuProps {
   onRoost: () => void;
   onCollection: () => void;
   onOnline: () => void;
+  onFriends: () => void;
+  /** Friend requests plus unread messages; 0 hides the badge. */
+  friendsBadge: number;
   profile: LocalProfile | null;
 }
 
@@ -94,6 +97,8 @@ export default function MainMenu({
   onRoost,
   onCollection,
   onOnline,
+  onFriends,
+  friendsBadge,
   profile,
 }: MainMenuProps) {
   const profileLevel = profile ? getProfileLevel(profile) : 1;
@@ -207,6 +212,20 @@ export default function MainMenu({
                   Lv {profileLevel} / ELO {profile?.elo ?? 1200} / {selectedTitle}
                 </span>
               </span>
+            </button>
+
+            <button
+              type="button"
+              className={styles.friendsButton}
+              onClick={() => {
+                playClick();
+                onFriends();
+              }}
+            >
+              <span>Friends</span>
+              {friendsBadge > 0 && (
+                <span className={styles.friendsBadge} aria-label={`${friendsBadge} new`}>{friendsBadge}</span>
+              )}
             </button>
 
             <dl className={styles.brandStats}>

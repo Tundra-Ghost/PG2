@@ -73,6 +73,11 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Accounts for playtesting: username + password (Better Auth, SQLite on the Fly volume); profiles sync to the account (Settings > Account). Replaces Clerk (P0-06) for now; no custom domain needed
 - [x] Accounts: password reset with a one-time recovery code (no email)
 - [x] Online: seats belong to the signed-in account, so Your games follows the player across devices; opponents show by username
+- [x] Feedback: in-game form (Settings > Feedback); read it with `pnpm --filter @pigeon-chess/server feedback`
+- [x] Online: match chat, saved with the game and placed between moves in the log
+- [x] Friends: requests by username, live status (online / in a game), direct messages, challenge a friend into a room
+- [ ] Friends: block/report, and push notifications for invites when the app is closed
+- [ ] Avatars: customizable pigeon avatars with swag (plan: `docs/pigeon-avatars-plan.md`); Phase 0 prototype with placeholder art next
 - [ ] Accounts: record online results (win/loss, ELO) on the server instead of trusting the client profile
 - [ ] Persist rooms in Redis and results in Postgres (TDD P0-05)
 - [ ] Reconcile current menu promises with actual scope so the prototype does not over-claim

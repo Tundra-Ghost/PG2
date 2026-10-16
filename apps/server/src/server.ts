@@ -11,6 +11,7 @@ import type {
 } from '@pigeon-chess/game-core';
 import { registerAccountRoutes, type Accounts } from './accounts';
 import { createFeedbackStore, registerFeedbackRoutes } from './feedback';
+import { attachSocial, type Presence } from './social';
 import { RoomManager, type Player } from './rooms';
 import type { RoomStore } from './store';
 
@@ -61,6 +62,7 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
   // A signed-in client sends its session token on connect. A missing or
   // dead token just means a guest: guests can still play by room code.
   const accounts = options.accounts;
+  const presence: Presence | null = accounts ? attachSocial(io, accounts, rooms) : null;
   if (accounts) {
     io.use((socket, next) => {
       const token: unknown = socket.handshake.auth?.token;
@@ -100,7 +102,9 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
 
     const takeSeat = (roomId: string, color: Color) => {
       seat = { roomId, color };
+      if (socket.data.player) presence?.seatChanged(socket.data.player.id, 1);
       void socket.join(roomId);
+      socket.emit('chat:history', rooms.chatHistory(roomId));
       broadcast(roomId);
     };
 
@@ -161,8 +165,18 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
       if (res.ok) broadcast(seat.roomId);
     });
 
+    socket.on('chat:send', (req, rawAck) => {
+      const ack = safeAck<ActionAck>(rawAck);
+      if (!seat) return ack({ ok: false, reason: 'Join a room first.' });
+      const res = rooms.chat(seat.roomId, seat.color, req?.text);
+      if (!res.ok) return ack(res);
+      ack({ ok: true });
+      io.to(seat.roomId).emit('chat:message', res.message);
+    });
+
     socket.on('disconnect', () => {
       if (!seat) return;
+      if (socket.data.player) presence?.seatChanged(socket.data.player.id, -1);
       rooms.setConnected(seat.roomId, seat.color, false);
       broadcast(seat.roomId);
       rooms.closeIfEmpty(seat.roomId);

@@ -6,7 +6,9 @@ import {
   resign,
   isPromotionMove,
   toWire,
+  MAX_CHAT_CHARS,
   type ActionAck,
+  type ChatMessage,
   type Color,
   type DrawOfferRequest,
   type GameSummary,
@@ -44,7 +46,15 @@ export interface Room {
   drawOffer: Color | null;
   /** Last time anything happened in the room (ms since epoch). */
   updatedAt: number;
+  /** Most recent chat, oldest first. */
+  chat: ChatMessage[];
 }
+
+/** Chat kept per room. Older lines drop off. */
+export const CHAT_HISTORY = 100;
+/** Messages one seat may send per CHAT_WINDOW_MS. */
+const CHAT_BURST = 5;
+const CHAT_WINDOW_MS = 5000;
 
 /** A room nobody has touched for this long is deleted. */
 export const ROOM_EXPIRY_MS = 14 * 24 * 60 * 60 * 1000;
@@ -56,6 +66,7 @@ export const ROOM_EXPIRY_MS = 14 * 24 * 60 * 60 * 1000;
  */
 export class RoomManager {
   private rooms = new Map<string, Room>();
+  private chatTimes = new Map<string, number[]>();
 
   constructor(
     private readonly store: RoomStore = new MemoryStore(),
@@ -89,6 +100,7 @@ export class RoomManager {
       seats: { white: { token, connected: true, ...(player ? { player } : {}) } },
       drawOffer: null,
       updatedAt: this.now(),
+      chat: [],
     };
     this.rooms.set(id, room);
     this.store.save(room);
@@ -200,6 +212,39 @@ export class RoomManager {
     if (!room.seats.black) return { ok: false, reason: 'Waiting for an opponent.' };
     if (room.state.status !== 'active') return { ok: false, reason: 'The game is over.' };
     return { ok: true, room };
+  }
+
+  /** Adds a chat line from a seated player. Saved with the room, but doesn't count as game activity. */
+  chat(roomId: string, color: Color, rawText: unknown): { ok: true; message: ChatMessage } | { ok: false; reason: string } {
+    const room = this.rooms.get(roomId);
+    if (!room) return { ok: false, reason: 'Room closed.' };
+    // Control characters could break the log layout; collapse runs of whitespace.
+    const text = (typeof rawText === 'string' ? rawText : '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!text) return { ok: false, reason: 'Say something first.' };
+    if (text.length > MAX_CHAT_CHARS) return { ok: false, reason: `Keep messages under ${MAX_CHAT_CHARS} characters.` };
+
+    const key = `${roomId}:${color}`;
+    const now = this.now();
+    const recent = (this.chatTimes.get(key) ?? []).filter(at => now - at < CHAT_WINDOW_MS);
+    if (recent.length >= CHAT_BURST) return { ok: false, reason: 'Slow down a little.' };
+    recent.push(now);
+    this.chatTimes.set(key, recent);
+
+    const message: ChatMessage = {
+      id: randomUUID(),
+      color,
+      author: room.seats[color]?.player?.username ?? (color === 'white' ? 'White' : 'Black'),
+      text,
+      ply: room.state.moveHistory.length,
+      at: now,
+    };
+    room.chat = [...room.chat, message].slice(-CHAT_HISTORY);
+    this.store.save(room);
+    return { ok: true, message };
+  }
+
+  chatHistory(roomId: string): ChatMessage[] {
+    return this.rooms.get(roomId)?.chat ?? [];
   }
 
   setConnected(roomId: string, color: Color, connected: boolean): void {

@@ -4,6 +4,7 @@ import type { AppSettings } from '../../settings';
 import { saveSettings } from '../../settings';
 import { playClick } from '../../sound';
 import AccountPanel from './AccountPanel';
+import FeedbackPanel from './FeedbackPanel';
 import styles from './Settings.module.css';
 
 interface SettingsProps {
@@ -11,6 +12,8 @@ interface SettingsProps {
   onSave: (s: AppSettings) => void;
   onBack: () => void;
   account: AccountControls;
+  /** Screen and match details attached to feedback. */
+  feedbackContext: () => Record<string, unknown>;
 }
 
 // ── Primitive controls ──────────────────────────────────────────────────────
@@ -104,7 +107,7 @@ function StaticRow({ label, sub }: { label: string; sub?: string }) {
 
 // ── Tab definitions ─────────────────────────────────────────────────────────
 
-type TabId = 'account' | 'audio' | 'display' | 'gameplay' | 'accessibility' | 'about';
+type TabId = 'account' | 'audio' | 'display' | 'gameplay' | 'accessibility' | 'feedback';
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'account',       label: 'Account' },
@@ -112,12 +115,12 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'display',       label: 'Display' },
   { id: 'gameplay',      label: 'Gameplay' },
   { id: 'accessibility', label: 'Access.' },
-  { id: 'about',         label: 'About' },
+  { id: 'feedback',      label: 'Feedback' },
 ];
 
 // ── Main component ──────────────────────────────────────────────────────────
 
-export default function Settings({ settings: initial, onSave, onBack, account }: SettingsProps) {
+export default function Settings({ settings: initial, onSave, onBack, account, feedbackContext }: SettingsProps) {
   const [s, setS] = useState<AppSettings>(initial);
   const [activeTab, setActiveTab] = useState<TabId>(account.account ? 'audio' : 'account');
 
@@ -258,8 +261,9 @@ export default function Settings({ settings: initial, onSave, onBack, account }:
             </>
           )}
 
-          {activeTab === 'about' && (
+          {activeTab === 'feedback' && (
             <>
+              <FeedbackPanel context={feedbackContext} />
               <StaticRow label="Pigeon Chess"  sub="v0.1.0 · Phase 0 · Viktor Crumb's Domain" />
               <StaticRow label="Audio Credits" sub="SFX from pigeon-chess prototype · BGM: Treasure Trove Tango (CC)" />
               <StaticRow label="Engine"        sub="Custom chess engine · Vite + React + TypeScript" />
