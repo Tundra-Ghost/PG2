@@ -23,6 +23,63 @@
   --board-size: max(320px, min(80vmin, 560px, calc(100dvh - 360px)));
 }
 
+/* Active abilities (C cards) leave a little less room for the board. */
+.withAbilities {
+  --board-size: max(300px, min(78vmin, 540px, calc(100dvh - 400px)));
+}
+
+.abilityBar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.4rem;
+  padding: 0.35rem 0.5rem;
+  border-top: 1px solid rgba(200, 168, 75, 0.15);
+  font-family: var(--font-body);
+}
+
+.abilityHint {
+  font-size: 0.75rem;
+  color: rgba(242, 234, 216, 0.6);
+}
+
+.abilityButton {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid #3a9de8;
+  border-radius: 4px;
+  background: rgba(58, 157, 232, 0.16);
+  color: #f2ead8;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.abilityButton:hover:not(:disabled) {
+  background: rgba(58, 157, 232, 0.3);
+}
+
+.abilityButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.abilityArmed {
+  background: #3a9de8;
+  color: #0e0a06;
+}
+
+.abilityState {
+  font-size: 0.68rem;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
 /* Explains the piece and tile markers of the active modifiers. */
 .legend {
   display: flex;

@@ -16,6 +16,9 @@ import { rejectQueenDef } from './definitions/reject-queen';
 import { chancellorDef } from './definitions/chancellor';
 import { twinTelepathyDef } from './definitions/twin-telepathy';
 import { ventTilesDef } from './definitions/vent-tiles';
+import { didIDoThatDef } from './definitions/oops-knight';
+import { retaliatorySwipeDef } from './definitions/retaliatory-swipe';
+import { forTheEmperorDef } from './definitions/for-the-emperor';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -30,3 +33,6 @@ modifierRegistry.register(rejectQueenDef);
 modifierRegistry.register(chancellorDef);
 modifierRegistry.register(twinTelepathyDef);
 modifierRegistry.register(ventTilesDef);
+modifierRegistry.register(didIDoThatDef);
+modifierRegistry.register(retaliatorySwipeDef);
+modifierRegistry.register(forTheEmperorDef);

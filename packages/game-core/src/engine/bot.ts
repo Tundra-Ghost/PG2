@@ -1,5 +1,6 @@
 import type { Color, GameState, Move } from './types';
 import { chessEngine } from './ChessEngine';
+import { getAbilityOptions, performAbility } from './abilities';
 import { applyMoveInternal, buildMove, cloneState, getValidPromotionTypes } from './gameLoop';
 
 /**
@@ -53,6 +54,24 @@ export function getChickBotMove(state: GameState, color: Color): Move | null {
         bestMoves.push(move);
       } else if (score === bestScore) {
         bestMoves.push(move);
+      }
+    }
+  }
+
+  // Active abilities (C cards) compete on the same material score.
+  for (const piece of state.pieces.values()) {
+    if (piece.color !== color) continue;
+    for (const option of getAbilityOptions(state, piece.square)) {
+      for (const to of option.targets) {
+        const move: Move = { from: piece.square, to, playerColor: color, ability: option.modifierId };
+        const score = materialScore(performAbility(cloneState(state), move).state, color);
+        if (score > bestScore) {
+          bestScore = score;
+          bestMoves.length = 0;
+          bestMoves.push(move);
+        } else if (score === bestScore) {
+          bestMoves.push(move);
+        }
       }
     }
   }

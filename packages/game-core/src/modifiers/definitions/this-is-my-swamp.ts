@@ -42,7 +42,9 @@ export const thisIsMySwampDef: ModifierDefinition = {
     }
 
     // Knights cannot make a 1-square move, so once free they leap out normally.
-    if (piece.type !== 'knight' && isSwampSquare(move.from) && distance(move.from, move.to) > 1) {
+    // Ability moves (a knight moving like a rook) get no such pass.
+    const exempt = piece.type === 'knight' && !move.ability;
+    if (!exempt && isSwampSquare(move.from) && distance(move.from, move.to) > 1) {
       return { blocked: true, reason: 'In the Swamp a piece moves only 1 square.' };
     }
 
