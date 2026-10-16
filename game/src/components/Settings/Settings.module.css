@@ -353,3 +353,23 @@
 .accountForm .accountNote {
   padding: 0;
 }
+
+.accountLinks {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.recoveryCode {
+  display: block;
+  padding: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  letter-spacing: 0.14em;
+  text-align: center;
+  color: var(--ui-gold-light);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px dashed rgba(200, 151, 58, 0.45);
+  user-select: all;
+}

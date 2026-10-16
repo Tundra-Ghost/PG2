@@ -1,3 +1,4 @@
+import { createHash, randomInt, timingSafeEqual } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { betterAuth, type BetterAuthOptions } from 'better-auth';
 import { getMigrations } from 'better-auth/db/migration';
@@ -6,7 +7,8 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 
 /**
  * Player accounts: username + password, no email. Better Auth owns users and
- * sessions; we add one table holding each player's profile as JSON.
+ * sessions; we add a table holding each player's profile as JSON, and one
+ * holding a recovery code per player, which stands in for an email reset.
  *
  * Everything lives in one SQLite file on the Fly volume next to the saved
  * rooms. Sessions travel as bearer tokens rather than cookies because the
@@ -26,6 +28,28 @@ export interface AccountOptions {
 
 /** Profiles are the client's own save format, avatar image included; this caps one player's save. */
 export const MAX_PROFILE_BYTES = 1024 * 1024;
+
+/** Crockford base32: no I, L, O or U, so codes survive being copied by hand. */
+const CODE_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+const CODE_LENGTH = 12; // 60 bits: far beyond guessing, even without the attempt limit.
+
+/** A fresh recovery code, shown to the player once, e.g. 7K3Q-9XWD-M2HT. */
+export function newRecoveryCode(): string {
+  const chars = Array.from({ length: CODE_LENGTH }, () => CODE_ALPHABET[randomInt(CODE_ALPHABET.length)]);
+  return [chars.slice(0, 4), chars.slice(4, 8), chars.slice(8)].map(part => part.join('')).join('-');
+}
+
+/** Codes are compared without dashes or case, and with the easily confused letters read as digits. */
+function hashRecoveryCode(code: string): Buffer {
+  const normalized = code.toUpperCase().replace(/[^0-9A-Z]/g, '').replace(/[IL]/g, '1').replace(/O/g, '0');
+  return createHash('sha256').update(normalized).digest();
+}
+
+/** Failed resets allowed per username in RESET_WINDOW_MS. */
+const RESET_ATTEMPTS = 5;
+const RESET_WINDOW_MS = 15 * 60 * 1000;
+
+export type ResetResult = { ok: true; recoveryCode: string } | { ok: false; reason: string; status: number };
 
 /** Better Auth insists on an email. Players never see this one. */
 export function placeholderEmail(name: string): string {
@@ -58,6 +82,10 @@ export interface Accounts {
   userIdFor(headers: FastifyRequest['headers']): Promise<string | null>;
   getProfile(userId: string): unknown;
   saveProfile(userId: string, profile: unknown): void;
+  /** Replaces the player's recovery code and returns the new one. */
+  issueRecoveryCode(userId: string): string;
+  /** Sets a new password if the code matches. Signs out every device and issues a new code. */
+  resetPassword(username: string, code: string, password: string): Promise<ResetResult>;
   close(): void;
 }
 
@@ -75,9 +103,27 @@ export async function createAccounts(options: AccountOptions): Promise<Accounts>
     updatedAt INTEGER NOT NULL
   )`);
 
+  db.exec(`CREATE TABLE IF NOT EXISTS recovery_code (
+    userId TEXT PRIMARY KEY REFERENCES user(id) ON DELETE CASCADE,
+    codeHash BLOB NOT NULL,
+    createdAt INTEGER NOT NULL
+  )`);
+
   const readProfile = db.prepare('SELECT data FROM profile WHERE userId = ?');
   const writeProfile = db.prepare(`INSERT INTO profile (userId, data, updatedAt) VALUES (?, ?, ?)
     ON CONFLICT(userId) DO UPDATE SET data = excluded.data, updatedAt = excluded.updatedAt`);
+  const writeCode = db.prepare(`INSERT INTO recovery_code (userId, codeHash, createdAt) VALUES (?, ?, ?)
+    ON CONFLICT(userId) DO UPDATE SET codeHash = excluded.codeHash, createdAt = excluded.createdAt`);
+  const findCode = db.prepare(
+    'SELECT user.id AS userId, recovery_code.codeHash AS codeHash FROM user LEFT JOIN recovery_code ON recovery_code.userId = user.id WHERE user.username = ?',
+  );
+  const failedResets = new Map<string, { count: number; since: number }>();
+
+  const issueRecoveryCode = (userId: string) => {
+    const code = newRecoveryCode();
+    writeCode.run(userId, hashRecoveryCode(code), Date.now());
+    return code;
+  };
 
   return {
     auth,
@@ -91,6 +137,34 @@ export async function createAccounts(options: AccountOptions): Promise<Accounts>
     },
     saveProfile(userId, profile) {
       writeProfile.run(userId, JSON.stringify(profile), Date.now());
+    },
+    issueRecoveryCode,
+    async resetPassword(name, code, password) {
+      const key = name.trim().toLowerCase();
+      const now = Date.now();
+      const failures = failedResets.get(key);
+      if (failures && now - failures.since < RESET_WINDOW_MS && failures.count >= RESET_ATTEMPTS) {
+        return { ok: false, status: 429, reason: 'Too many tries. Wait 15 minutes and try again.' };
+      }
+      const ctx = await auth.$context;
+      const { minPasswordLength, maxPasswordLength } = ctx.password.config;
+      if (password.length < minPasswordLength) {
+        return { ok: false, status: 400, reason: `Passwords need at least ${minPasswordLength} characters.` };
+      }
+      if (password.length > maxPasswordLength) return { ok: false, status: 400, reason: 'That password is too long.' };
+
+      const row = findCode.get(key) as { userId: string; codeHash: Uint8Array | null } | undefined;
+      const matches = row?.codeHash != null && timingSafeEqual(Buffer.from(row.codeHash), hashRecoveryCode(code));
+      if (!row || !matches) {
+        const fresh = !failures || now - failures.since >= RESET_WINDOW_MS;
+        failedResets.set(key, fresh ? { count: 1, since: now } : { count: failures.count + 1, since: failures.since });
+        return { ok: false, status: 400, reason: "That username and recovery code don't match." };
+      }
+
+      failedResets.delete(key);
+      await ctx.internalAdapter.updatePassword(row.userId, await ctx.password.hash(password));
+      await ctx.internalAdapter.deleteUserSessions(row.userId);
+      return { ok: true, recoveryCode: issueRecoveryCode(row.userId) };
     },
     close() {
       db.close();
@@ -107,7 +181,7 @@ function toHeaders(raw: FastifyRequest['headers']): Headers {
   return headers;
 }
 
-/** Mounts Better Auth at /api/auth/* and the profile routes at /api/profile. */
+/** Mounts Better Auth at /api/auth/*, plus our profile and recovery routes. */
 export function registerAccountRoutes(app: FastifyInstance, accounts: Accounts): void {
   app.route({
     method: ['GET', 'POST'],
@@ -125,6 +199,22 @@ export function registerAccountRoutes(app: FastifyInstance, accounts: Accounts):
       response.headers.forEach((value, key) => reply.header(key, value));
       return reply.send(response.body ? await response.text() : null);
     },
+  });
+
+  app.post('/api/account/recovery-code', async (request, reply) => {
+    const userId = await accounts.userIdFor(request.headers);
+    if (!userId) return reply.status(401).send({ error: 'Sign in first.' });
+    return { recoveryCode: accounts.issueRecoveryCode(userId) };
+  });
+
+  app.post('/api/account/reset-password', async (request, reply) => {
+    const body = (request.body ?? {}) as { username?: unknown; recoveryCode?: unknown; password?: unknown };
+    if (typeof body.username !== 'string' || typeof body.recoveryCode !== 'string' || typeof body.password !== 'string') {
+      return reply.status(400).send({ error: 'Expected a username, recovery code and new password.' });
+    }
+    const result = await accounts.resetPassword(body.username, body.recoveryCode, body.password);
+    if (!result.ok) return reply.status(result.status).send({ error: result.reason });
+    return { recoveryCode: result.recoveryCode };
   });
 
   app.get('/api/profile', async (request, reply) => {

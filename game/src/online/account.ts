@@ -130,3 +130,30 @@ export async function uploadProfile(profile: unknown): Promise<void> {
   const res = await call('/api/profile', { method: 'PUT', body: { profile } });
   if (!res.ok) throw new Error(`profile upload failed: ${res.status}`);
 }
+
+/** A new recovery code for the signed-in player. Replaces the old one. */
+export async function requestRecoveryCode(): Promise<string | null> {
+  try {
+    const res = await call('/api/account/recovery-code', { body: {} });
+    if (!res.ok) return null;
+    return ((await res.json()) as { recoveryCode: string }).recoveryCode;
+  } catch {
+    return null;
+  }
+}
+
+export type ResetResult = { ok: true; recoveryCode: string } | { ok: false; reason: string };
+
+/** Sets a new password using the recovery code. Every device gets signed out. */
+export async function resetPassword(username: string, recoveryCode: string, password: string): Promise<ResetResult> {
+  try {
+    const res = await call('/api/account/reset-password', {
+      body: { username: username.trim(), recoveryCode, password },
+    });
+    const body = (await res.json().catch(() => null)) as { recoveryCode?: string; error?: string } | null;
+    if (res.ok && body?.recoveryCode) return { ok: true, recoveryCode: body.recoveryCode };
+    return { ok: false, reason: body?.error ?? 'Something went wrong.' };
+  } catch {
+    return unreachable;
+  }
+}

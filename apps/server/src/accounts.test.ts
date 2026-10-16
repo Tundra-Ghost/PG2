@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { createAccounts, placeholderEmail } from './accounts';
+import { createAccounts, newRecoveryCode, placeholderEmail } from './accounts';
 import { createGameServer, type GameServer } from './server';
 
 const ORIGIN = 'http://localhost:5173';
@@ -102,5 +102,59 @@ describe('accounts', () => {
     expect(preflight.status).toBe(204);
     expect(preflight.headers.get('access-control-allow-origin')).toBe(ORIGIN);
     expect(preflight.headers.get('access-control-allow-headers')?.toLowerCase()).toContain('authorization');
+  });
+});
+
+describe('recovery codes', () => {
+  async function codeFor(token: string) {
+    const res = await call('/api/account/recovery-code', { body: {}, token });
+    return ((await res.json()) as { recoveryCode: string }).recoveryCode;
+  }
+
+  const reset = (username: string, recoveryCode: string, password: string) =>
+    call('/api/account/reset-password', { body: { username, recoveryCode, password } });
+
+  const signIn = (username: string, password: string) =>
+    call('/api/auth/sign-in/username', { body: { username, password } });
+
+  it('look like XXXX-XXXX-XXXX and differ each time', () => {
+    const code = newRecoveryCode();
+    expect(code).toMatch(/^[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/);
+    expect(newRecoveryCode()).not.toBe(code);
+  });
+
+  it('reset the password once, sign out old sessions, and hand back a new code', async () => {
+    const token = (await register('echo', 'old-password-1')).body.token!;
+    const code = await codeFor(token);
+
+    const res = await reset('Echo', code.toLowerCase().replace(/-/g, ''), 'new-password-1');
+    expect(res.status).toBe(200);
+    const next = ((await res.json()) as { recoveryCode: string }).recoveryCode;
+    expect(next).not.toBe(code);
+
+    expect((await call('/api/profile', { token })).status).toBe(401);
+    expect((await signIn('echo', 'old-password-1')).status).toBe(401);
+    expect((await signIn('echo', 'new-password-1')).status).toBe(200);
+
+    expect((await reset('echo', code, 'another-password-1')).status).toBe(400);
+    expect((await reset('echo', next, 'another-password-1')).status).toBe(200);
+  });
+
+  it('reject a wrong code or unknown player the same way, then slow down', async () => {
+    const token = (await register('foxtrot')).body.token!;
+    const code = await codeFor(token);
+    const wrong = await reset('foxtrot', 'AAAA-BBBB-CCCC', 'new-password-1');
+    const nobody = await reset('nobody', code, 'new-password-1');
+    expect(wrong.status).toBe(400);
+    expect(await nobody.json()).toEqual(await wrong.json());
+
+    for (let i = 0; i < 4; i++) await reset('foxtrot', 'AAAA-BBBB-CCCC', 'new-password-1');
+    expect((await reset('foxtrot', code, 'new-password-1')).status).toBe(429);
+  });
+
+  it('enforce the password length and need a session to issue codes', async () => {
+    const token = (await register('golf')).body.token!;
+    expect((await reset('golf', await codeFor(token), 'short')).status).toBe(400);
+    expect((await call('/api/account/recovery-code', { body: {} })).status).toBe(401);
   });
 });

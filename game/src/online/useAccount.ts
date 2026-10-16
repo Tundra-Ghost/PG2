@@ -4,6 +4,8 @@ import {
   currentAccount,
   fetchProfile,
   register as registerAccount,
+  requestRecoveryCode,
+  resetPassword as resetAccountPassword,
   signIn as signInAccount,
   signOut as signOutAccount,
   uploadProfile,
@@ -19,6 +21,12 @@ export interface AccountControls {
   register(username: string, password: string): Promise<AccountResult>;
   signIn(username: string, password: string): Promise<AccountResult>;
   signOut(): Promise<void>;
+  /** Uses a recovery code to set a new password, then signs in. */
+  resetPassword(username: string, recoveryCode: string, password: string): Promise<AccountResult>;
+  /** Shown once after sign-up or a reset, until the player confirms they saved it. */
+  recoveryCode: string | null;
+  newRecoveryCode(): Promise<void>;
+  dismissRecoveryCode(): void;
 }
 
 /**
@@ -32,6 +40,7 @@ export function useAccount(
 ): AccountControls {
   const [account, setAccount] = useState<Account | null>(null);
   const [sync, setSync] = useState<SyncState>('syncing');
+  const [recoveryCode, setRecoveryCode] = useState<string | null>(null);
   const profileRef = useRef(profile);
   profileRef.current = profile;
 
@@ -76,11 +85,28 @@ export function useAccount(
   return {
     account,
     sync,
-    register: (username, password) => withSync(registerAccount(username, password)),
+    async register(username, password) {
+      const result = await withSync(registerAccount(username, password));
+      if (result.ok) setRecoveryCode(await requestRecoveryCode());
+      return result;
+    },
     signIn: (username, password) => withSync(signInAccount(username, password)),
     async signOut() {
       await signOutAccount();
       setAccount(null);
+      setRecoveryCode(null);
     },
+    async resetPassword(username, code, password) {
+      const reset = await resetAccountPassword(username, code, password);
+      if (!reset.ok) return reset;
+      const result = await withSync(signInAccount(username, password));
+      if (result.ok) setRecoveryCode(reset.recoveryCode);
+      return result;
+    },
+    recoveryCode,
+    async newRecoveryCode() {
+      setRecoveryCode(await requestRecoveryCode());
+    },
+    dismissRecoveryCode: () => setRecoveryCode(null),
   };
 }
