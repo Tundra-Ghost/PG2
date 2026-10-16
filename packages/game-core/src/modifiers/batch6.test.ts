@@ -95,3 +95,41 @@ describe('MOD-C001 I Hereby Declare', () => {
     expect(getNoFlySquares(state).has('e5')).toBe(false);
   });
 });
+
+describe('MOD-C007 This Is Necessary (The Snap)', () => {
+  const SNAP = MODIFIER_IDS.theSnap;
+  const setup = () =>
+    withCard([makePiece('knight', 'white', 'b1'), makePiece('pawn', 'white', 'a2'), makePiece('rook', 'black', 'h8')], SNAP);
+
+  it('sacrifices a piece for a tempo token', () => {
+    const state = chessEngine.applyMove(setup(), move('b1', 'b1', 'white', { ability: SNAP }));
+    expect(state.pieces.has('b1')).toBe(false);
+    expect(state.tempoTokens.white).toBe(1);
+    expect(state.turn).toBe('black');
+  });
+
+  it('a token buys a second move in a row', () => {
+    let state = chessEngine.applyMove(setup(), move('b1', 'b1', 'white', { ability: SNAP }));
+    state = chessEngine.applyMove(state, move('h8', 'h7', 'black'));
+    expect(chessEngine.validateMove(state, move('a2', 'a3', 'black', { extraTurn: true })).valid).toBe(false);
+    state = chessEngine.applyMove(state, move('a2', 'a3', 'white', { extraTurn: true }));
+    expect(state.turn).toBe('white');
+    expect(state.tempoTokens.white).toBe(0);
+    state = chessEngine.applyMove(state, move('a3', 'a4', 'white'));
+    expect(state.turn).toBe('black');
+    expect(chessEngine.validateMove(state, move('h7', 'h6', 'black', { extraTurn: true })).valid).toBe(false);
+  });
+
+  it('an extra move cannot give check', () => {
+    const state = withCard([makePiece('rook', 'white', 'a1')], SNAP);
+    state.tempoTokens.white = 1;
+    expect(chessEngine.validateMove(state, move('a1', 'a8', 'white', { extraTurn: true })).valid).toBe(false);
+    expect(chessEngine.validateMove(state, move('a1', 'a7', 'white', { extraTurn: true })).valid).toBe(true);
+  });
+
+  it('caps tokens at 2', () => {
+    const state = setup();
+    state.tempoTokens.white = 2;
+    expect(getAbilityOptions(state, 'b1')[0].targets).toEqual([]);
+  });
+});

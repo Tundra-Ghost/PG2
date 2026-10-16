@@ -503,11 +503,15 @@ function applyMoveOnce(state: GameState, move: Move): GameState {
     }
   }
 
-  // Switch turn & counters
-  const nextColor: Color = preparedState.turn === 'white' ? 'black' : 'white';
+  // Switch turn & counters. A spent tempo token (MOD-C007) keeps the turn.
+  const opponent: Color = preparedState.turn === 'white' ? 'black' : 'white';
+  const nextColor: Color = preparedMove.extraTurn ? preparedState.turn : opponent;
+  if (preparedMove.extraTurn) {
+    next.tempoTokens = { ...next.tempoTokens, [preparedState.turn]: next.tempoTokens[preparedState.turn] - 1 };
+  }
   next.turn = nextColor;
   next.turnNumber = preparedState.turnNumber + 1;
-  if (preparedState.turn === 'black') {
+  if (preparedState.turn === 'black' && !preparedMove.extraTurn) {
     next.flags.fullMoveNumber = preparedState.flags.fullMoveNumber + 1;
   }
 
