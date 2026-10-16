@@ -373,3 +373,41 @@
   border: 1px dashed rgb(var(--gold-rgb) / 0.45);
   user-select: all;
 }
+
+/* ── Feedback tab ─────────────────────────────────────── */
+.kindRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.kindBtn {
+  flex: 1;
+  padding: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(var(--gold-rgb) / 0.6);
+  background: transparent;
+  border: 1px solid rgb(var(--gold-rgb) / 0.25);
+  cursor: pointer;
+}
+
+.kindBtnOn {
+  color: var(--ui-ink);
+  background: var(--ui-gold);
+  border-color: var(--ui-gold);
+}
+
+.feedbackText {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.accountSuccess {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--ui-gold-light);
+}

@@ -36,7 +36,7 @@ function writeToken(token: string | null): void {
   }
 }
 
-async function call(path: string, init: { method?: string; body?: unknown } = {}): Promise<Response> {
+export async function apiCall(path: string, init: { method?: string; body?: unknown } = {}): Promise<Response> {
   const token = readToken();
   return fetch(`${SERVER_URL}${path}`, {
     method: init.method ?? (init.body === undefined ? 'GET' : 'POST'),
@@ -81,7 +81,7 @@ export async function register(username: string, password: string): Promise<Acco
   try {
     const name = username.trim();
     return await signedIn(
-      await call('/api/auth/sign-up/email', {
+      await apiCall('/api/auth/sign-up/email', {
         body: { email: placeholderEmail(name), password, name, username: name },
       }),
     );
@@ -92,7 +92,7 @@ export async function register(username: string, password: string): Promise<Acco
 
 export async function signIn(username: string, password: string): Promise<AccountResult> {
   try {
-    return await signedIn(await call('/api/auth/sign-in/username', { body: { username: username.trim(), password } }));
+    return await signedIn(await apiCall('/api/auth/sign-in/username', { body: { username: username.trim(), password } }));
   } catch {
     return unreachable;
   }
@@ -100,7 +100,7 @@ export async function signIn(username: string, password: string): Promise<Accoun
 
 export async function signOut(): Promise<void> {
   try {
-    await call('/api/auth/sign-out', { body: {} });
+    await apiCall('/api/auth/sign-out', { body: {} });
   } catch {
     // Forgetting the token below signs this browser out either way.
   }
@@ -110,7 +110,7 @@ export async function signOut(): Promise<void> {
 /** The signed-in account, or null. A dead session is forgotten. */
 export async function currentAccount(): Promise<Account | null> {
   if (!readToken()) return null;
-  const res = await call('/api/auth/get-session');
+  const res = await apiCall('/api/auth/get-session');
   if (!res.ok) return null;
   const body = (await res.json()) as { user?: { username?: string } } | null;
   if (!body?.user?.username) {
@@ -122,20 +122,20 @@ export async function currentAccount(): Promise<Account | null> {
 
 /** The profile saved on the account, or null when it has none yet. */
 export async function fetchProfile(): Promise<unknown> {
-  const res = await call('/api/profile');
+  const res = await apiCall('/api/profile');
   if (!res.ok) throw new Error(`profile fetch failed: ${res.status}`);
   return ((await res.json()) as { profile: unknown }).profile;
 }
 
 export async function uploadProfile(profile: unknown): Promise<void> {
-  const res = await call('/api/profile', { method: 'PUT', body: { profile } });
+  const res = await apiCall('/api/profile', { method: 'PUT', body: { profile } });
   if (!res.ok) throw new Error(`profile upload failed: ${res.status}`);
 }
 
 /** A new recovery code for the signed-in player. Replaces the old one. */
 export async function requestRecoveryCode(): Promise<string | null> {
   try {
-    const res = await call('/api/account/recovery-code', { body: {} });
+    const res = await apiCall('/api/account/recovery-code', { body: {} });
     if (!res.ok) return null;
     return ((await res.json()) as { recoveryCode: string }).recoveryCode;
   } catch {
@@ -148,7 +148,7 @@ export type ResetResult = { ok: true; recoveryCode: string } | { ok: false; reas
 /** Sets a new password using the recovery code. Every device gets signed out. */
 export async function resetPassword(username: string, recoveryCode: string, password: string): Promise<ResetResult> {
   try {
-    const res = await call('/api/account/reset-password', {
+    const res = await apiCall('/api/account/reset-password', {
       body: { username: username.trim(), recoveryCode, password },
     });
     const body = (await res.json().catch(() => null)) as { recoveryCode?: string; error?: string } | null;

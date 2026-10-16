@@ -388,6 +388,29 @@ export default function App() {
     setScreen('menu');
   }
 
+  /** Attached to feedback so a report can be reproduced. */
+  function feedbackContext(): Record<string, unknown> {
+    const inMatch = prevScreen === 'game';
+    return {
+      screen: prevScreen,
+      account: account.account?.username ?? null,
+      ...(inMatch
+        ? {
+            mode: currentMatchMode,
+            bot: vsBot ? selectedBot : null,
+            modifiers: activePlayerModifierIds,
+            moves: gameState.moveHistory.length,
+            status: gameState.status,
+            turn: gameState.turn,
+          }
+        : {}),
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+      userAgent: navigator.userAgent,
+      url: window.location.href,
+      sentAt: new Date().toISOString(),
+    };
+  }
+
   function handleSettingsSave(nextSettings: AppSettings) {
     setSettings(nextSettings);
   }
@@ -413,6 +436,7 @@ export default function App() {
         onSave={handleSettingsSave}
         onBack={() => setScreen(prevScreen)}
         account={account}
+        feedbackContext={feedbackContext}
       />
     ) : null;
 
