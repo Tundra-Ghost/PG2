@@ -121,6 +121,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] GDD SFX: add subtle UI sounds for draft select/deselect, disabled-card hover, modal open/close, and settings toggles
 - [ ] GDD polish: review current emoji and placeholder symbols in the app shell against the art-direction doc and replace where needed
 - [x] GDD UI: establish a mobile-responsive baseline for the landing page and playable prototype
+- [x] Mobile: board fills the phone width (341px on a 390px screen) and fits landscape screens
 
 ## Priority 5: Product Hygiene
 

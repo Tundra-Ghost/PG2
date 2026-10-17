@@ -159,9 +159,11 @@
 }
 
 @media (max-width: 720px) {
+  /* Landscape phones: keep the board within the screen height. */
   .frame {
     border-width: 2px;
     width: 100%;
+    max-width: max(280px, calc(100dvh - 100px));
   }
 
   .board {
