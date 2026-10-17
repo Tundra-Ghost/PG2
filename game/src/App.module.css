@@ -266,8 +266,10 @@
     order: 0;
   }
 
+  /* Full width, not fit-content: the board sizes itself as a share of
+     this box, so fit-content shrank it to about 224px on a 390px phone. */
   .boardShell {
-    width: fit-content;
+    width: 100%;
     max-width: 100%;
     margin: 0 auto;
     padding: 0.35rem;
