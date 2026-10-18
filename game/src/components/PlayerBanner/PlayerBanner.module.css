@@ -141,18 +141,26 @@
   line-clamp: 2;
 }
 
+/* Phones: a slim strip above or below the board, like chess apps.
+   Only the portrait, name and turn badge stay; details are a tap away. */
 @media (max-width: 720px) {
   .card,
   .cardRight {
-    grid-template-columns: 82px minmax(0, 1fr);
-    min-height: 104px;
-    max-height: 124px;
-    gap: 0.65rem;
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 0;
+    max-height: none;
+    padding: 0.4rem 0.6rem;
+    border-width: 1px;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   }
 
   .portraitFrame {
-    width: 82px;
-    height: 82px;
+    width: 40px;
+    height: 40px;
+    border-width: 1px;
   }
 
   .cardRight .portraitFrame {
@@ -164,64 +172,50 @@
     text-align: left;
   }
 
-  .cardRight .topRow {
-    justify-content: space-between;
-  }
-
-  .portrait {
-    font-size: 1.65rem;
-  }
-
-  .role {
-    font-size: 0.96rem;
-  }
-
-  .name {
-    font-size: 1.42rem;
-  }
-
-  .metaLine {
-    font-size: 0.54rem;
-    letter-spacing: 0.1em;
-  }
-
-  .subtitle {
-    font-size: 0.66rem;
-    white-space: normal;
-  }
-}
-
-@media (max-width: 480px) {
-  .card,
-  .cardRight {
-    grid-template-columns: 74px minmax(0, 1fr);
-    min-height: 96px;
-    max-height: 116px;
-    padding: 0.6rem;
-    border-radius: 14px;
-  }
-
-  .portraitFrame {
-    width: 74px;
-    height: 74px;
-    border-radius: 999px;
+  .content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'name badge'
+      'role badge';
+    align-items: center;
+    column-gap: 0.5rem;
+    row-gap: 0;
   }
 
   .topRow {
-    gap: 0.45rem;
+    display: contents;
+  }
+
+  .role {
+    grid-area: role;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    opacity: 0.7;
   }
 
   .badge {
+    grid-area: badge;
     font-size: 0.56rem;
     letter-spacing: 0.1em;
-    padding: 0.18rem 0.38rem;
+    padding: 0.2rem 0.45rem;
+  }
+
+  .portrait {
+    font-size: 1.05rem;
   }
 
   .name {
-    font-size: 1.24rem;
+    grid-area: name;
+    overflow: hidden;
+    font-size: 1.05rem;
+    line-height: 1.15;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
+  .metaLine,
   .subtitle {
-    font-size: 0.62rem;
+    display: none;
   }
 }
