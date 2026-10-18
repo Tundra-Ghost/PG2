@@ -8,7 +8,7 @@ const DISTRACTION_DURATION = 2;
 
 export const geraldDef: ModifierDefinition = {
   id: ID,
-  name: 'Gerald',
+  name: 'Distracted Piece',
   category: 'B',
   pointCost: -1,
   curseRating: 1,

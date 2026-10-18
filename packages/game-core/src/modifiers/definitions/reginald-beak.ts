@@ -61,7 +61,7 @@ function reviewPool(move: Move, movedType: PieceType | undefined, captured: bool
 
 export const reginaldBeakDef: ModifierDefinition = {
   id: ID,
-  name: '7/10 Too Many Pieces',
+  name: '7/10 — Too Many Pieces',
   category: 'B',
   pointCost: -1,
   curseRating: 1,
