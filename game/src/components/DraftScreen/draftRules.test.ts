@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ALL_MODIFIERS, isSharedDraftModifier, modifierRegistry } from '@pigeon-chess/game-core';
-import { BUDGET, MAX_COUNT, MAX_PER_CATEGORY, getSelectedCards, getValidOptions, runRandomDraft } from './draftRules';
+import { BUDGET, MAX_COUNT, MAX_PER_CATEGORY, getSelectedCards, getValidOptions, pickBlocker, runRandomDraft } from './draftRules';
 
 const implemented = new Set(modifierRegistry.getAll().map(mod => mod.id));
 
@@ -35,5 +35,27 @@ describe('runRandomDraft', () => {
   it('only picks real cards', () => {
     const { playerIds } = runRandomDraft([], [], implemented, seeded(7));
     expect(playerIds.every(id => ALL_MODIFIERS.some(card => card.id === id))).toBe(true);
+  });
+});
+
+describe('pickBlocker', () => {
+  it('agrees with getValidOptions on every card through a whole random draft', () => {
+    for (let seed = 1; seed <= 10; seed++) {
+      const { playerIds, botIds } = runRandomDraft([], [], implemented, seeded(seed));
+      for (let n = 0; n <= playerIds.length; n++) {
+        const own = playerIds.slice(0, n);
+        const valid = new Set(getValidOptions(own, botIds, implemented).map(card => card.id));
+        for (const card of ALL_MODIFIERS) {
+          expect(pickBlocker(card, own, botIds, implemented) === null).toBe(valid.has(card.id));
+        }
+      }
+    }
+  });
+
+  it('explains the reason in player words', () => {
+    const card = ALL_MODIFIERS.find(c => implemented.has(c.id))!;
+    expect(pickBlocker(card, [card.id], [], implemented)).toBe('Already in your draft.');
+    const unbuilt = ALL_MODIFIERS.find(c => !implemented.has(c.id));
+    if (unbuilt) expect(pickBlocker(unbuilt, [], [], implemented)).toBe('Not in this build yet.');
   });
 });

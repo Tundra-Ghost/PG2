@@ -62,3 +62,27 @@ export function runRandomDraft(
     if (playerOptions.length === 0 && botOptions.length === 0) return { playerIds: player, botIds: bot };
   }
 }
+
+/**
+ * Why a side can't draft this card right now, in player words, or null when
+ * it can. Mirrors getValidOptions so the detail sheet can explain itself.
+ */
+export function pickBlocker(
+  card: ModifierCard,
+  ownIds: string[],
+  otherIds: string[],
+  implementedIds: Set<string>,
+  otherName = 'Your opponent',
+): string | null {
+  const ownCards = getSelectedCards(ownIds);
+  const ownCost = ownCards.reduce((sum, c) => sum + c.cost, 0);
+  if (!implementedIds.has(card.id)) return 'Not in this build yet.';
+  if (ownIds.includes(card.id)) return 'Already in your draft.';
+  if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return `${otherName} already claimed this shared modifier.`;
+  if (ownCards.length >= MAX_COUNT) return `Your draft is full (${MAX_COUNT} modifiers).`;
+  if (ownCost + card.cost > BUDGET) return `Over budget: ${BUDGET - ownCost} pts left.`;
+  if ((getCategoryCounts(ownCards)[card.category] ?? 0) >= MAX_PER_CATEGORY) {
+    return `You already have ${MAX_PER_CATEGORY} from this category.`;
+  }
+  return null;
+}

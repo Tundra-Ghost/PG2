@@ -196,6 +196,7 @@ export default function OnlineMatch({
       <main className={appStyles.main}>
         <section className={appStyles.matchHud}>
           <div className={appStyles.bannerRow}>
+            <div className={appStyles.selfSlot}>
             <PlayerBanner
               role={`You · ${myColor === 'white' ? 'White' : 'Black'}`}
               name={playerName}
@@ -203,6 +204,8 @@ export default function OnlineMatch({
               badge={state.turn === myColor ? 'To Move' : 'Waiting'}
               portraitLabel={playerName.slice(0, 1).toUpperCase()}
             />
+            </div>
+            <div className={appStyles.opponentSlot}>
             <PlayerBanner
               role={`Opponent · ${opponentColor === 'white' ? 'White' : 'Black'}`}
               name={opponentName}
@@ -211,6 +214,7 @@ export default function OnlineMatch({
               portraitLabel={opponentName.slice(0, 1).toUpperCase()}
               align="right"
             />
+            </div>
           </div>
 
           {room.drawOffer === opponentColor && state.status === 'active' && (

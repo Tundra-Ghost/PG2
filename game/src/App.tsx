@@ -79,6 +79,8 @@ export default function App() {
   );
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [modifierPanelCollapsed, setModifierPanelCollapsed] = useState(false);
+  /** Phones show one panel under the board at a time. */
+  const [mobileTab, setMobileTab] = useState<'feed' | 'modifiers'>('feed');
   const [profileViewer, setProfileViewer] = useState<ProfileViewerState | null>(null);
   const [chatEntries, setChatEntries] = useState<MatchChatEntry[]>([]);
   const [dialogueQueue, setDialogueQueue] = useState<MatchChatEntry[]>([]);
@@ -655,8 +657,9 @@ export default function App() {
       </header>
 
       <main className={styles.main}>
-        <section className={styles.matchHud}>
+        <section className={styles.matchHud} data-mobile-tab={mobileTab}>
           <div className={styles.bannerRow}>
+            <div className={styles.selfSlot}>
             <PlayerBanner
               role="Player"
               name={playerName}
@@ -675,6 +678,8 @@ export default function App() {
                 });
               }}
             />
+            </div>
+            <div className={styles.opponentSlot}>
             <PlayerBanner
               role={vsBot ? 'AI' : 'Opponent'}
               name={opponentName}
@@ -694,6 +699,7 @@ export default function App() {
                 });
               }}
             />
+            </div>
           </div>
 
           <div className={styles.stageRow}>
@@ -748,6 +754,25 @@ export default function App() {
               onNewGame={handleNewGame}
               infoMessage={infoMessage}
             />
+          </div>
+
+          <div className={styles.mobileTabs} role="tablist" aria-label="Match panels">
+            <button
+              role="tab"
+              aria-selected={mobileTab === 'feed'}
+              className={`${styles.mobileTab} ${mobileTab === 'feed' ? styles.mobileTabOn : ''}`}
+              onClick={() => setMobileTab('feed')}
+            >
+              Moves &amp; Chat
+            </button>
+            <button
+              role="tab"
+              aria-selected={mobileTab === 'modifiers'}
+              className={`${styles.mobileTab} ${mobileTab === 'modifiers' ? styles.mobileTabOn : ''}`}
+              onClick={() => setMobileTab('modifiers')}
+            >
+              Modifiers ({gameState.activeModifiers.length})
+            </button>
           </div>
         </section>
       </main>

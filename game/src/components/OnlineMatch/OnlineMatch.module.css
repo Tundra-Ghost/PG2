@@ -285,3 +285,11 @@
     flex: 1 1 100%;
   }
 }
+
+/* Phones: let the board and log join the match column so they follow the
+   chess-app order set in App.module.css (opponent, board, you, status, log). */
+@media (max-width: 720px) {
+  .stageRow {
+    display: contents;
+  }
+}

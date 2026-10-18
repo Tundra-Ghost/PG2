@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import {
   ALL_MODIFIERS,
   CATEGORY_COLORS,
@@ -17,6 +17,7 @@ import {
   MAX_PER_CATEGORY,
   getSelectedCards,
   getValidOptions,
+  pickBlocker,
   pickRandomCard,
   runRandomDraft,
 } from './draftRules';
@@ -34,11 +35,11 @@ type DraftTurn = 'player' | 'opponent' | 'done';
 
 const CATEGORY_FILTERS: { key: CategoryFilter; label: string }[] = [
   { key: 'ALL', label: 'All' },
-  { key: 'A', label: 'A - Board' },
-  { key: 'B', label: 'B - Cursed' },
-  { key: 'C', label: 'C - Abilities' },
-  { key: 'D', label: 'D - Fog' },
-  { key: 'E', label: 'E - Army' },
+  { key: 'A', label: 'Board' },
+  { key: 'B', label: 'Cursed' },
+  { key: 'C', label: 'Abilities' },
+  { key: 'D', label: 'Fog' },
+  { key: 'E', label: 'Army' },
 ];
 
 function getCostDisplay(cost: number) {
@@ -70,7 +71,6 @@ export default function DraftScreen({
   const [botSelectedIds, setBotSelectedIds] = useState<string[]>(opponentModifierIds);
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('ALL');
-  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [hideUnavailable, setHideUnavailable] = useState(true);
   const [draftTurn, setDraftTurn] = useState<DraftTurn>('player');
   /** Set by the random draft. The picks cannot be changed afterwards. */
@@ -188,288 +188,174 @@ export default function DraftScreen({
     onStartMatch(playerSelectedIds, botSelectedIds);
   }
 
-  function getStatusCopy(): string {
-    if (randomLocked) {
-      return 'Random draft locked in. You are stuck with it.';
-    }
-    if (draftTurn === 'done') {
-      return 'Draft complete. Start when ready.';
-    }
-    if (draftTurn === 'opponent') {
-      return `${opponentName} is making a pick.`;
-    }
-    if (playerValidOptions.length === 0) {
-      return 'No valid picks remain for you.';
-    }
-    return 'Your pick. Draft one modifier, then the opponent responds.';
+  const [detailId, setDetailId] = useState<string | null>(null);
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  const detailCard = detailId ? ALL_MODIFIERS.find(card => card.id === detailId) ?? null : null;
+  const turnLabel = draftTurn === 'player' ? 'Your pick' : draftTurn === 'opponent' ? `${opponentName} is picking…` : 'Draft complete';
+
+  function pickFromDetail(card: ModifierCard) {
+    playClick();
+    handlePlayerPick(card);
+    setDetailId(null);
   }
+
+  /** Why the player can't take this card, ignoring whose turn it is. */
+  const blockerFor = (card: ModifierCard) =>
+    pickBlocker(card, playerSelectedIds, botSelectedIds, implementedIds, opponentName);
+
+  const actions = (
+    <>
+      {!draftFinished && playerSelectedIds.length === 0 && (
+        <button
+          className={styles.secondaryBtn}
+          onClick={handleRandomDraft}
+          disabled={draftTurn !== 'player'}
+          title="Both sides get random picks. You cannot change them."
+        >
+          Random
+        </button>
+      )}
+      <button className={styles.primaryBtn} onClick={handleFinishDraft}>
+        Start match
+      </button>
+    </>
+  );
+
+  const summary = (
+    <>
+      <DraftList title="Your draft" cards={playerSelected} max={MAX_COUNT} empty="Nothing yet. Tap a modifier to read it, then draft it." />
+      <DraftList title={`${opponentName}'s draft`} cards={botSelected} max={MAX_COUNT} empty={`${opponentName} has not picked yet.`} />
+      <p className={styles.rules}>
+        {MAX_COUNT} modifiers max · {MAX_PER_CATEGORY} per category · {BUDGET} pt budget. Shared effects can only be
+        claimed once; owned effects can be drafted by both sides.
+      </p>
+    </>
+  );
 
   return (
     <div className={styles.root}>
-      <div className={styles.browser}>
-        <header className={styles.browserHeader}>
-          <div className={styles.browserTitle}>
-            <h2 className={styles.heading}>Select Modifiers</h2>
-            <span className={styles.headingSub}>Alternating draft - 8pt budget</span>
-            <span className={styles.turnPill}>{getStatusCopy()}</span>
-          </div>
-
-          <div className={styles.searchWrap}>
-            <span className={styles.searchIcon} aria-hidden="true">
-              ?
+      <header className={styles.topBar}>
+        <div className={styles.topRow}>
+          <button
+            className={styles.backBtn}
+            onClick={() => {
+              playClick();
+              onBack();
+            }}
+            aria-label="Back to bot select"
+          >
+            &lt;-
+          </button>
+          <div className={styles.titleBlock}>
+            <h2 className={styles.heading}>Draft Modifiers</h2>
+            <span className={`${styles.turn} ${draftTurn === 'player' ? styles.turnYou : ''}`} aria-live="polite">
+              {randomLocked ? 'Random draft locked in' : turnLabel}
             </span>
-            <input
-              className={styles.searchInput}
-              type="text"
-              placeholder="Search modifiers..."
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              aria-label="Search modifiers"
-            />
-            {query && (
-              <button
-                className={styles.searchClear}
-                onClick={() => {
-                  playClick();
-                  setQuery('');
-                }}
-                aria-label="Clear search"
-              >
-                x
-              </button>
-            )}
           </div>
+        </div>
 
-          <label className={styles.filterToggle}>
-            <input
-              type="checkbox"
-              checked={hideUnavailable}
-              onChange={e => setHideUnavailable(e.target.checked)}
-            />
-            <span className={styles.filterToggleLabel}>Hide unavailable modifiers</span>
-          </label>
+        <div className={styles.meters}>
+          <div className={styles.meter}>
+            <div className={styles.meterLabel}>
+              <span>Budget</span>
+              <span className={remaining < 0 ? styles.over : ''}>{playerTotalCost} / {BUDGET} pts</span>
+            </div>
+            <div className={styles.track}>
+              <div className={styles.fill} style={{ width: `${barPct}%` }} />
+            </div>
+          </div>
+          <div className={styles.pickDots} aria-label={`${playerSelected.length} of ${MAX_COUNT} picks`}>
+            {Array.from({ length: MAX_COUNT }, (_, i) => {
+              const card = playerSelected[i];
+              return (
+                <span
+                  key={i}
+                  className={`${styles.pickDot} ${card ? styles.pickDotOn : ''}`}
+                  style={card ? { background: CATEGORY_COLORS[card.category] } : undefined}
+                />
+              );
+            })}
+          </div>
+        </div>
 
+        <div className={styles.toolbar}>
+          <input
+            className={styles.search}
+            type="search"
+            placeholder="Search modifiers"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            aria-label="Search modifiers"
+          />
           <div className={styles.chips} role="group" aria-label="Category filter">
             {CATEGORY_FILTERS.map(({ key, label }) => (
               <button
                 key={key}
-                className={`${styles.chip} ${activeCategory === key ? styles.chipActive : ''}`}
-                style={
-                  activeCategory === key && key !== 'ALL'
-                    ? {
-                        borderColor: CATEGORY_COLORS[key as ModifierCategory],
-                        color: CATEGORY_COLORS[key as ModifierCategory],
-                        background: `${CATEGORY_COLORS[key as ModifierCategory]}18`,
-                      }
-                    : undefined
-                }
+                aria-pressed={activeCategory === key}
+                className={`${styles.chip} ${activeCategory === key ? styles.chipOn : ''}`}
+                style={key !== 'ALL' ? ({ '--cat': CATEGORY_COLORS[key] } as CSSProperties) : undefined}
                 onClick={() => {
                   playClick();
                   setActiveCategory(key);
                 }}
               >
+                {key !== 'ALL' && <span className={styles.chipDot} aria-hidden="true" />}
                 {label}
               </button>
             ))}
+            <button
+              aria-pressed={!hideUnavailable}
+              className={`${styles.chip} ${!hideUnavailable ? styles.chipOn : ''}`}
+              onClick={() => {
+                playClick();
+                setHideUnavailable(hide => !hide);
+              }}
+            >
+              Show upcoming
+            </button>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <div className={styles.grid}>
-          {filtered.length === 0 && <p className={styles.empty}>No modifiers match your search.</p>}
+      <div className={styles.body}>
+        <main className={styles.grid} aria-label="Modifiers">
+          {filtered.length === 0 && <p className={styles.empty}>No modifiers match.</p>}
           {filtered.map(card => {
-            const selectable = isCardSelectable(card);
-            const isImplemented = implementedIds.has(card.id);
-            const selectedByPlayer = playerSelectedIds.includes(card.id);
-            const selectedByOpponent = botSelectedIds.includes(card.id);
-            const isSharedLocked = isSharedDraftModifier(card.id) && selectedByOpponent;
-            const isExpanded = expandedId === card.id;
-            const catColor = CATEGORY_COLORS[card.category];
-
+            const mine = playerSelectedIds.includes(card.id);
+            const theirs = botSelectedIds.includes(card.id);
+            const blocked = !mine && blockerFor(card) !== null;
+            const tag = mine
+              ? 'Your pick'
+              : theirs
+                ? `${opponentName}'s pick`
+                : !implementedIds.has(card.id)
+                  ? 'Coming soon'
+                  : null;
             return (
-              <div
+              <button
                 key={card.id}
-                className={`${styles.card} ${
-                  selectedByPlayer ? styles.cardSelected : ''
-                } ${!selectable && !selectedByPlayer ? styles.cardDisabled : ''} ${
-                  !isImplemented ? styles.cardUnimplemented : ''
-                } ${isSharedLocked ? styles.cardClaimed : ''}`}
-                style={
-                  selectedByPlayer
-                    ? ({ '--cat-color': catColor } as React.CSSProperties)
-                    : undefined
-                }
-                onClick={() => handlePlayerPick(card)}
+                className={`${styles.card} ${mine ? styles.cardMine : ''} ${blocked ? styles.cardBlocked : ''}`}
+                style={{ '--cat': CATEGORY_COLORS[card.category] } as CSSProperties}
+                onClick={() => {
+                  playClick();
+                  setDetailId(card.id);
+                }}
               >
-                <div className={styles.cardStripe} style={{ background: catColor }} />
-
-                <div className={styles.cardBody}>
-                  <div className={styles.cardMeta}>
-                    <span className={styles.cardId}>{card.id}</span>
-                    {selectedByPlayer && <span className={styles.devBadge}>YOUR PICK</span>}
-                    {selectedByOpponent && (
-                      <span className={styles.devBadge}>{opponentName.toUpperCase()} PICK</span>
-                    )}
-                    {!isImplemented && <span className={styles.devBadge}>NOT IMPLEMENTED</span>}
-                    <span className={`${styles.tier} ${styles[`tier${card.tier}`]}`}>
-                      {card.tier}
-                    </span>
-                    <span
-                      className={`${styles.cost} ${
-                        card.cost < 0
-                          ? styles.costNegative
-                          : card.cost === 0
-                            ? styles.costZero
-                            : ''
-                      }`}
-                    >
-                      {getCostDisplay(card.cost)}
-                    </span>
-                  </div>
-
-                  <h3 className={styles.cardName}>{card.name}</h3>
-                  <p className={styles.cardType} style={{ color: catColor }}>
-                    {card.typeLine}
-                  </p>
-                  <p className={styles.cardDesc}>{card.description}</p>
-                  <PrototypeRules text={card.prototypeRules} />
-
-                  {!isImplemented && (
-                    <p className={styles.implementationHint}>
-                      Disabled for testing until the runtime behavior exists.
-                    </p>
-                  )}
-                  {isSharedLocked && (
-                    <p className={styles.implementationHint}>
-                      Shared modifier already claimed by {opponentName}.
-                    </p>
-                  )}
-                  {selectedByOpponent && !isSharedLocked && (
-                    <p className={styles.implementationHint}>
-                      Owned modifier. Both sides may draft this independently.
-                    </p>
-                  )}
-
-                  <button
-                    className={styles.flavorToggle}
-                    onClick={e => {
-                      e.stopPropagation();
-                      playClick();
-                      setExpandedId(isExpanded ? null : card.id);
-                    }}
-                    aria-expanded={isExpanded}
-                  >
-                    {isExpanded ? 'Hide flavor ^' : 'Flavor text v'}
-                  </button>
-                  {isExpanded && <p className={styles.cardFlavor}>{card.flavor}</p>}
-
-                  <div className={styles.cardFooter}>
-                    <span className={styles.categoryLabel} style={{ color: catColor }}>
-                      {CATEGORY_NAMES[card.category]}
-                    </span>
-                    <CursePips level={card.curseLevel} />
-                  </div>
-                </div>
-
-                {selectedByPlayer && (
-                  <div className={styles.selectedBadge} style={{ background: catColor }}>
-                    +
-                  </div>
-                )}
-              </div>
+                <span className={styles.cardTop}>
+                  <span className={styles.cardName}>{card.name}</span>
+                  <span className={`${styles.cost} ${card.cost < 0 ? styles.costRefund : ''}`}>{getCostDisplay(card.cost)}</span>
+                </span>
+                <span className={styles.cardType}>{card.typeLine}</span>
+                <span className={styles.cardDesc}>{card.description}</span>
+                {tag && <span className={`${styles.tag} ${mine ? styles.tagMine : ''}`}>{tag}</span>}
+              </button>
             );
           })}
-        </div>
-      </div>
+        </main>
 
-      <aside className={styles.panel}>
-        <div className={styles.panelInner}>
-          <h2 className={styles.panelHeading}>Draft Summary</h2>
-
-          <div className={styles.budgetSection}>
-            <div className={styles.budgetRow}>
-              <span className={styles.budgetLabel}>Your Budget</span>
-              <span className={styles.budgetValue}>
-                {playerTotalCost} / {BUDGET} pts
-              </span>
-            </div>
-            <div className={styles.budgetTrack}>
-              <div className={styles.budgetFill} style={{ width: `${barPct}%` }} />
-            </div>
-            <p className={styles.budgetHint}>
-              {remaining > 0 ? `${remaining} pts remaining` : 'Budget full'}
-            </p>
-          </div>
-
-          <div className={styles.countRow}>
-            <span className={styles.countLabel}>Draft Turn</span>
-            <span className={styles.countValue}>
-              {draftTurn === 'player' ? 'You' : draftTurn === 'opponent' ? opponentName : 'Done'}
-            </span>
-          </div>
-
-          <div className={styles.selectedList}>
-            {playerSelected.length === 0 ? (
-              <p className={styles.emptySelected}>
-                No player picks yet.
-                <span>Choose the first modifier to open the draft.</span>
-              </p>
-            ) : (
-              playerSelected.map(card => (
-                <div key={card.id} className={styles.selectedItem}>
-                  <div
-                    className={styles.selectedDot}
-                    style={{ background: CATEGORY_COLORS[card.category] }}
-                  />
-                  <span className={styles.selectedName}>{card.name}</span>
-                  <span
-                    className={`${styles.selectedCost} ${
-                      card.cost < 0 ? styles.costNegative : ''
-                    }`}
-                  >
-                    {getCostDisplay(card.cost)}
-                  </span>
-                </div>
-              ))
-            )}
-          </div>
-
-          <div className={styles.opponentBlock}>
-            <div className={styles.opponentHeader}>
-              <span className={styles.countLabel}>{opponentName} Draft</span>
-              <span className={styles.countValue}>
-                {botSelected.length} / {MAX_COUNT}
-              </span>
-            </div>
-            <div className={styles.selectedList}>
-              {botSelected.length === 0 ? (
-                <p className={styles.emptySelected}>{opponentName} has not picked yet.</p>
-              ) : (
-                botSelected.map(card => (
-                  <div key={card.id} className={styles.selectedItem}>
-                    <div
-                      className={styles.selectedDot}
-                      style={{ background: CATEGORY_COLORS[card.category] }}
-                    />
-                    <span className={styles.selectedName}>{card.name}</span>
-                    <span
-                      className={`${styles.selectedCost} ${
-                        card.cost < 0 ? styles.costNegative : ''
-                      }`}
-                    >
-                      {getCostDisplay(card.cost)}
-                    </span>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          <p className={styles.rulesHint}>
-            Max {MAX_COUNT} modifiers - {MAX_PER_CATEGORY} per category - Shared effects are
-            single-claim - Owned effects may be drafted by both sides
-          </p>
-
-          <div className={styles.viktorQuote}>
+        <aside className={styles.side}>
+          {summary}
+          <div className={styles.viktor}>
             <p className={styles.viktorText}>
               {draftFinished
                 ? '"The draft is settled. Viktor has stopped pretending there was a clean answer."'
@@ -477,35 +363,102 @@ export default function DraftScreen({
                   ? `"${opponentName} is picking now. Viktor trusts the chaos generator more than the birds."`
                   : '"You pick first. The bird picks second. This was the diplomatic compromise."'}
             </p>
-            <span className={styles.viktorAttr}>- Viktor Crumb</span>
+            <span className={styles.viktorAttr}>Viktor Crumb</span>
           </div>
+          <div className={styles.sideActions}>{actions}</div>
+        </aside>
+      </div>
 
-          <div className={styles.actions}>
-            {!draftFinished && playerSelectedIds.length === 0 && (
-              <button
-                className={styles.randomBtn}
-                onClick={handleRandomDraft}
-                disabled={draftTurn !== 'player'}
-                title="Both sides get random picks. You cannot change them."
-              >
-                Random Draft (locked)
-              </button>
-            )}
-            <button className={styles.startBtn} onClick={handleFinishDraft}>
-              {draftFinished ? 'Start Match' : 'Finish Draft & Start Match'}
-            </button>
-            <button
-              className={styles.backBtn}
-              onClick={() => {
-                playClick();
-                onBack();
-              }}
-            >
-              Back to Bot Select
-            </button>
+      {/* Phones: summary and actions live in a bar pinned to the bottom. */}
+      <footer className={styles.actionBar}>
+        <button className={styles.picksBtn} onClick={() => setSummaryOpen(true)}>
+          <strong>{playerSelected.length}/{MAX_COUNT}</strong> picks
+        </button>
+        {actions}
+      </footer>
+
+      {summaryOpen && (
+        <div className={styles.sheetBackdrop} onClick={() => setSummaryOpen(false)}>
+          <div className={styles.sheet} role="dialog" aria-modal="true" aria-label="Draft summary" onClick={e => e.stopPropagation()}>
+            <div className={styles.sheetGrip} aria-hidden="true" />
+            {summary}
+            <button className={styles.secondaryBtn} onClick={() => setSummaryOpen(false)}>Close</button>
           </div>
         </div>
-      </aside>
+      )}
+
+      {detailCard && (
+        <div className={styles.sheetBackdrop} onClick={() => setDetailId(null)}>
+          <div
+            className={`${styles.sheet} ${styles.detail}`}
+            style={{ '--cat': CATEGORY_COLORS[detailCard.category] } as CSSProperties}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modifier-detail-title"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className={styles.sheetGrip} aria-hidden="true" />
+            <div className={styles.detailHead}>
+              <span className={styles.detailCategory}>{CATEGORY_NAMES[detailCard.category]}</span>
+              <span className={`${styles.cost} ${detailCard.cost < 0 ? styles.costRefund : ''}`}>{getCostDisplay(detailCard.cost)}</span>
+            </div>
+            <h3 id="modifier-detail-title" className={styles.detailName}>{detailCard.name}</h3>
+            <p className={styles.detailType}>
+              {detailCard.typeLine} · Tier {detailCard.tier} · <CursePips level={detailCard.curseLevel} />
+            </p>
+            <p className={styles.detailDesc}>{detailCard.description}</p>
+            <PrototypeRules text={detailCard.prototypeRules} />
+            {detailCard.flavor && <p className={styles.flavor}>{detailCard.flavor}</p>}
+            {isSharedDraftModifier(detailCard.id) && (
+              <p className={styles.note}>Shared: affects both sides, and only one side can draft it.</p>
+            )}
+
+            {(() => {
+              const mine = playerSelectedIds.includes(detailCard.id);
+              const reason = mine ? null : blockerFor(detailCard);
+              const waiting = !mine && !reason && draftTurn !== 'player';
+              return (
+                <div className={styles.detailActions}>
+                  {mine ? (
+                    <p className={styles.detailState}>In your draft.</p>
+                  ) : reason ? (
+                    <p className={styles.detailState}>{reason}</p>
+                  ) : waiting ? (
+                    <p className={styles.detailState}>{draftFinished ? 'The draft is over.' : `Wait for ${opponentName} to pick.`}</p>
+                  ) : (
+                    <button className={styles.primaryBtn} onClick={() => pickFromDetail(detailCard)}>
+                      Draft this modifier
+                    </button>
+                  )}
+                  <button className={styles.secondaryBtn} onClick={() => setDetailId(null)}>Close</button>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
     </div>
+  );
+}
+
+function DraftList({ title, cards, max, empty }: { title: string; cards: ModifierCard[]; max: number; empty: string }) {
+  return (
+    <section className={styles.draftList}>
+      <h3 className={styles.listTitle}>
+        <span>{title}</span>
+        <span>{cards.length} / {max}</span>
+      </h3>
+      {cards.length === 0 ? (
+        <p className={styles.listEmpty}>{empty}</p>
+      ) : (
+        cards.map(card => (
+          <div key={card.id} className={styles.listItem}>
+            <span className={styles.listDot} style={{ background: CATEGORY_COLORS[card.category] }} />
+            <span className={styles.listName}>{card.name}</span>
+            <span className={`${styles.listCost} ${card.cost < 0 ? styles.costRefund : ''}`}>{getCostDisplay(card.cost)}</span>
+          </div>
+        ))
+      )}
+    </section>
   );
 }
