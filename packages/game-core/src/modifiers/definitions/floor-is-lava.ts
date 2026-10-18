@@ -58,7 +58,7 @@ function clearAllLava(state: GameState): GameState {
 
 export const floorIsLavaDef: ModifierDefinition = {
   id: ID,
-  name: 'Floor is Lava',
+  name: 'The Floor Is Lava',
   category: 'A',
   pointCost: 2,
   curseRating: 0,

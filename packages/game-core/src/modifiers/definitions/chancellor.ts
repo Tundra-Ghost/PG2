@@ -8,7 +8,7 @@ const ID = MODIFIER_IDS.chancellor;
 
 export const chancellorDef: ModifierDefinition = {
   id: ID,
-  name: 'Equivalent Exchange',
+  name: 'Equivalent Exchange (The Chancellor)',
   category: 'E',
   pointCost: 5,
   curseRating: 0,

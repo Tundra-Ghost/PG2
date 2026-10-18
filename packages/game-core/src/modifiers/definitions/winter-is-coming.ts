@@ -7,7 +7,7 @@ const ID = MODIFIER_IDS.winterIsComing;
 
 export const winterIsComingDef: ModifierDefinition = {
   id: ID,
-  name: 'Winter is Coming',
+  name: 'Winter Is Coming (To Your Pieces)',
   category: 'A',
   pointCost: 2,
   curseRating: 0,

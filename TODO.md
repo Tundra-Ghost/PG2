@@ -122,6 +122,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] GDD polish: review current emoji and placeholder symbols in the app shell against the art-direction doc and replace where needed
 - [x] GDD UI: establish a mobile-responsive baseline for the landing page and playable prototype
 - [x] Mobile: board fills the phone width (341px on a 390px screen) and fits landscape screens
+- [x] Modifier names in the match match the draft cards (test enforced)
 
 ## Priority 5: Product Hygiene
 

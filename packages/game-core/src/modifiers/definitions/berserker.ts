@@ -89,7 +89,7 @@ export function getBestCaptureTarget(state: GameState, from: Square): Square | n
 
 export const berserkerDef: ModifierDefinition = {
   id: ID,
-  name: 'Berserker',
+  name: 'BOY. (The Berserker)',
   category: 'E',
   pointCost: 3,
   curseRating: 0,

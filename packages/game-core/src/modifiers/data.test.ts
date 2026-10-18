@@ -13,4 +13,15 @@ describe('modifier card data', () => {
 
     expect(missing).toEqual([]);
   });
+
+  it('uses the draft card name in the match', () => {
+    // The draft shows card names, the match shows definition names.
+    // They must match so players recognise what they drafted.
+    const mismatched = modifierRegistry
+      .getAll()
+      .map(def => ({ id: def.id, match: def.name, card: ALL_MODIFIERS.find(card => card.id === def.id)?.name }))
+      .filter(({ match, card }) => match !== card);
+
+    expect(mismatched).toEqual([]);
+  });
 });
