@@ -278,9 +278,11 @@
 
 .sizeStandard {
   z-index: 5;
-  width: 48.5%;
-  height: clamp(220px, 29%, 310px);
-  min-height: 220px;
+  width: 47%;
+  /* Three cards plus Settings must stack in the right column without
+     overlapping, so a card is at most a quarter of the deck. */
+  height: clamp(190px, 25%, 280px);
+  min-height: 190px;
 }
 
 .sizeSettings {
@@ -291,33 +293,33 @@
 }
 
 .cardStory {
-  top: 1.5%;
-  right: 2.5%;
+  top: 2.5%;
+  right: 2%;
   transform: rotate(3deg);
 }
 
 .cardPuzzles {
-  top: 35%;
-  right: 2.5%;
+  top: 29%;
+  right: 2%;
   transform: rotate(-2deg);
 }
 
 .cardStats {
-  left: 4%;
-  top: 50%;
+  left: 2.5%;
+  top: 42%;
   transform: rotate(3deg);
 }
 
 .cardCollection {
-  right: 4%;
-  top: 56.5%;
+  right: 2.5%;
+  top: 55.5%;
   transform: rotate(2deg);
 }
 
 .cardOnline {
   z-index: 4;
-  left: 2.5%;
-  top: 18%;
+  left: 2%;
+  top: 14%;
   transform: rotate(-4deg);
 }
 
@@ -364,13 +366,14 @@
 .cardCopy {
   position: relative;
   z-index: 2;
-  width: min(52%, 280px);
+  width: min(58%, 280px);
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 0.55rem;
-  padding: clamp(1rem, 2.4vw, 2rem);
+  /* safe: if the copy is taller than the card, keep the title visible. */
+  justify-content: safe center;
+  gap: 0.45rem;
+  padding: clamp(0.9rem, 1.6vw, 1.5rem) clamp(1rem, 2vw, 1.8rem);
 }
 
 .sizeSettings .cardCopy {
