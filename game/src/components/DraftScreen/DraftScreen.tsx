@@ -11,6 +11,7 @@ import { isSharedDraftModifier } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './DraftScreen.module.css';
 import PrototypeRules from '../PrototypeRules/PrototypeRules';
+import { getCurseLabel, getTierLabel } from '../../modifiers/presentation';
 import {
   BUDGET,
   MAX_COUNT,
@@ -404,7 +405,10 @@ export default function DraftScreen({
             </div>
             <h3 id="modifier-detail-title" className={styles.detailName}>{detailCard.name}</h3>
             <p className={styles.detailType}>
-              {detailCard.typeLine} · Tier {detailCard.tier} · <CursePips level={detailCard.curseLevel} />
+              {detailCard.typeLine}
+            </p>
+            <p className={styles.detailType}>
+              {getTierLabel(detailCard.tier)} · {getCurseLabel(detailCard.curseLevel)} <CursePips level={detailCard.curseLevel} />
             </p>
             <p className={styles.detailDesc}>{detailCard.description}</p>
             <PrototypeRules text={detailCard.prototypeRules} />
