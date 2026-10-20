@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getModifierDisplayBucket, getModifierOwnershipLabel } from './presentation';
+import { getCurseLabel, getModifierDisplayBucket, getModifierOwnershipLabel, getTierLabel } from './presentation';
 import { getDraftScope } from '@pigeon-chess/game-core';
 
 describe('modifier presentation', () => {
@@ -29,5 +29,13 @@ describe('modifier presentation', () => {
 
   it('reads shared scope from the registered modifier definition for floor is lava', () => {
     expect(getDraftScope('MOD-A002')).toBe('shared');
+  });
+
+  it('explains tier letters and curse levels in words', () => {
+    expect(getTierLabel('S')).toBe('Tier S: match-changing');
+    expect(getTierLabel('A')).toBe('Tier A: strong');
+    expect(getTierLabel('B')).toBe('Tier B: light');
+    expect(getCurseLabel(0)).toBe('No curse');
+    expect(getCurseLabel(2)).toBe('Curse 2 of 3');
   });
 });

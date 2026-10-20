@@ -124,6 +124,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Mobile: board fills the phone width (341px on a 390px screen) and fits landscape screens
 - [x] Modifier names in the match match the draft cards (test enforced)
 - [x] Main menu cards no longer overlap on desktop
+- [x] Draft detail explains tier (S match-changing, A strong, B light) and curse level in words
 
 ## Priority 5: Product Hygiene
 
