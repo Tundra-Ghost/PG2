@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { ALL_MODIFIERS, isSharedDraftModifier, modifierRegistry } from '@pigeon-chess/game-core';
-import { BUDGET, MAX_COUNT, MAX_PER_CATEGORY, getSelectedCards, getValidOptions, pickBlocker, runRandomDraft } from './draftRules';
+import { ALL_MODIFIERS, isSharedDraftModifier, modifierRegistry } from '../index';
+import { BUDGET, MAX_COUNT, MAX_PER_CATEGORY, getSelectedCards, getValidOptions, pickBlocker, runRandomDraft } from './rules';
 
 const implemented = new Set(modifierRegistry.getAll().map(mod => mod.id));
 
