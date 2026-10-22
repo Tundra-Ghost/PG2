@@ -110,10 +110,12 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
       broadcast(roomId);
     };
 
-    socket.on('room:create', rawAck => {
-      const ack = safeAck<RoomAck>(rawAck);
+    socket.on('room:create', (reqOrAck, rawAck) => {
+      const legacy = typeof reqOrAck === 'function';
+      const ack = safeAck<RoomAck>(legacy ? reqOrAck : rawAck);
+      const req = legacy ? {} : (reqOrAck ?? {});
       if (seat) return ack({ ok: false, reason: 'Already in a room.' });
-      const res = rooms.create(socket.data.player);
+      const res = rooms.create(socket.data.player, { draft: req.draft === true });
       ack(res);
       if (res.ok) takeSeat(res.roomId, res.color);
     });
@@ -163,6 +165,22 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
       if (!seat) return ack({ ok: false, reason: 'Join a room first.' });
       const accept = typeof req?.accept === 'boolean' ? req.accept : undefined;
       const res = rooms.drawOffer(seat.roomId, seat.color, { accept });
+      ack(res);
+      if (res.ok) broadcast(seat.roomId);
+    });
+
+    socket.on('draft:pick', (req, rawAck) => {
+      const ack = safeAck<ActionAck>(rawAck);
+      if (!seat) return ack({ ok: false, reason: 'Join a room first.' });
+      const res = rooms.draftPick(seat.roomId, seat.color, req?.modifierId);
+      ack(res);
+      if (res.ok) broadcast(seat.roomId);
+    });
+
+    socket.on('draft:finish', rawAck => {
+      const ack = safeAck<ActionAck>(rawAck);
+      if (!seat) return ack({ ok: false, reason: 'Join a room first.' });
+      const res = rooms.draftFinish(seat.roomId, seat.color);
       ack(res);
       if (res.ok) broadcast(seat.roomId);
     });

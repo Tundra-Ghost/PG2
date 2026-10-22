@@ -39,6 +39,18 @@ describe('saved rooms', () => {
     expect(after.move(roomId, 'black', { from: 'e7', to: 'e5' })).toEqual({ ok: true });
   });
 
+  it('a draft in progress survives a server restart', () => {
+    const before = new RoomManager(new FileStore(dir));
+    const created = before.create(undefined, { draft: true });
+    if (!created.ok) throw new Error(created.reason);
+    before.join(created.roomId);
+    expect(before.draftPick(created.roomId, 'white', 'MOD-B002')).toEqual({ ok: true });
+
+    const after = new RoomManager(new FileStore(dir));
+    expect(after.snapshot(created.roomId)?.draft).toMatchObject({ picks: { white: ['MOD-B002'], black: [] }, turn: 'black' });
+    expect(after.move(created.roomId, 'white', { from: 'e2', to: 'e4' })).toMatchObject({ ok: false });
+  });
+
   it('a started game is kept when both players leave', () => {
     const rooms = new RoomManager(new FileStore(dir));
     const { roomId } = startedRoom(rooms);

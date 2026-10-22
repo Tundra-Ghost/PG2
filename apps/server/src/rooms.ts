@@ -2,7 +2,11 @@ import { randomInt, randomUUID } from 'node:crypto';
 import {
   buildMove,
   chessEngine,
+  createOnlineDraft,
+  draftFinish,
+  draftPick,
   drawByAgreement,
+  isDraftComplete,
   resign,
   isPromotionMove,
   toWire,
@@ -15,6 +19,7 @@ import {
   type SeatRef,
   type GameState,
   type MoveRequest,
+  type OnlineDraft,
   type RoomAck,
   type RoomSnapshot,
   type SeatStatus,
@@ -48,6 +53,8 @@ export interface Room {
   updatedAt: number;
   /** Most recent chat, oldest first. */
   chat: ChatMessage[];
+  /** The modifier draft, or null for a standard game. */
+  draft: OnlineDraft | null;
 }
 
 /** Chat kept per room. Older lines drop off. */
@@ -55,6 +62,21 @@ export const CHAT_HISTORY = 100;
 /** Messages one seat may send per CHAT_WINDOW_MS. */
 const CHAT_BURST = 5;
 const CHAT_WINDOW_MS = 5000;
+
+const DRAFT_RUNNING = 'Finish the modifier draft first.';
+
+function drafting(room: Room): boolean {
+  return room.draft !== null && !isDraftComplete(room.draft);
+}
+
+/** Same start as a local drafted match: each pick belongs to the side that drafted it. */
+function startDraftedGame(draft: OnlineDraft): GameState {
+  const state = chessEngine.activateDraftModifiers(chessEngine.getInitialState(), [
+    ...draft.picks.white.map(id => ({ id, sourceColor: 'white' as const })),
+    ...draft.picks.black.map(id => ({ id, sourceColor: 'black' as const })),
+  ]);
+  return chessEngine.beginTurn(state);
+}
 
 /** A room nobody has touched for this long is deleted. */
 export const ROOM_EXPIRY_MS = 14 * 24 * 60 * 60 * 1000;
@@ -91,7 +113,7 @@ export class RoomManager {
     this.store.save(room);
   }
 
-  create(player?: Player): RoomAck {
+  create(player?: Player, opts: { draft?: boolean } = {}): RoomAck {
     const id = this.newRoomId();
     const token = randomUUID();
     const room: Room = {
@@ -101,6 +123,7 @@ export class RoomManager {
       drawOffer: null,
       updatedAt: this.now(),
       chat: [],
+      draft: opts.draft ? createOnlineDraft() : null,
     };
     this.rooms.set(id, room);
     this.store.save(room);
@@ -140,6 +163,7 @@ export class RoomManager {
     const room = this.rooms.get(roomId);
     if (!room) return { ok: false, reason: 'Room closed.' };
     if (!room.seats.black) return { ok: false, reason: 'Waiting for an opponent.' };
+    if (drafting(room)) return { ok: false, reason: DRAFT_RUNNING };
 
     // The seat decides the colour, never the client payload.
     const state = room.state;
@@ -161,6 +185,7 @@ export class RoomManager {
   shooGerald(roomId: string, color: Color): ActionAck {
     const room = this.rooms.get(roomId);
     if (!room) return { ok: false, reason: 'Room closed.' };
+    if (drafting(room)) return { ok: false, reason: DRAFT_RUNNING };
     if (room.state.turn !== color) return { ok: false, reason: 'not your turn' };
     if (!chessEngine.canShooGerald(room.state)) return { ok: false, reason: 'Gerald cannot be shooed right now.' };
     room.state = chessEngine.shooGerald(room.state);
@@ -210,8 +235,35 @@ export class RoomManager {
     const room = this.rooms.get(roomId);
     if (!room) return { ok: false, reason: 'Room closed.' };
     if (!room.seats.black) return { ok: false, reason: 'Waiting for an opponent.' };
+    if (drafting(room)) return { ok: false, reason: DRAFT_RUNNING };
     if (room.state.status !== 'active') return { ok: false, reason: 'The game is over.' };
     return { ok: true, room };
+  }
+
+  /** A seat drafts a modifier. The game starts once both drafts are done. */
+  draftPick(roomId: string, color: Color, modifierId: unknown): ActionAck {
+    return this.draftAction(roomId, draft => draftPick(draft, color, String(modifierId ?? '')));
+  }
+
+  draftFinish(roomId: string, color: Color): ActionAck {
+    return this.draftAction(roomId, draft => draftFinish(draft, color));
+  }
+
+  private draftAction(
+    roomId: string,
+    step: (draft: OnlineDraft) => { ok: true; draft: OnlineDraft } | { ok: false; error: string },
+  ): ActionAck {
+    const room = this.rooms.get(roomId);
+    if (!room) return { ok: false, reason: 'Room closed.' };
+    if (!room.draft) return { ok: false, reason: 'This game has no draft.' };
+    if (!drafting(room)) return { ok: false, reason: 'The draft is over.' };
+    if (!room.seats.black) return { ok: false, reason: 'Waiting for an opponent.' };
+    const result = step(room.draft);
+    if (!result.ok) return { ok: false, reason: result.error };
+    room.draft = result.draft;
+    if (isDraftComplete(room.draft)) room.state = startDraftedGame(room.draft);
+    this.touch(room);
+    return { ok: true };
   }
 
   /** Adds a chat line from a seated player. Saved with the room, but doesn't count as game activity. */
@@ -317,6 +369,7 @@ export class RoomManager {
         white: room.seats.white?.player?.username ?? null,
         black: room.seats.black?.player?.username ?? null,
       },
+      draft: room.draft,
     };
   }
 
