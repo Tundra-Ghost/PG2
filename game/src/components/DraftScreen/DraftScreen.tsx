@@ -24,15 +24,28 @@ import {
 } from './draftRules';
 
 
+type DraftTurn = 'player' | 'opponent' | 'done';
+
+/** An online draft: the server owns the picks, this screen only shows and sends them. */
+export interface OnlineDraftControls {
+  myPicks: string[];
+  theirPicks: string[];
+  turn: DraftTurn;
+  /** This side has stopped picking. */
+  iAmDone: boolean;
+  onPick: (modifierId: string) => void;
+  onFinish: () => void;
+}
+
 interface DraftScreenProps {
-  onStartMatch: (playerSelectedIds: string[], opponentSelectedIds: string[]) => void;
+  onStartMatch?: (playerSelectedIds: string[], opponentSelectedIds: string[]) => void;
   onBack: () => void;
   opponentName?: string;
   opponentModifierIds?: string[];
+  online?: OnlineDraftControls;
 }
 
 type CategoryFilter = 'ALL' | ModifierCategory;
-type DraftTurn = 'player' | 'opponent' | 'done';
 
 const CATEGORY_FILTERS: { key: CategoryFilter; label: string }[] = [
   { key: 'ALL', label: 'All' },
@@ -67,13 +80,17 @@ export default function DraftScreen({
   onBack,
   opponentName = 'Opponent',
   opponentModifierIds = [],
+  online,
 }: DraftScreenProps) {
-  const [playerSelectedIds, setPlayerSelectedIds] = useState<string[]>([]);
-  const [botSelectedIds, setBotSelectedIds] = useState<string[]>(opponentModifierIds);
+  const [localPlayerIds, setPlayerSelectedIds] = useState<string[]>([]);
+  const [localBotIds, setBotSelectedIds] = useState<string[]>(opponentModifierIds);
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('ALL');
   const [hideUnavailable, setHideUnavailable] = useState(true);
-  const [draftTurn, setDraftTurn] = useState<DraftTurn>('player');
+  const [localTurn, setDraftTurn] = useState<DraftTurn>('player');
+  const playerSelectedIds = online ? online.myPicks : localPlayerIds;
+  const botSelectedIds = online ? online.theirPicks : localBotIds;
+  const draftTurn = online ? online.turn : localTurn;
   /** Set by the random draft. The picks cannot be changed afterwards. */
   const [randomLocked, setRandomLocked] = useState(false);
   const implementedIds = useMemo(() => new Set(modifierRegistry.getAll().map(mod => mod.id)), []);
@@ -98,7 +115,7 @@ export default function DraftScreen({
   const draftFinished = draftTurn === 'done';
 
   useEffect(() => {
-    if (draftTurn !== 'opponent') return;
+    if (online || draftTurn !== 'opponent') return;
 
     const timer = setTimeout(() => {
       const botPick = pickRandomCard(botValidOptions);
@@ -118,10 +135,10 @@ export default function DraftScreen({
     }, 450);
 
     return () => clearTimeout(timer);
-  }, [draftTurn, botValidOptions, botSelectedIds, implementedIds, playerSelectedIds]);
+  }, [online, draftTurn, botValidOptions, botSelectedIds, implementedIds, playerSelectedIds]);
 
   useEffect(() => {
-    if (draftTurn !== 'player') return;
+    if (online || draftTurn !== 'player') return;
     if (playerValidOptions.length > 0) return;
 
     if (botValidOptions.length > 0) {
@@ -129,7 +146,7 @@ export default function DraftScreen({
     } else {
       setDraftTurn('done');
     }
-  }, [draftTurn, playerValidOptions, botValidOptions]);
+  }, [online, draftTurn, playerValidOptions, botValidOptions]);
 
   const filtered = useMemo(() => {
     let list = ALL_MODIFIERS;
@@ -160,6 +177,10 @@ export default function DraftScreen({
 
   function handlePlayerPick(card: ModifierCard) {
     if (!isCardSelectable(card)) return;
+    if (online) {
+      online.onPick(card.id);
+      return;
+    }
 
     const nextPlayerIds = [...playerSelectedIds, card.id];
     const nextBotOptions = getValidOptions(botSelectedIds, nextPlayerIds, implementedIds);
@@ -186,7 +207,8 @@ export default function DraftScreen({
 
   function handleFinishDraft() {
     playClick();
-    onStartMatch(playerSelectedIds, botSelectedIds);
+    if (online) online.onFinish();
+    else onStartMatch?.(playerSelectedIds, botSelectedIds);
   }
 
   const [detailId, setDetailId] = useState<string | null>(null);
@@ -204,7 +226,19 @@ export default function DraftScreen({
   const blockerFor = (card: ModifierCard) =>
     pickBlocker(card, playerSelectedIds, botSelectedIds, implementedIds, opponentName);
 
-  const actions = (
+  const actions = online ? (
+    online.iAmDone ? (
+      <span className={styles.waitNote}>Waiting for {opponentName} to finish.</span>
+    ) : (
+      <button
+        className={styles.primaryBtn}
+        onClick={handleFinishDraft}
+        title={`Stop drafting. ${opponentName} can keep picking.`}
+      >
+        Done picking
+      </button>
+    )
+  ) : (
     <>
       {!draftFinished && playerSelectedIds.length === 0 && (
         <button
@@ -243,7 +277,7 @@ export default function DraftScreen({
               playClick();
               onBack();
             }}
-            aria-label="Back to bot select"
+            aria-label={online ? 'Leave the room' : 'Back to bot select'}
           >
             &lt;-
           </button>
@@ -360,9 +394,11 @@ export default function DraftScreen({
             <p className={styles.viktorText}>
               {draftFinished
                 ? '"The draft is settled. Viktor has stopped pretending there was a clean answer."'
-                : draftTurn === 'opponent'
-                  ? `"${opponentName} is picking now. Viktor trusts the chaos generator more than the birds."`
-                  : '"You pick first. The bird picks second. This was the diplomatic compromise."'}
+                : online
+                  ? '"White picks first, then you take turns. Tap Done picking when you have enough."'
+                  : draftTurn === 'opponent'
+                    ? `"${opponentName} is picking now. Viktor trusts the chaos generator more than the birds."`
+                    : '"You pick first. The bird picks second. This was the diplomatic compromise."'}
             </p>
             <span className={styles.viktorAttr}>Viktor Crumb</span>
           </div>

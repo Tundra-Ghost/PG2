@@ -9,6 +9,7 @@ import {
   type GameSummary,
   type GameState,
   type Move,
+  type OnlineDraft,
   type RoomAck,
   type RoomSnapshot,
   type SeatStatus,
@@ -64,7 +65,11 @@ export interface OnlineRoom {
   /** This match's chat, oldest first. */
   chat: ChatMessage[];
   sendChat: (text: string) => void;
-  createRoom: () => void;
+  /** The modifier draft, while it runs and after. Null for a standard game. */
+  draft: OnlineDraft | null;
+  draftPick: (modifierId: string) => void;
+  draftFinish: () => void;
+  createRoom: (withDraft: boolean) => void;
   joinRoom: (code: string) => void;
   sendMove: (move: Move) => void;
   shooGerald: () => void;
@@ -172,7 +177,14 @@ export function useOnlineRoom(account: string | null = null): OnlineRoom {
     names: snapshot?.names ?? null,
     chat,
     sendChat: text => socketRef.current?.emit('chat:send', { text }, actionAck),
-    createRoom: () => socketRef.current?.emit('room:create', onSeat),
+    draft: snapshot?.draft ?? null,
+    draftPick: modifierId => socketRef.current?.emit('draft:pick', { modifierId }, actionAck),
+    draftFinish: () => socketRef.current?.emit('draft:finish', actionAck),
+    // A standard room uses the old ack-only call, so it works on a server without drafts too.
+    createRoom: withDraft =>
+      withDraft
+        ? socketRef.current?.emit('room:create', { draft: true }, onSeat)
+        : socketRef.current?.emit('room:create', onSeat),
     joinRoom: code => socketRef.current?.emit('room:join', { roomId: code }, onSeat),
     sendMove: move =>
       socketRef.current?.emit(

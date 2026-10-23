@@ -67,10 +67,11 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Online: phones show draw offers in a banner above the board
 - [x] Online: save games to a Fly volume after every action; resume from a Your games list (games last for days, expire after 14 idle days)
 - [ ] Online: live mode with the 30s reconnect / forfeit rule from TDD §05 (saved games never forfeit for being away)
-- [ ] Online: modifier draft over sockets (TDD P1-03)
+- [x] Online: modifier draft over sockets (TDD P1-03)
   - [x] Draft rules and a two-player draft turn model live in game-core (server can enforce them)
   - [x] Server draft phase and socket events (room:create {draft}, draft:pick, draft:finish)
-  - [ ] Online draft screen
+  - [x] Online draft screen (Modifier draft or Standard chess when creating a room)
+- [ ] Server deploy is blocked: the Fly.io trial ended (2026-10-23 deploy failed). Needs a card on Fly or another host.
 - [x] Site: publish to GitHub Pages from Actions on every merge (`.github/workflows/pages.yml`)
 - [ ] Site: stop committing `game/dist` once the Actions deploy is confirmed live
 - [x] Online: host the server so the Pages build can reach it (Fly.io: pigeon-chess-server.fly.dev, region sjc)

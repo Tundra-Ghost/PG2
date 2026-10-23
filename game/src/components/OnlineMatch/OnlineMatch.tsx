@@ -4,9 +4,11 @@ import type { MatchChatEntry } from '../../matchFeed';
 import type { AppSettings } from '../../settings';
 import { playClick } from '../../sound';
 import { useOnlineRoom } from '../../online/useOnlineRoom';
+import { draftViewFor } from '../../online/draftView';
 import { isFinished, resultFor, type GameSurveyContext } from '../../online/survey';
 import PostGameSurvey from '../PostGameSurvey/PostGameSurvey';
 import Board from '../Board/Board';
+import DraftScreen from '../DraftScreen/DraftScreen';
 import GameStatus from '../GameStatus/GameStatus';
 import MoveHistory from '../MoveHistory/MoveHistory';
 import PlayerBanner from '../PlayerBanner/PlayerBanner';
@@ -28,8 +30,8 @@ interface OnlineMatchProps {
 }
 
 /**
- * Online two-player match (TDD P0-03 slice). Standard rules, no draft yet.
- * Every move goes to the server; the board only shows what the server sends.
+ * Online two-player match (TDD P0-03, with the P1-03 modifier draft).
+ * Every pick and move goes to the server; the screen only shows what the server sends.
  */
 export default function OnlineMatch({
   playerName,
@@ -69,6 +71,7 @@ export default function OnlineMatch({
     onJoined?.();
   }, [joinRoomId, room.connection, room.resumeGame, onJoined]);
   const [code, setCode] = useState('');
+  const [withDraft, setWithDraft] = useState(true);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -97,7 +100,7 @@ export default function OnlineMatch({
         <div className={styles.card}>
           <button className={styles.back} onClick={leave}>&lt;- Back</button>
           <h1 className={styles.title}>Play Online</h1>
-          <p className={styles.lede}>Standard chess against a friend. Modifier drafts come next.</p>
+          <p className={styles.lede}>Play a friend. Draft modifiers first, or play standard chess.</p>
 
           <ConnectionLine connection={room.connection} />
           <p className={styles.hint}>
@@ -121,16 +124,38 @@ export default function OnlineMatch({
                   {copied ? 'Copied' : 'Copy'}
                 </button>
               </div>
-              <p className={styles.hint}>Send this code to your opponent. You play White. Waiting for them to join.</p>
+              <p className={styles.hint}>
+                Send this code to your opponent. You play White.
+                {room.draft ? ' You both draft modifiers once they join.' : ''} Waiting for them to join.
+              </p>
             </div>
           ) : (
             <>
+              <div className={styles.modeRow} role="radiogroup" aria-label="Game type">
+                {[
+                  { draft: true, label: 'Modifier draft' },
+                  { draft: false, label: 'Standard chess' },
+                ].map(option => (
+                  <button
+                    key={option.label}
+                    role="radio"
+                    aria-checked={withDraft === option.draft}
+                    className={`${styles.modeBtn} ${withDraft === option.draft ? styles.modeOn : ''}`}
+                    onClick={() => {
+                      playClick();
+                      setWithDraft(option.draft);
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
               <button
                 className={styles.primary}
                 disabled={room.connection !== 'online'}
                 onClick={() => {
                   playClick();
-                  room.createRoom();
+                  room.createRoom(withDraft);
                 }}
               >
                 Create Room
@@ -183,6 +208,24 @@ export default function OnlineMatch({
   const opponentAway = opponentSeat === 'disconnected';
   const opponentName = room.names?.[opponentColor] ?? 'Opponent';
   const chatEntries = toChatEntries(room.chat, myColor, playerName, opponentName);
+
+  if (room.draft && room.draft.turn !== null) {
+    const draft = room.draft;
+    return (
+      <>
+        <DraftScreen
+          opponentName={opponentName}
+          onBack={leave}
+          online={{
+            ...draftViewFor(draft, myColor),
+            onPick: room.draftPick,
+            onFinish: room.draftFinish,
+          }}
+        />
+        {infoMessage && <p className={styles.draftError} role="alert">{infoMessage}</p>}
+      </>
+    );
+  }
 
   return (
     <div className={appStyles.app}>
