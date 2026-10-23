@@ -62,6 +62,8 @@ export type {
   ActionAck,
   ChatMessage,
   ClientToServerEvents,
+  CreateRoomRequest,
+  DraftPickRequest,
   DrawOfferRequest,
   GameSummary,
   SeatRef,

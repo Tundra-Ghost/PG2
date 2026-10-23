@@ -69,7 +69,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] Online: live mode with the 30s reconnect / forfeit rule from TDD §05 (saved games never forfeit for being away)
 - [ ] Online: modifier draft over sockets (TDD P1-03)
   - [x] Draft rules and a two-player draft turn model live in game-core (server can enforce them)
-  - [ ] Server draft phase and socket events
+  - [x] Server draft phase and socket events (room:create {draft}, draft:pick, draft:finish)
   - [ ] Online draft screen
 - [x] Site: publish to GitHub Pages from Actions on every merge (`.github/workflows/pages.yml`)
 - [ ] Site: stop committing `game/dist` once the Actions deploy is confirmed live

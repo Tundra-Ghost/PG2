@@ -1,4 +1,5 @@
 import type { Color, GameState, PieceType, Square } from '../engine/types';
+import type { OnlineDraft } from '../draft/online';
 import type { WireGameState } from './wire';
 
 /**
@@ -17,6 +18,20 @@ export interface RoomSnapshot {
   drawOffer: Color | null;
   /** Account usernames per seat. Null for an empty seat or a guest. */
   names: Record<Color, string | null>;
+  /**
+   * The modifier draft (TDD P1-03) while it runs, or once it has finished.
+   * Null for a standard game. No moves are allowed until it is complete.
+   */
+  draft: OnlineDraft | null;
+}
+
+export interface CreateRoomRequest {
+  /** Both players draft modifiers before the first move. */
+  draft?: boolean;
+}
+
+export interface DraftPickRequest {
+  modifierId: string;
 }
 
 export type RoomAck =
@@ -81,7 +96,11 @@ export interface GameSummary {
 }
 
 export interface ClientToServerEvents {
-  'room:create': (ack: (res: RoomAck) => void) => void;
+  /** Older clients send only the ack. */
+  'room:create': (
+    reqOrAck: CreateRoomRequest | ((res: RoomAck) => void),
+    ack?: (res: RoomAck) => void,
+  ) => void;
   'room:join': (req: JoinRequest, ack: (res: RoomAck) => void) => void;
   /**
    * Summaries of the saved games these seats belong to. Unknown seats are skipped.
@@ -94,6 +113,9 @@ export interface ClientToServerEvents {
   'game:resign': (ack: (res: ActionAck) => void) => void;
   'game:draw_offer': (req: DrawOfferRequest, ack: (res: ActionAck) => void) => void;
   'chat:send': (req: { text: string }, ack: (res: ActionAck) => void) => void;
+  'draft:pick': (req: DraftPickRequest, ack: (res: ActionAck) => void) => void;
+  /** Stop picking. The draft ends once both sides are done. */
+  'draft:finish': (ack: (res: ActionAck) => void) => void;
 }
 
 export interface ServerToClientEvents {

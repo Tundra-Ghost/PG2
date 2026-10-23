@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { io as connect, type Socket } from 'socket.io-client';
 import {
   fromWire,
+  MODIFIER_IDS,
   type ActionAck,
   type ClientToServerEvents,
   type ChatMessage,
@@ -166,6 +167,63 @@ describe('game server', () => {
     expect(await move(white, { from: 'e2', to: 'e4' })).toEqual({ ok: true });
     expect((await seen).drawOffer).toBeNull();
     expect(await drawOffer(black, true)).toMatchObject({ ok: false });
+  });
+});
+
+describe('online modifier draft', () => {
+  const createDraft = (c: Client) => new Promise<RoomAck>(resolve => c.emit('room:create', { draft: true }, resolve));
+  const pick = (c: Client, modifierId: string) =>
+    new Promise<ActionAck>(resolve => c.emit('draft:pick', { modifierId }, resolve));
+  const finish = (c: Client) => new Promise<ActionAck>(resolve => c.emit('draft:finish', resolve));
+
+  async function startDraft() {
+    const white = client();
+    const black = client();
+    const created = await createDraft(white);
+    if (!created.ok) throw new Error(created.reason);
+    const joined = await join(black, created.roomId);
+    if (!joined.ok) throw new Error(joined.reason);
+    return { white, black };
+  }
+
+  it('standard rooms have no draft', async () => {
+    const { white } = await startGame();
+    const seen = await stateWhere(white, () => true);
+    expect(seen.draft).toBeNull();
+    expect(await pick(white, MODIFIER_IDS.gerald)).toEqual({ ok: false, reason: 'This game has no draft.' });
+  });
+
+  it('runs alternating picks, blocks moves until done, then starts the game with both drafts', async () => {
+    const { white, black } = await startDraft();
+    expect(await move(white, { from: 'e2', to: 'e4' })).toEqual({ ok: false, reason: 'Finish the modifier draft first.' });
+    expect(await pick(black, MODIFIER_IDS.berserker)).toEqual({ ok: false, reason: 'Not your pick.' });
+
+    let seen = stateWhere(black, s => s.draft?.picks.white.length === 1);
+    expect(await pick(white, MODIFIER_IDS.gerald)).toEqual({ ok: true });
+    expect((await seen).draft?.turn).toBe('black');
+
+    expect(await pick(black, MODIFIER_IDS.berserker)).toEqual({ ok: true });
+    expect(await finish(white)).toEqual({ ok: true });
+    seen = stateWhere(white, s => s.draft?.turn === null);
+    expect(await finish(black)).toEqual({ ok: true });
+
+    const started = await seen;
+    const state = fromWire(started.state);
+    expect(state.activeModifiers.map(mod => [mod.id, mod.sourceColor])).toEqual(
+      expect.arrayContaining([
+        [MODIFIER_IDS.gerald, 'white'],
+        [MODIFIER_IDS.berserker, 'black'],
+      ]),
+    );
+    expect(await pick(white, MODIFIER_IDS.berserker)).toEqual({ ok: false, reason: 'The draft is over.' });
+  });
+
+  it('refuses picks that break the draft rules', async () => {
+    const { white, black } = await startDraft();
+    expect(await pick(white, MODIFIER_IDS.floorIsLava)).toEqual({ ok: true });
+    const res = await pick(black, MODIFIER_IDS.floorIsLava);
+    expect(res.ok).toBe(false);
+    expect(await pick(black, 'MOD-NOPE')).toEqual({ ok: false, reason: 'Unknown modifier.' });
   });
 });
 
