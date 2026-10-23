@@ -462,6 +462,13 @@
   border: 1px solid var(--ui-gold);
 }
 
+.waitNote {
+  margin-left: auto;
+  font-size: 0.88rem;
+  color: rgb(var(--parchment-rgb) / 0.8);
+  text-align: center;
+}
+
 .secondaryBtn {
   color: var(--ui-gold);
   background: transparent;
