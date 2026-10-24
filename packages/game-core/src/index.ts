@@ -21,7 +21,7 @@ export {
   isPromotionMove,
   PROMOTION_TYPES,
 } from './engine/gameLoop';
-export { getChickBotMove } from './engine/bot';
+export { getChickBotMove, getPigeonBotMove } from './engine/bot';
 export { getAbilityOptions } from './engine/abilities';
 export type { AbilityOption } from './engine/abilities';
 export { drawByAgreement, getWinner, resign } from './engine/result';
