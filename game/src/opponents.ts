@@ -39,9 +39,9 @@ export const BOTS: OpponentProfile[] = [
     dialogueTheme: 'measured',
     name: 'Pigeon',
     tagline: 'Depth-3 · Positional Heuristics',
-    description: 'Knows when to strut and when to scatter. Reads the board two moves ahead.',
+    description: 'Knows when to strut and when to scatter. Reads three moves ahead and steps around lava.',
     difficulty: 2,
-    available: false,
+    available: true,
     reactionPersonaId: 'measured',
   },
   {

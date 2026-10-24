@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { GameState } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
-import { getChickBotMove } from '@pigeon-chess/game-core';
+import { getChickBotMove, getPigeonBotMove } from '@pigeon-chess/game-core';
 import { getBotReaction, getBotSpeaker } from './botChat';
 import type { BotId } from './opponents';
 import { unlockBgm, playClick, playGameBgm, playMenuBgm } from './sound';
@@ -147,7 +147,7 @@ export default function App() {
     if (gameState.turn !== 'black') return;
 
     const timer = setTimeout(() => {
-      const move = getChickBotMove(gameState, 'black');
+      const move = selectedBot === 'pigeon' ? getPigeonBotMove(gameState, 'black') : getChickBotMove(gameState, 'black');
       if (move) {
         setGameState(prev => (prev.status === 'active' ? chessEngine.applyMove(prev, move) : prev));
       } else if (chessEngine.canShooGerald(gameState)) {
