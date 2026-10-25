@@ -92,7 +92,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 
 - [ ] Add more bot tiers beyond `Chick`
   - [x] Pigeon (medium): 3-ply alpha-beta through the full rules, so it sees lava and abilities; 900ms time budget
-  - [ ] Pigeon: think in a Web Worker so slow phones never freeze, and show a thinking badge
+  - [x] Bots think in a Web Worker (board never freezes) and the banner shows "Thinking…"
   - [ ] Magnus (hard, TDD says Phase 2)
 - [x] Route New Run through bot select before draft and show bot-owned draft picks
 - [x] Scope drafted curses to the side that selected them while preserving true shared modifiers
