@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { GameState } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
-import { getChickBotMove, getPigeonBotMove } from '@pigeon-chess/game-core';
 import { getBotReaction, getBotSpeaker } from './botChat';
 import type { BotId } from './opponents';
 import { unlockBgm, playClick, playGameBgm, playMenuBgm } from './sound';
@@ -21,6 +20,7 @@ import {
 import { buildBotProfile } from './matchProfiles';
 import Board from './components/Board/Board';
 import BotSelect from './components/BotSelect/BotSelect';
+import { requestBotMove } from './bot/requestBotMove';
 import CollectionVault from './components/CollectionVault/CollectionVault';
 import DraftScreen from './components/DraftScreen/DraftScreen';
 import GameStatus from './components/GameStatus/GameStatus';
@@ -70,6 +70,8 @@ export default function App() {
   const [gameState, setGameState] = useState<GameState>(() => chessEngine.getInitialState());
   const [vsBot, setVsBot] = useState(false);
   const [selectedBot, setSelectedBot] = useState<BotId | null>(null);
+  /** The bot is working out its move. */
+  const [botThinking, setBotThinking] = useState(false);
   const [botSelectMode, setBotSelectMode] = useState<BotSelectMode>(null);
   const [activePlayerModifierIds, setActivePlayerModifierIds] = useState<string[]>([]);
   const [pendingBotModifierIds, setPendingBotModifierIds] = useState<string[]>([]);
@@ -146,17 +148,27 @@ export default function App() {
     if (gameState.status !== 'active') return;
     if (gameState.turn !== 'black') return;
 
+    let cancelled = false;
+    setBotThinking(true);
     const timer = setTimeout(() => {
-      const move = selectedBot === 'pigeon' ? getPigeonBotMove(gameState, 'black') : getChickBotMove(gameState, 'black');
-      if (move) {
-        setGameState(prev => (prev.status === 'active' ? chessEngine.applyMove(prev, move) : prev));
-      } else if (chessEngine.canShooGerald(gameState)) {
-        // Gerald pinned the only movable piece. The bot spends its turn shooing him.
-        setGameState(prev => (prev.status === 'active' ? chessEngine.shooGerald(prev) : prev));
-      }
+      void requestBotMove(selectedBot, gameState, 'black').then(move => {
+        // The match moved on (resign, menu, new game) while the bot was thinking.
+        if (cancelled) return;
+        setBotThinking(false);
+        if (move) {
+          setGameState(prev => (prev === gameState ? chessEngine.applyMove(prev, move) : prev));
+        } else if (chessEngine.canShooGerald(gameState)) {
+          // Gerald pinned the only movable piece. The bot spends its turn shooing him.
+          setGameState(prev => (prev === gameState ? chessEngine.shooGerald(prev) : prev));
+        }
+      });
     }, 350);
 
-    return () => clearTimeout(timer);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      setBotThinking(false);
+    };
   }, [vsBot, selectedBot, gameState]);
 
   useEffect(() => {
@@ -685,7 +697,7 @@ export default function App() {
               name={opponentName}
               metaLine={`${opponentTitle} - Lv ${opponentLevel} - ELO ${botProfile?.elo ?? 1200}`}
               subtitle={botProfile?.motto || opponentTagline}
-              badge={gameState.turn === 'black' ? 'To Move' : 'Standing By'}
+              badge={gameState.turn === 'black' ? (vsBot && botThinking ? 'Thinking…' : 'To Move') : 'Standing By'}
               portraitLabel={selectedBotProfile?.icon ?? selectedBotProfile?.name.slice(0, 1).toUpperCase() ?? 'O'}
               align="right"
               onClick={() => {
