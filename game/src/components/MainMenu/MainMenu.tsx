@@ -112,7 +112,7 @@ export default function MainMenu({
     {
       id: 'story',
       label: 'Play',
-      detail: 'Start a story run with bot select and modifier drafting.',
+      detail: 'Play a bot, with a modifier draft or standard chess.',
       status: 'live',
       tone: 'olive',
       size: 'standard',

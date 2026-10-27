@@ -626,8 +626,8 @@ export default function App() {
   if (baseScreen === 'botselect') {
     const botSelectSubtitle =
       botSelectMode === 'run'
-        ? 'New Run - Choose bot opponent before drafting modifiers'
-        : 'Quick Play - Standard chess - No modifiers';
+        ? 'Pick a bot, then draft modifiers'
+        : 'Pick a bot - standard chess, no modifiers';
 
     return (
       <div onClick={handleUnlock}>
@@ -635,6 +635,11 @@ export default function App() {
           onSelect={handleBotSelect}
           onBack={() => setScreen('menu')}
           subtitle={botSelectSubtitle}
+          mode={botSelectMode ?? 'run'}
+          onModeChange={mode => {
+            setBotSelectMode(mode);
+            setCurrentMatchMode(mode === 'run' ? 'story' : 'quick');
+          }}
         />
         {settingsOverlay}
       </div>
