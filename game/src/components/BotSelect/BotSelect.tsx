@@ -2,11 +2,21 @@ import { playClick } from '../../sound';
 import { BOTS, type BotId } from '../../opponents';
 import styles from './BotSelect.module.css';
 
+export type BotMatchMode = 'run' | 'quick';
+
 interface BotSelectProps {
   onSelect: (botId: BotId) => void;
   onBack: () => void;
   subtitle?: string;
+  /** With onModeChange, shows a Modifier draft / Standard chess switch. */
+  mode?: BotMatchMode;
+  onModeChange?: (mode: BotMatchMode) => void;
 }
+
+const MODES: { mode: BotMatchMode; label: string }[] = [
+  { mode: 'run', label: 'Modifier draft' },
+  { mode: 'quick', label: 'Standard chess' },
+];
 
 function DifficultyPips({ level, max = 3 }: { level: number; max?: number }) {
   return (
@@ -22,6 +32,8 @@ export default function BotSelect({
   onSelect,
   onBack,
   subtitle = 'Quick Play - Standard chess - No modifiers',
+  mode,
+  onModeChange,
 }: BotSelectProps) {
   return (
     <div className={styles.root}>
@@ -42,6 +54,25 @@ export default function BotSelect({
               <p className={styles.sub}>{subtitle}</p>
             </div>
           </header>
+
+          {mode && onModeChange && (
+            <div className={styles.modeRow} role="radiogroup" aria-label="Game type">
+              {MODES.map(option => (
+                <button
+                  key={option.mode}
+                  role="radio"
+                  aria-checked={mode === option.mode}
+                  className={`${styles.modeBtn} ${mode === option.mode ? styles.modeOn : ''}`}
+                  onClick={() => {
+                    playClick();
+                    onModeChange(option.mode);
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           <ul className={styles.list} role="list">
             {BOTS.map(bot => (
