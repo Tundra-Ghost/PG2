@@ -5,6 +5,11 @@ export const BUDGET = 8;
 export const MAX_COUNT = 5;
 export const MAX_PER_CATEGORY = 2;
 
+export interface DraftRuleOptions {
+  /** Practice sandbox (GDD VS Bots): no budget, count or category caps. */
+  unlimited?: boolean;
+}
+
 export function getSelectedCards(ids: string[]) {
   return ALL_MODIFIERS.filter(mod => ids.includes(mod.id));
 }
@@ -21,6 +26,7 @@ export function getValidOptions(
   ownIds: string[],
   otherIds: string[],
   implementedIds: Set<string>,
+  { unlimited = false }: DraftRuleOptions = {},
 ): ModifierCard[] {
   const ownCards = getSelectedCards(ownIds);
   const ownCounts = getCategoryCounts(ownCards);
@@ -30,6 +36,7 @@ export function getValidOptions(
     if (!implementedIds.has(card.id)) return false;
     if (ownIds.includes(card.id)) return false;
     if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return false;
+    if (unlimited) return true;
     if (ownCards.length >= MAX_COUNT) return false;
     if (totalCost + card.cost > BUDGET) return false;
     if ((ownCounts[card.category] ?? 0) >= MAX_PER_CATEGORY) return false;
@@ -74,12 +81,14 @@ export function pickBlocker(
   otherIds: string[],
   implementedIds: Set<string>,
   otherName = 'Your opponent',
+  { unlimited = false }: DraftRuleOptions = {},
 ): string | null {
   const ownCards = getSelectedCards(ownIds);
   const ownCost = ownCards.reduce((sum, c) => sum + c.cost, 0);
   if (!implementedIds.has(card.id)) return 'Not in this build yet.';
   if (ownIds.includes(card.id)) return 'Already in your draft.';
   if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return `${otherName} already claimed this shared modifier.`;
+  if (unlimited) return null;
   if (ownCards.length >= MAX_COUNT) return `Your draft is full (${MAX_COUNT} modifiers).`;
   if (ownCost + card.cost > BUDGET) return `Over budget: ${BUDGET - ownCost} pts left.`;
   if ((getCategoryCounts(ownCards)[card.category] ?? 0) >= MAX_PER_CATEGORY) {
