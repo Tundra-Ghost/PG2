@@ -2,7 +2,7 @@ import { playClick } from '../../sound';
 import { BOTS, type BotId } from '../../opponents';
 import styles from './BotSelect.module.css';
 
-export type BotMatchMode = 'run' | 'quick';
+export type BotMatchMode = 'run' | 'quick' | 'practice';
 
 interface BotSelectProps {
   onSelect: (botId: BotId) => void;
@@ -16,6 +16,7 @@ interface BotSelectProps {
 const MODES: { mode: BotMatchMode; label: string }[] = [
   { mode: 'run', label: 'Modifier draft' },
   { mode: 'quick', label: 'Standard chess' },
+  { mode: 'practice', label: 'Practice' },
 ];
 
 function DifficultyPips({ level, max = 3 }: { level: number; max?: number }) {

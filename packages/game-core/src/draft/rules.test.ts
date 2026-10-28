@@ -59,3 +59,19 @@ describe('pickBlocker', () => {
     if (unbuilt) expect(pickBlocker(unbuilt, [], [], implemented)).toBe('Not in this build yet.');
   });
 });
+
+describe('unlimited practice drafts', () => {
+  it('lifts the budget, count and category caps but keeps shared cards exclusive', () => {
+    const all = ALL_MODIFIERS.filter(c => implemented.has(c.id) && !isSharedDraftModifier(c.id)).map(c => c.id);
+    expect(all.length).toBeGreaterThan(MAX_COUNT);
+    expect(getValidOptions(all.slice(0, -1), [], implemented)).toEqual([]);
+    const left = getValidOptions(all.slice(0, -1), [], implemented, { unlimited: true }).map(c => c.id);
+    expect(left).toContain(all[all.length - 1]);
+    expect(left.every(id => id === all[all.length - 1] || isSharedDraftModifier(id))).toBe(true);
+
+    const shared = ALL_MODIFIERS.find(c => implemented.has(c.id) && isSharedDraftModifier(c.id))!;
+    expect(pickBlocker(shared, [], [shared.id], implemented, 'Bot', { unlimited: true })).toBe(
+      'Bot already claimed this shared modifier.',
+    );
+  });
+});

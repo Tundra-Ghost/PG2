@@ -55,7 +55,7 @@ type Screen =
   | 'collection'
   | 'online'
   | 'friends';
-type BotSelectMode = 'run' | 'quick' | null;
+type BotSelectMode = 'run' | 'quick' | 'practice' | null;
 
 interface ProfileViewerState {
   profile: LocalProfile;
@@ -367,7 +367,7 @@ export default function App() {
     setSelectedBot(botId);
     setVsBot(true);
 
-    if (botSelectMode === 'run') {
+    if (botSelectMode === 'run' || botSelectMode === 'practice') {
       setPendingBotModifierIds([]);
       setScreen('draft');
       return;
@@ -394,7 +394,7 @@ export default function App() {
     state = chessEngine.beginTurn(state);
     setPendingBotModifierIds(opponentModifierIds);
     setActivePlayerModifierIds(playerModifierIds);
-    setCurrentMatchMode('story');
+    setCurrentMatchMode(botSelectMode === 'practice' ? 'quick' : 'story');
     setCurrentMatchStartedAt(new Date().toISOString());
     setChatEntries([]);
     setDialogueQueue([]);
@@ -625,9 +625,11 @@ export default function App() {
 
   if (baseScreen === 'botselect') {
     const botSelectSubtitle =
-      botSelectMode === 'run'
-        ? 'Pick a bot, then draft modifiers'
-        : 'Pick a bot - standard chess, no modifiers';
+      botSelectMode === 'practice'
+        ? 'Pick a bot, then set up any modifiers for both sides'
+        : botSelectMode === 'quick'
+          ? 'Pick a bot - standard chess, no modifiers'
+          : 'Pick a bot, then draft modifiers';
 
     return (
       <div onClick={handleUnlock}>
@@ -654,6 +656,7 @@ export default function App() {
           onBack={() => setScreen('botselect')}
           opponentName={opponentName}
           opponentModifierIds={pendingBotModifierIds}
+          practice={botSelectMode === 'practice'}
         />
         {settingsOverlay}
       </div>

@@ -51,6 +51,7 @@ export {
   pickBlocker,
   pickRandomCard,
   runRandomDraft,
+  type DraftRuleOptions,
 } from './draft/rules';
 export { createOnlineDraft, draftFinish, draftPick, isDraftComplete } from './draft/online';
 export type { DraftResult, OnlineDraft } from './draft/online';

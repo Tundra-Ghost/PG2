@@ -43,6 +43,8 @@ interface DraftScreenProps {
   opponentName?: string;
   opponentModifierIds?: string[];
   online?: OnlineDraftControls;
+  /** VS Bots practice (GDD): no limits, and you pick for both sides. */
+  practice?: boolean;
 }
 
 type CategoryFilter = 'ALL' | ModifierCategory;
@@ -81,6 +83,7 @@ export default function DraftScreen({
   opponentName = 'Opponent',
   opponentModifierIds = [],
   online,
+  practice = false,
 }: DraftScreenProps) {
   const [localPlayerIds, setPlayerSelectedIds] = useState<string[]>([]);
   const [localBotIds, setBotSelectedIds] = useState<string[]>(opponentModifierIds);
@@ -90,7 +93,17 @@ export default function DraftScreen({
   const [localTurn, setDraftTurn] = useState<DraftTurn>('player');
   const playerSelectedIds = online ? online.myPicks : localPlayerIds;
   const botSelectedIds = online ? online.theirPicks : localBotIds;
-  const draftTurn = online ? online.turn : localTurn;
+  const draftTurn = online ? online.turn : practice ? 'player' : localTurn;
+  /** Practice only: whose draft a pick goes into. */
+  const [practiceSide, setPracticeSide] = useState<'player' | 'opponent'>('player');
+  const forBot = practice && practiceSide === 'opponent';
+  const sideIds = forBot ? botSelectedIds : playerSelectedIds;
+  const otherSideIds = forBot ? playerSelectedIds : botSelectedIds;
+  const ruleOptions = { unlimited: practice };
+
+  /** Why this side can't take this card, ignoring whose turn it is. */
+  const blockerFor = (card: ModifierCard) =>
+    pickBlocker(card, sideIds, otherSideIds, implementedIds, forBot ? 'You' : opponentName, ruleOptions);
   /** Set by the random draft. The picks cannot be changed afterwards. */
   const [randomLocked, setRandomLocked] = useState(false);
   const implementedIds = useMemo(() => new Set(modifierRegistry.getAll().map(mod => mod.id)), []);
@@ -115,7 +128,7 @@ export default function DraftScreen({
   const draftFinished = draftTurn === 'done';
 
   useEffect(() => {
-    if (online || draftTurn !== 'opponent') return;
+    if (online || practice || draftTurn !== 'opponent') return;
 
     const timer = setTimeout(() => {
       const botPick = pickRandomCard(botValidOptions);
@@ -135,10 +148,10 @@ export default function DraftScreen({
     }, 450);
 
     return () => clearTimeout(timer);
-  }, [online, draftTurn, botValidOptions, botSelectedIds, implementedIds, playerSelectedIds]);
+  }, [online, practice, draftTurn, botValidOptions, botSelectedIds, implementedIds, playerSelectedIds]);
 
   useEffect(() => {
-    if (online || draftTurn !== 'player') return;
+    if (online || practice || draftTurn !== 'player') return;
     if (playerValidOptions.length > 0) return;
 
     if (botValidOptions.length > 0) {
@@ -146,7 +159,7 @@ export default function DraftScreen({
     } else {
       setDraftTurn('done');
     }
-  }, [online, draftTurn, playerValidOptions, botValidOptions]);
+  }, [online, practice, draftTurn, playerValidOptions, botValidOptions]);
 
   const filtered = useMemo(() => {
     let list = ALL_MODIFIERS;
@@ -172,6 +185,7 @@ export default function DraftScreen({
 
   function isCardSelectable(card: ModifierCard): boolean {
     if (draftTurn !== 'player') return false;
+    if (practice) return blockerFor(card) === null;
     return playerValidOptions.some(option => option.id === card.id);
   }
 
@@ -179,6 +193,11 @@ export default function DraftScreen({
     if (!isCardSelectable(card)) return;
     if (online) {
       online.onPick(card.id);
+      return;
+    }
+    if (practice) {
+      if (forBot) setBotSelectedIds(ids => [...ids, card.id]);
+      else setPlayerSelectedIds(ids => [...ids, card.id]);
       return;
     }
 
@@ -214,7 +233,9 @@ export default function DraftScreen({
   const [detailId, setDetailId] = useState<string | null>(null);
   const [summaryOpen, setSummaryOpen] = useState(false);
   const detailCard = detailId ? ALL_MODIFIERS.find(card => card.id === detailId) ?? null : null;
-  const turnLabel = draftTurn === 'player' ? 'Your pick' : draftTurn === 'opponent' ? `${opponentName} is picking…` : 'Draft complete';
+  const turnLabel = practice
+    ? 'Practice · no limits'
+    : draftTurn === 'player' ? 'Your pick' : draftTurn === 'opponent' ? `${opponentName} is picking…` : 'Draft complete';
 
   function pickFromDetail(card: ModifierCard) {
     playClick();
@@ -222,9 +243,12 @@ export default function DraftScreen({
     setDetailId(null);
   }
 
-  /** Why the player can't take this card, ignoring whose turn it is. */
-  const blockerFor = (card: ModifierCard) =>
-    pickBlocker(card, playerSelectedIds, botSelectedIds, implementedIds, opponentName);
+  function removeFromPractice(card: ModifierCard) {
+    playClick();
+    if (forBot) setBotSelectedIds(ids => ids.filter(id => id !== card.id));
+    else setPlayerSelectedIds(ids => ids.filter(id => id !== card.id));
+    setDetailId(null);
+  }
 
   const actions = online ? (
     online.iAmDone ? (
@@ -238,6 +262,10 @@ export default function DraftScreen({
         Done picking
       </button>
     )
+  ) : practice ? (
+    <button className={styles.primaryBtn} onClick={handleFinishDraft}>
+      Start match
+    </button>
   ) : (
     <>
       {!draftFinished && playerSelectedIds.length === 0 && (
@@ -258,11 +286,18 @@ export default function DraftScreen({
 
   const summary = (
     <>
-      <DraftList title="Your draft" cards={playerSelected} max={MAX_COUNT} empty="Nothing yet. Tap a modifier to read it, then draft it." />
-      <DraftList title={`${opponentName}'s draft`} cards={botSelected} max={MAX_COUNT} empty={`${opponentName} has not picked yet.`} />
+      <DraftList title="Your draft" cards={playerSelected} max={practice ? undefined : MAX_COUNT} empty="Nothing yet. Tap a modifier to read it, then draft it." />
+      <DraftList
+        title={`${opponentName}'s draft`}
+        cards={botSelected}
+        max={practice ? undefined : MAX_COUNT}
+        empty={practice ? `Switch to ${opponentName} above to give it modifiers.` : `${opponentName} has not picked yet.`}
+      />
       <p className={styles.rules}>
-        {MAX_COUNT} modifiers max · {MAX_PER_CATEGORY} per category · {BUDGET} pt budget. Shared effects can only be
-        claimed once; owned effects can be drafted by both sides.
+        {practice
+          ? 'Practice: no budget, count or category limits. Shared effects can still only be claimed once.'
+          : `${MAX_COUNT} modifiers max · ${MAX_PER_CATEGORY} per category · ${BUDGET} pt budget. Shared effects can only be
+        claimed once; owned effects can be drafted by both sides.`}
       </p>
     </>
   );
@@ -289,6 +324,24 @@ export default function DraftScreen({
           </div>
         </div>
 
+        {practice ? (
+          <div className={styles.chips} role="radiogroup" aria-label="Drafting for">
+            {(['player', 'opponent'] as const).map(side => (
+              <button
+                key={side}
+                role="radio"
+                aria-checked={practiceSide === side}
+                className={`${styles.chip} ${practiceSide === side ? styles.chipOn : ''}`}
+                onClick={() => {
+                  playClick();
+                  setPracticeSide(side);
+                }}
+              >
+                Drafting for {side === 'player' ? 'you' : opponentName}
+              </button>
+            ))}
+          </div>
+        ) : (
         <div className={styles.meters}>
           <div className={styles.meter}>
             <div className={styles.meterLabel}>
@@ -312,6 +365,7 @@ export default function DraftScreen({
             })}
           </div>
         </div>
+        )}
 
         <div className={styles.toolbar}>
           <input
@@ -358,7 +412,7 @@ export default function DraftScreen({
           {filtered.map(card => {
             const mine = playerSelectedIds.includes(card.id);
             const theirs = botSelectedIds.includes(card.id);
-            const blocked = !mine && blockerFor(card) !== null;
+            const blocked = !sideIds.includes(card.id) && blockerFor(card) !== null;
             const tag = mine
               ? 'Your pick'
               : theirs
@@ -392,7 +446,9 @@ export default function DraftScreen({
           {summary}
           <div className={styles.viktor}>
             <p className={styles.viktorText}>
-              {draftFinished
+              {practice
+                ? '"Practice. Hand out whatever you like. Viktor will pretend this is science."'
+                : draftFinished
                 ? '"The draft is settled. Viktor has stopped pretending there was a clean answer."'
                 : online
                   ? '"White picks first, then you take turns. Tap Done picking when you have enough."'
@@ -409,7 +465,7 @@ export default function DraftScreen({
       {/* Phones: summary and actions live in a bar pinned to the bottom. */}
       <footer className={styles.actionBar}>
         <button className={styles.picksBtn} onClick={() => setSummaryOpen(true)}>
-          <strong>{playerSelected.length}/{MAX_COUNT}</strong> picks
+          <strong>{practice ? playerSelected.length + botSelected.length : `${playerSelected.length}/${MAX_COUNT}`}</strong> picks
         </button>
         {actions}
       </footer>
@@ -454,12 +510,16 @@ export default function DraftScreen({
             )}
 
             {(() => {
-              const mine = playerSelectedIds.includes(detailCard.id);
+              const mine = sideIds.includes(detailCard.id);
               const reason = mine ? null : blockerFor(detailCard);
               const waiting = !mine && !reason && draftTurn !== 'player';
               return (
                 <div className={styles.detailActions}>
-                  {mine ? (
+                  {mine && practice ? (
+                    <button className={styles.secondaryBtn} onClick={() => removeFromPractice(detailCard)}>
+                      Remove from {forBot ? `${opponentName}'s` : 'your'} draft
+                    </button>
+                  ) : mine ? (
                     <p className={styles.detailState}>In your draft.</p>
                   ) : reason ? (
                     <p className={styles.detailState}>{reason}</p>
@@ -467,7 +527,7 @@ export default function DraftScreen({
                     <p className={styles.detailState}>{draftFinished ? 'The draft is over.' : `Wait for ${opponentName} to pick.`}</p>
                   ) : (
                     <button className={styles.primaryBtn} onClick={() => pickFromDetail(detailCard)}>
-                      Draft this modifier
+                      {forBot ? `Give to ${opponentName}` : 'Draft this modifier'}
                     </button>
                   )}
                   <button className={styles.secondaryBtn} onClick={() => setDetailId(null)}>Close</button>
@@ -481,12 +541,12 @@ export default function DraftScreen({
   );
 }
 
-function DraftList({ title, cards, max, empty }: { title: string; cards: ModifierCard[]; max: number; empty: string }) {
+function DraftList({ title, cards, max, empty }: { title: string; cards: ModifierCard[]; max?: number; empty: string }) {
   return (
     <section className={styles.draftList}>
       <h3 className={styles.listTitle}>
         <span>{title}</span>
-        <span>{cards.length} / {max}</span>
+        <span>{max === undefined ? cards.length : `${cards.length} / ${max}`}</span>
       </h3>
       {cards.length === 0 ? (
         <p className={styles.listEmpty}>{empty}</p>

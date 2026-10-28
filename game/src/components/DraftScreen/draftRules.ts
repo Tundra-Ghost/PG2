@@ -8,4 +8,5 @@ export {
   pickBlocker,
   pickRandomCard,
   runRandomDraft,
+  type DraftRuleOptions,
 } from '@pigeon-chess/game-core';

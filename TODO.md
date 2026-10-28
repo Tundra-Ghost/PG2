@@ -104,7 +104,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Classify prototype modifiers by draft scope so owned effects can be drafted by both sides
 - [ ] Build `VS Bots` as a complete menu-to-match flow
   - [x] Play > Choose Opponent offers Modifier draft or Standard chess (standard was unreachable from the menu)
-  - [ ] GDD sandbox: unlimited free pick for VS Bots practice
+  - [x] Practice mode (GDD sandbox): no draft limits, you pick for both sides, picks can be removed
 - [x] Expose a read-only Modifier Vault sourced from the modifier bible/data set
 - [ ] Track run state if Story Mode is meant to be more than a one-match draft
 
