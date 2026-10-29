@@ -87,6 +87,8 @@ export interface GameEvent {
   modifierId: ModifierID;
   title: string;
   message: string;
+  /** Board squares the event happened on, so the board can animate them. */
+  squares?: Square[];
 }
 
 export interface MoveRecord {

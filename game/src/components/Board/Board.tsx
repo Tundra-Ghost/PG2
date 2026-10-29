@@ -14,7 +14,7 @@ import {
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import { playCapture, playCastle, playMove } from '../../sound';
 import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
-import SquareComponent from '../Square/Square';
+import SquareComponent, { type SquareBurst } from '../Square/Square';
 import PromotionModal from '../PromotionModal/PromotionModal';
 import styles from './Board.module.css';
 
@@ -107,6 +107,17 @@ export default function Board({
     const timer = window.setTimeout(() => setPieceMovedFlash(false), 1400);
     return () => window.clearTimeout(timer);
   }, [plies, pieceMovedNow]);
+
+  // GDD UI: flash the squares where a modifier just struck (lava burns).
+  const bursts = useMemo(() => {
+    const map = new Map<Square, SquareBurst>();
+    for (const event of state.eventHistory) {
+      if (event.ply !== plies || !event.squares) continue;
+      const kind = event.modifierId === MODIFIER_IDS.floorIsLava ? 'lava' : 'event';
+      for (const sq of event.squares) map.set(sq, { key: event.id, kind });
+    }
+    return map;
+  }, [state.eventHistory, plies]);
 
   const quietZones = useMemo(() => getQuietZoneSquares(state), [state]);
   const noFlySquares = useMemo(() => getNoFlySquares(state), [state]);
@@ -365,6 +376,7 @@ export default function Board({
                     isShaft={shaft}
                     quietZone={quietZone}
                     noFlyZone={noFly}
+                    burst={bursts.get(square)}
                     onClick={handleSquareClick}
                   />
                 );

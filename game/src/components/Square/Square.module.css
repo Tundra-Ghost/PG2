@@ -171,3 +171,34 @@
     font-size: 0.58rem;
   }
 }
+
+/* GDD UI: a one-off flash where a modifier just struck. */
+.burst {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  border-radius: 2px;
+  animation: burstFade 1.1s ease-out forwards;
+}
+
+.burstLava {
+  background: radial-gradient(circle, rgb(255 214 120 / 0.95) 0%, rgb(240 96 24 / 0.85) 38%, rgb(150 30 10 / 0) 72%);
+}
+
+.burstEvent {
+  box-shadow: inset 0 0 0 3px var(--ui-gold);
+}
+
+@keyframes burstFade {
+  0% { opacity: 0; transform: scale(0.4); }
+  18% { opacity: 1; transform: scale(1.15); }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .burst {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}

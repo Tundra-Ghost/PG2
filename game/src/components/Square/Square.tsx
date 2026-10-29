@@ -4,6 +4,13 @@ import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import PieceComponent from '../Piece/Piece';
 import styles from './Square.module.css';
 
+/** A one-off flash on a square where a modifier just struck. */
+export interface SquareBurst {
+  /** Changes for each new event, so the animation replays. */
+  key: string;
+  kind: 'lava' | 'event';
+}
+
 interface SquareProps {
   square: SquareType;
   isLight: boolean;
@@ -20,6 +27,7 @@ interface SquareProps {
   quietZone?: 'white' | 'black';
   /** MOD-C001: the side whose king closed this square's line, if any. */
   noFlyZone?: 'white' | 'black';
+  burst?: SquareBurst;
   onClick: (square: SquareType) => void;
 }
 
@@ -110,6 +118,7 @@ export default function Square({
   isShaft,
   quietZone,
   noFlyZone,
+  burst,
   onClick,
 }: SquareProps) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -210,6 +219,14 @@ export default function Square({
         <div className={styles.pieceLayer}>
           <PieceComponent piece={piece} />
         </div>
+      )}
+
+      {burst && (
+        <div
+          key={burst.key}
+          className={`${styles.burst} ${burst.kind === 'lava' ? styles.burstLava : styles.burstEvent}`}
+          aria-hidden="true"
+        />
       )}
 
       {isLegalTarget && (
