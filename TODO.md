@@ -52,7 +52,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Document the implemented hook model in code-facing terms
 - [x] Add tests for the 5 currently registered modifiers
 - [x] Verify the existing 5 modifiers match their modifier-bible intent
-- [ ] Separate shipped modifiers from design-only modifiers in the UI/data layer
+- [x] Separate shipped modifiers from design-only modifiers in the UI/data layer (Vault Playable/Design filter; draft hides unbuilt cards)
 - [x] Add a draft filter to hide unavailable modifiers during modifier testing
 - [ ] Track implementation status per shipped modifier: engine logic, board visuals, interaction feedback, tests
 - [ ] Build an implementation checklist for the remaining 35 modifiers by category
@@ -113,6 +113,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] UX: board legend explains the marker badges of active modifiers; Winter zone is a light tint, frozen pieces show ❄
 - [ ] GDD UI: replace temporary letter badges with authored icon badges for Gerald, lava, freeze, pacifist, and berserker states
 - [ ] GDD UI: animate modifier triggers on board and pieces: lava burn, Gerald fly-off, freeze thaw, berserker chain, pacifist refusal
+  - [x] Lava burn: events carry `squares`, the board flashes them (other modifiers can add squares to get a gold flash)
 - [x] GDD UI: add short event banners for autonomous or curse-driven actions so modifier outcomes never feel silent
 - [x] GDD UI: route modifier-trigger messages into the in-game history feed
 - [x] GDD UI: separate match log from modifier browsing so the board surface reads more clearly

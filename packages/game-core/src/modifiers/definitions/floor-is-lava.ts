@@ -83,11 +83,13 @@ export const floorIsLavaDef: ModifierDefinition = {
     // Capture any non-king piece standing on a lava square after the move
     const next = cloneState(state);
     const lavaVictims: string[] = [];
+    const burned: Square[] = [];
     for (const [sq, tile] of next.tiles) {
       if (!tile.effects.some(e => e.type === 'lava')) continue;
       const piece = next.pieces.get(sq);
       if (piece && piece.type !== 'king') {
         lavaVictims.push(`${piece.color} ${piece.type} on ${sq}`);
+        burned.push(sq);
         next.pieces.delete(sq);
       }
     }
@@ -98,6 +100,7 @@ export const floorIsLavaDef: ModifierDefinition = {
       type: 'modifier',
       modifierId: ID,
       title: 'Lava',
+      squares: burned,
       message:
         lavaVictims.length === 1
           ? `${lavaVictims[0]} burns in lava.`
