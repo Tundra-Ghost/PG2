@@ -48,6 +48,7 @@ function assignReplacementBerserker(state: GameState, color: Piece['color']): Ga
     type: 'modifier',
     modifierId: ID,
     title: 'Berserker',
+    squares: [successor.square],
     message: `${color} berserker title passes to ${successor.type} on ${successor.square}.`,
   });
 }
@@ -153,6 +154,7 @@ export const berserkerDef: ModifierDefinition = {
       type: 'modifier',
       modifierId: ID,
       title: 'Berserker',
+      squares: [move.to, chainTo],
       message: chainedTarget
         ? `${berserkerNow.color} berserker chained from ${move.to} to ${chainTo}, capturing ${chainedTarget.color} ${chainedTarget.type}.`
         : `${berserkerNow.color} berserker chained from ${move.to} to ${chainTo}.`,

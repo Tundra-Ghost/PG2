@@ -114,6 +114,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] GDD UI: replace temporary letter badges with authored icon badges for Gerald, lava, freeze, pacifist, and berserker states
 - [ ] GDD UI: animate modifier triggers on board and pieces: lava burn, Gerald fly-off, freeze thaw, berserker chain, pacifist refusal
   - [x] Lava burn: events carry `squares`, the board flashes them (other modifiers can add squares to get a gold flash)
+  - [x] Berserker chain: both squares flash red; the square that inherits the title flashes too
 - [x] GDD UI: add short event banners for autonomous or curse-driven actions so modifier outcomes never feel silent
 - [x] GDD UI: route modifier-trigger messages into the in-game history feed
 - [x] GDD UI: separate match log from modifier browsing so the board surface reads more clearly

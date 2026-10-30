@@ -22,6 +22,10 @@ const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
 const GERALD_ID = MODIFIER_IDS.gerald;
 const WINTER_ID = MODIFIER_IDS.winterIsComing;
+const BURST_KINDS: Partial<Record<string, SquareBurst['kind']>> = {
+  [MODIFIER_IDS.floorIsLava]: 'lava',
+  [MODIFIER_IDS.berserker]: 'berserker',
+};
 
 interface BoardProps {
   state: GameState;
@@ -108,12 +112,12 @@ export default function Board({
     return () => window.clearTimeout(timer);
   }, [plies, pieceMovedNow]);
 
-  // GDD UI: flash the squares where a modifier just struck (lava burns).
+  // GDD UI: flash the squares where a modifier just struck (lava burns, berserker chains).
   const bursts = useMemo(() => {
     const map = new Map<Square, SquareBurst>();
     for (const event of state.eventHistory) {
       if (event.ply !== plies || !event.squares) continue;
-      const kind = event.modifierId === MODIFIER_IDS.floorIsLava ? 'lava' : 'event';
+      const kind = BURST_KINDS[event.modifierId] ?? 'event';
       for (const sq of event.squares) map.set(sq, { key: event.id, kind });
     }
     return map;
