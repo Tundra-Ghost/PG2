@@ -186,6 +186,11 @@
   background: radial-gradient(circle, rgb(255 214 120 / 0.95) 0%, rgb(240 96 24 / 0.85) 38%, rgb(150 30 10 / 0) 72%);
 }
 
+.burstBerserker {
+  background: radial-gradient(circle, rgb(255 120 120 / 0.55) 0%, rgb(200 20 30 / 0.45) 45%, rgb(120 0 10 / 0) 75%);
+  box-shadow: inset 0 0 0 3px rgb(210 30 40 / 0.9);
+}
+
 .burstEvent {
   box-shadow: inset 0 0 0 3px var(--ui-gold);
 }

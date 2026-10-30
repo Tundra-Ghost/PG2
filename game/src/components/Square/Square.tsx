@@ -8,8 +8,14 @@ import styles from './Square.module.css';
 export interface SquareBurst {
   /** Changes for each new event, so the animation replays. */
   key: string;
-  kind: 'lava' | 'event';
+  kind: 'lava' | 'berserker' | 'event';
 }
+
+const BURST_CLASS: Record<SquareBurst['kind'], string | undefined> = {
+  lava: styles.burstLava,
+  berserker: styles.burstBerserker,
+  event: styles.burstEvent,
+};
 
 interface SquareProps {
   square: SquareType;
@@ -224,7 +230,7 @@ export default function Square({
       {burst && (
         <div
           key={burst.key}
-          className={`${styles.burst} ${burst.kind === 'lava' ? styles.burstLava : styles.burstEvent}`}
+          className={`${styles.burst} ${BURST_CLASS[burst.kind]}`}
           aria-hidden="true"
         />
       )}
