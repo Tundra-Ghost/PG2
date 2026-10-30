@@ -10,8 +10,8 @@ export const geraldDef: ModifierDefinition = {
   id: ID,
   name: 'Distracted Piece',
   category: 'B',
-  pointCost: -1,
-  curseRating: 1,
+  pointCost: -2,
+  curseRating: 2,
   activeFor: 'both',
   draftScope: 'owned',
 

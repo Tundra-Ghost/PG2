@@ -141,6 +141,17 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Main menu cards no longer overlap on desktop
 - [x] Draft detail explains tier (S match-changing, A strong, B light) and curse level in words
 
+## Doc Follow-ups (from the 2026-10-30 doc review)
+
+- [ ] Art guide 2.4: storm in slate, Tier C badge in grey, cost shown with +/- icon instead of gold/green
+- [ ] Art guide 7.3: authored icons for piece status badges (replace G, O, B, ! letters)
+- [ ] Art guide 14: wire the made modifier sounds (lava, Gerald, freeze, cannon, storm, vent, traitor, gong)
+- [ ] Art guide 9/13: reduced-motion setting and screen reader labels for event banners
+- [ ] Bible D006: only offer Cat Mode once a fog card is drafted (when fog ships)
+- [ ] TDD 4: move bot tie-breaks and runRandomDraft to the seeded PRNG
+- [ ] Bible balance test plan: bot-vs-bot win-rate harness per modifier
+- [ ] Lava: amber preview of the next spots (Bible A002)
+
 ## Priority 5: Product Hygiene
 
 - [ ] Keep `README.md` aligned with the actual repo state

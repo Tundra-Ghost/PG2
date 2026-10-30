@@ -92,7 +92,7 @@ export const berserkerDef: ModifierDefinition = {
   id: ID,
   name: 'BOY. (The Berserker)',
   category: 'E',
-  pointCost: 3,
+  pointCost: 4,
   curseRating: 0,
   activeFor: 'both',
   draftScope: 'owned',

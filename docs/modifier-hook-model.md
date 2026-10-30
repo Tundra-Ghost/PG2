@@ -4,8 +4,8 @@ This document translates the current prototype implementation into code-facing t
 
 Primary references:
 
-- `docs/pigeon-chess-tdd.html`
-- `docs/pigeon-chess-modifier-bible-v02.html`
+- `docs/tdd.md`
+- `docs/modifier-bible.md`
 - `packages/game-core/src/modifiers/types.ts`
 - `packages/game-core/src/engine/gameLoop.ts`
 - `packages/game-core/src/engine/moveValidator.ts`

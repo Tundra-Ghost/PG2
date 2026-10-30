@@ -8,10 +8,10 @@ This file summarizes what is actually implemented in the repository today and wh
 
 Primary product references:
 
-- `docs/pigeon-chess-gdd.html`
-- `docs/pigeon-chess-tdd.html`
-- `docs/pigeon-chess-art-direction.html`
-- `docs/pigeon-chess-modifier-bible-v02.html`
+- `docs/gdd.md`
+- `docs/tdd.md`
+- `docs/art-direction.md`
+- `docs/modifier-bible.md`
 - `docs/modifier-hook-model.md`
 
 ## Top-Level Structure

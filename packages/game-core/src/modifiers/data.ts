@@ -273,14 +273,14 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     category: 'B',
     categoryName: 'Cursed',
     typeLine: 'Curse · UI Disruption · Commentary',
-    cost: -1,
-    curseLevel: 1,
+    cost: 0,
+    curseLevel: 0,
     tier: 'B',
     description:
       'After every move you make, pigeon critic Reginald Beak appears with a 200ms review of your decision. Reginald has no gameplay effect. He has many opinions.',
     flavor: '"Reginald gave Viktor\'s en passant a 3/10. Viktor has given Reginald a 0/10. Reginald was unaffected."',
     prototypeRules:
-      'Reginald reviews every move the owner makes in the match feed. About 30 review lines so far. No gameplay effect.',
+      'Reginald reviews every move the owner makes in the match feed. About 30 review lines so far. No gameplay effect, so the card is free and adds no curse. It still uses a draft slot.',
   },
 
   // ── CATEGORY C — ACTIVE ABILITIES ──────────────────────────────────────────

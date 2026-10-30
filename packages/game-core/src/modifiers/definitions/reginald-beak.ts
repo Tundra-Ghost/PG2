@@ -63,8 +63,8 @@ export const reginaldBeakDef: ModifierDefinition = {
   id: ID,
   name: '7/10 — Too Many Pieces',
   category: 'B',
-  pointCost: -1,
-  curseRating: 1,
+  pointCost: 0,
+  curseRating: 0,
   activeFor: 'both',
   draftScope: 'owned',
 

@@ -24,4 +24,15 @@ describe('modifier card data', () => {
 
     expect(mismatched).toEqual([]);
   });
+
+  it('keeps definition cost and curse equal to the draft card', () => {
+    // The draft reads the card; the definition copy must not drift from it.
+    const mismatched = modifierRegistry
+      .getAll()
+      .map(def => ({ id: def.id, def: [def.pointCost, def.curseRating], card: ALL_MODIFIERS.find(card => card.id === def.id) }))
+      .filter(({ def, card }) => def[0] !== card?.cost || def[1] !== card?.curseLevel)
+      .map(({ id }) => id);
+
+    expect(mismatched).toEqual([]);
+  });
 });
