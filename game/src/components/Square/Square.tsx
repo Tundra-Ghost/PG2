@@ -8,12 +8,13 @@ import styles from './Square.module.css';
 export interface SquareBurst {
   /** Changes for each new event, so the animation replays. */
   key: string;
-  kind: 'lava' | 'berserker' | 'event';
+  kind: 'lava' | 'berserker' | 'storm' | 'event';
 }
 
 const BURST_CLASS: Record<SquareBurst['kind'], string | undefined> = {
   lava: styles.burstLava,
   berserker: styles.burstBerserker,
+  storm: styles.burstStorm,
   event: styles.burstEvent,
 };
 
@@ -29,6 +30,8 @@ interface SquareProps {
   isFrozenZone: boolean;
   isSwamp: boolean;
   isShaft: boolean;
+  /** MOD-A005: storm coming next wave, or already consumed. */
+  storm?: 'warning' | 'active';
   /** MOD-C005: the side whose queen guards this square, if any. */
   quietZone?: 'white' | 'black';
   /** MOD-C001: the side whose king closed this square's line, if any. */
@@ -82,6 +85,7 @@ function getTileTooltipLines(
   isFrozenZone: boolean,
   isSwamp: boolean,
   isShaft: boolean,
+  storm: 'warning' | 'active' | undefined,
   quietZone: 'white' | 'black' | undefined,
   noFlyZone: 'white' | 'black' | undefined,
 ): string[] {
@@ -95,6 +99,12 @@ function getTileTooltipLines(
   }
   if (isShaft) {
     lines.push('Vent Tiles: An empty shaft. No piece can enter or cross it.');
+  }
+  if (storm === 'warning') {
+    lines.push('The Storm Closes In: The storm takes this square soon. Pieces left here are lost.');
+  }
+  if (storm === 'active') {
+    lines.push('The Storm Closes In: Lost to the storm. No piece can enter or cross it.');
   }
   if (isSwamp) {
     lines.push('This Is My Swamp: Pieces here move only 1 square. Knights landing here are stuck for 2 turns.');
@@ -122,6 +132,7 @@ export default function Square({
   isFrozenZone,
   isSwamp,
   isShaft,
+  storm,
   quietZone,
   noFlyZone,
   burst,
@@ -134,7 +145,7 @@ export default function Square({
   const colorClass = isLight ? styles.light : styles.dark;
   const hasLava = tileEffects.includes('lava');
   const pieceTooltipLines = getPieceTooltipLines(piece);
-  const tileTooltipLines = getTileTooltipLines(tileEffects, isFrozenZone, isSwamp, isShaft, quietZone, noFlyZone);
+  const tileTooltipLines = getTileTooltipLines(tileEffects, isFrozenZone, isSwamp, isShaft, storm, quietZone, noFlyZone);
   const tooltipLines = [...pieceTooltipLines, ...tileTooltipLines];
   const hasTooltip = tooltipLines.length > 0;
 
@@ -198,6 +209,13 @@ export default function Square({
 
       {isShaft && (
         <div className={`${styles.tileEffectLayer} ${styles.shaft}`} aria-hidden="true" />
+      )}
+
+      {storm && (
+        <div
+          className={`${styles.tileEffectLayer} ${storm === 'active' ? styles.stormActive : styles.stormWarning}`}
+          aria-hidden="true"
+        />
       )}
 
       {isSwamp && (

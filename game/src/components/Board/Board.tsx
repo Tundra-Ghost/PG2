@@ -25,6 +25,7 @@ const WINTER_ID = MODIFIER_IDS.winterIsComing;
 const BURST_KINDS: Partial<Record<string, SquareBurst['kind']>> = {
   [MODIFIER_IDS.floorIsLava]: 'lava',
   [MODIFIER_IDS.berserker]: 'berserker',
+  [MODIFIER_IDS.stormClosesIn]: 'storm',
 };
 
 interface BoardProps {
@@ -112,7 +113,7 @@ export default function Board({
     return () => window.clearTimeout(timer);
   }, [plies, pieceMovedNow]);
 
-  // GDD UI: flash the squares where a modifier just struck (lava burns, berserker chains).
+  // GDD UI: flash the squares where a modifier just struck (lava burns, berserker chains, storm waves).
   const bursts = useMemo(() => {
     const map = new Map<Square, SquareBurst>();
     for (const event of state.eventHistory) {
@@ -361,7 +362,8 @@ export default function Board({
                   state.tiles.get(square)?.effects.map(effect => effect.type) ?? [];
                 const frozenZone = winterActive && isFrozenZoneSquare(square);
                 const swamp = state.tiles.get(square)?.isSwamp === true;
-                const shaft = state.tiles.get(square)?.isVoid === true;
+                const storm = state.tiles.get(square)?.storm;
+                const shaft = state.tiles.get(square)?.isVoid === true && !storm;
                 const quietZone = quietZones.get(square);
                 const noFly = noFlySquares.get(square);
                 return (
@@ -378,6 +380,7 @@ export default function Board({
                     isFrozenZone={frozenZone}
                     isSwamp={swamp}
                     isShaft={shaft}
+                    storm={storm}
                     quietZone={quietZone}
                     noFlyZone={noFly}
                     burst={bursts.get(square)}

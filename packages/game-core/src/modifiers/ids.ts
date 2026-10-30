@@ -2,6 +2,7 @@ export const MODIFIER_IDS = {
   floorIsLava: 'MOD-A002',
   ventTiles: 'MOD-A003',
   winterIsComing: 'MOD-A004',
+  stormClosesIn: 'MOD-A005',
   thisIsMySwamp: 'MOD-A006',
   youDied: 'MOD-B001',
   fiftyFirstMoves: 'MOD-B005',

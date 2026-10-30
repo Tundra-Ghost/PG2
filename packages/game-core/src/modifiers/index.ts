@@ -26,6 +26,7 @@ import { threeKingsDef } from './definitions/three-kings';
 import { fiftyFirstMovesDef } from './definitions/fifty-first-moves';
 import { noFlyZoneDef } from './definitions/no-fly-zone';
 import { theSnapDef } from './definitions/the-snap';
+import { stormClosesInDef } from './definitions/storm-closes-in';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -50,3 +51,4 @@ modifierRegistry.register(threeKingsDef);
 modifierRegistry.register(fiftyFirstMovesDef);
 modifierRegistry.register(noFlyZoneDef);
 modifierRegistry.register(theSnapDef);
+modifierRegistry.register(stormClosesInDef);

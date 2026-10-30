@@ -7,7 +7,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Phase 0 prototype is playable locally in `game/`
 - Architecture is client-side today
 - TDD target architecture is server-authoritative shared game-core
-- 23 modifier definitions are registered, while the modifier bible defines 40 cards
+- 24 modifier definitions are registered, while the modifier bible defines 40 cards
 - Vitest is now installed in `game/` and baseline engine tests are passing
 - Engine tests now cover opening movement, wrong-turn rejection, self-check rejection, castling safety/rights, en passant, promotion, checkmate, stalemate, threefold repetition, 50-move rule, and insufficient material
 - Engine rule-regression coverage now also includes rook-capture castling-rights loss, en-passant expiry, pinned-piece legal movement along the pin line, and SAN disambiguation/capture notation
@@ -55,7 +55,9 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Separate shipped modifiers from design-only modifiers in the UI/data layer (Vault Playable/Design filter; draft hides unbuilt cards)
 - [x] Add a draft filter to hide unavailable modifiers during modifier testing
 - [ ] Track implementation status per shipped modifier: engine logic, board visuals, interaction feedback, tests
-- [ ] Build an implementation checklist for the remaining 35 modifiers by category
+- [ ] Build an implementation checklist for the remaining modifiers by category
+- [x] MOD-A005 The Storm Closes In (corners first, 6×6 after turn 32; kings spared until they step off)
+- [ ] Storm: pawns cannot promote once rank 8/1 is storm (design call: promote on the last open rank?)
 - [x] Slow down Gerald and lava cadence to improve readability in the shipped prototype
 
 ## Priority 3: Close TDD/GDD Gaps
@@ -71,7 +73,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
   - [x] Draft rules and a two-player draft turn model live in game-core (server can enforce them)
   - [x] Server draft phase and socket events (room:create {draft}, draft:pick, draft:finish)
   - [x] Online draft screen (Modifier draft or Standard chess when creating a room)
-- [ ] Server deploy is blocked: the Fly.io trial ended (2026-10-23 deploy failed). Needs a card on Fly or another host.
+- [ ] Server deploy is paused: the Fly.io trial ended. Tanner set hosting aside on 2026-10-30; focus is core game features.
 - [x] Site: publish to GitHub Pages from Actions on every merge (`.github/workflows/pages.yml`)
 - [x] Site: stop committing `game/dist` (Pages builds it fresh; 30+ green deploys confirmed it)
 - [x] Online: host the server so the Pages build can reach it (Fly.io: pigeon-chess-server.fly.dev, region sjc)
@@ -114,6 +116,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] GDD UI: replace temporary letter badges with authored icon badges for Gerald, lava, freeze, pacifist, and berserker states
 - [ ] GDD UI: animate modifier triggers on board and pieces: lava burn, Gerald fly-off, freeze thaw, berserker chain, pacifist refusal
   - [x] Lava burn: events carry `squares`, the board flashes them (other modifiers can add squares to get a gold flash)
+  - [x] Storm waves flash pale blue; next wave's squares are striped one wave ahead
   - [x] Berserker chain: both squares flash red; the square that inherits the title flashes too
 - [x] GDD UI: add short event banners for autonomous or curse-driven actions so modifier outcomes never feel silent
 - [x] GDD UI: route modifier-trigger messages into the in-game history feed
