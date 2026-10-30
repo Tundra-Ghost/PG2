@@ -1,24 +1,11 @@
-import type { Piece as ChessPiece, PieceType } from '@pigeon-chess/game-core';
+import type { Piece as ChessPiece } from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import styles from './Piece.module.css';
+import PieceArt from './PieceArt';
 
 interface PieceProps {
   piece: ChessPiece;
 }
-
-// Both colours use the solid glyphs. The outline glyphs (♙ etc.) have a
-// transparent body, so white pieces looked hollow and black pieces on dark
-// squares read as white. Colour now comes from CSS fill and stroke alone.
-const SYMBOLS: Partial<Record<PieceType, string>> = {
-  king: '♚',
-  queen: '♛',
-  rook: '♜',
-  bishop: '♝',
-  knight: '♞',
-  pawn: '♟',
-  chancellor: '♜', // MOD-E004: a rook glyph with a C badge
-  royal_guard: '♚', // MOD-E003: a king glyph with a shield badge
-};
 
 const GERALD_ID = MODIFIER_IDS.gerald;
 const WINTER_ID = MODIFIER_IDS.winterIsComing;
@@ -26,11 +13,8 @@ const SWAMP_ID = MODIFIER_IDS.thisIsMySwamp;
 
 export default function Piece({ piece }: PieceProps) {
   const { type, color, cooldowns, isPacifist, isBerserker, isTraitor, hasPromotionChain } = piece;
-  const symbol = SYMBOLS[type] ?? '?';
   const markers: string[] = [];
 
-  if (type === 'chancellor') markers.push('C');
-  if (type === 'royal_guard') markers.push('⛨');
   if ((cooldowns[GERALD_ID] ?? 0) > 0) markers.push('G');
   if ((cooldowns[WINTER_ID] ?? 0) > 0) markers.push('❄');
   if ((cooldowns[SWAMP_ID] ?? 0) > 0) markers.push('≈');
@@ -61,7 +45,7 @@ export default function Piece({ piece }: PieceProps) {
       ].filter(Boolean).join(' ')}
       aria-label={`${color} ${type === 'royal_guard' ? 'royal guard' : type}${markerLabel ? `, ${markerLabel}` : ''}`}
     >
-      <span className={styles.symbol}>{symbol}</span>
+      <PieceArt type={type} color={color} className={styles.symbol} />
       {markers.length > 0 && (
         <span className={styles.markerStack} aria-hidden="true">
           {markers.map(marker => (

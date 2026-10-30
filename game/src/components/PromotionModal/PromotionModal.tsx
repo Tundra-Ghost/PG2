@@ -1,6 +1,7 @@
 import type { Color, PieceType } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './PromotionModal.module.css';
+import PieceArt from '../Piece/PieceArt';
 
 interface PromotionModalProps {
   color: Color;
@@ -9,11 +10,11 @@ interface PromotionModalProps {
   onChoose: (piece: PieceType) => void;
 }
 
-const CHOICES: { type: PieceType; whiteSymbol: string; blackSymbol: string; label: string }[] = [
-  { type: 'queen',  whiteSymbol: '♕', blackSymbol: '♛', label: 'Queen'  },
-  { type: 'rook',   whiteSymbol: '♖', blackSymbol: '♜', label: 'Rook'   },
-  { type: 'bishop', whiteSymbol: '♗', blackSymbol: '♝', label: 'Bishop' },
-  { type: 'knight', whiteSymbol: '♘', blackSymbol: '♞', label: 'Knight' },
+const CHOICES: { type: PieceType; label: string }[] = [
+  { type: 'queen', label: 'Queen' },
+  { type: 'rook', label: 'Rook' },
+  { type: 'bishop', label: 'Bishop' },
+  { type: 'knight', label: 'Knight' },
 ];
 
 export default function PromotionModal({ color, allowed, onChoose }: PromotionModalProps) {
@@ -24,7 +25,7 @@ export default function PromotionModal({ color, allowed, onChoose }: PromotionMo
         <p className={styles.heading}>Promote Pawn</p>
         <p className={styles.sub}>{color === 'white' ? 'White' : 'Black'} — choose a piece</p>
         <div className={styles.choices}>
-          {choices.map(({ type, whiteSymbol, blackSymbol, label }) => (
+          {choices.map(({ type, label }) => (
             <button
               key={type}
               className={`${styles.choice} ${styles[color]}`}
@@ -34,9 +35,7 @@ export default function PromotionModal({ color, allowed, onChoose }: PromotionMo
               }}
               aria-label={`Promote to ${label}`}
             >
-              <span className={styles.symbol}>
-                {color === 'white' ? whiteSymbol : blackSymbol}
-              </span>
+              <PieceArt type={type} color={color} className={styles.symbol} />
               <span className={styles.label}>{label}</span>
             </button>
           ))}
