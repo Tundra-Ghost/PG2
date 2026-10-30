@@ -1,0 +1,33 @@
+.art {
+  display: inline-flex;
+  width: 1.2em;
+  height: 1.2em;
+  line-height: 0;
+}
+
+.art svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* White: parchment body, ink outline and hatching. */
+.white {
+  color: var(--ui-ink, #18120a);
+  --pc-fill: var(--ui-parchment, #f2ead8);
+  --pc-hatch: rgb(24 18 10 / 0.85);
+  --pc-xhatch: 0;
+}
+
+/* Black: walnut body with a light outline, so it reads on Board Dark.
+   Cross-hatching gives the denser engraving the art guide asks for. */
+.black {
+  color: var(--board-light-sq, #c8a870);
+  --pc-fill: #4a3420;
+  --pc-hatch: rgb(18 12 5 / 0.7);
+  --pc-xhatch: 1;
+}
+
+:global(body.high-contrast) .black {
+  color: #e8d090;
+}
