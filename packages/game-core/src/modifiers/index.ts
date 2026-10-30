@@ -27,6 +27,7 @@ import { fiftyFirstMovesDef } from './definitions/fifty-first-moves';
 import { noFlyZoneDef } from './definitions/no-fly-zone';
 import { theSnapDef } from './definitions/the-snap';
 import { stormClosesInDef } from './definitions/storm-closes-in';
+import { gravitationalAnomalyDef } from './definitions/gravitational-anomaly';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -52,3 +53,4 @@ modifierRegistry.register(fiftyFirstMovesDef);
 modifierRegistry.register(noFlyZoneDef);
 modifierRegistry.register(theSnapDef);
 modifierRegistry.register(stormClosesInDef);
+modifierRegistry.register(gravitationalAnomalyDef);

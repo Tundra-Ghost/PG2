@@ -4,6 +4,7 @@ export const MODIFIER_IDS = {
   winterIsComing: 'MOD-A004',
   stormClosesIn: 'MOD-A005',
   thisIsMySwamp: 'MOD-A006',
+  gravitationalAnomaly: 'MOD-A007',
   youDied: 'MOD-B001',
   fiftyFirstMoves: 'MOD-B005',
   gerald: 'MOD-B002',

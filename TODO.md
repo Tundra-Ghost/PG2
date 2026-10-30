@@ -7,7 +7,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Phase 0 prototype is playable locally in `game/`
 - Architecture is client-side today
 - TDD target architecture is server-authoritative shared game-core
-- 24 modifier definitions are registered, while the modifier bible defines 40 cards
+- 25 modifier definitions are registered, while the modifier bible defines 40 cards
 - Vitest is now installed in `game/` and baseline engine tests are passing
 - Engine tests now cover opening movement, wrong-turn rejection, self-check rejection, castling safety/rights, en passant, promotion, checkmate, stalemate, threefold repetition, 50-move rule, and insufficient material
 - Engine rule-regression coverage now also includes rook-capture castling-rights loss, en-passant expiry, pinned-piece legal movement along the pin line, and SAN disambiguation/capture notation
@@ -57,6 +57,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] Track implementation status per shipped modifier: engine logic, board visuals, interaction feedback, tests
 - [ ] Build an implementation checklist for the remaining modifiers by category
 - [x] MOD-A005 The Storm Closes In (corners first, 6×6 after turn 32; kings spared until they step off)
+- [x] MOD-A007 Gravitational Anomaly (sideways only, east then west every 12 turns; pawns keep their direction)
 - [x] Storm: pawns promote on the last open rank once the square ahead is storm (Tanner confirmed 2026-10-30)
 - [x] Slow down Gerald and lava cadence to improve readability in the shipped prototype
 

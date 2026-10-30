@@ -147,6 +147,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Every 12 turns, gravity flips. All pieces slide 1 square toward the new bottom edge. Pieces sliding off the board are captured. Pawns re-orient to new gravity. Kings slide too.',
     flavor: '"Viktor\'s rook slid sideways. Viktor\'s pawns are now facing east. Viktor is not thinking about it."',
+    prototypeRules:
+      'Every 12 full turns gravity pulls sideways, east then west, back and forth. Everything slides one square that way, with a warning the move before. Pieces pushed off the edge are lost; kings brace and stay. Pawns keep their direction, and a pawn pushed onto its last rank becomes a queen. Castling is gone after the first shift.',
   },
   {
     id: 'MOD-A008',
