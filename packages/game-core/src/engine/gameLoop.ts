@@ -235,13 +235,18 @@ export function buildMove(state: GameState, from: Square, to: Square): Move {
 /**
  * Returns true if a pawn move from `from` to `to` reaches the back rank
  * and therefore requires a promotion choice from the player.
+ * MOD-A005: once the storm has taken the square ahead, the last open rank
+ * counts as the back rank.
  */
 export function isPromotionMove(state: GameState, from: Square, to: Square): boolean {
   const piece = state.pieces.get(from);
   if (!piece || piece.type !== 'pawn') return false;
   const toRank = rankIndex(to);
-  return (piece.color === 'white' && toRank === 7) ||
-         (piece.color === 'black' && toRank === 0);
+  if ((piece.color === 'white' && toRank === 7) || (piece.color === 'black' && toRank === 0)) {
+    return true;
+  }
+  const ahead = toSquare(fileIndex(to), toRank + (piece.color === 'white' ? 1 : -1));
+  return state.tiles.get(ahead)?.storm === 'active';
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

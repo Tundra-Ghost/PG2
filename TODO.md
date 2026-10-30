@@ -57,7 +57,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] Track implementation status per shipped modifier: engine logic, board visuals, interaction feedback, tests
 - [ ] Build an implementation checklist for the remaining modifiers by category
 - [x] MOD-A005 The Storm Closes In (corners first, 6×6 after turn 32; kings spared until they step off)
-- [ ] Storm: pawns cannot promote once rank 8/1 is storm (design call: promote on the last open rank?)
+- [x] Storm: pawns promote on the last open rank once the square ahead is storm (Tanner confirmed 2026-10-30)
 - [x] Slow down Gerald and lava cadence to improve readability in the shipped prototype
 
 ## Priority 3: Close TDD/GDD Gaps
