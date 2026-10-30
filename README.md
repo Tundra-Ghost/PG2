@@ -12,10 +12,10 @@ This repository currently contains:
 
 The project vision is defined in the GDD and TDD:
 
-- `docs/pigeon-chess-gdd.html`
-- `docs/pigeon-chess-tdd.html`
-- `docs/pigeon-chess-art-direction.html`
-- `docs/pigeon-chess-modifier-bible-v02.html`
+- `docs/gdd.md`
+- `docs/tdd.md`
+- `docs/art-direction.md`
+- `docs/modifier-bible.md`
 
 ## Current Implementation
 

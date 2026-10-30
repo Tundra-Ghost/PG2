@@ -60,8 +60,8 @@ export const floorIsLavaDef: ModifierDefinition = {
   id: ID,
   name: 'The Floor Is Lava',
   category: 'A',
-  pointCost: 2,
-  curseRating: 0,
+  pointCost: 3,
+  curseRating: 1,
   activeFor: 'both',
   draftScope: 'shared',
 
