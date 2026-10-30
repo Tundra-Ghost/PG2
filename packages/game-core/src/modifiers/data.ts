@@ -118,7 +118,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'The outer ring of the board is consumed by Storm every 8 turns. Pieces on Storm tiles are eliminated. Board shrinks from 8×8 toward 6×6 by turn 40.',
     flavor: '"The board is getting smaller. Viktor is getting calmer. These things are unrelated."',
     prototypeRules:
-      'Every 8 full turns the storm takes part of the outer ring: corners first, edge middles last. Full 6×6 after turn 32. Squares about to go are striped one wave ahead. Pieces caught are lost; kings are spared until they step off. Nothing can enter or cross storm squares.',
+      'Every 8 full turns the storm takes part of the outer ring: corners first, edge middles last. Full 6×6 after turn 32. Squares about to go are striped one wave ahead. Pieces caught are lost; kings are spared until they step off. Nothing can enter or cross storm squares. Once the square ahead is storm, a pawn promotes on the last open rank.',
   },
   {
     id: 'MOD-A006',

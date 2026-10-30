@@ -104,4 +104,23 @@ describe('The Storm Closes In', () => {
     expect(targets).toContain('d2');
     expect(targets).not.toContain('d1');
   });
+
+  it('lets pawns promote on the last open rank once the storm takes the one ahead', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'e2'),
+      makePiece('pawn', 'white', 'c6'),
+      makePiece('pawn', 'black', 'f3'),
+      makePiece('king', 'black', 'e5'),
+    ]);
+    state.activeModifiers = [storm];
+    expect(chessEngine.isPromotionMove(state, 'c6', 'c7')).toBe(false);
+
+    state.tiles.set('c8', { square: 'c8', effects: [], storm: 'active', isVoid: true });
+    state.tiles.set('f1', { square: 'f1', effects: [], storm: 'active', isVoid: true });
+    expect(chessEngine.isPromotionMove(state, 'c6', 'c7')).toBe(true);
+    expect(chessEngine.isPromotionMove(state, 'f3', 'f2')).toBe(true);
+
+    const next = chessEngine.applyMove(state, move('c6', 'c7', 'white', { promotion: 'queen' }));
+    expect(next.pieces.get('c7')?.type).toBe('queen');
+  });
 });
