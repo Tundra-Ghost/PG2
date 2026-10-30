@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
 import { buildMove } from '@pigeon-chess/game-core';
@@ -13,6 +13,7 @@ import {
 } from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import { playCapture, playCastle, playMove } from '../../sound';
+import { pickEventSounds, playSynth } from '../../sfx';
 import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
 import SquareComponent, { type SquareBurst } from '../Square/Square';
 import PromotionModal from '../PromotionModal/PromotionModal';
@@ -113,6 +114,23 @@ export default function Board({
     const timer = window.setTimeout(() => setPieceMovedFlash(false), 1400);
     return () => window.clearTimeout(timer);
   }, [plies, pieceMovedNow]);
+
+  // Sound for modifier events and check. Events already in the history
+  // when the board mounts (a resumed game) stay silent.
+  const heardEvents = useRef<Set<string> | null>(null);
+  useEffect(() => {
+    const seen = heardEvents.current;
+    if (!seen) {
+      heardEvents.current = new Set(state.eventHistory.map(event => event.id));
+      return;
+    }
+    const fresh = state.eventHistory.filter(event => !seen.has(event.id));
+    fresh.forEach(event => seen.add(event.id));
+    const sounds = pickEventSounds(fresh);
+    if (chessEngine.isInCheck(state, state.turn)) sounds.push('check');
+    const timers = sounds.map((sound, i) => window.setTimeout(() => playSynth(sound), 90 + i * 220));
+    return () => timers.forEach(timer => window.clearTimeout(timer));
+  }, [state, plies]);
 
   // GDD UI: flash the squares where a modifier just struck (lava burns, berserker chains, storm waves).
   const bursts = useMemo(() => {
