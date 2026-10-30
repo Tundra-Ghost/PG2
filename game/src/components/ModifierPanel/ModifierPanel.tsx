@@ -13,6 +13,7 @@ import {
 import { playClick } from '../../sound';
 import styles from './ModifierPanel.module.css';
 import PrototypeRules from '../PrototypeRules/PrototypeRules';
+import { ModifierIcon } from '../ModifierIcon/ModifierIcon';
 
 interface ModifierPanelProps {
   state: GameState;
@@ -99,7 +100,7 @@ function CategoryBadge({ mod }: { mod: ModifierDisplay }) {
           background: `${mod.color}14`,
         }}
       >
-        {mod.category}
+        <ModifierIcon id={mod.id} size={22} />
       </span>
       <span className={styles.categoryLabel}>{CATEGORY_LABELS[mod.category]}</span>
     </div>

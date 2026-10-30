@@ -11,6 +11,7 @@ import { isSharedDraftModifier } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './DraftScreen.module.css';
 import PrototypeRules from '../PrototypeRules/PrototypeRules';
+import { ModifierIcon } from '../ModifierIcon/ModifierIcon';
 import { getCurseLabel, getTierLabel } from '../../modifiers/presentation';
 import {
   BUDGET,
@@ -431,6 +432,7 @@ export default function DraftScreen({
                 }}
               >
                 <span className={styles.cardTop}>
+                  <ModifierIcon id={card.id} size={30} className={styles.cardIcon} />
                   <span className={styles.cardName}>{card.name}</span>
                   <span className={`${styles.cost} ${card.cost < 0 ? styles.costRefund : ''}`}>{getCostDisplay(card.cost)}</span>
                 </span>
@@ -492,7 +494,10 @@ export default function DraftScreen({
           >
             <div className={styles.sheetGrip} aria-hidden="true" />
             <div className={styles.detailHead}>
-              <span className={styles.detailCategory}>{CATEGORY_NAMES[detailCard.category]}</span>
+              <span className={styles.detailCategory}>
+                <ModifierIcon id={detailCard.id} size={40} />
+                {CATEGORY_NAMES[detailCard.category]}
+              </span>
               <span className={`${styles.cost} ${detailCard.cost < 0 ? styles.costRefund : ''}`}>{getCostDisplay(detailCard.cost)}</span>
             </div>
             <h3 id="modifier-detail-title" className={styles.detailName}>{detailCard.name}</h3>
@@ -553,7 +558,7 @@ function DraftList({ title, cards, max, empty }: { title: string; cards: Modifie
       ) : (
         cards.map(card => (
           <div key={card.id} className={styles.listItem}>
-            <span className={styles.listDot} style={{ background: CATEGORY_COLORS[card.category] }} />
+            <ModifierIcon id={card.id} size={18} className={styles.listIcon} style={{ color: CATEGORY_COLORS[card.category] }} />
             <span className={styles.listName}>{card.name}</span>
             <span className={`${styles.listCost} ${card.cost < 0 ? styles.costRefund : ''}`}>{getCostDisplay(card.cost)}</span>
           </div>

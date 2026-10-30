@@ -60,6 +60,15 @@
   cursor: pointer;
 }
 
+.abilityIcon {
+  align-self: center;
+  color: #3a9de8;
+}
+
+.abilityArmed .abilityIcon {
+  color: inherit;
+}
+
 .abilityButton:hover:not(:disabled) {
   background: rgba(58, 157, 232, 0.3);
 }
