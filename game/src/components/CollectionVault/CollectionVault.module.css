@@ -208,9 +208,17 @@
   align-items: center;
   justify-content: center;
   color: #0d0a06;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
   background: var(--category-color);
+}
+
+.cardIdRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.cardIcon {
+  color: var(--category-color);
 }
 
 .categoryName {

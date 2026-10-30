@@ -10,6 +10,7 @@ import { modifierRegistry } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './CollectionVault.module.css';
 import PrototypeRules from '../PrototypeRules/PrototypeRules';
+import { CategoryIcon, ModifierIcon } from '../ModifierIcon/ModifierIcon';
 
 type CategoryFilter = 'ALL' | ModifierCategory;
 type StatusFilter = 'all' | 'implemented' | 'design';
@@ -63,7 +64,10 @@ function VaultCard({
     >
       <div className={styles.cardStripe} />
       <header className={styles.cardHeader}>
-        <span className={styles.cardId}>{card.id}</span>
+        <span className={styles.cardIdRow}>
+          <ModifierIcon id={card.id} size={34} className={styles.cardIcon} />
+          <span className={styles.cardId}>{card.id}</span>
+        </span>
         <span className={implemented ? styles.statusLive : styles.statusDesign}>
           {implemented ? 'Playable' : 'Design'}
         </span>
@@ -245,7 +249,9 @@ export default function CollectionVault({ onBack }: CollectionVaultProps) {
                   setCategory(key);
                 }}
               >
-                <span className={styles.categoryLetter}>{key}</span>
+                <span className={styles.categoryLetter}>
+                  <CategoryIcon category={key} size={22} title={`Category ${key}`} />
+                </span>
                 <span className={styles.categoryName}>{CATEGORY_NAMES[key]}</span>
                 <span className={styles.categoryMeta}>
                   {playable}/{total} playable

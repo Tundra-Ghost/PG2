@@ -17,6 +17,7 @@ import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
 import SquareComponent, { type SquareBurst } from '../Square/Square';
 import PromotionModal from '../PromotionModal/PromotionModal';
 import styles from './Board.module.css';
+import { ModifierIcon } from '../ModifierIcon/ModifierIcon';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -444,6 +445,7 @@ export default function Board({
                     title={option.hint}
                     onClick={() => toggleAbility(option.modifierId)}
                   >
+                    <ModifierIcon id={option.modifierId} size={20} className={styles.abilityIcon} />
                     {armed ? `Cancel ${option.label}` : option.label}
                     <span className={styles.abilityState}>
                       {option.cooldownLeft > 0
