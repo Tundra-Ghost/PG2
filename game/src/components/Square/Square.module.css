@@ -236,3 +236,8 @@
     animation-iteration-count: 1;
   }
 }
+
+/* Phaser board: the square only takes clicks and hosts the tooltip. */
+.hit {
+  background: transparent;
+}

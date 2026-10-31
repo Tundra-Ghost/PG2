@@ -1,21 +1,23 @@
 import { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
-import type { Square } from '@pigeon-chess/game-core';
 import type { SquareView } from '../Board/boardView';
 import { BoardScene, CELL } from './BoardScene';
 import styles from './PhaserBoard.module.css';
 
 interface PhaserBoardProps {
   views: SquareView[];
-  onSquareClick: (square: Square) => void;
 }
 
-/** Hosts the Phaser board scene inside the React board frame. */
-export default function PhaserBoard({ views, onSquareClick }: PhaserBoardProps) {
+/**
+ * Hosts the Phaser board scene inside the React board frame. It only draws:
+ * clicks, tooltips and screen-reader labels come from the hit squares React
+ * lays over it.
+ */
+export default function PhaserBoard({ views }: PhaserBoardProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<BoardScene | null>(null);
-  const latest = useRef({ views, onSquareClick });
-  latest.current = { views, onSquareClick };
+  const latestViews = useRef(views);
+  latestViews.current = views;
 
   useEffect(() => {
     if (!hostRef.current) return;
@@ -31,7 +33,7 @@ export default function PhaserBoard({ views, onSquareClick }: PhaserBoardProps) 
       scene,
     });
     sceneRef.current = scene;
-    scene.setBoard(latest.current.views, square => latest.current.onSquareClick(square));
+    scene.setBoard(latestViews.current);
     return () => {
       sceneRef.current = null;
       // Phaser removes its canvas on its next frame; take it out now so a
@@ -42,8 +44,8 @@ export default function PhaserBoard({ views, onSquareClick }: PhaserBoardProps) 
   }, []);
 
   useEffect(() => {
-    sceneRef.current?.setBoard(views, square => latest.current.onSquareClick(square));
+    sceneRef.current?.setBoard(views);
   }, [views]);
 
-  return <div ref={hostRef} className={styles.host} data-board-renderer="phaser" />;
+  return <div ref={hostRef} className={styles.host} data-board-renderer="phaser" aria-hidden="true" />;
 }

@@ -117,7 +117,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 
 - [ ] Phaser board (art direction: Phaser 3 board + React UI; Tanner approved 2026-10-31). Opt in with `?board=phaser`.
   - [x] Step 1: board, highlights, legal dots, pieces and clicks in a Phaser scene (lazy-loaded chunk)
-  - [ ] Step 2: tile effects, piece markers, Gerald, tooltips
+  - [x] Step 2: tile effects, piece markers, Gerald; clicks, tooltips and labels come from transparent DOM squares over the canvas
   - [ ] Step 3: event flashes and "A PIECE MOVED"
   - [ ] Step 4: phone check, make Phaser the default, remove the DOM grid
 

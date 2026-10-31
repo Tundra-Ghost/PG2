@@ -37,6 +37,8 @@ interface SquareProps {
   /** MOD-C001: the side whose king closed this square's line, if any. */
   noFlyZone?: 'white' | 'black';
   burst?: SquareBurst;
+  /** Phaser board: draw nothing, only take clicks and show tooltips. */
+  hitOnly?: boolean;
   onClick: (square: SquareType) => void;
 }
 
@@ -136,6 +138,7 @@ export default function Square({
   quietZone,
   noFlyZone,
   burst,
+  hitOnly = false,
   onClick,
 }: SquareProps) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -186,9 +189,19 @@ export default function Square({
     onClick(square);
   }
 
+  const tooltip = hasTooltip && showTooltip && (
+    <div className={styles.tooltip} role="tooltip">
+      {tooltipLines.map(line => (
+        <div key={line} className={styles.tooltipLine}>
+          {line}
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div
-      className={`${styles.square} ${colorClass} ${overlayClass}`}
+      className={hitOnly ? `${styles.square} ${styles.hit}` : `${styles.square} ${colorClass} ${overlayClass}`}
       onClick={handleClick}
       onMouseEnter={() => hasTooltip && setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
@@ -203,6 +216,8 @@ export default function Square({
       aria-label={tooltipLines.length > 0 ? `${square}, ${tooltipLines.join(' ')}` : square}
       tabIndex={-1}
     >
+      {hitOnly ? tooltip : (
+        <>
       {isFrozenZone && (
         <div className={`${styles.tileEffectLayer} ${styles.frozenTint}`} aria-hidden="true" />
       )}
@@ -257,14 +272,8 @@ export default function Square({
         <div className={piece ? styles.captureDot : styles.legalDot} />
       )}
 
-      {hasTooltip && showTooltip && (
-        <div className={styles.tooltip} role="tooltip">
-          {tooltipLines.map(line => (
-            <div key={line} className={styles.tooltipLine}>
-              {line}
-            </div>
-          ))}
-        </div>
+      {tooltip}
+        </>
       )}
     </div>
   );

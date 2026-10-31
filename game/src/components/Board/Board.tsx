@@ -364,9 +364,14 @@ export default function Board({
               <div className={styles.pieceMovedFlash} role="status">A PIECE MOVED</div>
             )}
             {renderer === 'phaser' ? (
-              <Suspense fallback={null}>
-                <PhaserBoard views={squareViews} onSquareClick={handleSquareClick} />
-              </Suspense>
+              <>
+                <Suspense fallback={null}>
+                  <PhaserBoard views={squareViews} />
+                </Suspense>
+                {squareViews.map(view => (
+                  <SquareComponent key={view.square} {...view} hitOnly onClick={handleSquareClick} />
+                ))}
+              </>
             ) : (
               squareViews.map(view => (
                 <SquareComponent key={view.square} {...view} onClick={handleSquareClick} />
