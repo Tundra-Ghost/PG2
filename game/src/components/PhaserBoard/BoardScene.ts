@@ -175,6 +175,14 @@ export class BoardScene extends Phaser.Scene {
       // A highlight replaces the square colour and is
       // tinted over the dark frame, not over the square.
       const overlay = view.isInCheck ? theme.check : view.isSelected ? theme.selected : view.isLastMove ? theme.lastMove : null;
+      if (view.isClosed) {
+        // Outside this board's shape: the frame with faint hatching, so it
+        // never reads as a dark square.
+        g.fillStyle(0x070503, 1).fillRect(x, y, CELL, CELL);
+        g.lineStyle(1, 0xc8973a, 0.12);
+        stripes(g, x, y, 10, 1);
+        return;
+      }
       if (overlay) {
         g.fillStyle(theme.frame, 1).fillRect(x, y, CELL, CELL);
         g.fillStyle(overlay[0], overlay[1]).fillRect(x, y, CELL, CELL);

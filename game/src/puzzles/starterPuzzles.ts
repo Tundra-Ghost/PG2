@@ -1,4 +1,10 @@
-import type { Puzzle } from '@pigeon-chess/game-core';
+import type { Puzzle, Square } from '@pigeon-chess/game-core';
+
+const SIX_BY_SIX_RING = [...'abcdefgh'].flatMap(file =>
+  [...'12345678']
+    .filter(rank => file === 'a' || file === 'h' || rank === '1' || rank === '8')
+    .map(rank => `${file}${rank}` as Square),
+);
 
 /** Built-in puzzles so the mode is never empty. Players can copy them into the editor. */
 export const STARTER_PUZZLES: Puzzle[] = [
@@ -22,6 +28,7 @@ export const STARTER_PUZZLES: Puzzle[] = [
     modifiers: [],
     goal: { type: 'checkmate', moves: 1 },
     seed: 1,
+    closed: [],
   },
   {
     id: 'starter-royal-fork',
@@ -45,6 +52,7 @@ export const STARTER_PUZZLES: Puzzle[] = [
     modifiers: [],
     goal: { type: 'capture', target: 'c8', moves: 2 },
     seed: 1,
+    closed: [],
   },
   {
     id: 'starter-hot-floor',
@@ -67,5 +75,23 @@ export const STARTER_PUZZLES: Puzzle[] = [
     modifiers: [{ id: 'MOD-A002', owner: null }],
     goal: { type: 'survive', rounds: 4 },
     seed: 7,
+    closed: [],
+  },
+  {
+    id: 'starter-small-world',
+    title: 'Small world',
+    author: 'Viktor',
+    difficulty: 'egg',
+    toMove: 'white',
+    pieces: [
+      { square: 'b5', type: 'king', color: 'white' },
+      { square: 'g2', type: 'rook', color: 'white' },
+      { square: 'b7', type: 'king', color: 'black' },
+    ],
+    modifiers: [],
+    goal: { type: 'checkmate', moves: 1 },
+    seed: 1,
+    // A 6×6 board: the outer ring is closed, so the edge comes sooner.
+    closed: SIX_BY_SIX_RING,
   },
 ];

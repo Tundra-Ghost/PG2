@@ -44,6 +44,7 @@ export interface TileState {
   effects: TileEffect[];
   isVent?: boolean;       // MOD-A003: hidden, unused vent
   isVoid?: boolean;       // off the board: used vent shafts, storm
+  isClosed?: boolean;     // never part of the board: puzzle board shapes (also isVoid)
   isSwamp?: boolean;      // future: MOD-A006
   storm?: 'warning' | 'active'; // MOD-A005: warning before a wave, active once consumed (also isVoid)
   isSurveilled?: boolean; // future: MOD-D008
