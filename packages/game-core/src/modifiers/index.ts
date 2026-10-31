@@ -34,6 +34,7 @@ import { heavyIsTheCrownDef } from './definitions/heavy-is-the-crown';
 import { recalculatingDef } from './definitions/recalculating';
 import { hatofulGambitDef } from './definitions/hatoful-gambit';
 import { darkAndScaredDef } from './definitions/dark-and-scared';
+import { knownUnknownsDef } from './definitions/known-unknowns';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -66,3 +67,4 @@ modifierRegistry.register(heavyIsTheCrownDef);
 modifierRegistry.register(recalculatingDef);
 modifierRegistry.register(hatofulGambitDef);
 modifierRegistry.register(darkAndScaredDef);
+modifierRegistry.register(knownUnknownsDef);
