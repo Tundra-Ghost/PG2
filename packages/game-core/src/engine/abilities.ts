@@ -103,6 +103,8 @@ export interface AbilityOption {
   cooldownLeft: number;
   /** Targets that pass full validation. Empty while cooling down. */
   targets: Square[];
+  /** Replaces "ready" on the button, such as a token count. */
+  status?: string;
 }
 
 /** Abilities the piece on `square` could use now or later, for the ability button. */
@@ -123,7 +125,21 @@ export function getAbilityOptions(state: GameState, square: Square): AbilityOpti
       : ability.getTargets(state, piece).filter(to =>
           validateMove(state, { from: square, to, playerColor: piece.color, ability: inst.id }).valid,
         );
-    options.push({ modifierId: inst.id, label: ability.label, hint: ability.hint, cooldownLeft, targets });
+    const status = ability.status?.(state, piece);
+    options.push({ modifierId: inst.id, label: ability.label, hint: ability.hint, cooldownLeft, targets, ...(status ? { status } : {}) });
   }
   return options;
+}
+
+/**
+ * The pieces a player may pick for an ability target, or null when the
+ * ability needs no pick. Only choices that pass full validation are listed.
+ */
+export function getAbilityChoices(state: GameState, from: Square, to: Square, id: ModifierID): PieceType[] | null {
+  const ability = getActiveAbility(state, id);
+  const piece = state.pieces.get(from);
+  if (!ability?.getChoices || !piece) return null;
+  return ability.getChoices(state, piece, to).filter(dropType =>
+    validateMove(state, { from, to, playerColor: piece.color, ability: id, dropType }).valid,
+  );
 }

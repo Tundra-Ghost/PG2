@@ -3,6 +3,7 @@ import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/ga
 import { chessEngine } from '@pigeon-chess/game-core';
 import { buildMove } from '@pigeon-chess/game-core';
 import {
+  getAbilityChoices,
   getAbilityOptions,
   getValidPromotionTypes,
   isHistoryBlackout,
@@ -91,6 +92,8 @@ export default function Board({
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null);
+  /** MOD-E008: an armed drop waiting for the player to pick which piece. */
+  const [pendingDrop, setPendingDrop] = useState<{ move: Move; choices: PieceType[] } | null>(null);
   /** The ability (modifier id) armed for the selected piece, if any. */
   const [abilityMode, setAbilityMode] = useState<string | null>(null);
 
@@ -200,6 +203,22 @@ export default function Board({
     [commitMove, pendingPromotion, state, withTempo],
   );
 
+  const handleDropChoice = useCallback(
+    (type: PieceType | null) => {
+      if (pendingDrop && type) {
+        const move = { ...pendingDrop.move, dropType: type };
+        if (chessEngine.validateMove(state, move).valid) {
+          playMove();
+          commitMove(move);
+        }
+      }
+      setPendingDrop(null);
+      setSelected(null);
+      setLegalMoves([]);
+    },
+    [commitMove, pendingDrop, state],
+  );
+
   const shooGeraldOrWarn = useCallback(() => {
     setSelected(null);
     setLegalMoves([]);
@@ -216,7 +235,7 @@ export default function Board({
     (square: Square) => {
       if (state.status !== 'active') return;
       if (controlColor && state.turn !== controlColor) return; // opponent's turn
-      if (pendingPromotion) return; // modal is open — ignore board clicks
+      if (pendingPromotion || pendingDrop) return; // modal is open — ignore board clicks
 
       const clickedPiece = state.pieces.get(square);
 
@@ -242,6 +261,12 @@ export default function Board({
       // Attempt an armed ability (it may target an own piece, so check first)
       if (abilityMode && legalMoves.includes(square)) {
         const move: Move = { from: selected, to: square, playerColor: state.turn, ability: abilityMode };
+        const choices = getAbilityChoices(state, selected, square, abilityMode);
+        if (choices && choices.length > 1) {
+          setPendingDrop({ move, choices });
+          return;
+        }
+        if (choices?.length === 1) move.dropType = choices[0];
         const validation = chessEngine.validateMove(state, move);
         if (validation.valid) {
           if (state.pieces.has(square)) playCapture();
@@ -316,7 +341,7 @@ export default function Board({
       setSelected(null);
       setLegalMoves([]);
     },
-    [abilityMode, autoQueen, commitMove, controlColor, legalMoves, onInfo, pendingPromotion, selected, shooGeraldOrWarn, state, withTempo],
+    [abilityMode, autoQueen, commitMove, controlColor, legalMoves, onInfo, pendingDrop, pendingPromotion, selected, shooGeraldOrWarn, state, withTempo],
   );
 
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
@@ -432,10 +457,10 @@ export default function Board({
                       {option.cooldownLeft > 0
                         ? `ready in ${option.cooldownLeft}`
                         : option.targets.length === 0
-                          ? 'no target'
+                          ? option.status ?? 'no target'
                           : armed
                             ? 'pick a target'
-                            : 'ready'}
+                            : option.status ?? 'ready'}
                     </span>
                   </button>
                 );
@@ -461,6 +486,16 @@ export default function Board({
       </div>
 
       {/* Promotion modal — rendered outside the board frame so it overlays everything */}
+      {pendingDrop && (
+        <PromotionModal
+          color={state.turn}
+          heading="Buy Back"
+          allowed={pendingDrop.choices}
+          onChoose={handleDropChoice}
+          onCancel={() => handleDropChoice(null)}
+        />
+      )}
+
       {pendingPromotion && (
         <PromotionModal
           color={state.turn}

@@ -29,6 +29,7 @@ import { theSnapDef } from './definitions/the-snap';
 import { stormClosesInDef } from './definitions/storm-closes-in';
 import { gravitationalAnomalyDef } from './definitions/gravitational-anomaly';
 import { cordycepticSpreadDef } from './definitions/cordyceptic-spread';
+import { moneyballDef } from './definitions/moneyball';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -56,3 +57,4 @@ modifierRegistry.register(theSnapDef);
 modifierRegistry.register(stormClosesInDef);
 modifierRegistry.register(gravitationalAnomalyDef);
 modifierRegistry.register(cordycepticSpreadDef);
+modifierRegistry.register(moneyballDef);
