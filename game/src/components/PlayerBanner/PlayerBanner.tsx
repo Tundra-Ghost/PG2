@@ -7,6 +7,8 @@ interface PlayerBannerProps {
   badge?: string;
   portraitLabel?: string;
   portraitSrc?: string | null;
+  /** Keeps pixel art crisp when it is scaled up. */
+  portraitPixelArt?: boolean;
   metaLine?: string;
   align?: 'left' | 'right';
   onClick?: () => void;
@@ -19,6 +21,7 @@ export default function PlayerBanner({
   badge,
   portraitLabel,
   portraitSrc,
+  portraitPixelArt = false,
   metaLine,
   align = 'left',
   onClick,
@@ -34,7 +37,7 @@ export default function PlayerBanner({
     >
       <div className={styles.portraitFrame} aria-hidden="true">
         {portraitSrc ? (
-          <img src={portraitSrc} alt="" className={styles.portraitImage} />
+          <img src={portraitSrc} alt="" className={`${styles.portraitImage} ${portraitPixelArt ? styles.portraitPixelArt : ''}`} />
         ) : (
           <div className={styles.portrait}>{portraitLabel ?? role.slice(0, 1)}</div>
         )}

@@ -1,3 +1,4 @@
+import { SPRITES } from '../../characters';
 import type { Piece as ChessPiece } from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import styles from './Piece.module.css';
@@ -15,7 +16,6 @@ export default function Piece({ piece }: PieceProps) {
   const { type, color, cooldowns, isPacifist, isBerserker, isTraitor, hasPromotionChain } = piece;
   const markers: string[] = [];
 
-  if ((cooldowns[GERALD_ID] ?? 0) > 0) markers.push('G');
   if ((cooldowns[WINTER_ID] ?? 0) > 0) markers.push('❄');
   if ((cooldowns[SWAMP_ID] ?? 0) > 0) markers.push('≈');
   if (isPacifist) markers.push('O');
@@ -46,6 +46,7 @@ export default function Piece({ piece }: PieceProps) {
       aria-label={`${color} ${type === 'royal_guard' ? 'royal guard' : type}${markerLabel ? `, ${markerLabel}` : ''}`}
     >
       <PieceArt type={type} color={color} className={styles.symbol} />
+      {(cooldowns[GERALD_ID] ?? 0) > 0 && <img src={SPRITES.gerald} alt="" className={styles.gerald} />}
       {markers.length > 0 && (
         <span className={styles.markerStack} aria-hidden="true">
           {markers.map(marker => (

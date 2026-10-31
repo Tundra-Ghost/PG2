@@ -13,6 +13,7 @@ import {
 } from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import { playCapture, playCastle, playMove } from '../../sound';
+import { SPRITES } from '../../characters';
 import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
 import SquareComponent, { type SquareBurst } from '../Square/Square';
 import PromotionModal from '../PromotionModal/PromotionModal';
@@ -470,7 +471,11 @@ export default function Board({
           <div className={styles.legend} aria-label="Board markers">
             {markerLegend.map(entry => (
               <span key={entry.label} className={styles.legendItem}>
-                <span className={styles.legendMark}>{entry.mark}</span>
+                {entry.mark === 'G' ? (
+                  <img src={SPRITES.gerald} alt="" className={styles.legendSprite} />
+                ) : (
+                  <span className={styles.legendMark}>{entry.mark}</span>
+                )}
                 {entry.label}
               </span>
             ))}

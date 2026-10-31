@@ -24,6 +24,7 @@ interface MoveHistoryProps {
   playerAvatarLabel?: string;
   playerAvatarSrc?: string | null;
   opponentAvatarIcon?: string | null;
+  opponentAvatarSrc?: string | null;
   pendingDialogue?: MatchChatEntry | null;
   onDismissDialogue?: () => void;
   /** The side reading the feed. Defaults to the side to move (hotseat). */
@@ -96,6 +97,7 @@ export default function MoveHistory({
   playerAvatarLabel = 'P',
   playerAvatarSrc = null,
   opponentAvatarIcon = null,
+  opponentAvatarSrc = null,
   pendingDialogue = null,
   onDismissDialogue,
   viewerColor,
@@ -140,7 +142,7 @@ export default function MoveHistory({
         order: ply * 100,
         avatarLabel: actor.slice(0, 1).toUpperCase(),
         avatarIcon: isWhite ? null : (opponentAvatarIcon ?? undefined),
-        portraitSrc: isWhite ? playerAvatarSrc : null,
+        portraitSrc: isWhite ? playerAvatarSrc : opponentAvatarSrc,
       });
 
       for (const [eventIndex, event] of visibleEvents.entries()) {
@@ -197,6 +199,7 @@ export default function MoveHistory({
     eventHistory,
     moveHistory,
     opponentAvatarIcon,
+    opponentAvatarSrc,
     playerAvatarSrc,
     whiteLabel,
   ]);

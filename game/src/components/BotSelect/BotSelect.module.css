@@ -177,6 +177,13 @@
   filter: drop-shadow(0 0 12px rgba(200, 151, 58, 0.20));
 }
 
+.cardSprite {
+  display: block;
+  width: 64px;
+  height: 64px;
+  image-rendering: pixelated;
+}
+
 .cardBody {
   flex: 1;
   min-width: 0;
