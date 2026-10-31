@@ -212,6 +212,8 @@ export default function Square({
         setShowTooltip(false);
       }}
       data-square={square}
+      data-piece={piece ? `${piece.color}-${piece.type}` : undefined}
+      data-legal={isLegalTarget || undefined}
       role="button"
       aria-label={tooltipLines.length > 0 ? `${square}, ${tooltipLines.join(' ')}` : square}
       tabIndex={-1}
