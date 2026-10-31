@@ -11,37 +11,59 @@ import {
 import { playClick } from '../../sound';
 import { deletePuzzle, newPuzzleId, readPuzzles, savePuzzle } from '../../puzzles/puzzleStore';
 import PuzzleEditor from '../PuzzleEditor/PuzzleEditor';
+import PuzzlePlay from '../PuzzlePlay/PuzzlePlay';
+import { STARTER_PUZZLES } from '../../puzzles/starterPuzzles';
+import type { AppSettings } from '../../settings';
 import styles from './PuzzleScreen.module.css';
 
 interface PuzzleScreenProps {
+  settings: AppSettings;
   onBack: () => void;
-  /** Starts a puzzle. Left out while play mode is not wired up. */
-  onPlay?: (puzzle: Puzzle) => void;
 }
 
 function difficultyLabel(puzzle: Puzzle): string {
   return PUZZLE_DIFFICULTIES.find(d => d.id === puzzle.difficulty)?.label ?? 'Egg';
 }
 
-export default function PuzzleScreen({ onBack, onPlay }: PuzzleScreenProps) {
+export default function PuzzleScreen({ settings, onBack }: PuzzleScreenProps) {
   const [puzzles, setPuzzles] = useState<Puzzle[]>(() => readPuzzles());
   const [editing, setEditing] = useState<Puzzle | null>(null);
   const [code, setCode] = useState('');
   const [message, setMessage] = useState<string | null>(null);
+  /** The puzzle on the board, and whether it came from the editor's Test button. */
+  const [playing, setPlaying] = useState<{ puzzle: Puzzle; fromEditor: boolean } | null>(null);
+
+  const play = playing && (
+    <PuzzlePlay
+      puzzle={playing.puzzle}
+      settings={settings}
+      backLabel={playing.fromEditor ? 'Back to editor' : 'Puzzles'}
+      onBack={() => setPlaying(null)}
+    />
+  );
 
   if (editing) {
+    // The editor stays mounted while testing so unsaved changes survive.
     return (
-      <PuzzleEditor
-        key={editing.id}
-        initial={editing}
-        onSave={puzzle => setPuzzles(savePuzzle(puzzle))}
-        onBack={() => {
-          setEditing(null);
-          setPuzzles(readPuzzles());
-        }}
-      />
+      <>
+        <div hidden={Boolean(playing)}>
+          <PuzzleEditor
+            key={editing.id}
+            initial={editing}
+            onSave={puzzle => setPuzzles(savePuzzle(puzzle))}
+            onTest={puzzle => setPlaying({ puzzle, fromEditor: true })}
+            onBack={() => {
+              setEditing(null);
+              setPuzzles(readPuzzles());
+            }}
+          />
+        </div>
+        {play}
+      </>
     );
   }
+
+  if (play) return play;
 
   function importCode() {
     playClick();
@@ -69,6 +91,61 @@ export default function PuzzleScreen({ onBack, onPlay }: PuzzleScreenProps) {
   function remove(puzzle: Puzzle) {
     if (!window.confirm(`Delete "${puzzle.title}"?`)) return;
     setPuzzles(deletePuzzle(puzzle.id));
+  }
+
+  function renderCard(puzzle: Puzzle, starter: boolean) {
+    const ready = validatePuzzle(puzzle).length === 0;
+    return (
+      <li key={puzzle.id} className={styles.card}>
+        <div className={styles.cardText}>
+          <span className={styles.cardMeta}>
+            {difficultyLabel(puzzle)}
+            {puzzle.modifiers.length > 0 &&
+              ` · ${puzzle.modifiers.length} modifier${puzzle.modifiers.length === 1 ? '' : 's'}`}
+            {puzzle.author && ` · by ${puzzle.author}`}
+            {!ready && ' · Draft'}
+          </span>
+          <strong>{puzzle.title}</strong>
+          <span>{describeGoal(puzzle)}</span>
+        </div>
+        <div className={styles.cardActions}>
+          <button
+            type="button"
+            className={styles.primaryButton}
+            disabled={!ready}
+            title={ready ? undefined : 'Open the editor to fix this puzzle'}
+            onClick={() => {
+              playClick();
+              setPlaying({ puzzle, fromEditor: false });
+            }}
+          >
+            Play
+          </button>
+          {starter ? (
+            <button
+              type="button"
+              className={styles.button}
+              title="Make your own copy to change"
+              onClick={() => setEditing({ ...puzzle, id: newPuzzleId(), title: `${puzzle.title} (copy)`, author: '' })}
+            >
+              Copy to edit
+            </button>
+          ) : (
+            <>
+              <button type="button" className={styles.button} onClick={() => setEditing(puzzle)}>
+                Edit
+              </button>
+              <button type="button" className={styles.button} onClick={() => copy(puzzle)}>
+                Copy code
+              </button>
+              <button type="button" className={styles.button} onClick={() => remove(puzzle)}>
+                Delete
+              </button>
+            </>
+          )}
+        </div>
+      </li>
+    );
   }
 
   return (
@@ -115,55 +192,15 @@ export default function PuzzleScreen({ onBack, onPlay }: PuzzleScreenProps) {
       </form>
       {message && <p className={styles.message}>{message}</p>}
 
+      <h2 className={styles.sectionTitle}>Your puzzles</h2>
       {puzzles.length === 0 ? (
-        <p className={styles.empty}>No puzzles yet. Make one, or paste a code from a friend.</p>
+        <p className={styles.empty}>No puzzles yet. Make one, copy a starter, or paste a code from a friend.</p>
       ) : (
-        <ul className={styles.list}>
-          {puzzles.map(puzzle => {
-            const ready = validatePuzzle(puzzle).length === 0;
-            return (
-              <li key={puzzle.id} className={styles.card}>
-                <div className={styles.cardText}>
-                  <span className={styles.cardMeta}>
-                    {difficultyLabel(puzzle)}
-                    {puzzle.modifiers.length > 0 &&
-                      ` · ${puzzle.modifiers.length} modifier${puzzle.modifiers.length === 1 ? '' : 's'}`}
-                    {puzzle.author && ` · by ${puzzle.author}`}
-                    {!ready && ' · Draft'}
-                  </span>
-                  <strong>{puzzle.title}</strong>
-                  <span>{describeGoal(puzzle)}</span>
-                </div>
-                <div className={styles.cardActions}>
-                  {onPlay && (
-                    <button
-                      type="button"
-                      className={styles.primaryButton}
-                      disabled={!ready}
-                      title={ready ? undefined : 'Open the editor to fix this puzzle'}
-                      onClick={() => {
-                        playClick();
-                        onPlay(puzzle);
-                      }}
-                    >
-                      Play
-                    </button>
-                  )}
-                  <button type="button" className={styles.button} onClick={() => setEditing(puzzle)}>
-                    Edit
-                  </button>
-                  <button type="button" className={styles.button} onClick={() => copy(puzzle)}>
-                    Copy code
-                  </button>
-                  <button type="button" className={styles.button} onClick={() => remove(puzzle)}>
-                    Delete
-                  </button>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <ul className={styles.list}>{puzzles.map(puzzle => renderCard(puzzle, false))}</ul>
       )}
+
+      <h2 className={styles.sectionTitle}>Starter puzzles</h2>
+      <ul className={styles.list}>{STARTER_PUZZLES.map(puzzle => renderCard(puzzle, true))}</ul>
     </div>
   );
 }

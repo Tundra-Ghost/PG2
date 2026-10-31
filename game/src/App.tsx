@@ -631,7 +631,7 @@ export default function App() {
   if (baseScreen === 'puzzles') {
     return (
       <div onClick={handleUnlock}>
-        <PuzzleScreen onBack={() => setScreen('menu')} />
+        <PuzzleScreen settings={settings} onBack={() => setScreen('menu')} />
         {settingsOverlay}
       </div>
     );
