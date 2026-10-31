@@ -12,6 +12,7 @@ Primary product references:
 - `docs/tdd.md`
 - `docs/art-direction.md`
 - `docs/modifier-bible.md`
+- `docs/characters.md`
 - `docs/modifier-hook-model.md`
 
 ## Top-Level Structure
