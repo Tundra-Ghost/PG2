@@ -87,3 +87,26 @@ export type {
   SocialClientEvents,
   SocialServerEvents,
 } from './net/social';
+
+export {
+  ALL_SQUARES,
+  MAX_PUZZLE_MOVES,
+  PUZZLE_DIFFICULTIES,
+  PUZZLE_PIECE_TYPES,
+  buildPuzzleState,
+  createEmptyPuzzle,
+  decodePuzzle,
+  describeGoal,
+  encodePuzzle,
+  getPuzzleProgress,
+  validatePuzzle,
+} from './puzzle/puzzle';
+export type {
+  Puzzle,
+  PuzzleDifficulty,
+  PuzzleGoal,
+  PuzzleModifier,
+  PuzzlePiece,
+  PuzzleProgress,
+  PuzzleStatus,
+} from './puzzle/puzzle';
