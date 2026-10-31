@@ -7,7 +7,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Phase 0 prototype is playable locally in `game/`
 - Architecture is client-side today
 - TDD target architecture is server-authoritative shared game-core
-- 28 modifier definitions are registered, while the modifier bible defines 40 cards
+- 29 modifier definitions are registered, while the modifier bible defines 40 cards
 - Vitest is now installed in `game/` and baseline engine tests are passing
 - Engine tests now cover opening movement, wrong-turn rejection, self-check rejection, castling safety/rights, en passant, promotion, checkmate, stalemate, threefold repetition, 50-move rule, and insufficient material
 - Engine rule-regression coverage now also includes rook-capture castling-rights loss, en-passant expiry, pinned-piece legal movement along the pin line, and SAN disambiguation/capture notation
@@ -59,6 +59,8 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] MOD-A005 The Storm Closes In (corners first, 6×6 after turn 32; kings spared until they step off)
 - [x] MOD-A007 Gravitational Anomaly (sideways only, east then west every 12 turns; pawns keep their direction)
 - [x] Storm: pawns promote on the last open rank once the square ahead is storm (Tanner confirmed 2026-10-30)
+- [x] MOD-D007 Recalculating… (1-2 fake dots per selection; picking one flashes RECALCULATING… and you pick again)
+- [ ] UX: info messages ("That piece is frozen", ability errors) show in the footer, below the fold on a 1366×768 screen. Show them near the board.
 - [x] MOD-B004 Heavy Is The Crown (King moves take an order turn first; free in check; abilities now count as moves for skip-turn checks)
 - [x] MOD-E008 Moneyball (captures earn tokens, King's Buy back drops a lost piece; no check, no back-rank pawns)
 - [x] MOD-A001 The Cordyceptic Spread (new Infected tile every 5 rounds, 25% spread per round, sliders lose reach, pawns lose double step, bishop/queen clears)

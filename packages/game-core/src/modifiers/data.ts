@@ -500,6 +500,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'When you select a piece, legal move highlights include 1–2 false squares. Attempting a false square triggers "RECALCULATING…" and wastes your selection. All actual legal moves are still highlighted.',
     flavor: '"Viktor selected his knight. The board suggested f9. Viktor tried f9. f9 does not exist. RECALCULATING."',
+    prototypeRules:
+      'When either player selects a piece, 1 or 2 fake move dots appear near it. Picking a fake one shows RECALCULATING… and you choose again. No move is lost. Real moves are always shown. Bots are not fooled.',
   },
   {
     id: 'MOD-D008',
