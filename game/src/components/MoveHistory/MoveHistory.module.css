@@ -371,10 +371,14 @@
 }
 
 @media (max-width: 720px) {
+  /* Fills the pull-up drawer; the list inside scrolls. */
   .panel {
-    min-height: 280px;
-    height: 280px;
+    min-height: 0;
+    height: 100%;
     flex: none;
+    border-width: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .mobileDialogueOverlay {
@@ -409,12 +413,6 @@
 }
 
 @media (max-width: 480px) {
-  .panel {
-    min-height: 240px;
-    height: 240px;
-    flex: none;
-  }
-
   .mobileDialogueOverlay {
     inset: 3rem 0 auto;
   }

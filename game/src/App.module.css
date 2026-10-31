@@ -117,11 +117,6 @@
   width: 100%;
 }
 
-/* Moves/Chat vs Modifiers switch: phones only. */
-.mobileTabs {
-  display: none;
-}
-
 /* Legacy alias kept for reference — not used */
 .boardStage {
   display: flex;
@@ -241,11 +236,13 @@
     white-space: nowrap;
   }
 
+  /* Room for the bar pinned to the bottom. */
   .main {
-    padding: 0.4rem 0.35rem 1rem;
+    padding: 0.4rem 0.35rem calc(4.2rem + env(safe-area-inset-bottom));
   }
 
   .matchHud {
+    --match-drawer-height: 46dvh;
     gap: 0.45rem;
   }
 
@@ -256,11 +253,14 @@
 
   .opponentSlot { order: 1; }
   .boardOnly    { order: 2; }
-  .selfSlot     { order: 3; }
-  .gameFooter   { order: 4; }
-  .mobileTabs   { order: 5; }
-  .logDock,
-  .modifierDock { order: 6; }
+  /* The ticker is order 3 (MatchDrawer.module.css). */
+  .selfSlot     { order: 4; }
+  .gameFooter   { order: 5; }
+
+  .opponentSlot,
+  .selfSlot {
+    position: relative;
+  }
 
   .boardOnly {
     grid-column: auto;
@@ -276,46 +276,31 @@
     border-radius: 12px;
   }
 
-  .mobileTabs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.25rem;
-    padding: 0.25rem;
-    margin-top: 0.3rem;
-    background: rgb(var(--ink-rgb) / 0.55);
-    border: 1px solid rgb(var(--gold-rgb) / 0.18);
-    border-radius: 999px;
-  }
-
-  .mobileTab {
-    padding: 0.55rem 0.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgb(var(--gold-rgb) / 0.65);
-    background: transparent;
-    border: none;
-    border-radius: 999px;
-    cursor: pointer;
-  }
-
-  .mobileTabOn {
-    color: var(--ui-ink);
-    background: var(--ui-gold);
-  }
-
-  .matchHud[data-mobile-tab='feed'] .modifierDock,
-  .matchHud[data-mobile-tab='modifiers'] .logDock {
-    display: none;
-  }
-
+  /* The panels live in a drawer over the lower screen, so no move or message
+     ever changes the page's height or position. */
   .logDock,
   .modifierDock {
+    position: fixed;
+    z-index: 41;
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
+    height: var(--match-drawer-height);
     min-height: 0;
     max-height: none;
-    overflow: visible;
+    overflow-y: auto;
+    background: var(--ui-bg-dark);
+    visibility: hidden;
+    transform: translateY(100%);
+    transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.24s;
+  }
+
+  .matchHud[data-drawer='open'][data-mobile-tab='feed'] .logDock,
+  .matchHud[data-drawer='open'][data-mobile-tab='modifiers'] .modifierDock {
+    visibility: visible;
+    transform: none;
+    transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .modifierDockCollapsed {

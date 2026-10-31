@@ -359,6 +359,11 @@
     min-width: 0;
   }
 
+  /* The drawer already collapses this panel. */
+  .collapseBtn {
+    display: none;
+  }
+
   .panelCollapsed {
     min-height: 72px;
   }

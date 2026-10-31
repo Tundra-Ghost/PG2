@@ -1,5 +1,5 @@
 import type { GameEvent, GameState } from '@pigeon-chess/game-core';
-import { MODIFIER_IDS } from '@pigeon-chess/game-core';
+import { MODIFIER_IDS, blackoutMovesLeft, isHistoryBlackout, type Color } from '@pigeon-chess/game-core';
 
 export interface MatchChatEntry {
   id: string;
@@ -17,6 +17,41 @@ export interface MatchChatEntry {
   dialogueTheme?: 'player' | 'chick' | 'measured' | 'grandmaster' | 'npc';
   dialogueExpression?: 'neutral' | 'shocked' | 'smug' | 'frustrated';
   shownInDialogue?: boolean;
+  /** Already shown on screen as it was spoken, so it needs no chat bubble. */
+  spokenLive?: boolean;
+}
+
+export function formatActorMove(label: string, notation: string): string {
+  return label === 'You' ? `${label} play: ${notation}` : `${label} plays: ${notation}`;
+}
+
+export function formatEventMessage(message: string, whiteLabel: string, blackLabel: string): string {
+  return message
+    .replace(/\bwhite ([a-z_]+)/gi, `${whiteLabel}'s $1`)
+    .replace(/\bblack ([a-z_]+)/gi, `${blackLabel}'s $1`)
+    .replace(/\bwhite\b/gi, whiteLabel)
+    .replace(/\bblack\b/gi, blackLabel);
+}
+
+/**
+ * The newest move or modifier event as one line, for the ticker under the
+ * board. Follows the same rules as the log, so a side under 50 First Moves
+ * can't read the moves here either.
+ */
+export function latestFeedLine(state: GameState, whiteLabel: string, blackLabel: string, viewer?: Color): string {
+  const { moveHistory, eventHistory } = state;
+  if (state.status === 'active' && isHistoryBlackout(state, viewer ?? state.turn)) {
+    const left = blackoutMovesLeft(state);
+    return `You cannot remember any moves. Memory returns in ${left} move${left === 1 ? '' : 's'}.`;
+  }
+  const lastEvent = eventHistory[eventHistory.length - 1];
+  if (lastEvent && lastEvent.ply >= moveHistory.length) {
+    return `${lastEvent.title}: ${formatEventMessage(lastEvent.message, whiteLabel, blackLabel)}`;
+  }
+  const lastMove = moveHistory[moveHistory.length - 1];
+  if (!lastMove) return 'No moves yet.';
+  const actor = lastMove.pieceMoved.color === 'white' ? whiteLabel : blackLabel;
+  return formatActorMove(actor, lastMove.notation);
 }
 
 export function getDerivedFeedOrder(
