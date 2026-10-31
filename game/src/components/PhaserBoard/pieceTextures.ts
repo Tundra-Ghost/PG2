@@ -48,6 +48,10 @@ export function renderPieceCanvas(type: string, color: Color, size: number): Pro
       canvas.height = size;
       const ctx = canvas.getContext('2d');
       if (!ctx) return resolve(null);
+      // The drop shadow is baked in here rather than added as a WebGL effect.
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      ctx.shadowBlur = size * 0.05;
+      ctx.shadowOffsetY = size * 0.025;
       ctx.drawImage(img, 0, 0, size, size);
       resolve(canvas);
     };
