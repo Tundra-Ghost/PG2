@@ -38,6 +38,7 @@ export { isFrozenZoneSquare } from './modifiers/definitions/winter';
 export { getInfectedReach } from './modifiers/definitions/cordyceptic-spread';
 export { getCrownOrders } from './modifiers/definitions/heavy-is-the-crown';
 export { getFakeMoveHints } from './modifiers/definitions/recalculating';
+export { getPigeonHops } from './modifiers/definitions/hatoful-gambit';
 export { isSwampSquare, SWAMP_SQUARES } from './modifiers/definitions/swamp';
 export { getQuietZoneSquares } from './modifiers/definitions/quiet-quitting';
 export { getBankedEnPassant } from './modifiers/definitions/banked-en-passant';

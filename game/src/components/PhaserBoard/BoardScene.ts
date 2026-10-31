@@ -278,6 +278,19 @@ export class BoardScene extends Phaser.Scene {
           .setOrigin(0, 0).setDepth(DEPTH.tileIcons),
       );
     }
+    if (view.pigeonHop) {
+      // Dashed teal ring with a target dot: a Pigeon lands here next move.
+      const steps = 12;
+      tiles.lineStyle(3, 0x3ab0a0, 0.95);
+      for (let i = 0; i < steps; i += 2) {
+        const a0 = (i / steps) * Math.PI * 2;
+        const a1 = ((i + 1) / steps) * Math.PI * 2;
+        tiles.beginPath();
+        tiles.arc(cx, cy, CELL * 0.36, a0, a1);
+        tiles.strokePath();
+      }
+      tiles.fillStyle(0x3ab0a0, 0.9).fillCircle(cx, cy, CELL * 0.06);
+    }
     if (view.crownOrder) {
       const inset = CELL * 0.12;
       const size = CELL - inset * 2;

@@ -27,6 +27,7 @@ export const MODIFIER_IDS = {
   chancellor: 'MOD-E004',
   twinTelepathy: 'MOD-E005',
   moneyball: 'MOD-E008',
+  hatofulGambit: 'MOD-E001',
   recalculating: 'MOD-D007',
 } as const;
 

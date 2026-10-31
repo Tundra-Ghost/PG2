@@ -387,10 +387,11 @@ One tile is the Surveillance Square, a golden eye both players see. Any piece th
 Non-standard piece setups. Both players see both armies before the match.
 
 ### MOD-E001 · Hatoful Gambit (The Flock Army)
-*Ref: Hatoful Boyfriend / pigeon chess meme* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Hatoful Boyfriend / pigeon chess meme* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Both of the owner's knights become Pigeons. Pigeons move like knights. Every 5 rounds each Pigeon announces, one move ahead, a square it will hop to on its own, and then hops there. Hops can capture. Both players see the destination.
 
+- Built: the hop square shows as a dashed teal ring. A hop never takes a King or leaves a King in check. If the square is no longer safe, the Pigeon stays put.
 - Gerald will not sit on Pigeons.
 - Synergy: Did I Do That? Pigeons can use the rook move.
 
@@ -484,7 +485,7 @@ Values the game uses today. "Built" cards match the build.
 | D006 | Cat Mode | D | B | 1 | 0 | Owner | Design |
 | D007 | Recalculating… | D | A | 3 | 1 | Shared | Built |
 | D008 | Big Beak Is Watching | D | B | 2 | 0 | Shared | Design |
-| E001 | Hatoful Gambit | E | S | 5 | 0 | Owner | Design |
+| E001 | Hatoful Gambit | E | S | 5 | 0 | Owner | Built |
 | E002 | The Small Council | E | A | 3 | 0 | Owner | Built |
 | E003 | Yeah, There Are Three Of Them | E | A | 3 | 0 | Owner | Built |
 | E004 | Equivalent Exchange | E | S | 5 | 0 | Owner | Built |
@@ -493,7 +494,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 
-29 of 40 built. Scope for Design cards is a proposal.
+30 of 40 built. Scope for Design cards is a proposal.
 
 ### Balance test plan
 

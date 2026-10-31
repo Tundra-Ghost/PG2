@@ -17,7 +17,7 @@ interface Ledger {
 }
 
 const LETTER: Partial<Record<PieceType, string>> = {
-  queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: 'P', chancellor: 'C', royal_guard: 'G',
+  queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: 'P', chancellor: 'C', royal_guard: 'G', pigeon: 'H',
 };
 
 function ledgers(state: GameState): Partial<Record<Color, Ledger>> {

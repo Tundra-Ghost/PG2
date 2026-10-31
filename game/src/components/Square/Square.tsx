@@ -37,6 +37,9 @@ function getPieceTooltipLines(piece: PieceType | undefined, infectedReach: numbe
   if (piece.isPacifist) {
     lines.push('Conscientious Objector: This piece refuses to capture.');
   }
+  if (piece.type === 'pigeon') {
+    lines.push('Pigeon: Moves like a knight. Every 5 rounds it picks a square and hops there on its own.');
+  }
   if (piece.type === 'chancellor') {
     lines.push('Chancellor: Moves like a rook or a knight.');
   }
@@ -108,6 +111,7 @@ export default function Square({
   isSwamp,
   infectedReach,
   crownOrder,
+  pigeonHop,
   isShaft,
   storm,
   quietZone,
@@ -123,6 +127,7 @@ export default function Square({
   const tooltipLines = [
     ...pieceTooltipLines,
     ...tileTooltipLines,
+    ...(pigeonHop ? [`Hatoful Gambit: the ${pigeonHop} pigeon hops here on the next move.`] : []),
     ...(crownOrder ? [`Heavy Is The Crown: the ${crownOrder} king is ordered here. It can move here on its next turn.`] : []),
   ];
   const hasTooltip = tooltipLines.length > 0;

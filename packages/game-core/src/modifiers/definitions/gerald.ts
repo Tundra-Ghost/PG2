@@ -28,7 +28,7 @@ export const geraldDef: ModifierDefinition = {
 
     // Pick one random non-king piece belonging to the current player and lock it.
     const candidates = Array.from(state.pieces.values()).filter(
-      p => p.color === state.turn && p.type !== 'king',
+      p => p.color === state.turn && p.type !== 'king' && p.type !== 'pigeon',
     );
     if (candidates.length === 0) return state;
 
