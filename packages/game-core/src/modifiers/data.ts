@@ -463,6 +463,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Each player has a randomly assigned 2×2 Blind Spot they cannot see even if adjacent. Blind Spots differ per player and shift every 15 turns. Players see their Blind Spot outline but not the contents.',
     flavor: '"Viktor knows there is a 2×2 area he cannot see. Viktor knows that he does not know. Viktor is spiralling."',
+    prototypeRules:
+      'Each player has a 2×2 Blind Spot in the middle of the board, marked by a dashed outline. Enemy pieces inside it are hidden, and enemy moves into it are not shown in the log. The two spots never overlap and move every 15 rounds. Bots still see the whole board.',
   },
   {
     id: 'MOD-D005',

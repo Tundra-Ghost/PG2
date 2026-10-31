@@ -30,6 +30,7 @@ export const MODIFIER_IDS = {
   hatofulGambit: 'MOD-E001',
   recalculating: 'MOD-D007',
   darkAndScared: 'MOD-D001',
+  knownUnknowns: 'MOD-D004',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];

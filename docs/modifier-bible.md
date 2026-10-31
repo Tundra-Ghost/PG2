@@ -354,9 +354,11 @@ The owner places 2 Ghost Pieces during setup. They look real to the opponent. A 
 Every 10 rounds, and on each capture, a 2×2 smoke cloud appears there for 3 rounds. Pieces inside are hidden from the opponent of whoever made the cloud. Movement through smoke is normal.
 
 ### MOD-D004 · Known Unknowns (The Rumsfeld)
-*Ref: Rumsfeld press conference* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Design**
+*Ref: Rumsfeld press conference* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
 Each player has a 2×2 Blind Spot they cannot see into. Blind Spots differ per player and move every 15 rounds. Players see the outline of their own Blind Spot.
+
+- Built: spots sit in ranks 3-6 and never overlap. Your own pieces inside your spot stay visible. Bots still see the whole board.
 
 ### MOD-D005 · Sus (One Of These Is Lying)
 *Ref: Among Us* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -481,7 +483,7 @@ Values the game uses today. "Built" cards match the build.
 | D001 | It's Dark And I'm Scared | D | S | 4 | 1 | Shared | Built |
 | D002 | I'm Literally Right Here | D | A | 3 | 0 | Owner | Design |
 | D003 | What's In The Cloud, Bro | D | B | 2 | 0 | Shared | Design |
-| D004 | Known Unknowns | D | B | 2 | 1 | Shared | Design |
+| D004 | Known Unknowns | D | B | 2 | 1 | Shared | Built |
 | D005 | Sus | D | A | 3 | 0 | Owner | Design |
 | D006 | Cat Mode | D | B | 1 | 0 | Owner | Design |
 | D007 | Recalculating… | D | A | 3 | 1 | Shared | Built |
@@ -495,7 +497,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 
-31 of 40 built. Scope for Design cards is a proposal.
+32 of 40 built. Scope for Design cards is a proposal.
 
 ### Balance test plan
 

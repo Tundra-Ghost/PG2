@@ -197,6 +197,7 @@ export class BoardScene extends Phaser.Scene {
         fog.fillStyle(0x2a2440, 0.25).fillCircle(x + CELL * 0.3, y + CELL * 0.35, CELL * 0.22);
         fog.fillStyle(0x2a2440, 0.18).fillCircle(x + CELL * 0.7, y + CELL * 0.65, CELL * 0.26);
       }
+      if (view.blindSpot) this.drawBlindSpotEdges(index, x, y);
       if (view.burst) this.playBurst(view, cx, cy);
 
       if (view.isLegalTarget) {
@@ -442,5 +443,25 @@ export class BoardScene extends Phaser.Scene {
       ],
       onComplete: () => g.destroy(),
     });
+  }
+
+  /** Known Unknowns: a dashed violet line around the viewer's Blind Spot. */
+  private drawBlindSpotEdges(index: number, x: number, y: number) {
+    const col = index % 8;
+    const inSpot = (i: number) => i >= 0 && i < 64 && this.views[i]?.blindSpot === true;
+    const g = this.fogLayer;
+    g.lineStyle(3, 0x9a7ad8, 0.95);
+    const dashed = (x1: number, y1: number, x2: number, y2: number) => {
+      const steps = 4;
+      for (let i = 0; i < steps; i++) {
+        const t0 = i / steps;
+        const t1 = (i + 0.6) / steps;
+        g.lineBetween(x1 + (x2 - x1) * t0, y1 + (y2 - y1) * t0, x1 + (x2 - x1) * t1, y1 + (y2 - y1) * t1);
+      }
+    };
+    if (!inSpot(index - 8)) dashed(x, y + 1.5, x + CELL, y + 1.5);
+    if (!inSpot(index + 8)) dashed(x, y + CELL - 1.5, x + CELL, y + CELL - 1.5);
+    if (col === 0 || !inSpot(index - 1)) dashed(x + 1.5, y, x + 1.5, y + CELL);
+    if (col === 7 || !inSpot(index + 1)) dashed(x + CELL - 1.5, y, x + CELL - 1.5, y + CELL);
   }
 }

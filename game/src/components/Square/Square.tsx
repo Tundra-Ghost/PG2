@@ -113,6 +113,7 @@ export default function Square({
   crownOrder,
   pigeonHop,
   isHidden,
+  blindSpot,
   isShaft,
   storm,
   quietZone,
@@ -128,7 +129,7 @@ export default function Square({
   const tooltipLines = [
     ...pieceTooltipLines,
     ...tileTooltipLines,
-    ...(isHidden ? ['Dark: you cannot see this square.'] : []),
+    ...(blindSpot ? ['Known Unknowns: your Blind Spot. You cannot see enemy pieces here.'] : isHidden ? ['Dark: you cannot see this square.'] : []),
     ...(pigeonHop ? [`Hatoful Gambit: the ${pigeonHop} pigeon hops here on the next move.`] : []),
     ...(crownOrder ? [`Heavy Is The Crown: the ${crownOrder} king is ordered here. It can move here on its next turn.`] : []),
   ];
