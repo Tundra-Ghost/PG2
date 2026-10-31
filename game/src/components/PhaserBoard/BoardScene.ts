@@ -11,7 +11,9 @@ const PIECE_PX = 64;
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 
 // Draw order, bottom to top.
-const DEPTH = { squares: 0, tiles: 1, pulse: 2, tileIcons: 2.5, pieces: 3, badges: 4, marks: 5 };
+const DEPTH = { squares: 0, tiles: 1, pulse: 2, tileIcons: 2.5, pieces: 3, badges: 4, marks: 5, bursts: 6 };
+const MOVE_MS = 140;
+const BURST_MS = 1100;
 
 interface Theme {
   frame: number;
@@ -86,6 +88,9 @@ export class BoardScene extends Phaser.Scene {
   private labels: Phaser.GameObjects.GameObject[] = [];
   private pieceSprites = new Map<string, Phaser.GameObjects.Image>();
   private geraldSprites = new Map<string, Phaser.GameObjects.Image>();
+  /** Burst keys already played, so a redraw never replays a flash. */
+  private playedBursts = new Set<string>();
+  private calm = false;
 
   constructor() {
     super('board');
@@ -107,8 +112,10 @@ export class BoardScene extends Phaser.Scene {
     this.pulseLayer = this.add.graphics().setDepth(DEPTH.pulse);
     this.badgeLayer = this.add.graphics().setDepth(DEPTH.badges);
     this.markLayer = this.add.graphics().setDepth(DEPTH.marks);
-    const calm = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (!calm) {
+    this.calm = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    // Flashes already on screen when the board opens are not replayed.
+    for (const view of this.views) if (view.burst) this.playedBursts.add(`${view.burst.key}:${view.square}`);
+    if (!this.calm) {
       // Lava and storm warnings breathe, like their CSS versions.
       this.tweens.add({ targets: this.pulseLayer, alpha: 0.55, duration: 750, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     }
@@ -150,6 +157,7 @@ export class BoardScene extends Phaser.Scene {
       }
 
       this.drawTile(view, x, y, tiles, pulse);
+      if (view.burst) this.playBurst(view, cx, cy);
 
       if (view.isLegalTarget) {
         marks.fillStyle(theme.legal[0], theme.legal[1]);
@@ -171,7 +179,7 @@ export class BoardScene extends Phaser.Scene {
       } else if (sprite.texture.key !== texture) {
         sprite.setTexture(texture).setDisplaySize(PIECE_PX, PIECE_PX);
       }
-      sprite.setPosition(cx, cy);
+      this.placeSprite(sprite, cx, cy);
       this.styleSprite(sprite, worn.berserker, worn.traitor);
 
       if (worn.gerald) {
@@ -273,6 +281,61 @@ export class BoardScene extends Phaser.Scene {
           .setOrigin(1, 1).setDepth(DEPTH.tileIcons),
       );
     }
+  }
+
+  /** Pieces glide to their new square instead of jumping. */
+  private placeSprite(sprite: Phaser.GameObjects.Image, x: number, y: number) {
+    this.tweens.killTweensOf(sprite);
+    const fresh = sprite.x === 0 && sprite.y === 0;
+    if (this.calm || fresh || (sprite.x === x && sprite.y === y)) {
+      sprite.setPosition(x, y);
+      return;
+    }
+    sprite.setDepth(DEPTH.pieces + 0.5);
+    this.tweens.add({
+      targets: sprite,
+      x,
+      y,
+      duration: MOVE_MS,
+      ease: 'Quad.easeOut',
+      onComplete: () => sprite.setDepth(DEPTH.pieces),
+    });
+  }
+
+  /** A one-shot flash where a modifier just struck, like the DOM .burst. */
+  private playBurst(view: SquareView, cx: number, cy: number) {
+    const burst = view.burst!;
+    const id = `${burst.key}:${view.square}`;
+    if (this.playedBursts.has(id)) return;
+    this.playedBursts.add(id);
+    if (this.calm) return;
+
+    const g = this.add.graphics().setDepth(DEPTH.bursts).setPosition(cx, cy);
+    const half = CELL / 2;
+    if (burst.kind === 'lava') {
+      glow(g, 0, 0, half * 1.1, 0x961e0a, 0.6);
+      glow(g, 0, 0, half * 0.8, 0xf06018, 0.85);
+      glow(g, 0, 0, half * 0.4, 0xffd678, 0.95);
+    } else if (burst.kind === 'berserker') {
+      glow(g, 0, 0, half * 1.1, 0xc8141e, 0.5);
+      glow(g, 0, 0, half * 0.6, 0xff7878, 0.55);
+      g.lineStyle(3, 0xd21e28, 0.9).strokeRect(-half + 1.5, -half + 1.5, CELL - 3, CELL - 3);
+    } else if (burst.kind === 'storm') {
+      glow(g, 0, 0, half * 1.1, 0x283258, 0.4);
+      glow(g, 0, 0, half * 0.7, 0x8c96dc, 0.6);
+      glow(g, 0, 0, half * 0.35, 0xebf0ff, 0.9);
+    } else {
+      g.lineStyle(3, 0xc8973a, 1).strokeRect(-half + 1.5, -half + 1.5, CELL - 3, CELL - 3);
+    }
+    g.setScale(0.4).setAlpha(0);
+    this.tweens.chain({
+      targets: g,
+      tweens: [
+        { scale: 1.15, alpha: 1, duration: BURST_MS * 0.18, ease: 'Quad.easeOut' },
+        { scale: 1.35, alpha: 0, duration: BURST_MS * 0.82, ease: 'Quad.easeOut' },
+      ],
+      onComplete: () => g.destroy(),
+    });
   }
 
   /** Berserkers smoulder and warned traitors glow red (WebGL only). */
