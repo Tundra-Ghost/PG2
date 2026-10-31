@@ -332,10 +332,11 @@ When an enemy pawn double-steps past your pawn, your pawn banks the en passant. 
 Information is power. These cards restrict, corrupt, or weaponise visibility. They apply to both players unless stated. All fog cards need per-player views, so none are built yet. Online, the server must never send hidden pieces to a player (see TDD).
 
 ### MOD-D001 · It's Dark And I'm Scared
-*Ref: Minecraft night* · **Tier S** · Cost 4 · Curse 1 · Scope: Shared · Modes: All · **Design**
+*Ref: Minecraft night* · **Tier S** · Cost 4 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
 Both players see only within 2 squares of their own pieces. The rest is dark. Pigeon pieces are always visible.
 
+- Built: dark squares are drawn as fog. Enemy moves that land in the dark show as "moves in the dark" in the log. Bots still see the whole board for now.
 - Synergy: Forgive Me, For I Have Moved. Reveals the target through fog.
 - Synergy: Vent Tiles. Vents are invisible in fog.
 
@@ -477,7 +478,7 @@ Values the game uses today. "Built" cards match the build.
 | C006 | FOR THE EMPEROR | C | A | 4 | 1 | Owner | Built |
 | C007 | This Is Necessary | C | A | 4 | 0 | Owner | Built |
 | C008 | I've Been Waiting For This | C | B | 2 | 0 | Owner | Built |
-| D001 | It's Dark And I'm Scared | D | S | 4 | 1 | Shared | Design |
+| D001 | It's Dark And I'm Scared | D | S | 4 | 1 | Shared | Built |
 | D002 | I'm Literally Right Here | D | A | 3 | 0 | Owner | Design |
 | D003 | What's In The Cloud, Bro | D | B | 2 | 0 | Shared | Design |
 | D004 | Known Unknowns | D | B | 2 | 1 | Shared | Design |
@@ -494,7 +495,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 
-30 of 40 built. Scope for Design cards is a proposal.
+31 of 40 built. Scope for Design cards is a proposal.
 
 ### Balance test plan
 

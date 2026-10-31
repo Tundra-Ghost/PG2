@@ -422,6 +422,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Both players can only see within 2 squares of their own pieces. The rest: black. Pigeon pieces are always visible — they have luminescent tail feathers.',
     flavor: '"Viktor can see two squares in any direction. The other sixty-one squares are a philosophical position."',
+    prototypeRules:
+      'Each player sees only within 2 squares of their own pieces. The rest of the board is dark, and enemy moves into the dark are not shown in the log. Pigeons are always visible. Bots still see the whole board.',
   },
   {
     id: 'MOD-D002',

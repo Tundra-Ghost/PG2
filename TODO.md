@@ -7,7 +7,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Phase 0 prototype is playable locally in `game/`
 - Architecture is client-side today
 - TDD target architecture is server-authoritative shared game-core
-- 30 modifier definitions are registered, while the modifier bible defines 40 cards
+- 31 modifier definitions are registered, while the modifier bible defines 40 cards
 - Vitest is now installed in `game/` and baseline engine tests are passing
 - Engine tests now cover opening movement, wrong-turn rejection, self-check rejection, castling safety/rights, en passant, promotion, checkmate, stalemate, threefold repetition, 50-move rule, and insufficient material
 - Engine rule-regression coverage now also includes rook-capture castling-rights loss, en-passant expiry, pinned-piece legal movement along the pin line, and SAN disambiguation/capture notation
@@ -59,6 +59,9 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] MOD-A005 The Storm Closes In (corners first, 6×6 after turn 32; kings spared until they step off)
 - [x] MOD-A007 Gravitational Anomaly (sideways only, east then west every 12 turns; pawns keep their direction)
 - [x] Storm: pawns promote on the last open rank once the square ahead is storm (Tanner confirmed 2026-10-30)
+- [x] Fog of war layer: `getVisibleSquares` combines fog cards; the board draws hidden squares dark and hides enemy pieces there; the log hides enemy moves into the dark
+- [x] MOD-D001 It's Dark And I'm Scared (2-square vision around own pieces; pigeons always visible)
+- [ ] Fog: bots still see the whole board; online play shows fog from the player's side only once draft works online
 - [x] MOD-E001 Hatoful Gambit (owner's knights become Pigeons; every 5 rounds they announce a square and hop there one move later)
 - [x] MOD-D007 Recalculating… (1-2 fake dots per selection; picking one flashes RECALCULATING… and you pick again)
 - [ ] UX: info messages ("That piece is frozen", ability errors) show in the footer, below the fold on a 1366×768 screen. Show them near the board.

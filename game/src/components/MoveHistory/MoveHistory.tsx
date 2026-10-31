@@ -3,7 +3,9 @@ import {
   MODIFIER_IDS,
   blackoutMovesLeft,
   getWinner,
+  getVisibleSquares,
   isHistoryBlackout,
+  isMoveHidden,
   type Color,
   type GameEvent,
   type GameState,
@@ -124,6 +126,9 @@ export default function MoveHistory({
     }
 
     const feedEntries: FeedEntry[] = [];
+    // Fog cards: the opponent's moves into the dark are not readable.
+    const viewer = viewerColor ?? turn;
+    const visible = getVisibleSquares(state, viewer);
 
     moveHistory.forEach((move, index) => {
       const ply = index + 1;
@@ -136,7 +141,7 @@ export default function MoveHistory({
         key: `move-${ply}`,
         kind: 'move',
         actor,
-        text: formatActorMove(actor, move.notation),
+        text: isMoveHidden(state, move, viewer, visible) ? `${actor} moves in the dark.` : formatActorMove(actor, move.notation),
         detail: `Ply ${ply}`,
         emphasis,
         order: ply * 100,
@@ -201,6 +206,9 @@ export default function MoveHistory({
     opponentAvatarIcon,
     opponentAvatarSrc,
     playerAvatarSrc,
+    state,
+    turn,
+    viewerColor,
     whiteLabel,
   ]);
 
