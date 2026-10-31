@@ -1,4 +1,5 @@
 export const MODIFIER_IDS = {
+  cordycepticSpread: 'MOD-A001',
   floorIsLava: 'MOD-A002',
   ventTiles: 'MOD-A003',
   winterIsComing: 'MOD-A004',

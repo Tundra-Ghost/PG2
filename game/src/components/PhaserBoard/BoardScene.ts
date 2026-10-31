@@ -66,6 +66,9 @@ function stripes(g: Phaser.GameObjects.Graphics, x: number, y: number, spacing: 
 }
 
 /** A soft radial blob, built from stacked circles. */
+/** Fungal spots on an Infected tile: [x, y, radius] as fractions of a cell. */
+const SPORES: [number, number, number][] = [[0.28, 0.3, 0.16], [0.7, 0.42, 0.13], [0.42, 0.74, 0.14], [0.8, 0.8, 0.09]];
+
 function glow(g: Phaser.GameObjects.Graphics, cx: number, cy: number, radius: number, color: number, alpha: number) {
   const steps = 6;
   for (let i = steps; i >= 1; i--) {
@@ -265,6 +268,24 @@ export class BoardScene extends Phaser.Scene {
       tiles.fillStyle(0xaa6ee6, 0.18).fillRect(x + inset, y + inset, CELL - inset * 2, CELL - inset * 2);
       tiles.lineStyle(2, 0xdcaaff, 0.85).strokeRect(x + inset, y + inset, CELL - inset * 2, CELL - inset * 2);
     }
+    if (view.tileEffects.includes('infected')) {
+      tiles.fillStyle(0x4e5a22, 0.45).fillRect(x, y, CELL, CELL);
+      for (const [sx, sy, r] of SPORES) {
+        glow(tiles, x + CELL * sx, y + CELL * sy, CELL * r, 0xb4d25a, 0.7);
+      }
+      this.labels.push(
+        this.add.text(x + 5, y + 3, '✱', { fontFamily: MONO, fontSize: '13px', color: 'rgba(214,240,140,0.95)' })
+          .setOrigin(0, 0).setDepth(DEPTH.tileIcons),
+      );
+    }
+    if (view.infectedReach !== undefined) {
+      this.labels.push(
+        this.add.text(x + CELL - 5, y + 3, String(view.infectedReach), {
+          fontFamily: MONO, fontSize: '13px', fontStyle: 'bold', color: '#e6f5a0', backgroundColor: 'rgba(30,36,10,0.85)',
+          padding: { x: 3, y: 1 },
+        }).setOrigin(1, 0).setDepth(DEPTH.badges),
+      );
+    }
     if (view.tileEffects.includes('lava')) {
       const inset = CELL * 0.1;
       const size = CELL - inset * 2;
@@ -302,7 +323,7 @@ export class BoardScene extends Phaser.Scene {
     });
   }
 
-  /** A one-shot flash where a modifier just struck, like the DOM .burst. */
+  /** A one-shot flash where a modifier just struck. */
   private playBurst(view: SquareView, cx: number, cy: number) {
     const burst = view.burst!;
     const id = `${burst.key}:${view.square}`;
@@ -320,6 +341,9 @@ export class BoardScene extends Phaser.Scene {
       glow(g, 0, 0, half * 1.1, 0xc8141e, 0.5);
       glow(g, 0, 0, half * 0.6, 0xff7878, 0.55);
       g.lineStyle(3, 0xd21e28, 0.9).strokeRect(-half + 1.5, -half + 1.5, CELL - 3, CELL - 3);
+    } else if (burst.kind === 'infection') {
+      glow(g, 0, 0, half * 1.1, 0x3c4a14, 0.5);
+      glow(g, 0, 0, half * 0.7, 0xb4d25a, 0.8);
     } else if (burst.kind === 'storm') {
       glow(g, 0, 0, half * 1.1, 0x283258, 0.4);
       glow(g, 0, 0, half * 0.7, 0x8c96dc, 0.6);

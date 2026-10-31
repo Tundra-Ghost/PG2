@@ -29,6 +29,7 @@ const BURST_KINDS: Partial<Record<string, SquareBurst['kind']>> = {
   [MODIFIER_IDS.floorIsLava]: 'lava',
   [MODIFIER_IDS.berserker]: 'berserker',
   [MODIFIER_IDS.stormClosesIn]: 'storm',
+  [MODIFIER_IDS.cordycepticSpread]: 'infection',
 };
 
 interface BoardProps {

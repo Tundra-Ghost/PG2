@@ -59,6 +59,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Every 5 turns, one random empty tile becomes Infected. Pieces standing still on Infected tiles lose 1 square of movement per turn. A Bishop or Queen passing through clears infection. 25% chance to spread to an adjacent tile each turn.',
     flavor: '"There is something growing on the board. Viktor has chosen not to investigate what it is."',
+    prototypeRules:
+      'A new Infected tile appears every 5 rounds. Each round, every Infected tile has a 25% chance to spread to a neighbour. Rooks, bishops and queens standing still on infection lose 1 square of reach per round. Pawns lose their double step. Knights and kings are not slowed. A bishop or queen clears every square it crosses. Lava burns infection away.',
   },
   {
     id: 'MOD-A002',
