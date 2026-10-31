@@ -57,10 +57,12 @@ function withLimit(goal: PuzzleGoal, limit: number): PuzzleGoal {
 interface PuzzleEditorProps {
   initial: Puzzle;
   onSave: (puzzle: Puzzle) => void;
+  /** Plays the puzzle as it stands, saved or not. */
+  onTest: (puzzle: Puzzle) => void;
   onBack: () => void;
 }
 
-export default function PuzzleEditor({ initial, onSave, onBack }: PuzzleEditorProps) {
+export default function PuzzleEditor({ initial, onSave, onTest, onBack }: PuzzleEditorProps) {
   const [puzzle, setPuzzle] = useState<Puzzle>(initial);
   const [tool, setTool] = useState<Tool>({ kind: 'piece', type: 'queen', color: 'white' });
   const [dirty, setDirty] = useState(false);
@@ -164,6 +166,18 @@ export default function PuzzleEditor({ initial, onSave, onBack }: PuzzleEditorPr
         <div className={styles.headerActions}>
           <button type="button" className={styles.secondaryButton} onClick={copyCode}>
             Copy code
+          </button>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            disabled={problems.length > 0}
+            title={problems.length ? 'Fix the problems listed below first' : 'Play it against the bot'}
+            onClick={() => {
+              playClick();
+              onTest(puzzle);
+            }}
+          >
+            Test
           </button>
           <button type="button" className={styles.primaryButton} onClick={save}>
             {dirty ? 'Save' : 'Saved'}
@@ -387,6 +401,16 @@ export default function PuzzleEditor({ initial, onSave, onBack }: PuzzleEditorPr
               );
             })}
           </ul>
+          {puzzle.modifiers.length > 0 && (
+            <button
+              type="button"
+              className={styles.toolButton}
+              title="Changes where random modifiers start, like lava tiles and vents. Use Test to see the result."
+              onClick={() => update({ seed: Math.floor(Math.random() * 1_000_000) + 1 })}
+            >
+              Reroll random setup
+            </button>
+          )}
           <label className={styles.field}>
             <span>Add a modifier</span>
             <select value="" onChange={event => addModifier(event.target.value)}>

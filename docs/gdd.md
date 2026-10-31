@@ -262,6 +262,8 @@ Pigeon Chess uses **Glicko-2** (as Lichess does). In the game it is just called 
 
 A puzzle is a position plus a modifier loadout and a goal. "Win in 3 with The Cordyceptic Spread active." "Survive 5 rounds against Hatoful Gambit."
 
+**Built so far (local only):** the Puzzles screen has three starter puzzles, an editor (click to place pieces, solver side, goal, difficulty, any playable modifier with an owner), a Test button, and play mode where the Pigeon bot defends. Puzzles save in the browser and share as `PC1-` codes. Code: `packages/game-core/src/puzzle`, `game/src/components/Puzzle*`. Voting, discovery and server storage are not built.
+
 **Creator tool:** drag-and-drop board editor, any modifier combo, goal (checkmate, capture, survive N rounds), difficulty tag (Egg, Hatchling, Grandmaster), submit for community voting.
 
 **Discovery:** daily featured puzzle, Hot / New / Top tabs, filters by modifier, difficulty and piece count, puzzle streaks, creator follows.
