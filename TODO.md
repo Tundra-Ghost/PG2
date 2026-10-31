@@ -115,6 +115,12 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 
 ## Priority 4A: UI, VFX, And SFX Readability
 
+- [ ] Phaser board (art direction: Phaser 3 board + React UI; Tanner approved 2026-10-31). Opt in with `?board=phaser`.
+  - [x] Step 1: board, highlights, legal dots, pieces and clicks in a Phaser scene (lazy-loaded chunk)
+  - [ ] Step 2: tile effects, piece markers, Gerald, tooltips
+  - [ ] Step 3: event flashes and "A PIECE MOVED"
+  - [ ] Step 4: phone check, make Phaser the default, remove the DOM grid
+
 - [x] UX: board legend explains the marker badges of active modifiers; Winter zone is a light tint, frozen pieces show ❄
 - [ ] GDD UI: replace temporary letter badges with authored icon badges for Gerald, lava, freeze, pacifist, and berserker states
 - [ ] GDD UI: animate modifier triggers on board and pieces: lava burn, Gerald fly-off, freeze thaw, berserker chain, pacifist refusal

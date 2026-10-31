@@ -1,0 +1,11 @@
+.host {
+  position: absolute;
+  inset: 0;
+  line-height: 0;
+}
+
+.host canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
