@@ -3,7 +3,7 @@ import type { Color } from '@pigeon-chess/game-core';
 import { SPRITES } from '../../characters';
 import type { SquareView } from '../Board/boardView';
 import { getPieceMarkers } from '../Piece/pieceMarkers';
-import { PIECE_TYPES, pieceSvgDataUri, pieceTextureKey } from './pieceTextures';
+import { PIECE_GLYPHS, PIECE_TYPES, pieceTextureKey, renderPieceCanvas } from './pieceTextures';
 
 /** Square size the scene is laid out at; the canvas scales to fit. */
 export const CELL = 80;
@@ -101,13 +101,32 @@ export class BoardScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image('gerald', SPRITES.gerald);
+  }
+
+  /**
+   * Piece images are drawn to canvases here rather than through Phaser's SVG
+   * loader, so one browser quirk cannot leave the board empty. Until a piece's
+   * texture is ready, the board shows a glyph for it.
+   */
+  private loadPieceTextures() {
+    const jobs: Promise<void>[] = [];
     for (const type of PIECE_TYPES) {
       for (const color of ['white', 'black'] as Color[]) {
-        const uri = pieceSvgDataUri(type, color);
-        if (uri) this.load.svg(pieceTextureKey(type, color), uri, { width: PIECE_PX * 2, height: PIECE_PX * 2 });
+        jobs.push(renderPieceCanvas(type, color, PIECE_PX * 2).then(canvas => {
+          const key = pieceTextureKey(type, color);
+          if (!canvas) console.warn(`Piece image failed to load: ${key}`);
+          else if (this.sys.isActive() && !this.textures.exists(key)) this.textures.addCanvas(key, canvas);
+        }));
       }
     }
-    this.load.image('gerald', SPRITES.gerald);
+    void Promise.all(jobs).then(() => {
+      if (!this.sys.isActive()) return;
+      // Sprites made before their texture existed are rebuilt with it.
+      for (const sprite of this.pieceSprites.values()) sprite.destroy();
+      this.pieceSprites.clear();
+      this.redraw();
+    });
   }
 
   create() {
@@ -125,6 +144,7 @@ export class BoardScene extends Phaser.Scene {
       this.tweens.add({ targets: this.pulseLayer, alpha: 0.55, duration: 750, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     }
     this.ready = true;
+    this.loadPieceTextures();
     this.redraw();
   }
 
@@ -184,15 +204,27 @@ export class BoardScene extends Phaser.Scene {
       // Keyed by piece id so a piece keeps its sprite as it moves (ready for tweens later).
       seenPieces.add(piece.id);
       const texture = pieceTextureKey(piece.type, piece.color);
-      let sprite = this.pieceSprites.get(piece.id);
-      if (!sprite) {
-        sprite = this.add.image(0, 0, texture).setDepth(DEPTH.pieces).setDisplaySize(PIECE_PX, PIECE_PX);
-        this.pieceSprites.set(piece.id, sprite);
-      } else if (sprite.texture.key !== texture) {
-        sprite.setTexture(texture).setDisplaySize(PIECE_PX, PIECE_PX);
+      if (!this.textures.exists(texture)) {
+        this.labels.push(
+          this.add.text(cx, cy, PIECE_GLYPHS[piece.type] ?? '?', {
+            fontFamily: 'serif',
+            fontSize: '52px',
+            color: piece.color === 'white' ? '#f2ead8' : '#2a1c0e',
+            stroke: piece.color === 'white' ? '#18120a' : '#c8a870',
+            strokeThickness: 3,
+          }).setOrigin(0.5).setDepth(DEPTH.pieces),
+        );
+      } else {
+        let sprite = this.pieceSprites.get(piece.id);
+        if (!sprite) {
+          sprite = this.add.image(0, 0, texture).setDepth(DEPTH.pieces).setDisplaySize(PIECE_PX, PIECE_PX);
+          this.pieceSprites.set(piece.id, sprite);
+        } else if (sprite.texture.key !== texture) {
+          sprite.setTexture(texture).setDisplaySize(PIECE_PX, PIECE_PX);
+        }
+        this.placeSprite(sprite, cx, cy);
+        this.styleSprite(sprite, worn.berserker, worn.traitor);
       }
-      this.placeSprite(sprite, cx, cy);
-      this.styleSprite(sprite, worn.berserker, worn.traitor);
 
       if (worn.gerald) {
         seenGerald.add(piece.id);
