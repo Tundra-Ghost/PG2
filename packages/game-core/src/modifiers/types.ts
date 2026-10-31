@@ -35,6 +35,10 @@ export interface AbilitySpec {
   apply?: (state: GameState, move: Move) => AbilityResult;
   /** Move-list text. Default: piece letter, from, x or -, to. */
   notation?: (state: GameState, move: Move) => string;
+  /** Pieces the player picks from for this target (sent as `move.dropType`). */
+  getChoices?: (state: GameState, piece: Piece, to: Square) => PieceType[];
+  /** Replaces "ready" on the button, such as a token count. */
+  status?: (state: GameState, piece: Piece) => string;
 }
 
 /**

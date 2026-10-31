@@ -630,5 +630,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Each piece you lose generates a Mercenary Token. Spend a Token (costs your turn) to drop a captured piece onto any empty square as your own. Cannot drop to give check. Max 3 Tokens held.',
     flavor: '"Viktor lost a bishop. Viktor ran the numbers. Viktor bought the bishop back at a discount."',
+    prototypeRules:
+      'Each of your pieces captured earns a Mercenary Token (max 3). Select your King and press Buy back to spend one: pick a lost piece and drop it on any empty square. It costs your turn. A drop may not give check, and pawns may not drop on rank 1 or 8.',
   },
 ];

@@ -100,3 +100,21 @@
 .choice:hover .label {
   color: var(--ui-gold);
 }
+
+.cancel {
+  margin-top: 0.75rem;
+  padding: 0.4rem 1.2rem;
+  background: transparent;
+  border: 1px solid rgb(var(--gold-rgb) / 0.4);
+  color: rgb(var(--gold-rgb) / 0.8);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.cancel:hover {
+  border-color: var(--ui-gold);
+  color: var(--ui-gold);
+}

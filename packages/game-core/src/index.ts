@@ -22,7 +22,7 @@ export {
   PROMOTION_TYPES,
 } from './engine/gameLoop';
 export { getChickBotMove, getPigeonBotMove } from './engine/bot';
-export { getAbilityOptions } from './engine/abilities';
+export { getAbilityChoices, getAbilityOptions } from './engine/abilities';
 export type { AbilityOption } from './engine/abilities';
 export { drawByAgreement, getWinner, resign } from './engine/result';
 export { prngPickIndex, prngStep } from './engine/prng';

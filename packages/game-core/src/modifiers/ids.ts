@@ -25,6 +25,7 @@ export const MODIFIER_IDS = {
   rejectQueen: 'MOD-E007',
   chancellor: 'MOD-E004',
   twinTelepathy: 'MOD-E005',
+  moneyball: 'MOD-E008',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];

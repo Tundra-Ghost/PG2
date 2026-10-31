@@ -5,9 +5,13 @@ import PieceArt from '../Piece/PieceArt';
 
 interface PromotionModalProps {
   color: Color;
-  /** Pieces the modifiers allow. Defaults to all four. */
+  /** Pieces the modifiers allow. Defaults to the four promotion pieces. */
   allowed?: readonly PieceType[];
   onChoose: (piece: PieceType) => void;
+  /** Also used to pick a Moneyball drop. */
+  heading?: string;
+  /** Shows a Cancel button. */
+  onCancel?: () => void;
 }
 
 const CHOICES: { type: PieceType; label: string }[] = [
@@ -15,14 +19,17 @@ const CHOICES: { type: PieceType; label: string }[] = [
   { type: 'rook', label: 'Rook' },
   { type: 'bishop', label: 'Bishop' },
   { type: 'knight', label: 'Knight' },
+  { type: 'chancellor', label: 'Chancellor' },
+  { type: 'royal_guard', label: 'Royal Guard' },
+  { type: 'pawn', label: 'Pawn' },
 ];
 
-export default function PromotionModal({ color, allowed, onChoose }: PromotionModalProps) {
-  const choices = allowed ? CHOICES.filter(choice => allowed.includes(choice.type)) : CHOICES;
+export default function PromotionModal({ color, allowed, onChoose, heading = 'Promote Pawn', onCancel }: PromotionModalProps) {
+  const choices = CHOICES.filter(choice => (allowed ?? CHOICES.slice(0, 4).map(c => c.type)).includes(choice.type));
   return (
-    <div className={styles.backdrop} role="dialog" aria-modal="true" aria-label="Choose promotion piece">
+    <div className={styles.backdrop} role="dialog" aria-modal="true" aria-label={heading}>
       <div className={styles.card}>
-        <p className={styles.heading}>Promote Pawn</p>
+        <p className={styles.heading}>{heading}</p>
         <p className={styles.sub}>{color === 'white' ? 'White' : 'Black'} — choose a piece</p>
         <div className={styles.choices}>
           {choices.map(({ type, label }) => (
@@ -33,13 +40,18 @@ export default function PromotionModal({ color, allowed, onChoose }: PromotionMo
                 playClick();
                 onChoose(type);
               }}
-              aria-label={`Promote to ${label}`}
+              aria-label={heading === 'Promote Pawn' ? `Promote to ${label}` : label}
             >
               <PieceArt type={type} color={color} className={styles.symbol} />
               <span className={styles.label}>{label}</span>
             </button>
           ))}
         </div>
+        {onCancel && (
+          <button type="button" className={styles.cancel} onClick={onCancel}>
+            Cancel
+          </button>
+        )}
       </div>
     </div>
   );

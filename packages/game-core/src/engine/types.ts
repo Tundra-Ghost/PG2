@@ -137,6 +137,8 @@ export interface Move {
   ability?: ModifierID;
   /** MOD-C007: spend a tempo token so the same side moves again right after. */
   extraTurn?: boolean;
+  /** MOD-E008: the piece an ability places on the board (a Moneyball drop). */
+  dropType?: PieceType;
 }
 
 export interface ValidationResult {

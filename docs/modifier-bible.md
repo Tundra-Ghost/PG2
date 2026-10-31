@@ -434,11 +434,13 @@ The game picks the Berserker, never a King or pawn. After it captures, it takes 
 The owner's pawns promote to knight, bishop or rook only. The promoted piece chains one extra capture on its first capture after promotion.
 
 ### MOD-E008 · Moneyball (We'll Buy Them Back)
-*Ref: Moneyball* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Design**
+*Ref: Moneyball* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**
 
 Each piece the owner loses gives a Mercenary Token (max 3). Spend a Token (costs your move) to drop a captured piece onto any empty square as your own. No drop may give check. No pawn drops on rank 1 or 8.
 
-- Ruling: a defected Traitor piece that is captured can be bought back.
+- Built: select your King and press Buy back, pick a square, then pick the piece. Drops show as N@d3 in the move list.
+- Ruling: only captures earn tokens. Pieces lost to lava, storm or gravity do not.
+- Ruling: a defected Traitor piece that is captured can be bought back. (Not built yet: the build counts the piece's colour when it is captured.)
 - Balance flag: the drop-check guard is critical.
 
 ## Balance summary
@@ -486,9 +488,9 @@ Values the game uses today. "Built" cards match the build.
 | E005 | Twin Telepathy | E | B | 2 | 0 | Shared | Built |
 | E006 | BOY. | E | A | 4 | 0 | Owner | Built |
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
-| E008 | Moneyball | E | A | 4 | 0 | Owner | Design |
+| E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 
-26 of 40 built. Scope for Design cards is a proposal.
+27 of 40 built. Scope for Design cards is a proposal.
 
 ### Balance test plan
 
