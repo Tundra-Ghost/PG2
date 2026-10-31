@@ -213,9 +213,9 @@ function pieceMoves(state: GameState, piece: Piece): Square[] {
     case 'royal_guard':
       // MOD-E003: steps like a king, never castles, can be captured
       return stepMoves(state, piece);
-    // Future piece types — no moves for now
+    // MOD-E001: a Pigeon moves like a knight (it also hops on its own)
     case 'pigeon':
-      return [];
+      return knightMoves(state, piece);
   }
 }
 

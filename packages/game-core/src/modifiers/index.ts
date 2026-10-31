@@ -32,6 +32,7 @@ import { cordycepticSpreadDef } from './definitions/cordyceptic-spread';
 import { moneyballDef } from './definitions/moneyball';
 import { heavyIsTheCrownDef } from './definitions/heavy-is-the-crown';
 import { recalculatingDef } from './definitions/recalculating';
+import { hatofulGambitDef } from './definitions/hatoful-gambit';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -62,3 +63,4 @@ modifierRegistry.register(cordycepticSpreadDef);
 modifierRegistry.register(moneyballDef);
 modifierRegistry.register(heavyIsTheCrownDef);
 modifierRegistry.register(recalculatingDef);
+modifierRegistry.register(hatofulGambitDef);

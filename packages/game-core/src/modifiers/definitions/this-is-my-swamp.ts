@@ -43,7 +43,7 @@ export const thisIsMySwampDef: ModifierDefinition = {
 
     // Knights cannot make a 1-square move, so once free they leap out normally.
     // Ability moves (a knight moving like a rook) get no such pass.
-    const exempt = piece.type === 'knight' && !move.ability;
+    const exempt = (piece.type === 'knight' || piece.type === 'pigeon') && !move.ability;
     if (!exempt && isSwampSquare(move.from) && distance(move.from, move.to) > 1) {
       return { blocked: true, reason: 'In the Swamp a piece moves only 1 square.' };
     }
@@ -53,7 +53,7 @@ export const thisIsMySwampDef: ModifierDefinition = {
 
   onPostMove(state, move) {
     const piece = state.pieces.get(move.to);
-    if (!piece || piece.type !== 'knight') return state;
+    if (!piece || (piece.type !== 'knight' && piece.type !== 'pigeon')) return state;
     if (!isSwampSquare(move.to) || isSwampSquare(move.from)) return state;
 
     const next = cloneState(state);
@@ -66,7 +66,7 @@ export const thisIsMySwampDef: ModifierDefinition = {
       type: 'modifier',
       modifierId: ID,
       title: 'Swamp',
-      message: `The ${piece.color} knight is stuck in the Swamp for 2 turns.`,
+      message: `The ${piece.color} ${piece.type} is stuck in the Swamp for 2 turns.`,
     });
   },
 
