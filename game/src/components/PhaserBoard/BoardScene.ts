@@ -231,8 +231,11 @@ export class BoardScene extends Phaser.Scene {
           sprite.setTexture(texture).setDisplaySize(PIECE_PX, PIECE_PX);
         }
         this.placeSprite(sprite, cx, cy);
-        this.styleSprite(sprite, worn.berserker, worn.traitor);
       }
+      // A red glow under Traitors and Berserkers. Drawn as shapes, not WebGL
+      // effects: some phone browsers render those effects as solid boxes.
+      if (worn.traitor) glow(tiles, cx, cy, CELL * 0.46, 0xff2828, 0.75);
+      else if (worn.berserker) glow(tiles, cx, cy, CELL * 0.42, 0xd64a2c, 0.6);
 
       if (worn.gerald) {
         seenGerald.add(piece.id);
@@ -439,18 +442,5 @@ export class BoardScene extends Phaser.Scene {
       ],
       onComplete: () => g.destroy(),
     });
-  }
-
-  /** Berserkers smoulder and warned traitors glow red (WebGL only). */
-  private styleSprite(sprite: Phaser.GameObjects.Image, berserker: boolean, traitor: boolean) {
-    const fx = sprite.preFX;
-    if (!fx) return;
-    const want = traitor ? 'traitor' : berserker ? 'berserker' : 'plain';
-    if (sprite.getData('fx') === want) return;
-    sprite.setData('fx', want);
-    fx.clear();
-    fx.addShadow(0, 0.6, 0.06, 1, 0x000000, 4, 0.5);
-    if (want === 'traitor') fx.addGlow(0xff2828, 4, 0, false, 0.1, 12);
-    if (want === 'berserker') fx.addGlow(0xd64a2c, 2, 0, false, 0.1, 10);
   }
 }
