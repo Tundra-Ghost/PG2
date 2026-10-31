@@ -308,7 +308,7 @@ The [TDD](tdd.md) is the source of truth. Summary:
 ### Done (as of 2026-10-30)
 
 - Custom chess engine with full FIDE rules and tests
-- 25 of 40 modifiers playable, with draft, ability bar, event banners and board effects
+- 26 of 40 modifiers playable, with draft, ability bar, event banners and board effects
 - New Run, VS Bots (Chick, Pigeon), Practice, Standard chess
 - Shared rules package, game server, online rooms, saved games, accounts, friends, chat (hosting paused)
 - Local profiles, records, achievements
@@ -318,7 +318,7 @@ The [TDD](tdd.md) is the source of truth. Summary:
 
 ### Next
 
-- Remaining modifiers that need new systems: per-player fog, Hatoful Gambit, Moneyball, Bandersnatch, Cordyceptic Spread, the slow-King and inverted-move curses
+- Remaining modifiers that need new systems: per-player fog, Hatoful Gambit, Moneyball, Bandersnatch, the slow-King and inverted-move curses
 - Balance test run (bot vs bot) for all built cards
 - Phaser board renderer, with sprite-sheet-ready pieces
 - Story Tower 1 (doubles as the tutorial)

@@ -16,10 +16,14 @@ const GERALD_ID = MODIFIER_IDS.gerald;
 const WINTER_ID = MODIFIER_IDS.winterIsComing;
 const SWAMP_ID = MODIFIER_IDS.thisIsMySwamp;
 
-function getPieceTooltipLines(piece: PieceType | undefined): string[] {
+function getPieceTooltipLines(piece: PieceType | undefined, infectedReach: number | undefined): string[] {
   if (!piece) return [];
 
   const lines: string[] = [];
+
+  if (infectedReach !== undefined) {
+    lines.push(`Cordyceptic Spread: Slowed by infection. Can move ${infectedReach} square${infectedReach === 1 ? '' : 's'}.`);
+  }
 
   if ((piece.cooldowns[GERALD_ID] ?? 0) > 0) {
     lines.push('Gerald: This piece is blocked and clearing it costs the turn.');
@@ -63,6 +67,9 @@ function getTileTooltipLines(
 ): string[] {
   const lines: string[] = [];
 
+  if (tileEffects.includes('infected')) {
+    lines.push('Cordyceptic Spread: Infected. Pieces standing still here lose reach each round. A bishop or queen crossing clears it.');
+  }
   if (tileEffects.includes('lava')) {
     lines.push('Floor Is Lava: Non-king pieces landing here are destroyed.');
   }
@@ -99,6 +106,7 @@ export default function Square({
   tileEffects,
   isFrozenZone,
   isSwamp,
+  infectedReach,
   isShaft,
   storm,
   quietZone,
@@ -109,7 +117,7 @@ export default function Square({
   const touchTimerRef = useRef<number | null>(null);
   const longPressTriggeredRef = useRef(false);
 
-  const pieceTooltipLines = getPieceTooltipLines(piece);
+  const pieceTooltipLines = getPieceTooltipLines(piece, infectedReach);
   const tileTooltipLines = getTileTooltipLines(tileEffects, isFrozenZone, isSwamp, isShaft, storm, quietZone, noFlyZone);
   const tooltipLines = [...pieceTooltipLines, ...tileTooltipLines];
   const hasTooltip = tooltipLines.length > 0;

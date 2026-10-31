@@ -63,15 +63,16 @@ These rules apply to every card. A card can never break them.
 The board physically changes mid-match. Tiles spread, burn, sink, freeze, or flip.
 
 ### MOD-A001 · The Cordyceptic Spread
-*Ref: The Last of Us / Cordyceps* · **Tier S** · Cost 4 · Curse 1 · Scope: Shared · Modes: All · **Design**
+*Ref: The Last of Us / Cordyceps* · **Tier S** · Cost 4 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
-Every 5 rounds, one random empty tile becomes Infected. A piece standing on an Infected tile loses 1 square of movement for each round it stays still. A Bishop or Queen passing through clears the infection. Each round, an Infected tile has a 25% chance to infect one adjacent tile.
+Every 5 rounds, one random empty tile becomes Infected. A piece standing on an Infected tile loses 1 square of movement for each round it stays still (minimum 1). A Bishop or Queen clears every Infected square it crosses or lands on. Each round, an Infected tile has a 25% chance to infect one adjacent tile.
 
 *The mushroom is patient. The mushroom always wins eventually.*
 
 - Synergy: It's Dark And I'm Scared. Hidden infected tiles are catastrophic.
 - Conflict: The Floor Is Lava. Infection cannot spread onto Lava.
-- Open question: how does "lose 1 square" apply to knights and pawns? Decide when built.
+- Ruling: rooks, bishops, queens and chancellors lose reach. Pawns lose their double step. Knights and kings are not slowed. Moving the piece resets its count. The slowed piece shows its reach on its square.
+- Ruling: lava burns infection away.
 
 ### MOD-A002 · The Floor Is Lava
 *Ref: "The floor is lava" meme* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Built**
@@ -446,7 +447,7 @@ Values the game uses today. "Built" cards match the build.
 
 | ID | Name | Cat | Tier | Cost | Curse | Scope | Status |
 |---|---|---|---|---|---|---|---|
-| A001 | The Cordyceptic Spread | A | S | 4 | 1 | Shared | Design |
+| A001 | The Cordyceptic Spread | A | S | 4 | 1 | Shared | Built |
 | A002 | The Floor Is Lava | A | A | 3 | 1 | Shared | Built |
 | A003 | Vent Tiles | A | B | 2 | 0 | Shared | Built |
 | A004 | Winter Is Coming | A | B | 2 | 0 | Shared | Built |
@@ -487,7 +488,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Design |
 
-25 of 40 built. Scope for Design cards is a proposal.
+26 of 40 built. Scope for Design cards is a proposal.
 
 ### Balance test plan
 

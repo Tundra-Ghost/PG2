@@ -20,6 +20,7 @@ export interface MarkerLegendEntry {
 /** Piece and tile markers, in the order they appear in the legend. */
 const MARKER_LEGEND: Array<{ modifierId: string } & MarkerLegendEntry> = [
   { modifierId: MODIFIER_IDS.floorIsLava, mark: '▲', label: 'Lava' },
+  { modifierId: MODIFIER_IDS.cordycepticSpread, mark: '✱', label: 'Infected' },
   { modifierId: MODIFIER_IDS.winterIsComing, mark: '❄', label: 'Frozen' },
   { modifierId: MODIFIER_IDS.thisIsMySwamp, mark: '≈', label: 'Swamp' },
   { modifierId: MODIFIER_IDS.gerald, mark: 'G', label: 'Gerald' },

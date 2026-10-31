@@ -1,5 +1,5 @@
 import type { GameState, Piece, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
+import { getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -8,7 +8,7 @@ const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
 export interface SquareBurst {
   /** Changes for each new event, so the animation replays. */
   key: string;
-  kind: 'lava' | 'berserker' | 'storm' | 'event';
+  kind: 'lava' | 'berserker' | 'storm' | 'infection' | 'event';
 }
 
 /**
@@ -26,6 +26,8 @@ export interface SquareView {
   tileEffects: TileEffectType[];
   isFrozenZone: boolean;
   isSwamp: boolean;
+  /** MOD-A001: how far the slowed piece here may still move. */
+  infectedReach?: number;
   isShaft: boolean;
   storm?: 'warning' | 'active';
   quietZone?: 'white' | 'black';
@@ -71,6 +73,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         tileEffects: tile?.effects.map(effect => effect.type) ?? [],
         isFrozenZone: winterActive && isFrozenZoneSquare(square),
         isSwamp: tile?.isSwamp === true,
+        infectedReach: getInfectedReach(state, square) ?? undefined,
         isShaft: tile?.isVoid === true && !storm,
         storm,
         quietZone: quietZones.get(square),
