@@ -9,7 +9,7 @@ import {
   type GameState,
 } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
-import type { MatchChatEntry } from '../../matchFeed';
+import { formatActorMove, formatEventMessage, type MatchChatEntry } from '../../matchFeed';
 import styles from './MoveHistory.module.css';
 import DialogueBox from '../DialogueBox/DialogueBox';
 
@@ -87,22 +87,6 @@ function TypewriterBubble({
   );
 }
 
-function formatActorMove(label: string, notation: string): string {
-  return label === 'You' ? `${label} play: ${notation}` : `${label} plays: ${notation}`;
-}
-
-function formatEventMessage(
-  message: string,
-  whiteLabel: string,
-  blackLabel: string,
-): string {
-  return message
-    .replace(/\bwhite ([a-z_]+)/gi, `${whiteLabel}'s $1`)
-    .replace(/\bblack ([a-z_]+)/gi, `${blackLabel}'s $1`)
-    .replace(/\bwhite\b/gi, whiteLabel)
-    .replace(/\bblack\b/gi, blackLabel);
-}
-
 export default function MoveHistory({
   state,
   whiteLabel = 'White',
@@ -121,10 +105,12 @@ export default function MoveHistory({
   const blackout = status === 'active' && isHistoryBlackout(state, viewerColor ?? turn);
   const blackoutLeft = blackout ? blackoutMovesLeft(state) : 0;
   const [draftChat, setDraftChat] = useState('');
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
+  // Scroll the list itself. scrollIntoView would drag the whole page with it.
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const list = listRef.current;
+    if (list) list.scrollTo({ top: list.scrollHeight, behavior: 'smooth' });
   }, [moveHistory.length, eventHistory.length, chatEntries.length]);
 
   const entries = useMemo(() => {
@@ -267,7 +253,7 @@ export default function MoveHistory({
         </div>
       ) : null}
 
-      <div className={styles.list}>
+      <div ref={listRef} className={styles.list}>
         {entries.length === 0 && (
           <p className={styles.empty}>
             No moves yet. Chat, moves, and modifier events will appear here as the match develops.
@@ -349,8 +335,6 @@ export default function MoveHistory({
             <span className={styles.result}>{RESULT_TEXT[getWinner(state) ?? 'draw']}</span>
           </div>
         )}
-
-        <div ref={bottomRef} />
       </div>
     </aside>
   );

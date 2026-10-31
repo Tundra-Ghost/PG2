@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ChatMessage, Color, GameSummary } from '@pigeon-chess/game-core';
-import type { MatchChatEntry } from '../../matchFeed';
+import { latestFeedLine, type MatchChatEntry } from '../../matchFeed';
+import { ChatBubble, MatchDrawerBar, MatchTicker, useMatchDrawer } from '../MatchDrawer/MatchDrawer';
 import type { AppSettings } from '../../settings';
 import { playClick } from '../../sound';
 import { useOnlineRoom } from '../../online/useOnlineRoom';
@@ -93,6 +94,12 @@ export default function OnlineMatch({
   const opponentColor = room.color === 'white' ? 'black' : 'white';
   const opponentSeat = room.seats?.[opponentColor] ?? 'empty';
   const inGame = room.state && room.color && opponentSeat !== 'empty';
+  const opponentName = room.names?.[opponentColor] ?? 'Opponent';
+  const chatEntries = useMemo(
+    () => (room.color ? toChatEntries(room.chat, room.color, playerName, opponentName) : []),
+    [room.chat, room.color, playerName, opponentName],
+  );
+  const drawer = useMatchDrawer(chatEntries);
 
   if (!inGame) {
     return (
@@ -206,8 +213,6 @@ export default function OnlineMatch({
   const state = room.state!;
   const myColor = room.color!;
   const opponentAway = opponentSeat === 'disconnected';
-  const opponentName = room.names?.[opponentColor] ?? 'Opponent';
-  const chatEntries = toChatEntries(room.chat, myColor, playerName, opponentName);
 
   if (room.draft && room.draft.turn !== null) {
     const draft = room.draft;
@@ -237,7 +242,7 @@ export default function OnlineMatch({
       </header>
 
       <main className={appStyles.main}>
-        <section className={appStyles.matchHud}>
+        <section className={appStyles.matchHud} data-mobile-tab={drawer.tab} data-drawer={drawer.open ? 'open' : 'closed'}>
           <div className={appStyles.bannerRow}>
             <div className={appStyles.selfSlot}>
             <PlayerBanner
@@ -247,6 +252,7 @@ export default function OnlineMatch({
               badge={state.turn === myColor ? 'To Move' : 'Waiting'}
               portraitLabel={playerName.slice(0, 1).toUpperCase()}
             />
+            <ChatBubble text={drawer.bubble?.side === 'self' ? drawer.bubble.text : null} />
             </div>
             <div className={appStyles.opponentSlot}>
             <PlayerBanner
@@ -257,6 +263,7 @@ export default function OnlineMatch({
               portraitLabel={opponentName.slice(0, 1).toUpperCase()}
               align="right"
             />
+            <ChatBubble text={drawer.bubble?.side === 'opponent' ? drawer.bubble.text : null} />
             </div>
           </div>
 
@@ -269,6 +276,12 @@ export default function OnlineMatch({
               <button className={styles.controlBtn} onClick={() => { playClick(); room.answerDraw(false); }}>Decline</button>
             </div>
           )}
+
+          <MatchTicker
+            line={latestFeedLine(state, myColor === 'white' ? playerName : opponentName, myColor === 'black' ? playerName : opponentName, myColor)}
+            onOpen={() => drawer.setOpen(true)}
+          />
+          <MatchDrawerBar drawer={drawer} />
 
           <div className={styles.stageRow}>
             <div className={appStyles.logDock}>

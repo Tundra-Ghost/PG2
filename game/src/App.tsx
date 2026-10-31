@@ -8,6 +8,7 @@ import type { AppSettings } from './settings';
 import { applySettings, loadSettings, saveSettings } from './settings';
 import { useAccount } from './online/useAccount';
 import { useSocial } from './online/useSocial';
+import { ChatBubble, MatchDrawerBar, MatchTicker, useMatchDrawer } from './components/MatchDrawer/MatchDrawer';
 import Friends from './components/Friends/Friends';
 import PostGameSurvey from './components/PostGameSurvey/PostGameSurvey';
 import { isFinished, resultFor, type GameSurveyContext } from './online/survey';
@@ -15,6 +16,7 @@ import {
   getDerivedFeedOrder,
   getModifierEventBannerMessage,
   pickBannerEvent,
+  latestFeedLine,
   type MatchChatEntry,
 } from './matchFeed';
 import { buildBotProfile } from './matchProfiles';
@@ -81,12 +83,11 @@ export default function App() {
   );
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [modifierPanelCollapsed, setModifierPanelCollapsed] = useState(false);
-  /** Phones show one panel under the board at a time. */
-  const [mobileTab, setMobileTab] = useState<'feed' | 'modifiers'>('feed');
   const [profileViewer, setProfileViewer] = useState<ProfileViewerState | null>(null);
   const [chatEntries, setChatEntries] = useState<MatchChatEntry[]>([]);
   const [dialogueQueue, setDialogueQueue] = useState<MatchChatEntry[]>([]);
   const [pendingDialogue, setPendingDialogue] = useState<MatchChatEntry | null>(null);
+  const drawer = useMatchDrawer(chatEntries, pendingDialogue);
   // Stable ref so handleDialogueDismiss never changes identity (avoids resetting DialogueBox timers)
   const pendingDialogueRef = useRef<MatchChatEntry | null>(null);
   useEffect(() => {
@@ -109,7 +110,7 @@ export default function App() {
   const handleDialogueDismiss = useCallback(() => {
     const entry = pendingDialogueRef.current;
     if (!entry) return;
-    setChatEntries(prev => [...prev, { ...entry, shownInDialogue: true }]);
+    setChatEntries(prev => [...prev, { ...entry, shownInDialogue: true, spokenLive: true }]);
     setPendingDialogue(null);
   }, []);
 
@@ -677,7 +678,7 @@ export default function App() {
       </header>
 
       <main className={styles.main}>
-        <section className={styles.matchHud} data-mobile-tab={mobileTab}>
+        <section className={styles.matchHud} data-mobile-tab={drawer.tab} data-drawer={drawer.open ? 'open' : 'closed'}>
           <div className={styles.bannerRow}>
             <div className={styles.selfSlot}>
             <PlayerBanner
@@ -698,6 +699,7 @@ export default function App() {
                 });
               }}
             />
+            <ChatBubble text={drawer.bubble?.side === 'self' ? drawer.bubble.text : null} />
             </div>
             <div className={styles.opponentSlot}>
             <PlayerBanner
@@ -719,6 +721,7 @@ export default function App() {
                 });
               }}
             />
+            <ChatBubble text={drawer.bubble?.side === 'opponent' ? drawer.bubble.text : null} />
             </div>
           </div>
 
@@ -776,24 +779,8 @@ export default function App() {
             />
           </div>
 
-          <div className={styles.mobileTabs} role="tablist" aria-label="Match panels">
-            <button
-              role="tab"
-              aria-selected={mobileTab === 'feed'}
-              className={`${styles.mobileTab} ${mobileTab === 'feed' ? styles.mobileTabOn : ''}`}
-              onClick={() => setMobileTab('feed')}
-            >
-              Moves &amp; Chat
-            </button>
-            <button
-              role="tab"
-              aria-selected={mobileTab === 'modifiers'}
-              className={`${styles.mobileTab} ${mobileTab === 'modifiers' ? styles.mobileTabOn : ''}`}
-              onClick={() => setMobileTab('modifiers')}
-            >
-              Modifiers ({gameState.activeModifiers.length})
-            </button>
-          </div>
+          <MatchTicker line={latestFeedLine(gameState, playerName, vsBot ? opponentName : 'Black', vsBot ? 'white' : undefined)} onOpen={() => drawer.setOpen(true)} />
+          <MatchDrawerBar drawer={drawer} modifierCount={gameState.activeModifiers.length} />
         </section>
       </main>
 
