@@ -9,6 +9,7 @@ export const MODIFIER_IDS = {
   youDied: 'MOD-B001',
   fiftyFirstMoves: 'MOD-B005',
   gerald: 'MOD-B002',
+  heavyIsTheCrown: 'MOD-B004',
   conscientiousObjector: 'MOD-B007',
   reginaldBeak: 'MOD-B008',
   traitor: 'MOD-B006',

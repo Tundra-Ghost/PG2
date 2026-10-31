@@ -1,5 +1,5 @@
 import type { GameState, Piece, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
+import { getCrownOrders, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -28,6 +28,8 @@ export interface SquareView {
   isSwamp: boolean;
   /** MOD-A001: how far the slowed piece here may still move. */
   infectedReach?: number;
+  /** MOD-B004: the side whose heavy King is ordered to this square. */
+  crownOrder?: 'white' | 'black';
   isShaft: boolean;
   storm?: 'warning' | 'active';
   quietZone?: 'white' | 'black';
@@ -53,6 +55,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const winterActive = state.activeModifiers.some(mod => mod.id === MODIFIER_IDS.winterIsComing);
   const quietZones = getQuietZoneSquares(state);
   const noFlySquares = getNoFlySquares(state);
+  const crownOrders = getCrownOrders(state);
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
   const fileOrder = orientation === 'white' ? [...FILES] : [...FILES].reverse();
 
@@ -74,6 +77,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         isFrozenZone: winterActive && isFrozenZoneSquare(square),
         isSwamp: tile?.isSwamp === true,
         infectedReach: getInfectedReach(state, square) ?? undefined,
+        crownOrder: crownOrders.get(square),
         isShaft: tile?.isVoid === true && !storm,
         storm,
         quietZone: quietZones.get(square),

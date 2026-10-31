@@ -31,6 +31,7 @@ const MARKER_LEGEND: Array<{ modifierId: string } & MarkerLegendEntry> = [
   { modifierId: MODIFIER_IDS.chancellor, mark: 'C', label: 'Chancellor' },
   { modifierId: MODIFIER_IDS.threeKings, mark: '⛨', label: 'Royal Guard' },
   { modifierId: MODIFIER_IDS.ventTiles, mark: '●', label: 'Vent shaft' },
+  { modifierId: MODIFIER_IDS.heavyIsTheCrown, mark: '♔', label: 'King order' },
 ];
 
 /** Legend rows for the markers that can appear in this match. */

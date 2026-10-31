@@ -223,6 +223,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your King moves at half speed — a two-turn commitment. During the commitment window the destination is visible to your opponent. Castling takes 3 turns total.',
     flavor: '"The crown weighs heavily. The King moves slowly. Somewhere, someone is writing bars about this."',
+    prototypeRules:
+      'Your King moves in two steps. Select it and press Order move to pick a square (this costs your turn). On a later turn, move the King there. Your opponent sees the ordered square. In check, the King moves freely and the order is dropped. Castling also takes two turns.',
   },
   {
     id: 'MOD-B005',
