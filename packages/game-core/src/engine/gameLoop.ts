@@ -16,7 +16,7 @@ import type { ModifierDefinition } from '../modifiers/types';
 import { getDraftScope } from '../modifiers/scope';
 import { MODIFIER_IDS } from '../modifiers/ids';
 import { validateMove } from './moveValidator';
-import { buildAbilityNotation, performAbility, startAbilityCooldown, tickAbilityCooldowns } from './abilities';
+import { buildAbilityNotation, getAbilityOptions, performAbility, startAbilityCooldown, tickAbilityCooldowns } from './abilities';
 
 const GERALD_ID = MODIFIER_IDS.gerald;
 
@@ -686,6 +686,11 @@ export function hasAnyValidMove(state: GameState): boolean {
       }
       if (validateMove(state, buildMove(state, piece.square, to)).valid) return true;
     }
+  }
+  // An ability that costs the turn (such as ordering a heavy King) is a move too.
+  for (const piece of state.pieces.values()) {
+    if (piece.color !== state.turn) continue;
+    if (getAbilityOptions(state, piece.square).some(option => option.targets.length > 0)) return true;
   }
   return false;
 }

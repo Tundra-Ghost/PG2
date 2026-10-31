@@ -30,6 +30,7 @@ import { stormClosesInDef } from './definitions/storm-closes-in';
 import { gravitationalAnomalyDef } from './definitions/gravitational-anomaly';
 import { cordycepticSpreadDef } from './definitions/cordyceptic-spread';
 import { moneyballDef } from './definitions/moneyball';
+import { heavyIsTheCrownDef } from './definitions/heavy-is-the-crown';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -58,3 +59,4 @@ modifierRegistry.register(stormClosesInDef);
 modifierRegistry.register(gravitationalAnomalyDef);
 modifierRegistry.register(cordycepticSpreadDef);
 modifierRegistry.register(moneyballDef);
+modifierRegistry.register(heavyIsTheCrownDef);

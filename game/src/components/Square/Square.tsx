@@ -107,6 +107,7 @@ export default function Square({
   isFrozenZone,
   isSwamp,
   infectedReach,
+  crownOrder,
   isShaft,
   storm,
   quietZone,
@@ -119,7 +120,11 @@ export default function Square({
 
   const pieceTooltipLines = getPieceTooltipLines(piece, infectedReach);
   const tileTooltipLines = getTileTooltipLines(tileEffects, isFrozenZone, isSwamp, isShaft, storm, quietZone, noFlyZone);
-  const tooltipLines = [...pieceTooltipLines, ...tileTooltipLines];
+  const tooltipLines = [
+    ...pieceTooltipLines,
+    ...tileTooltipLines,
+    ...(crownOrder ? [`Heavy Is The Crown: the ${crownOrder} king is ordered here. It can move here on its next turn.`] : []),
+  ];
   const hasTooltip = tooltipLines.length > 0;
 
   function clearTouchTimer() {

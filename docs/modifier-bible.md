@@ -203,12 +203,14 @@ For the owner's first 5 moves, every piece moves in the opposite direction to th
 - Open question: what is the "opposite" of a knight jump or a castle? Define before building.
 
 ### MOD-B004 · Heavy Is The Crown (uneasy lies)
-*Ref: "Heavy is the head"* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
+*Ref: "Heavy is the head"* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Built**
 
 The owner's King moves at half speed. Moving the King takes two moves: choose on the first, confirm on the second. During the wait the King glows and the opponent can see the destination. Castling takes 3 moves.
 
 - Conflict: Winter Is Coming. A frozen slow King is near softlock.
-- Open question: what happens if the King is checked during the wait? Suggested rule: the order is cancelled and the King may move normally to escape.
+- Built: select the King and press Order move to pick a square. That costs the turn. Make the move on any later turn. The ordered square shows a dashed gold frame.
+- Ruling: in check, the King moves freely and the order is dropped.
+- Changed: castling takes two turns like any King move, not three.
 
 ### MOD-B005 · 50 First Moves
 *Ref: 50 First Dates / Memento* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: No Ranked · **Built**
@@ -460,7 +462,7 @@ Values the game uses today. "Built" cards match the build.
 | B001 | YOU DIED | B | S | -3 | 3 | Owner | Built |
 | B002 | Distracted Piece | B | A | -2 | 2 | Owner | Built |
 | B003 | No, I Don't Think I Will | B | B | -1 | 1 | Owner | Design |
-| B004 | Heavy Is The Crown | B | A | -2 | 2 | Owner | Design |
+| B004 | Heavy Is The Crown | B | A | -2 | 2 | Owner | Built |
 | B005 | 50 First Moves | B | A | -2 | 2 | Owner | Built |
 | B006 | They Were The Traitor | B | S | -3 | 3 | Owner | Built |
 | B007 | Conscientious Objector | B | B | -1 | 1 | Owner | Built |
@@ -490,7 +492,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 
-27 of 40 built. Scope for Design cards is a proposal.
+28 of 40 built. Scope for Design cards is a proposal.
 
 ### Balance test plan
 

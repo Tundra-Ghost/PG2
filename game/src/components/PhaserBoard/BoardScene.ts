@@ -278,6 +278,23 @@ export class BoardScene extends Phaser.Scene {
           .setOrigin(0, 0).setDepth(DEPTH.tileIcons),
       );
     }
+    if (view.crownOrder) {
+      const inset = CELL * 0.12;
+      const size = CELL - inset * 2;
+      for (let i = 0; i < 4; i++) {
+        // Dashed gold frame: two dashes per side.
+        const t = (i % 2) * (size / 2);
+        tiles.lineStyle(3, 0xc8902a, 1);
+        tiles.lineBetween(x + inset + t + 4, y + inset, x + inset + t + size / 2 - 4, y + inset);
+        tiles.lineBetween(x + inset + t + 4, y + CELL - inset, x + inset + t + size / 2 - 4, y + CELL - inset);
+        tiles.lineBetween(x + inset, y + inset + t + 4, x + inset, y + inset + t + size / 2 - 4);
+        tiles.lineBetween(x + CELL - inset, y + inset + t + 4, x + CELL - inset, y + inset + t + size / 2 - 4);
+      }
+      this.labels.push(
+        this.add.text(cx, cy, '♔', { fontFamily: 'serif', fontSize: '34px', color: 'rgba(200,144,42,0.8)' })
+          .setOrigin(0.5).setDepth(DEPTH.tileIcons),
+      );
+    }
     if (view.infectedReach !== undefined) {
       this.labels.push(
         this.add.text(x + CELL - 5, y + 3, String(view.infectedReach), {
