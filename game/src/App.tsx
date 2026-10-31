@@ -33,6 +33,7 @@ import PlayerBanner from './components/PlayerBanner/PlayerBanner';
 import ProfileSetup from './components/ProfileSetup/ProfileSetup';
 import SettingsScreen from './components/Settings/Settings';
 import OnlineMatch from './components/OnlineMatch/OnlineMatch';
+import PuzzleScreen from './components/PuzzleScreen/PuzzleScreen';
 import {
   createProfile,
   getProfileLevel,
@@ -56,7 +57,8 @@ type Screen =
   | 'roost'
   | 'collection'
   | 'online'
-  | 'friends';
+  | 'friends'
+  | 'puzzles';
 type BotSelectMode = 'run' | 'quick' | 'practice' | null;
 
 interface ProfileViewerState {
@@ -521,6 +523,7 @@ export default function App() {
           onProfile={goToProfile}
           onRoost={goToRoost}
           onCollection={goToCollection}
+          onPuzzles={() => setScreen('puzzles')}
           onOnline={() => {
             playClick();
             setScreen('online');
@@ -620,6 +623,15 @@ export default function App() {
     return (
       <div onClick={handleUnlock}>
         <CollectionVault onBack={() => setScreen('menu')} />
+        {settingsOverlay}
+      </div>
+    );
+  }
+
+  if (baseScreen === 'puzzles') {
+    return (
+      <div onClick={handleUnlock}>
+        <PuzzleScreen onBack={() => setScreen('menu')} />
         {settingsOverlay}
       </div>
     );
