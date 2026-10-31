@@ -3,6 +3,7 @@ import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/ga
 import { chessEngine } from '@pigeon-chess/game-core';
 import { buildMove } from '@pigeon-chess/game-core';
 import {
+  getFakeMoveHints,
   getAbilityChoices,
   getAbilityOptions,
   getValidPromotionTypes,
@@ -91,6 +92,15 @@ export default function Board({
 }: BoardProps) {
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
+  /** MOD-D007: fake dots mixed into legalMoves. */
+  const [fakeMoves, setFakeMoves] = useState<Square[]>([]);
+  /** Bumps on each fake dot picked, so the RECALCULATING banner replays. */
+  const [recalcKey, setRecalcKey] = useState(0);
+  useEffect(() => {
+    if (recalcKey === 0) return;
+    const timer = window.setTimeout(() => setRecalcKey(0), 1100);
+    return () => window.clearTimeout(timer);
+  }, [recalcKey]);
   const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null);
   /** MOD-E008: an armed drop waiting for the player to pick which piece. */
   const [pendingDrop, setPendingDrop] = useState<{ move: Move; choices: PieceType[] } | null>(null);
@@ -136,20 +146,31 @@ export default function Board({
     ? getAbilityOptions(state, selected)
     : [];
 
+  const showMovesFor = useCallback(
+    (square: Square) => {
+      const real = getDisplayLegalMoves(state, square);
+      const fakes = getFakeMoveHints(state, square, real);
+      setFakeMoves(fakes);
+      setLegalMoves([...real, ...fakes]);
+    },
+    [state],
+  );
+
   const toggleAbility = useCallback(
     (modifierId: string) => {
       if (!selected) return;
       if (abilityMode === modifierId) {
         setAbilityMode(null);
-        setLegalMoves(getDisplayLegalMoves(state, selected));
+        showMovesFor(selected);
         return;
       }
       const option = getAbilityOptions(state, selected).find(o => o.modifierId === modifierId);
       if (!option || option.targets.length === 0) return;
       setAbilityMode(modifierId);
+      setFakeMoves([]);
       setLegalMoves(option.targets);
     },
-    [abilityMode, selected, state],
+    [abilityMode, selected, showMovesFor, state],
   );
   const withTempo = useCallback(
     (move: Move): Move => (extraMode ? { ...move, extraTurn: true } : move),
@@ -253,7 +274,7 @@ export default function Board({
             onInfo?.('This piece refuses to capture.');
           }
           setSelected(square);
-          setLegalMoves(getDisplayLegalMoves(state, square));
+          showMovesFor(square);
         }
         return;
       }
@@ -290,7 +311,7 @@ export default function Board({
           onInfo?.('This piece refuses to capture.');
         }
         setSelected(square);
-        setLegalMoves(getDisplayLegalMoves(state, square));
+        showMovesFor(square);
         return;
       }
 
@@ -298,6 +319,14 @@ export default function Board({
       if (square === selected) {
         setSelected(null);
         setLegalMoves([]);
+        return;
+      }
+
+      // MOD-D007: a fake dot. The player picks again, no move lost.
+      if (fakeMoves.includes(square)) {
+        setRecalcKey(key => key + 1);
+        setFakeMoves(fakes => fakes.filter(sq => sq !== square));
+        setLegalMoves(moves => moves.filter(sq => sq !== square));
         return;
       }
 
@@ -341,7 +370,7 @@ export default function Board({
       setSelected(null);
       setLegalMoves([]);
     },
-    [abilityMode, autoQueen, commitMove, controlColor, legalMoves, onInfo, pendingDrop, pendingPromotion, selected, shooGeraldOrWarn, state, withTempo],
+    [abilityMode, autoQueen, commitMove, controlColor, fakeMoves, legalMoves, onInfo, pendingDrop, pendingPromotion, selected, shooGeraldOrWarn, showMovesFor, state, withTempo],
   );
 
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
@@ -384,6 +413,9 @@ export default function Board({
 
           {/* Board grid */}
           <div className={styles.board}>
+            {recalcKey > 0 && (
+              <div key={recalcKey} className={styles.recalcFlash} role="status">RECALCULATING…</div>
+            )}
             {pieceMovedFlash && (
               <div className={styles.pieceMovedFlash} role="status">A PIECE MOVED</div>
             )}

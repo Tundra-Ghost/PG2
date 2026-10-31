@@ -370,11 +370,12 @@ Adds 1 square to the owner's view range in any fog card. Cat Mode is only offere
 - Changed from v0.2: draft gating added.
 
 ### MOD-D007 · Recalculating… (Move Hints Corrupted)
-*Ref: GPS rerouting* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: No Ranked · **Design**
+*Ref: GPS rerouting* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: No Ranked · **Built**
 
 When a player selects a piece, 1 or 2 fake legal-move dots appear. Picking a fake one shows "RECALCULATING…" and the player chooses again (no move lost). Real moves are always shown.
 
 - Note: banked en passant hints are never faked.
+- Built: fake dots sit within 3 squares of the piece and never on your own pieces. They stay the same while the piece is selected. Bots are not fooled.
 
 ### MOD-D008 · Big Beak Is Watching
 *Ref: Big Brother* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Design**
@@ -481,7 +482,7 @@ Values the game uses today. "Built" cards match the build.
 | D004 | Known Unknowns | D | B | 2 | 1 | Shared | Design |
 | D005 | Sus | D | A | 3 | 0 | Owner | Design |
 | D006 | Cat Mode | D | B | 1 | 0 | Owner | Design |
-| D007 | Recalculating… | D | A | 3 | 1 | Shared | Design |
+| D007 | Recalculating… | D | A | 3 | 1 | Shared | Built |
 | D008 | Big Beak Is Watching | D | B | 2 | 0 | Shared | Design |
 | E001 | Hatoful Gambit | E | S | 5 | 0 | Owner | Design |
 | E002 | The Small Council | E | A | 3 | 0 | Owner | Built |
@@ -492,7 +493,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 
-28 of 40 built. Scope for Design cards is a proposal.
+29 of 40 built. Scope for Design cards is a proposal.
 
 ### Balance test plan
 
