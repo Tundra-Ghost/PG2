@@ -39,7 +39,7 @@ jobs:
         run: |
           mkdir -p _site/docs _site/game
           cp index.html _site/
-          cp docs/*.html _site/docs/
+          cp docs/*.md _site/docs/
           cp -r game/dist _site/game/dist
       - uses: actions/upload-pages-artifact@v3
         with:
