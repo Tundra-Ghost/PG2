@@ -19,16 +19,45 @@ export function pieceTextureKey(type: string, color: Color): string {
   return `piece-${color}-${type}`;
 }
 
-/** A data URI of one piece, coloured for one side. */
-export function pieceSvgDataUri(type: string, color: Color): string | null {
+/** The SVG of one piece, coloured for one side and sized in pixels. */
+export function pieceSvgMarkup(type: string, color: Color, size: number): string | null {
   const entry = Object.entries(files).find(([path]) => path.endsWith(`/${type}.svg`));
   if (!entry) return null;
   const c = PALETTE[color];
-  const svg = entry[1]
+  return entry[1]
     .split('currentColor').join(c.stroke)
     .split('var(--pc-fill)').join(c.fill)
     .split('var(--pc-hatch)').join(c.hatch)
-    .split('var(--pc-xhatch,0)').join(c.xhatch);
-  // Phaser's SVG loader decodes data URIs with atob, so they must be base64.
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
+    .split('var(--pc-xhatch,0)').join(c.xhatch)
+    // Some browsers will not draw an SVG to a canvas without a pixel size.
+    .replace('<svg ', `<svg width="${size}" height="${size}" `);
 }
+
+/**
+ * One piece drawn onto a canvas, ready to become a texture. Resolves null
+ * when the browser cannot draw the SVG, so the board can fall back to a glyph.
+ */
+export function renderPieceCanvas(type: string, color: Color, size: number): Promise<HTMLCanvasElement | null> {
+  const svg = pieceSvgMarkup(type, color, size);
+  if (!svg) return Promise.resolve(null);
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return resolve(null);
+      ctx.drawImage(img, 0, 0, size, size);
+      resolve(canvas);
+    };
+    img.onerror = () => resolve(null);
+    img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  });
+}
+
+/** Text stand-ins for when a piece image fails to load. */
+export const PIECE_GLYPHS: Record<string, string> = {
+  king: '\u265A', queen: '\u265B', rook: '\u265C', bishop: '\u265D', knight: '\u265E', pawn: '\u265F',
+  chancellor: 'C', royal_guard: 'G', pigeon: 'P',
+};
