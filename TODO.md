@@ -115,11 +115,11 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 
 ## Priority 4A: UI, VFX, And SFX Readability
 
-- [ ] Phaser board (art direction: Phaser 3 board + React UI; Tanner approved 2026-10-31). Opt in with `?board=phaser`.
+- [x] Phaser board (art direction: Phaser 3 board + React UI; Tanner approved 2026-10-31). The only board renderer since step 4.
   - [x] Step 1: board, highlights, legal dots, pieces and clicks in a Phaser scene (lazy-loaded chunk)
   - [x] Step 2: tile effects, piece markers, Gerald; clicks, tooltips and labels come from transparent DOM squares over the canvas
   - [x] Step 3: event flashes play in Phaser; pieces glide between squares; "A PIECE MOVED" stays a DOM overlay
-  - [ ] Step 4: phone check, make Phaser the default, remove the DOM grid
+  - [x] Step 4: phone check passed at 390px; Phaser is the only board; DOM squares only take clicks and tooltips; old DOM piece and tile drawing removed
 
 - [x] UX: board legend explains the marker badges of active modifiers; Winter zone is a light tint, frozen pieces show ❄
 - [ ] GDD UI: replace temporary letter badges with authored icon badges for Gerald, lava, freeze, pacifist, and berserker states

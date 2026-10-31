@@ -1,44 +1,14 @@
 import { useRef, useState } from 'react';
 import type { Piece as PieceType, Square as SquareType, TileEffectType } from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
-import PieceComponent from '../Piece/Piece';
+import type { SquareView } from '../Board/boardView';
 import styles from './Square.module.css';
 
-/** A one-off flash on a square where a modifier just struck. */
-export interface SquareBurst {
-  /** Changes for each new event, so the animation replays. */
-  key: string;
-  kind: 'lava' | 'berserker' | 'storm' | 'event';
-}
-
-const BURST_CLASS: Record<SquareBurst['kind'], string | undefined> = {
-  lava: styles.burstLava,
-  berserker: styles.burstBerserker,
-  storm: styles.burstStorm,
-  event: styles.burstEvent,
-};
-
-interface SquareProps {
-  square: SquareType;
-  isLight: boolean;
-  piece: PieceType | undefined;
-  isSelected: boolean;
-  isLegalTarget: boolean;
-  isInCheck: boolean;
-  isLastMove: boolean;
-  tileEffects: TileEffectType[];
-  isFrozenZone: boolean;
-  isSwamp: boolean;
-  isShaft: boolean;
-  /** MOD-A005: storm coming next wave, or already consumed. */
-  storm?: 'warning' | 'active';
-  /** MOD-C005: the side whose queen guards this square, if any. */
-  quietZone?: 'white' | 'black';
-  /** MOD-C001: the side whose king closed this square's line, if any. */
-  noFlyZone?: 'white' | 'black';
-  burst?: SquareBurst;
-  /** Phaser board: draw nothing, only take clicks and show tooltips. */
-  hitOnly?: boolean;
+/**
+ * The Phaser board draws every square. This transparent square sits on top of
+ * it and handles clicks, tooltips, accessibility and test hooks.
+ */
+interface SquareProps extends SquareView {
   onClick: (square: SquareType) => void;
 }
 
@@ -124,12 +94,8 @@ function getTileTooltipLines(
 
 export default function Square({
   square,
-  isLight,
   piece,
-  isSelected,
   isLegalTarget,
-  isInCheck,
-  isLastMove,
   tileEffects,
   isFrozenZone,
   isSwamp,
@@ -137,28 +103,16 @@ export default function Square({
   storm,
   quietZone,
   noFlyZone,
-  burst,
-  hitOnly = false,
   onClick,
 }: SquareProps) {
   const [showTooltip, setShowTooltip] = useState(false);
   const touchTimerRef = useRef<number | null>(null);
   const longPressTriggeredRef = useRef(false);
 
-  const colorClass = isLight ? styles.light : styles.dark;
-  const hasLava = tileEffects.includes('lava');
   const pieceTooltipLines = getPieceTooltipLines(piece);
   const tileTooltipLines = getTileTooltipLines(tileEffects, isFrozenZone, isSwamp, isShaft, storm, quietZone, noFlyZone);
   const tooltipLines = [...pieceTooltipLines, ...tileTooltipLines];
   const hasTooltip = tooltipLines.length > 0;
-
-  const overlayClass = isInCheck
-    ? styles.check
-    : isSelected
-      ? styles.selected
-      : isLastMove
-        ? styles.lastMove
-        : '';
 
   function clearTouchTimer() {
     if (touchTimerRef.current !== null) {
@@ -201,7 +155,7 @@ export default function Square({
 
   return (
     <div
-      className={hitOnly ? `${styles.square} ${styles.hit}` : `${styles.square} ${colorClass} ${overlayClass}`}
+      className={styles.square}
       onClick={handleClick}
       onMouseEnter={() => hasTooltip && setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
@@ -218,65 +172,7 @@ export default function Square({
       aria-label={tooltipLines.length > 0 ? `${square}, ${tooltipLines.join(' ')}` : square}
       tabIndex={-1}
     >
-      {hitOnly ? tooltip : (
-        <>
-      {isFrozenZone && (
-        <div className={`${styles.tileEffectLayer} ${styles.frozenTint}`} aria-hidden="true" />
-      )}
-
-      {isShaft && (
-        <div className={`${styles.tileEffectLayer} ${styles.shaft}`} aria-hidden="true" />
-      )}
-
-      {storm && (
-        <div
-          className={`${styles.tileEffectLayer} ${storm === 'active' ? styles.stormActive : styles.stormWarning}`}
-          aria-hidden="true"
-        />
-      )}
-
-      {isSwamp && (
-        <div className={`${styles.tileEffectLayer} ${styles.swampTint}`} aria-hidden="true">
-          <div className={styles.swampIcon}>≈</div>
-        </div>
-      )}
-
-      {noFlyZone && (
-        <div className={`${styles.tileEffectLayer} ${styles.noFlyZone}`} aria-hidden="true" />
-      )}
-
-      {quietZone && (
-        <div className={`${styles.tileEffectLayer} ${styles.quietZone}`} aria-hidden="true" />
-      )}
-
-      {hasLava && (
-        <div className={styles.tileEffectLayer} aria-hidden="true">
-          <div className={styles.lavaGlow} />
-          <div className={styles.lavaIcon}>▲</div>
-        </div>
-      )}
-
-      {piece && (
-        <div className={styles.pieceLayer}>
-          <PieceComponent piece={piece} />
-        </div>
-      )}
-
-      {burst && (
-        <div
-          key={burst.key}
-          className={`${styles.burst} ${BURST_CLASS[burst.kind]}`}
-          aria-hidden="true"
-        />
-      )}
-
-      {isLegalTarget && (
-        <div className={piece ? styles.captureDot : styles.legalDot} />
-      )}
-
       {tooltip}
-        </>
-      )}
     </div>
   );
 }

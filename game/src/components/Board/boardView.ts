@@ -1,13 +1,19 @@
 import type { GameState, Piece, Square, TileEffectType } from '@pigeon-chess/game-core';
 import { getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
-import type { SquareBurst } from '../Square/Square';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
 
+/** A one-off flash on a square where a modifier just struck. */
+export interface SquareBurst {
+  /** Changes for each new event, so the animation replays. */
+  key: string;
+  kind: 'lava' | 'berserker' | 'storm' | 'event';
+}
+
 /**
- * Everything a renderer needs to draw one square. Both the DOM board and the
- * Phaser board draw from this, so game rules never live in a renderer.
+ * Everything the board needs to draw one square. The Phaser board draws from
+ * this and the click squares read it, so game rules never live in a renderer.
  */
 export interface SquareView {
   square: Square;

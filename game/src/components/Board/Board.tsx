@@ -12,11 +12,10 @@ import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import { playCapture, playCastle, playMove } from '../../sound';
 import { SPRITES } from '../../characters';
 import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
-import SquareComponent, { type SquareBurst } from '../Square/Square';
-import { buildSquareViews } from './boardView';
-import { readBoardRenderer } from '../PhaserBoard/rendererChoice';
+import SquareComponent from '../Square/Square';
+import { buildSquareViews, type SquareBurst } from './boardView';
 
-// Phaser is large, so it only loads for players who use the Phaser board.
+// Phaser is large, so it loads in its own chunk once a game starts.
 const PhaserBoard = lazy(() => import('../PhaserBoard/PhaserBoard'));
 import PromotionModal from '../PromotionModal/PromotionModal';
 import styles from './Board.module.css';
@@ -88,7 +87,6 @@ export default function Board({
   autoQueen = false,
   showCoordinates = true,
 }: BoardProps) {
-  const [renderer] = useState(readBoardRenderer);
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null);
@@ -363,20 +361,12 @@ export default function Board({
             {pieceMovedFlash && (
               <div className={styles.pieceMovedFlash} role="status">A PIECE MOVED</div>
             )}
-            {renderer === 'phaser' ? (
-              <>
-                <Suspense fallback={null}>
-                  <PhaserBoard views={squareViews} />
-                </Suspense>
-                {squareViews.map(view => (
-                  <SquareComponent key={view.square} {...view} hitOnly onClick={handleSquareClick} />
-                ))}
-              </>
-            ) : (
-              squareViews.map(view => (
-                <SquareComponent key={view.square} {...view} onClick={handleSquareClick} />
-              ))
-            )}
+            <Suspense fallback={null}>
+              <PhaserBoard views={squareViews} />
+            </Suspense>
+            {squareViews.map(view => (
+              <SquareComponent key={view.square} {...view} onClick={handleSquareClick} />
+            ))}
           </div>
 
           {/* Right rank labels */}
