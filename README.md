@@ -16,6 +16,7 @@ The project vision is defined in the GDD and TDD:
 - `docs/tdd.md`
 - `docs/art-direction.md`
 - `docs/modifier-bible.md`
+- `docs/characters.md`
 
 ## Current Implementation
 

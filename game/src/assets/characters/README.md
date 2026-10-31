@@ -6,6 +6,8 @@ Each bird has its own feather colour, silhouette and signature item, so they sta
 
 Margaret and Reginald are not used in the game yet (Prodigy boss, review panel).
 
+Names, bios and art descriptors for the full cast (including a pigeon for every chess piece) are in `docs/characters.md`.
+
 ## Prompts
 
 - **gerald**: a scruffy plump city rock pigeon, ruffled messy grey feathers sticking out, half-closed unimpressed eyes, wearing a worn brown tweed flat cap, iridescent green and purple neck, red feet, full body
