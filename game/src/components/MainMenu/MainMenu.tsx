@@ -14,6 +14,7 @@ interface MainMenuProps {
   onProfile: () => void;
   onRoost: () => void;
   onCollection: () => void;
+  onPuzzles: () => void;
   onOnline: () => void;
   onFriends: () => void;
   /** Friend requests plus unread messages; 0 hides the badge. */
@@ -96,6 +97,7 @@ export default function MainMenu({
   onProfile,
   onRoost,
   onCollection,
+  onPuzzles,
   onOnline,
   onFriends,
   friendsBadge,
@@ -122,11 +124,12 @@ export default function MainMenu({
     {
       id: 'puzzles',
       label: 'Puzzles',
-      detail: 'Test your tactics with curated puzzle positions.',
-      status: 'soon',
+      detail: 'Build modifier puzzles and share them with a code.',
+      status: 'live',
       tone: 'sand',
       size: 'standard',
       artClass: 'artPuzzles',
+      action: onPuzzles,
     },
     {
       id: 'stats',
