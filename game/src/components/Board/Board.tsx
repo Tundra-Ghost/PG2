@@ -1,13 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
 import { buildMove } from '@pigeon-chess/game-core';
 import {
   getAbilityOptions,
-  getNoFlySquares,
-  getQuietZoneSquares,
   getValidPromotionTypes,
-  isFrozenZoneSquare,
   isHistoryBlackout,
   modifierRegistry,
 } from '@pigeon-chess/game-core';
@@ -16,6 +13,11 @@ import { playCapture, playCastle, playMove } from '../../sound';
 import { SPRITES } from '../../characters';
 import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
 import SquareComponent, { type SquareBurst } from '../Square/Square';
+import { buildSquareViews } from './boardView';
+import { readBoardRenderer } from '../PhaserBoard/rendererChoice';
+
+// Phaser is large, so it only loads for players who use the Phaser board.
+const PhaserBoard = lazy(() => import('../PhaserBoard/PhaserBoard'));
 import PromotionModal from '../PromotionModal/PromotionModal';
 import styles from './Board.module.css';
 import { ModifierIcon } from '../ModifierIcon/ModifierIcon';
@@ -45,10 +47,6 @@ interface BoardProps {
   showLegalMoves?: boolean;
   autoQueen?: boolean;
   showCoordinates?: boolean;
-}
-
-function isLightSquare(file: number, rank: number): boolean {
-  return (file + rank) % 2 !== 0;
 }
 
 interface PendingPromotion {
@@ -90,6 +88,7 @@ export default function Board({
   autoQueen = false,
   showCoordinates = true,
 }: BoardProps) {
+  const [renderer] = useState(readBoardRenderer);
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
   const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null);
@@ -126,8 +125,6 @@ export default function Board({
     return map;
   }, [state.eventHistory, plies]);
 
-  const quietZones = useMemo(() => getQuietZoneSquares(state), [state]);
-  const noFlySquares = useMemo(() => getNoFlySquares(state), [state]);
   const abilitySide = controlColor ?? state.turn;
   const tempoTokens = state.tempoTokens[abilitySide] ?? 0;
   const hasAbilityCards = state.activeModifiers.some(
@@ -164,7 +161,6 @@ export default function Board({
     [onMove, onStateChange, state],
   );
 
-  const winterActive = state.activeModifiers.some(mod => mod.id === WINTER_ID);
   const markerLegend = getMarkerLegend(state.activeModifiers.map(mod => mod.id));
 
   // MOD-B005: during a blackout the cursed side does not see the last move either.
@@ -326,6 +322,17 @@ export default function Board({
 
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
   const fileOrder = orientation === 'white' ? [...FILES] : [...FILES].reverse();
+  const squareViews = buildSquareViews({
+    state,
+    orientation,
+    selected,
+    legalMoves,
+    showLegalMoves,
+    checkSquare,
+    lastFrom,
+    lastTo,
+    bursts,
+  });
 
   return (
     <>
@@ -356,40 +363,14 @@ export default function Board({
             {pieceMovedFlash && (
               <div className={styles.pieceMovedFlash} role="status">A PIECE MOVED</div>
             )}
-            {rankOrder.map(rank =>
-              fileOrder.map(file => {
-                const square = `${file}${rank}` as Square;
-                const piece  = state.pieces.get(square);
-                const tileEffects =
-                  state.tiles.get(square)?.effects.map(effect => effect.type) ?? [];
-                const frozenZone = winterActive && isFrozenZoneSquare(square);
-                const swamp = state.tiles.get(square)?.isSwamp === true;
-                const storm = state.tiles.get(square)?.storm;
-                const shaft = state.tiles.get(square)?.isVoid === true && !storm;
-                const quietZone = quietZones.get(square);
-                const noFly = noFlySquares.get(square);
-                return (
-                  <SquareComponent
-                    key={square}
-                    square={square}
-                    isLight={isLightSquare(FILES.indexOf(file), RANKS.indexOf(rank))}
-                    piece={piece}
-                    isSelected={selected === square}
-                    isLegalTarget={showLegalMoves && legalMoves.includes(square)}
-                    isInCheck={checkSquare === square}
-                    isLastMove={square === lastFrom || square === lastTo}
-                    tileEffects={tileEffects}
-                    isFrozenZone={frozenZone}
-                    isSwamp={swamp}
-                    isShaft={shaft}
-                    storm={storm}
-                    quietZone={quietZone}
-                    noFlyZone={noFly}
-                    burst={bursts.get(square)}
-                    onClick={handleSquareClick}
-                  />
-                );
-              }),
+            {renderer === 'phaser' ? (
+              <Suspense fallback={null}>
+                <PhaserBoard views={squareViews} onSquareClick={handleSquareClick} />
+              </Suspense>
+            ) : (
+              squareViews.map(view => (
+                <SquareComponent key={view.square} {...view} onClick={handleSquareClick} />
+              ))
             )}
           </div>
 
