@@ -89,7 +89,7 @@ export default function BotSelect({
                   aria-disabled={!bot.available}
                 >
                   <span className={styles.cardIcon} aria-hidden="true">
-                    {bot.icon}
+                    {bot.sprite ? <img src={bot.sprite} alt="" className={styles.cardSprite} /> : bot.icon}
                   </span>
 
                   <div className={styles.cardBody}>

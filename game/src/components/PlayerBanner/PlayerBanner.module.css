@@ -72,6 +72,11 @@
   border-radius: 999px;
 }
 
+.portraitPixelArt {
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
 .content {
   min-width: 0;
   display: flex;

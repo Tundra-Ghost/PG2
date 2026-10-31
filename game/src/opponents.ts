@@ -1,3 +1,5 @@
+import { SPRITES } from './characters';
+
 export type BotId = 'chick' | 'pigeon' | 'magnus';
 export type OpponentId = BotId | `npc:${string}`;
 
@@ -5,6 +7,8 @@ export interface OpponentProfile {
   id: OpponentId;
   kind: 'bot' | 'npc';
   icon: string;
+  /** Pixel art portrait; takes the place of the emoji icon. */
+  sprite?: string;
   portraitSlotLabel: string;
   dialogueTheme: 'player' | 'chick' | 'measured' | 'grandmaster' | 'npc';
   name: string;
@@ -22,6 +26,7 @@ export const BOTS: OpponentProfile[] = [
     id: 'chick',
     kind: 'bot',
     icon: '🐣',
+    sprite: SPRITES.chick,
     portraitSlotLabel: 'Chick Portrait',
     dialogueTheme: 'chick',
     name: 'Chick',
@@ -35,6 +40,7 @@ export const BOTS: OpponentProfile[] = [
     id: 'pigeon',
     kind: 'bot',
     icon: '🐦',
+    sprite: SPRITES.pigeon,
     portraitSlotLabel: 'Pigeon Portrait',
     dialogueTheme: 'measured',
     name: 'Pigeon',
@@ -48,6 +54,7 @@ export const BOTS: OpponentProfile[] = [
     id: 'magnus',
     kind: 'bot',
     icon: '🦅',
+    sprite: SPRITES.magnus,
     portraitSlotLabel: 'Magnus Portrait',
     dialogueTheme: 'grandmaster',
     name: 'Magnus Jr.',

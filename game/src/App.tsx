@@ -189,7 +189,7 @@ export default function App() {
 
     const currentSpeaker = getBotSpeaker(selectedBot);
     const currentOpponentName = currentSpeaker?.name ?? 'Opponent';
-    const currentOpponentIcon = currentSpeaker?.icon ?? null;
+    const currentOpponentIcon = currentSpeaker?.sprite ? null : currentSpeaker?.icon ?? null;
 
     const moveIndex = gameState.moveHistory.length - 1;
     const reaction = getBotReaction({
@@ -213,6 +213,7 @@ export default function App() {
         source: 'bot',
         avatarLabel: currentOpponentName.slice(0, 1).toUpperCase(),
         avatarIcon: currentOpponentIcon,
+        portraitSrc: currentSpeaker?.sprite ?? null,
         portraitSlotLabel: currentSpeaker?.portraitSlotLabel ?? `${currentOpponentName} Portrait`,
         dialogueTheme: currentSpeaker?.dialogueTheme ?? 'npc',
         dialogueExpression: reaction.expression,
@@ -709,6 +710,8 @@ export default function App() {
               subtitle={botProfile?.motto || opponentTagline}
               badge={gameState.turn === 'black' ? (vsBot && botThinking ? 'Thinking…' : 'To Move') : 'Standing By'}
               portraitLabel={selectedBotProfile?.icon ?? selectedBotProfile?.name.slice(0, 1).toUpperCase() ?? 'O'}
+              portraitSrc={selectedBotProfile?.sprite ?? null}
+              portraitPixelArt
               align="right"
               onClick={() => {
                 if (!botProfile) return;
@@ -735,7 +738,8 @@ export default function App() {
                 onSendChat={gameState.status === 'active' ? handleSendChat : undefined}
                 playerAvatarLabel={playerName.slice(0, 1).toUpperCase()}
                 playerAvatarSrc={playerProfile?.avatarDataUrl ?? null}
-                opponentAvatarIcon={selectedBotProfile?.icon ?? null}
+                opponentAvatarIcon={selectedBotProfile?.sprite ? null : selectedBotProfile?.icon ?? null}
+                opponentAvatarSrc={selectedBotProfile?.sprite ?? null}
                 pendingDialogue={pendingDialogue}
                 onDismissDialogue={handleDialogueDismiss}
                 viewerColor={vsBot ? 'white' : undefined}
