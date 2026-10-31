@@ -197,3 +197,59 @@ describe('describeGoal', () => {
     );
   });
 });
+
+describe('board shapes', () => {
+  it('closed squares block moves and slides', () => {
+    const puzzle: Puzzle = { ...backRankPuzzle(), closed: ['a5', 'b1'] };
+    const state = buildPuzzleState(puzzle);
+    const rookMoves = chessEngine.getLegalMoves(state, 'a1');
+    expect(rookMoves).toContain('a4');
+    expect(rookMoves).not.toContain('a5');
+    expect(rookMoves).not.toContain('a8');
+    expect(rookMoves).not.toContain('b1');
+    expect(rookMoves).not.toContain('c1');
+  });
+
+  it('a pawn facing a closed square promotes', () => {
+    const puzzle: Puzzle = {
+      ...createEmptyPuzzle('promo'),
+      pieces: [
+        { square: 'a1', type: 'king', color: 'white' },
+        { square: 'h8', type: 'king', color: 'black' },
+        { square: 'd5', type: 'pawn', color: 'white' },
+      ],
+      closed: ['d7', 'd8'],
+    };
+    const state = buildPuzzleState(puzzle);
+    expect(chessEngine.getLegalMoves(state, 'd5')).toEqual(['d6']);
+    expect(chessEngine.isPromotionMove(state, 'd5', 'd6')).toBe(true);
+    const promoted = chessEngine.applyMove(state, { from: 'd5', to: 'd6', playerColor: 'white', promotion: 'queen' });
+    expect(promoted.pieces.get('d6')?.type).toBe('queen');
+  });
+
+  it('turns castling off when the path is closed', () => {
+    const puzzle: Puzzle = {
+      ...createEmptyPuzzle('c'),
+      pieces: [
+        { square: 'e1', type: 'king', color: 'white' },
+        { square: 'h1', type: 'rook', color: 'white' },
+        { square: 'a1', type: 'rook', color: 'white' },
+        { square: 'e8', type: 'king', color: 'black' },
+      ],
+      closed: ['b1'],
+    };
+    expect(buildPuzzleState(puzzle).flags.castlingRights.white).toEqual({ kingSide: true, queenSide: false });
+  });
+
+  it('refuses pieces on closed squares', () => {
+    const puzzle: Puzzle = { ...backRankPuzzle(), closed: ['a1'] };
+    expect(validatePuzzle(puzzle)).toContain('a1 is closed, so no piece can stand there.');
+  });
+
+  it('keeps the shape in share codes, and old codes still read', () => {
+    const shaped: Puzzle = { ...backRankPuzzle(), closed: ['a8', 'h1', 'd4'] };
+    expect(decodePuzzle(encodePuzzle(shaped), 't1')).toEqual(shaped);
+    expect(encodePuzzle(backRankPuzzle())).not.toContain('"c"');
+    expect(decodePuzzle(encodePuzzle(backRankPuzzle()), 't1').closed).toEqual([]);
+  });
+});

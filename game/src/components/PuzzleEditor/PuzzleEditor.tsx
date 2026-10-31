@@ -33,7 +33,25 @@ const PIECE_NAMES: Partial<Record<PieceType, string>> = {
   pawn: 'Pawn',
 };
 
-type Tool = { kind: 'piece'; type: PieceType; color: Color } | { kind: 'erase' } | { kind: 'target' };
+type Tool =
+  | { kind: 'piece'; type: PieceType; color: Color }
+  | { kind: 'erase' }
+  | { kind: 'target' }
+  | { kind: 'shape' };
+
+const ALL_SQUARES = RANKS.flatMap(rank => FILES.map(file => `${file}${rank}` as Square));
+
+/** Distance from the board centre on each axis, 0.5 for the middle four squares. */
+function offCentre(square: Square): [number, number] {
+  return [Math.abs(FILES.indexOf(square[0] as (typeof FILES)[number]) - 3.5), Math.abs(Number(square[1]) - 4.5)];
+}
+
+const SHAPES: { label: string; closed: (square: Square) => boolean }[] = [
+  { label: 'Full', closed: () => false },
+  { label: '6×6', closed: sq => Math.max(...offCentre(sq)) > 3 },
+  { label: 'Cross', closed: sq => offCentre(sq).every(d => d > 2) },
+  { label: 'Diamond', closed: sq => offCentre(sq)[0] + offCentre(sq)[1] > 5 },
+];
 
 const START_ROW: PieceType[] = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'];
 
@@ -75,6 +93,7 @@ export default function PuzzleEditor({ initial, onSave, onTest, onBack }: Puzzle
   }, []);
   const pieceAt = useMemo(() => new Map(puzzle.pieces.map(p => [p.square, p])), [puzzle.pieces]);
   const target = puzzle.goal.type === 'capture' ? puzzle.goal.target : null;
+  const closedSet = useMemo(() => new Set(puzzle.closed), [puzzle.closed]);
 
   function update(change: Partial<Puzzle>) {
     setPuzzle(prev => ({ ...prev, ...change }));
@@ -82,7 +101,26 @@ export default function PuzzleEditor({ initial, onSave, onTest, onBack }: Puzzle
     setNotice(null);
   }
 
+  /** Sets the board shape. Pieces left outside it come off the board. */
+  function setClosed(closed: Square[]) {
+    const shut = new Set(closed);
+    const kept = puzzle.pieces.filter(p => !shut.has(p.square));
+    update({ closed, pieces: kept });
+    const lost = puzzle.pieces.length - kept.length;
+    if (lost > 0) setNotice(`Removed ${lost} piece${lost === 1 ? '' : 's'} outside the board.`);
+  }
+
   function handleSquare(square: Square) {
+    if (tool.kind === 'shape') {
+      setClosed(
+        closedSet.has(square) ? puzzle.closed.filter(sq => sq !== square) : [...puzzle.closed, square],
+      );
+      return;
+    }
+    if (closedSet.has(square)) {
+      setNotice(`${square} is closed. Use Edit shape to open it.`);
+      return;
+    }
     if (tool.kind === 'target') {
       if (puzzle.goal.type === 'capture') update({ goal: { ...puzzle.goal, target: square } });
       setTool({ kind: 'piece', type: 'queen', color: puzzle.toMove });
@@ -146,7 +184,9 @@ export default function PuzzleEditor({ initial, onSave, onTest, onBack }: Puzzle
   }
 
   const toolLabel =
-    tool.kind === 'target'
+    tool.kind === 'shape'
+      ? 'Click squares to close or open them. Closed squares are off the board.'
+      : tool.kind === 'target'
       ? 'Click the enemy piece to capture.'
       : tool.kind === 'erase'
         ? 'Click a piece to remove it.'
@@ -225,6 +265,29 @@ export default function PuzzleEditor({ initial, onSave, onTest, onBack }: Puzzle
             </button>
           </div>
           <p className={styles.hint}>{toolLabel}</p>
+
+          <h2 className={`${styles.sectionTitle} ${styles.shapeTitle}`}>Board shape</h2>
+          <button
+            type="button"
+            className={`${styles.toolButton} ${styles.shapeEdit} ${tool.kind === 'shape' ? styles.active : ''}`}
+            aria-pressed={tool.kind === 'shape'}
+            onClick={() => setTool(tool.kind === 'shape' ? { kind: 'piece', type: 'queen', color: puzzle.toMove } : { kind: 'shape' })}
+          >
+            {tool.kind === 'shape' ? 'Done editing shape' : 'Edit shape'}
+          </button>
+          <div className={styles.shapeRow}>
+            {SHAPES.map(shape => (
+              <button
+                key={shape.label}
+                type="button"
+                className={styles.toolButton}
+                onClick={() => setClosed(ALL_SQUARES.filter(shape.closed))}
+              >
+                {shape.label}
+              </button>
+            ))}
+          </div>
+          <p className={styles.hint}>{64 - puzzle.closed.length} of 64 squares open.</p>
         </section>
 
         <section className={styles.boardWrap} aria-label="Puzzle board">
@@ -234,14 +297,19 @@ export default function PuzzleEditor({ initial, onSave, onTest, onBack }: Puzzle
                 const square = `${file}${rank}` as Square;
                 const piece = pieceAt.get(square);
                 const dark = (r + f) % 2 === 1;
+                const isClosed = closedSet.has(square);
                 return (
                   <button
                     key={square}
                     type="button"
-                    className={`${styles.square} ${dark ? styles.dark : styles.light} ${
-                      square === target ? styles.target : ''
-                    }`}
-                    aria-label={piece ? `${square} ${piece.color} ${piece.type}` : square}
+                    className={[
+                      styles.square,
+                      dark ? styles.dark : styles.light,
+                      isClosed ? styles.closed : '',
+                      tool.kind === 'shape' ? styles.shaping : '',
+                      square === target ? styles.target : '',
+                    ].join(' ')}
+                    aria-label={isClosed ? `${square} closed` : piece ? `${square} ${piece.color} ${piece.type}` : square}
                     onClick={() => handleSquare(square)}
                     onContextMenu={event => {
                       event.preventDefault();

@@ -53,6 +53,8 @@ export interface Puzzle {
   goal: PuzzleGoal;
   /** Fixes every random modifier roll so a puzzle plays the same each time. */
   seed: number;
+  /** Squares cut out of the board, so puzzles can use any board shape. */
+  closed: Square[];
 }
 
 /** Pieces the editor can place. Modifier-only pieces come from the modifiers themselves. */
@@ -84,6 +86,7 @@ export function createEmptyPuzzle(id: string): Puzzle {
     modifiers: [],
     goal: { type: 'checkmate', moves: 1 },
     seed: 1,
+    closed: [],
   };
 }
 
@@ -102,12 +105,17 @@ function buildBareState(puzzle: Puzzle): GameState {
     };
     state.pieces.set(spec.square, piece);
   }
-  state.tiles = new Map();
+  state.tiles = new Map(
+    puzzle.closed.map(square => [square, { square, effects: [], isVoid: true, isClosed: true }]),
+  );
   state.turn = puzzle.toMove;
   state.prngSeed = puzzle.seed | 0;
   state.prngState = puzzle.seed | 0;
 
-  // Castling is allowed only when king and rook still stand on their start squares.
+  // Castling is allowed only when king and rook still stand on their start
+  // squares and the board shape leaves the squares between them.
+  const closed = new Set<string>(puzzle.closed);
+  const rowOpen = (files: string[], rank: string) => files.every(file => !closed.has(`${file}${rank}`));
   const at = (sq: string, type: PieceType, color: Color) => {
     const piece = state.pieces.get(sq as Square);
     return piece?.type === type && piece.color === color;
@@ -116,8 +124,8 @@ function buildBareState(puzzle: Puzzle): GameState {
     const rank = color === 'white' ? '1' : '8';
     const king = at(`e${rank}`, 'king', color);
     state.flags.castlingRights[color] = {
-      kingSide: king && at(`h${rank}`, 'rook', color),
-      queenSide: king && at(`a${rank}`, 'rook', color),
+      kingSide: king && at(`h${rank}`, 'rook', color) && rowOpen(['f', 'g'], rank),
+      queenSide: king && at(`a${rank}`, 'rook', color) && rowOpen(['b', 'c', 'd'], rank),
     };
   }
   state.positionHistory = { [positionKey(state)]: 1 };
@@ -141,7 +149,10 @@ export function buildPuzzleState(puzzle: Puzzle): GameState {
 export function validatePuzzle(puzzle: Puzzle): string[] {
   const problems: string[] = [];
   const seen = new Set<Square>();
+  const closed = new Set(puzzle.closed);
+  if (closed.size > 60) problems.push('Open at least 4 squares.');
   for (const piece of puzzle.pieces) {
+    if (closed.has(piece.square)) problems.push(`${piece.square} is closed, so no piece can stand there.`);
     if (seen.has(piece.square)) problems.push(`Two pieces on ${piece.square}.`);
     seen.add(piece.square);
     if (piece.type === 'pawn' && (piece.square[1] === '1' || piece.square[1] === '8')) {
@@ -282,6 +293,8 @@ interface PuzzleWire {
   x: string[];
   g: [string, number, string?];
   s: number;
+  /** Closed squares, "a1 h8". Left out when the board is full. */
+  c?: string;
 }
 
 // game-core has no DOM or Node typings, so base64 and UTF-8 are done by hand.
@@ -351,6 +364,7 @@ export function encodePuzzle(puzzle: Puzzle): string {
           : ['m', goal.moves],
     s: puzzle.seed,
   };
+  if (puzzle.closed.length > 0) wire.c = puzzle.closed.join(' ');
   return CODE_PREFIX + toBase64Url(JSON.stringify(wire));
 }
 
@@ -399,6 +413,7 @@ export function decodePuzzle(code: string, id: string): Puzzle {
     modifiers,
     goal,
     seed: Number.isFinite(wire.s) ? wire.s | 0 : 1,
+    closed: String(wire.c ?? '').split(' ').filter(isSquare),
   };
 }
 

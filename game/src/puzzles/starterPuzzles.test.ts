@@ -36,6 +36,13 @@ describe('starter puzzles', () => {
     expect(getPuzzleProgress(puzzle, start, solverMove(start, 'a1', 'a8')).status).toBe('solved');
   });
 
+  it('small world: Rg7 mates against the closed edge', () => {
+    const puzzle = byId('starter-small-world');
+    const start = buildPuzzleState(puzzle);
+    expect(puzzle.closed).toHaveLength(28);
+    expect(getPuzzleProgress(puzzle, start, solverMove(start, 'g2', 'g7')).status).toBe('solved');
+  });
+
   it('royal fork: Ne7+ wins the queen against the bot', () => {
     const puzzle = byId('starter-royal-fork');
     const start = buildPuzzleState(puzzle);

@@ -236,7 +236,8 @@ export function buildMove(state: GameState, from: Square, to: Square): Move {
  * Returns true if a pawn move from `from` to `to` reaches the back rank
  * and therefore requires a promotion choice from the player.
  * MOD-A005: once the storm has taken the square ahead, the last open rank
- * counts as the back rank.
+ * counts as the back rank. Puzzle board shapes work the same way: a pawn
+ * facing a closed square promotes.
  */
 export function isPromotionMove(state: GameState, from: Square, to: Square): boolean {
   const piece = state.pieces.get(from);
@@ -246,7 +247,8 @@ export function isPromotionMove(state: GameState, from: Square, to: Square): boo
     return true;
   }
   const ahead = toSquare(fileIndex(to), toRank + (piece.color === 'white' ? 1 : -1));
-  return state.tiles.get(ahead)?.storm === 'active';
+  const aheadTile = state.tiles.get(ahead);
+  return aheadTile?.storm === 'active' || aheadTile?.isClosed === true;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
