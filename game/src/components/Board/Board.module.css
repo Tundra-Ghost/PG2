@@ -17,6 +17,14 @@
   grid-template-rows: repeat(8, 1fr);
   width: var(--board-size);
   height: var(--board-size);
+  /* Plain checkerboard while the Phaser board loads; the canvas covers it. */
+  background: conic-gradient(
+      var(--board-dark-sq) 0 90deg,
+      var(--board-light-sq) 0 180deg,
+      var(--board-dark-sq) 0 270deg,
+      var(--board-light-sq) 0
+    )
+    0 0 / 25% 25%;
 }
 
 /* Leave room for the legend row so the frame still fits short screens. */

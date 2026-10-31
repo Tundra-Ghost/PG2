@@ -146,7 +146,7 @@ export class BoardScene extends Phaser.Scene {
       const cx = x + CELL / 2;
       const cy = y + CELL / 2;
 
-      // Like the DOM board, a highlight replaces the square colour and is
+      // A highlight replaces the square colour and is
       // tinted over the dark frame, not over the square.
       const overlay = view.isInCheck ? theme.check : view.isSelected ? theme.selected : view.isLastMove ? theme.lastMove : null;
       if (overlay) {
