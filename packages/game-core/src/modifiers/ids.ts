@@ -29,6 +29,7 @@ export const MODIFIER_IDS = {
   moneyball: 'MOD-E008',
   hatofulGambit: 'MOD-E001',
   recalculating: 'MOD-D007',
+  darkAndScared: 'MOD-D001',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];

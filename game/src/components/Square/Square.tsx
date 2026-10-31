@@ -112,6 +112,7 @@ export default function Square({
   infectedReach,
   crownOrder,
   pigeonHop,
+  isHidden,
   isShaft,
   storm,
   quietZone,
@@ -127,6 +128,7 @@ export default function Square({
   const tooltipLines = [
     ...pieceTooltipLines,
     ...tileTooltipLines,
+    ...(isHidden ? ['Dark: you cannot see this square.'] : []),
     ...(pigeonHop ? [`Hatoful Gambit: the ${pigeonHop} pigeon hops here on the next move.`] : []),
     ...(crownOrder ? [`Heavy Is The Crown: the ${crownOrder} king is ordered here. It can move here on its next turn.`] : []),
   ];

@@ -385,6 +385,7 @@ export default function Board({
     lastFrom,
     lastTo,
     bursts,
+    viewer: controlColor ?? state.turn,
   });
 
   return (

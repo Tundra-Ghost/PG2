@@ -11,7 +11,7 @@ const PIECE_PX = 64;
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
 
 // Draw order, bottom to top.
-const DEPTH = { squares: 0, tiles: 1, pulse: 2, tileIcons: 2.5, pieces: 3, badges: 4, marks: 5, bursts: 6 };
+const DEPTH = { squares: 0, tiles: 1, pulse: 2, tileIcons: 2.5, fog: 2.8, pieces: 3, badges: 4, marks: 5, bursts: 6 };
 const MOVE_MS = 140;
 const BURST_MS = 1100;
 
@@ -86,6 +86,7 @@ export class BoardScene extends Phaser.Scene {
   private squareLayer!: Phaser.GameObjects.Graphics;
   private tileLayer!: Phaser.GameObjects.Graphics;
   private pulseLayer!: Phaser.GameObjects.Graphics;
+  private fogLayer!: Phaser.GameObjects.Graphics;
   private markLayer!: Phaser.GameObjects.Graphics;
   private badgeLayer!: Phaser.GameObjects.Graphics;
   private labels: Phaser.GameObjects.GameObject[] = [];
@@ -112,6 +113,7 @@ export class BoardScene extends Phaser.Scene {
   create() {
     this.squareLayer = this.add.graphics().setDepth(DEPTH.squares);
     this.tileLayer = this.add.graphics().setDepth(DEPTH.tiles);
+    this.fogLayer = this.add.graphics().setDepth(DEPTH.fog);
     this.pulseLayer = this.add.graphics().setDepth(DEPTH.pulse);
     this.badgeLayer = this.add.graphics().setDepth(DEPTH.badges);
     this.markLayer = this.add.graphics().setDepth(DEPTH.marks);
@@ -135,6 +137,7 @@ export class BoardScene extends Phaser.Scene {
     const theme = readTheme();
     const g = this.squareLayer.clear();
     const tiles = this.tileLayer.clear();
+    const fog = this.fogLayer.clear();
     const pulse = this.pulseLayer.clear();
     const marks = this.markLayer.clear();
     const badges = this.badgeLayer.clear();
@@ -160,6 +163,12 @@ export class BoardScene extends Phaser.Scene {
       }
 
       this.drawTile(view, x, y, tiles, pulse);
+      // Fog of war: dark, with a faint grain so the board still reads.
+      if (view.isHidden) {
+        fog.fillStyle(0x07060a, 0.86).fillRect(x, y, CELL, CELL);
+        fog.fillStyle(0x2a2440, 0.25).fillCircle(x + CELL * 0.3, y + CELL * 0.35, CELL * 0.22);
+        fog.fillStyle(0x2a2440, 0.18).fillCircle(x + CELL * 0.7, y + CELL * 0.65, CELL * 0.26);
+      }
       if (view.burst) this.playBurst(view, cx, cy);
 
       if (view.isLegalTarget) {

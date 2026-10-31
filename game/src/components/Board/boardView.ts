@@ -1,5 +1,5 @@
-import type { GameState, Piece, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getCrownOrders, getPigeonHops, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
+import type { Color, GameState, Piece, Square, TileEffectType } from '@pigeon-chess/game-core';
+import { getCrownOrders, getPigeonHops, getVisibleSquares, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -37,6 +37,8 @@ export interface SquareView {
   quietZone?: 'white' | 'black';
   noFlyZone?: 'white' | 'black';
   burst?: SquareBurst;
+  /** Fog of war: the viewer cannot see this square, so enemy pieces here are not shown. */
+  isHidden?: boolean;
 }
 
 export interface BoardViewInput {
@@ -49,11 +51,14 @@ export interface BoardViewInput {
   lastFrom?: Square;
   lastTo?: Square;
   bursts: Map<Square, SquareBurst>;
+  /** Whose eyes the board is drawn through, for fog cards. */
+  viewer?: Color;
 }
 
 /** The 64 squares in screen order: top-left first, row by row. */
 export function buildSquareViews(input: BoardViewInput): SquareView[] {
-  const { state, orientation, selected, legalMoves, showLegalMoves, checkSquare, lastFrom, lastTo, bursts } = input;
+  const { state, orientation, selected, legalMoves, showLegalMoves, checkSquare, lastFrom, lastTo, bursts, viewer } = input;
+  const visible = viewer ? getVisibleSquares(state, viewer) : null;
   const winterActive = state.activeModifiers.some(mod => mod.id === MODIFIER_IDS.winterIsComing);
   const quietZones = getQuietZoneSquares(state);
   const noFlySquares = getNoFlySquares(state);
@@ -68,25 +73,27 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
       const square = `${file}${rank}` as Square;
       const tile = state.tiles.get(square);
       const storm = tile?.storm;
+      const hidden = visible !== null && !visible.has(square);
       views.push({
         square,
         isLight: (FILES.indexOf(file) + RANKS.indexOf(rank)) % 2 !== 0,
-        piece: state.pieces.get(square),
+        piece: hidden ? undefined : state.pieces.get(square),
         isSelected: selected === square,
         isLegalTarget: showLegalMoves && legalMoves.includes(square),
         isInCheck: checkSquare === square,
-        isLastMove: square === lastFrom || square === lastTo,
+        isLastMove: !hidden && (square === lastFrom || square === lastTo),
         tileEffects: tile?.effects.map(effect => effect.type) ?? [],
         isFrozenZone: winterActive && isFrozenZoneSquare(square),
         isSwamp: tile?.isSwamp === true,
-        infectedReach: getInfectedReach(state, square) ?? undefined,
+        infectedReach: hidden ? undefined : getInfectedReach(state, square) ?? undefined,
         crownOrder: crownOrders.get(square),
         pigeonHop: pigeonHops.get(square),
         isShaft: tile?.isVoid === true && !storm,
         storm,
         quietZone: quietZones.get(square),
         noFlyZone: noFlySquares.get(square),
-        burst: bursts.get(square),
+        burst: hidden ? undefined : bursts.get(square),
+        ...(hidden ? { isHidden: true } : {}),
       });
     }
   }
