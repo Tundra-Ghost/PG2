@@ -4,7 +4,8 @@ import { modifierRegistry } from '../modifiers/registry';
 /**
  * Squares `viewer` can see, or null when no fog card is active. Each fog
  * card limits the view; with several, a square must pass all of them.
- * Squares holding the viewer's own pieces are always visible.
+ * Squares holding the viewer's own pieces are always visible, and so are
+ * squares a card reveals (getRevealedSquares).
  */
 export function getVisibleSquares(state: GameState, viewer: Color): Set<Square> | null {
   const views: Set<Square>[] = [];
@@ -22,6 +23,12 @@ export function getVisibleSquares(state: GameState, viewer: Color): Set<Square> 
   }
   for (const piece of state.pieces.values()) {
     if (piece.color === viewer) visible.add(piece.square);
+  }
+  seen.clear();
+  for (const inst of state.activeModifiers) {
+    if (seen.has(inst.id)) continue;
+    seen.add(inst.id);
+    for (const sq of modifierRegistry.get(inst.id)?.getRevealedSquares?.(state, viewer) ?? []) visible.add(sq);
   }
   return visible;
 }

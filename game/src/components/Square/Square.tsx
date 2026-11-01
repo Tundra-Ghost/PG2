@@ -114,6 +114,7 @@ export default function Square({
   pigeonHop,
   isHidden,
   blindSpot,
+  surveillance,
   isShaft,
   storm,
   quietZone,
@@ -130,6 +131,7 @@ export default function Square({
     ...pieceTooltipLines,
     ...tileTooltipLines,
     ...(blindSpot ? ['Known Unknowns: your Blind Spot. You cannot see enemy pieces here.'] : isHidden ? ['Dark: you cannot see this square.'] : []),
+    ...(surveillance ? ['Big Beak Is Watching: a piece that moves here or next to here is shown to both players for 3 rounds.'] : []),
     ...(pigeonHop ? [`Hatoful Gambit: the ${pigeonHop} pigeon hops here on the next move.`] : []),
     ...(crownOrder ? [`Heavy Is The Crown: the ${crownOrder} king is ordered here. It can move here on its next turn.`] : []),
   ];

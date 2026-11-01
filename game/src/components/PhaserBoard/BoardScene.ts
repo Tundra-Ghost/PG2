@@ -198,6 +198,8 @@ export class BoardScene extends Phaser.Scene {
         fog.fillStyle(0x2a2440, 0.18).fillCircle(x + CELL * 0.7, y + CELL * 0.65, CELL * 0.26);
       }
       if (view.blindSpot) this.drawBlindSpotEdges(index, x, y);
+      // Drawn over the fog: both players always see the eye.
+      if (view.surveillance) this.drawEye(cx, cy);
       if (view.burst) this.playBurst(view, cx, cy);
 
       if (view.isLegalTarget) {
@@ -463,5 +465,14 @@ export class BoardScene extends Phaser.Scene {
     if (!inSpot(index + 8)) dashed(x, y + CELL - 1.5, x + CELL, y + CELL - 1.5);
     if (col === 0 || !inSpot(index - 1)) dashed(x + 1.5, y, x + 1.5, y + CELL);
     if (col === 7 || !inSpot(index + 1)) dashed(x + CELL - 1.5, y, x + CELL - 1.5, y + CELL);
+  }
+
+  /** Big Beak Is Watching: a golden eye on the Surveillance Square. */
+  private drawEye(cx: number, cy: number) {
+    const g = this.fogLayer;
+    g.fillStyle(0xd8a838, 0.18).fillEllipse(cx, cy, CELL * 0.86, CELL * 0.5);
+    g.lineStyle(3, 0xe0b040, 0.95).strokeEllipse(cx, cy, CELL * 0.86, CELL * 0.5);
+    g.fillStyle(0xe0b040, 0.95).fillCircle(cx, cy, CELL * 0.14);
+    g.fillStyle(0x18120a, 1).fillCircle(cx, cy, CELL * 0.06);
   }
 }

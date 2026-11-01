@@ -34,6 +34,7 @@ const MARKER_LEGEND: Array<{ modifierId: string } & MarkerLegendEntry> = [
   { modifierId: MODIFIER_IDS.heavyIsTheCrown, mark: '♔', label: 'King order' },
   { modifierId: MODIFIER_IDS.hatofulGambit, mark: '◎', label: 'Pigeon hop' },
   { modifierId: MODIFIER_IDS.knownUnknowns, mark: '⬚', label: 'Blind Spot' },
+  { modifierId: MODIFIER_IDS.bigBeak, mark: '◉', label: 'Surveillance Square' },
 ];
 
 /** Legend rows for the markers that can appear in this match. */

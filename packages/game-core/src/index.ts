@@ -40,6 +40,7 @@ export { getCrownOrders } from './modifiers/definitions/heavy-is-the-crown';
 export { getFakeMoveHints } from './modifiers/definitions/recalculating';
 export { getPigeonHops } from './modifiers/definitions/hatoful-gambit';
 export { getBlindSpot } from './modifiers/definitions/known-unknowns';
+export { getSurveillanceSquare } from './modifiers/definitions/big-beak';
 export { getVisibleSquares, isMoveHidden } from './engine/visibility';
 export { isSwampSquare, SWAMP_SQUARES } from './modifiers/definitions/swamp';
 export { getQuietZoneSquares } from './modifiers/definitions/quiet-quitting';

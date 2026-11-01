@@ -381,9 +381,11 @@ When a player selects a piece, 1 or 2 fake legal-move dots appear. Picking a fak
 - Built: fake dots sit within 3 squares of the piece and never on your own pieces. They stay the same while the piece is selected. Bots are not fooled.
 
 ### MOD-D008 · Big Beak Is Watching
-*Ref: Big Brother* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Design**
+*Ref: Big Brother* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
 
 One tile is the Surveillance Square, a golden eye both players see. Any piece that moves within 1 square of it is shown to both players for 3 rounds, through any fog.
+
+- Built: the eye sits in the middle 4×4 and does not move. Moving onto the eye counts. Each sighting is announced in the log, so the card still does something without a fog card.
 
 ## Category E: Asymmetric Armies
 
@@ -487,7 +489,7 @@ Values the game uses today. "Built" cards match the build.
 | D005 | Sus | D | A | 3 | 0 | Owner | Design |
 | D006 | Cat Mode | D | B | 1 | 0 | Owner | Design |
 | D007 | Recalculating… | D | A | 3 | 1 | Shared | Built |
-| D008 | Big Beak Is Watching | D | B | 2 | 0 | Shared | Design |
+| D008 | Big Beak Is Watching | D | B | 2 | 0 | Shared | Built |
 | E001 | Hatoful Gambit | E | S | 5 | 0 | Owner | Built |
 | E002 | The Small Council | E | A | 3 | 0 | Owner | Built |
 | E003 | Yeah, There Are Three Of Them | E | A | 3 | 0 | Owner | Built |
@@ -497,7 +499,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 
-32 of 40 built. Scope for Design cards is a proposal.
+33 of 40 built. Scope for Design cards is a proposal.
 
 ### Balance test plan
 

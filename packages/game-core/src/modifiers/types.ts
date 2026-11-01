@@ -99,4 +99,10 @@ export interface ModifierDefinition {
    * Return null to use default full visibility.
    */
   getVisibleSquares?: (state: GameState, color: Color) => Square[] | null;
+
+  /**
+   * Fog-of-war: squares shown to `color` even through fog. Added after every
+   * fog card has limited the view.
+   */
+  getRevealedSquares?: (state: GameState, color: Color) => Square[];
 }
