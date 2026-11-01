@@ -1,5 +1,5 @@
 import type { Color, GameState, Piece, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getBlindSpot, getCrownOrders, getPigeonHops, getVisibleSquares, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
+import { getBlindSpot, getCrownOrders, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -43,6 +43,8 @@ export interface SquareView {
   isHidden?: boolean;
   /** Known Unknowns: this square is in the viewer's own Blind Spot. */
   blindSpot?: boolean;
+  /** Big Beak Is Watching: the Surveillance Square. */
+  surveillance?: boolean;
 }
 
 export interface BoardViewInput {
@@ -69,6 +71,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const crownOrders = getCrownOrders(state);
   const pigeonHops = getPigeonHops(state);
   const blindSpot = new Set(viewer ? getBlindSpot(state, viewer) : []);
+  const eye = getSurveillanceSquare(state);
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
   const fileOrder = orientation === 'white' ? [...FILES] : [...FILES].reverse();
 
@@ -101,6 +104,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         burst: hidden ? undefined : bursts.get(square),
         ...(hidden ? { isHidden: true } : {}),
         ...(blindSpot.has(square) ? { blindSpot: true } : {}),
+        ...(eye === square ? { surveillance: true } : {}),
       });
     }
   }

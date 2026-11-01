@@ -519,6 +519,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'One tile becomes the Surveillance Square — visible to both players as a golden eye. Any piece moving within 1 square of it is revealed to BOTH players for 3 turns regardless of fog.',
     flavor: '"There is a square that sees everything. Viktor is avoiding it. His opponent has noticed. The square has noted this also."',
+    prototypeRules:
+      'One square in the middle of the board is the Surveillance Square, a golden eye both players see. A piece that moves onto it or next to it is shown to both players for 3 rounds, even through fog. Without a fog card it only announces who it saw.',
   },
 
   // ── CATEGORY E — ASYMMETRIC ARMIES ─────────────────────────────────────────

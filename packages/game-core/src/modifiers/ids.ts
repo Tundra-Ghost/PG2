@@ -31,6 +31,7 @@ export const MODIFIER_IDS = {
   recalculating: 'MOD-D007',
   darkAndScared: 'MOD-D001',
   knownUnknowns: 'MOD-D004',
+  bigBeak: 'MOD-D008',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];
