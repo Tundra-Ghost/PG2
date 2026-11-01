@@ -32,7 +32,7 @@ Needs Node 20+ and pnpm (`corepack enable` once, or `npm i -g pnpm`).
 
 ```
 pnpm install
-pnpm dev            # web app at http://localhost:5173/PG2/game/dist/
+pnpm dev            # web app at http://localhost:5173/
 pnpm dev:server     # game server at http://localhost:3001 (needed for Online)
 pnpm test           # all packages
 pnpm typecheck
@@ -51,7 +51,7 @@ fly ssh console -C "pnpm --filter @pigeon-chess/server feedback surveys"  # surv
 
 To try online play, run both, open the web app in two tabs, create a room in one and join with the code in the other.
 
-The live site (tundra-ghost.github.io/PG2/) is built and published by `.github/workflows/pages.yml` on every merge to main. Online play there connects to the game server on Fly.io at `https://pigeon-chess-server.fly.dev` (`fly.toml`, `apps/server/Dockerfile`). The server deploys itself from `.github/workflows/fly-deploy.yml` when server code reaches main (needs the `FLY_API_TOKEN` repo secret); it can also be run by hand from the Actions tab, or with `fly deploy` from the repo root.
+The live site (pigeonchess.app, with the game at /play) is built and published by `.github/workflows/pages.yml` on every merge to main. Online play there connects to the game server on Fly.io at `https://pigeon-chess-server.fly.dev` (`fly.toml`, `apps/server/Dockerfile`). The server deploys itself from `.github/workflows/fly-deploy.yml` when server code reaches main (needs the `FLY_API_TOKEN` repo secret); it can also be run by hand from the Actions tab, or with `fly deploy` from the repo root.
 
 ## Repo Map
 
