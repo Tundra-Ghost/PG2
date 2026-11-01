@@ -2,10 +2,11 @@ name: Publish site
 
 # Builds the game and publishes it to GitHub Pages on every merge to main.
 # Needs Settings > Pages > Source set to "GitHub Actions".
-# The site layout matches the old branch deploy, so links keep working:
-#   /PG2/             -> index.html
-#   /PG2/docs/        -> design docs
-#   /PG2/game/dist/   -> the game (fresh build)
+# Site layout (under /PG2/ on github.io, at the root on pigeonchess.app):
+#   /                 -> index.html
+#   /docs/            -> design docs
+#   /play/            -> the game (fresh build)
+#   /game/dist/       -> redirects to /play/, for links shared before the move
 on:
   push:
     branches: [main]
@@ -37,10 +38,17 @@ jobs:
           VITE_SERVER_URL: https://pigeon-chess-server.fly.dev
       - name: Assemble site
         run: |
-          mkdir -p _site/docs _site/game
+          mkdir -p _site/docs _site/game/dist
           cp index.html _site/
           cp docs/*.md _site/docs/
-          cp -r game/dist _site/game/dist
+          cp -r game/dist _site/play
+          cat > _site/game/dist/index.html <<'HTML'
+          <!doctype html>
+          <meta charset="utf-8">
+          <title>Pigeon Chess</title>
+          <meta http-equiv="refresh" content="0; url=../../play/">
+          <a href="../../play/">Pigeon Chess has moved. Play here.</a>
+          HTML
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
