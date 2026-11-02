@@ -36,7 +36,7 @@ function writeToken(token: string | null): void {
   }
 }
 
-export async function apiCall(path: string, init: { method?: string; body?: unknown } = {}): Promise<Response> {
+function send(path: string, init: { method?: string; body?: unknown }): Promise<Response> {
   const token = readToken();
   return fetch(`${SERVER_URL}${path}`, {
     method: init.method ?? (init.body === undefined ? 'GET' : 'POST'),
@@ -46,6 +46,78 @@ export async function apiCall(path: string, init: { method?: string; body?: unkn
     },
     body: init.body === undefined ? undefined : JSON.stringify(init.body),
   });
+}
+
+/** Fly's proxy answers these while the sleeping server boots. */
+const BOOTING = new Set([502, 503, 504]);
+/** How long a cold start may take before we give up. */
+const WAKE_LIMIT_MS = 60_000;
+let waking: Promise<boolean> | null = null;
+let awake = false;
+const wakeListeners = new Set<(waking: boolean) => void>();
+
+function setWaking(next: boolean) {
+  for (const listener of wakeListeners) listener(next);
+}
+
+/** Tells a component when the server is waking up, so it can say so. Returns an unsubscribe. */
+export function onWaking(listener: (waking: boolean) => void): () => void {
+  wakeListeners.add(listener);
+  return () => wakeListeners.delete(listener);
+}
+
+async function healthy(): Promise<boolean> {
+  try {
+    const res = await fetch(`${SERVER_URL}/health`, { signal: AbortSignal.timeout(10_000) });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * The game server sleeps when nobody is playing and wakes on the first request,
+ * which can take several seconds. This pings it until it answers. Called when
+ * the game loads, so it is usually awake by the time a player signs in.
+ */
+export function wakeServer(): Promise<boolean> {
+  if (awake) return Promise.resolve(true);
+  if (waking) return waking;
+  waking = (async () => {
+    const giveUpAt = Date.now() + WAKE_LIMIT_MS;
+    const slow = setTimeout(() => setWaking(true), 1500);
+    try {
+      while (Date.now() < giveUpAt) {
+        if (await healthy()) {
+          awake = true;
+          return true;
+        }
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+      return false;
+    } finally {
+      clearTimeout(slow);
+      setWaking(false);
+      waking = null;
+    }
+  })();
+  return waking;
+}
+
+/** A server call that waits for a sleeping server to wake up, then tries once more. */
+export async function apiCall(path: string, init: { method?: string; body?: unknown } = {}): Promise<Response> {
+  try {
+    const res = await send(path, init);
+    if (!BOOTING.has(res.status)) {
+      awake = true;
+      return res;
+    }
+  } catch {
+    // Unreachable: most often the server is asleep. Fall through and wake it.
+  }
+  awake = false;
+  if (!(await wakeServer())) throw new Error('game server unreachable');
+  return send(path, init);
 }
 
 /** Better Auth error codes, in player words. */
@@ -75,7 +147,7 @@ async function signedIn(res: Response): Promise<AccountResult> {
   return { ok: true, account: { username: body.user.username } };
 }
 
-const unreachable = { ok: false, reason: 'Could not reach the game server. Try again in a moment.' } as const;
+const unreachable = { ok: false, reason: 'The game server did not wake up. Check your connection and try again.' } as const;
 
 export async function register(username: string, password: string): Promise<AccountResult> {
   try {

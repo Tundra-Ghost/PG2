@@ -182,8 +182,13 @@ export default function AccountPanel({
         />
       </label>
       {error && <p className={styles.accountError} role="alert">{error}</p>}
+      {controls.waking && (
+        <p className={styles.accountNote} role="status">
+          The game server is waking up. This can take up to 30 seconds. You can fill in the form now.
+        </p>
+      )}
       <button type="submit" className={styles.accountPrimary} disabled={busy}>
-        {busy ? 'One moment…' : SUBMIT[mode]}
+        {busy ? (controls.waking ? 'Waking the server…' : 'One moment…') : SUBMIT[mode]}
       </button>
       <div className={styles.accountLinks}>
         {mode !== 'signin' && (

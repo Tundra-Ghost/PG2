@@ -3,6 +3,8 @@ import { adoptProfile, type LocalProfile } from '../profile';
 import {
   currentAccount,
   fetchProfile,
+  onWaking,
+  wakeServer,
   register as registerAccount,
   requestRecoveryCode,
   resetPassword as resetAccountPassword,
@@ -19,6 +21,8 @@ export interface AccountControls {
   account: Account | null;
   /** False until a saved session has been checked, so a returning player is not shown as a guest. */
   ready: boolean;
+  /** The sleeping game server is starting up. Requests wait for it. */
+  waking: boolean;
   sync: SyncState;
   register(username: string, password: string): Promise<AccountResult>;
   signIn(username: string, password: string): Promise<AccountResult>;
@@ -42,6 +46,7 @@ export function useAccount(
 ): AccountControls {
   const [account, setAccount] = useState<Account | null>(null);
   const [ready, setReady] = useState(false);
+  const [waking, setWaking] = useState(false);
   const [sync, setSync] = useState<SyncState>('syncing');
   const [recoveryCode, setRecoveryCode] = useState<string | null>(null);
   const profileRef = useRef(profile);
@@ -64,6 +69,13 @@ export function useAccount(
     },
     [setProfile],
   );
+
+  useEffect(() => {
+    const stop = onWaking(setWaking);
+    // Start waking the server now, so it is up by the time the player signs in or plays online.
+    void wakeServer();
+    return stop;
+  }, []);
 
   useEffect(() => {
     currentAccount()
@@ -94,6 +106,7 @@ export function useAccount(
   return {
     account,
     ready,
+    waking,
     sync,
     async register(username, password) {
       const result = await withSync(registerAccount(username, password));
