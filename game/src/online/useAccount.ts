@@ -17,6 +17,8 @@ export type SyncState = 'syncing' | 'synced' | 'offline';
 
 export interface AccountControls {
   account: Account | null;
+  /** False until a saved session has been checked, so a returning player is not shown as a guest. */
+  ready: boolean;
   sync: SyncState;
   register(username: string, password: string): Promise<AccountResult>;
   signIn(username: string, password: string): Promise<AccountResult>;
@@ -39,6 +41,7 @@ export function useAccount(
   setProfile: (profile: LocalProfile) => void,
 ): AccountControls {
   const [account, setAccount] = useState<Account | null>(null);
+  const [ready, setReady] = useState(false);
   const [sync, setSync] = useState<SyncState>('syncing');
   const [recoveryCode, setRecoveryCode] = useState<string | null>(null);
   const profileRef = useRef(profile);
@@ -64,8 +67,14 @@ export function useAccount(
 
   useEffect(() => {
     currentAccount()
-      .then(found => (found ? start(found) : undefined))
-      .catch(() => setSync('offline'));
+      .then(found => {
+        setReady(true);
+        if (found) void start(found);
+      })
+      .catch(() => {
+        setReady(true);
+        setSync('offline');
+      });
   }, [start]);
 
   useEffect(() => {
@@ -84,6 +93,7 @@ export function useAccount(
 
   return {
     account,
+    ready,
     sync,
     async register(username, password) {
       const result = await withSync(registerAccount(username, password));

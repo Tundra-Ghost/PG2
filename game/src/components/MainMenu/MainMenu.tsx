@@ -17,9 +17,12 @@ interface MainMenuProps {
   onPuzzles: () => void;
   onOnline: () => void;
   onFriends: () => void;
+  onLinkAccount: () => void;
+  /** Signed in (or still checking). False shows the guest prompt. */
+  linked: boolean;
   /** Friend requests plus unread messages; 0 hides the badge. */
   friendsBadge: number;
-  profile: LocalProfile | null;
+  profile: LocalProfile;
 }
 
 type CardTone = 'olive' | 'blue' | 'sand' | 'plum' | 'slate' | 'steel';
@@ -100,15 +103,17 @@ export default function MainMenu({
   onPuzzles,
   onOnline,
   onFriends,
+  onLinkAccount,
+  linked,
   friendsBadge,
   profile,
 }: MainMenuProps) {
-  const profileLevel = profile ? getProfileLevel(profile) : 1;
-  const selectedTitle = profile ? getSelectedTitle(profile).name : 'Street Pigeon';
-  const favoriteModifierId = profile ? getFavoriteModifiers(profile, 'all')[0] ?? null : null;
+  const profileLevel = getProfileLevel(profile);
+  const selectedTitle = getSelectedTitle(profile).name;
+  const favoriteModifierId = getFavoriteModifiers(profile, 'all')[0] ?? null;
   const favoriteModifierName = favoriteModifierId ? getModifierName(favoriteModifierId) : 'None yet';
-  const profileName = profile?.displayName ?? 'Create Profile';
-  const profileInitial = profile?.displayName?.slice(0, 1).toUpperCase() ?? 'P';
+  const profileName = profile.displayName || 'Player';
+  const profileInitial = profileName.slice(0, 1).toUpperCase();
 
   const cards: MenuCard[] = [
     {
@@ -198,7 +203,7 @@ export default function MainMenu({
                 onProfile();
               }}
             >
-              {profile?.avatarDataUrl ? (
+              {profile.avatarDataUrl ? (
                 <img
                   src={profile.avatarDataUrl}
                   alt={`${profile.displayName} avatar`}
@@ -210,12 +215,29 @@ export default function MainMenu({
                 </span>
               )}
               <span className={styles.profileText}>
-                <span className={styles.profileName}>{profileName}</span>
+                <span className={styles.profileName}>
+                  {profileName}
+                  {!linked && <span className={styles.guestTag}>Guest</span>}
+                </span>
                 <span className={styles.profileMeta}>
-                  Lv {profileLevel} / ELO {profile?.elo ?? 1200} / {selectedTitle}
+                  Lv {profileLevel} / ELO {profile.elo} / {selectedTitle}
                 </span>
               </span>
             </button>
+
+            {!linked && (
+              <button
+                type="button"
+                className={styles.linkButton}
+                onClick={() => {
+                  playClick();
+                  onLinkAccount();
+                }}
+              >
+                <span>Link account</span>
+                <span className={styles.linkHint}>Save progress and play online</span>
+              </button>
+            )}
 
             <button
               type="button"

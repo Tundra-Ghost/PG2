@@ -45,8 +45,14 @@ function RecoveryCode({ code, onDone }: { code: string; onDone: () => void }) {
   );
 }
 
-export default function AccountPanel({ controls }: { controls: AccountControls }) {
-  const [mode, setMode] = useState<Mode>('signin');
+export default function AccountPanel({
+  controls,
+  startMode = 'signin',
+}: {
+  controls: AccountControls;
+  startMode?: 'signin' | 'register';
+}) {
+  const [mode, setMode] = useState<Mode>(startMode);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
@@ -127,8 +133,8 @@ export default function AccountPanel({ controls }: { controls: AccountControls }
 
   const SUBMIT: Record<Mode, string> = { signin: 'Sign in', register: 'Create account', reset: 'Set new password' };
   const NOTE: Record<Mode, string> = {
-    signin: 'Sign in to keep your profile, stats, titles and online games across devices.',
-    register: 'No email needed. You will get a recovery code in case you forget your password.',
+    signin: 'Sign in to keep your profile, stats, titles and online games across devices. You need an account to play online. An account you already have keeps its own profile.',
+    register: 'Your guest profile and its progress move onto the new account. No email needed. You will get a recovery code in case you forget your password.',
     reset: 'Enter the recovery code you saved when you made your account. You will get a new one.',
   };
 

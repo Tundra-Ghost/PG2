@@ -13,7 +13,6 @@ import {
 import { playClick } from '../../sound';
 import { formatActorMove, formatEventMessage, type MatchChatEntry } from '../../matchFeed';
 import styles from './MoveHistory.module.css';
-import DialogueBox from '../DialogueBox/DialogueBox';
 
 const RESULT_TEXT = { white: '1 - 0', black: '0 - 1', draw: '1/2 - 1/2' } as const;
 
@@ -27,8 +26,6 @@ interface MoveHistoryProps {
   playerAvatarSrc?: string | null;
   opponentAvatarIcon?: string | null;
   opponentAvatarSrc?: string | null;
-  pendingDialogue?: MatchChatEntry | null;
-  onDismissDialogue?: () => void;
   /** The side reading the feed. Defaults to the side to move (hotseat). */
   viewerColor?: Color;
 }
@@ -100,8 +97,6 @@ export default function MoveHistory({
   playerAvatarSrc = null,
   opponentAvatarIcon = null,
   opponentAvatarSrc = null,
-  pendingDialogue = null,
-  onDismissDialogue,
   viewerColor,
 }: MoveHistoryProps) {
   const { moveHistory, eventHistory, status, turn, flags } = state;
@@ -224,16 +219,6 @@ export default function MoveHistory({
 
   return (
     <aside className={styles.panel}>
-      {pendingDialogue && onDismissDialogue ? (
-        <div className={styles.mobileDialogueOverlay}>
-          <DialogueBox
-            entry={pendingDialogue}
-            onDismiss={onDismissDialogue}
-            variant="panelOverlay"
-          />
-        </div>
-      ) : null}
-
       <header className={styles.header}>
         <span className={styles.headerTitle}>Chat / Moves</span>
         <span className={styles.moveCount}>

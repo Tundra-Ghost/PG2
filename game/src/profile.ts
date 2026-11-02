@@ -260,6 +260,38 @@ export function adoptProfile(raw: unknown): LocalProfile | null {
   return normalized ? persistProfile(normalized) : null;
 }
 
+const GUEST_ADJECTIVES = [
+  'Sly', 'Brave', 'Dusty', 'Grumpy', 'Swift', 'Sneaky', 'Lucky', 'Rooftop', 'Midnight', 'Crafty',
+  'Bold', 'Plucky', 'Feral', 'Dapper', 'Rusty', 'Velvet', 'Stormy', 'Quiet', 'Royal', 'Puffy',
+];
+const GUEST_NOUNS = [
+  'Pigeon', 'Beak', 'Feather', 'Crumb', 'Rook', 'Knight', 'Bishop', 'Pawn', 'Coo', 'Flock',
+  'Wing', 'Roost', 'Baguette', 'Gambit', 'Perch', 'Squab',
+];
+
+function pick<T>(items: T[], random: () => number): T {
+  return items[Math.floor(random() * items.length)];
+}
+
+/** A throwaway name like "SneakyBeak4821", so a new player can start without a form. */
+export function randomGuestName(random: () => number = Math.random): string {
+  const digits = String(Math.floor(random() * 9000) + 1000);
+  return `${pick(GUEST_ADJECTIVES, random)}${pick(GUEST_NOUNS, random)}${digits}`;
+}
+
+/** This browser's profile, made on the spot with a random name the first time. */
+export function ensureProfile(): LocalProfile {
+  const existing = loadProfile();
+  if (existing) return existing;
+  const guest = createProfile({ displayName: randomGuestName() });
+  try {
+    return persistProfile(guest);
+  } catch {
+    // Storage blocked: the profile lasts until the tab closes.
+    return guest;
+  }
+}
+
 export function createProfile(input?: Partial<ProfileInput>): LocalProfile {
   const now = new Date().toISOString();
   return {

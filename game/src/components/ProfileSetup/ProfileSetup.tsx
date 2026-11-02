@@ -29,6 +29,9 @@ interface ProfileSetupProps {
   onBack: () => void;
   heading?: string;
   subtitle?: string;
+  /** Not signed in: shows the prompt to link an account. */
+  guest?: boolean;
+  onLinkAccount?: () => void;
 }
 
 type TabId = 'overview' | 'stats' | 'titles' | 'achievements' | 'history' | 'edit';
@@ -88,6 +91,8 @@ export default function ProfileSetup({
   onBack,
   heading,
   subtitle,
+  guest = false,
+  onLinkAccount,
 }: ProfileSetupProps) {
   const seedProfile = useMemo(
     () =>
@@ -145,12 +150,12 @@ export default function ProfileSetup({
   const onlineHistory = viewProfile.matchHistory.filter(match => match.mode === 'online');
   const canSave = editable && draftName.trim().length >= 2;
 
-  const titleLabel = heading ?? (editable ? (profile ? 'Profile Hub' : 'Create Profile') : `${viewProfile.displayName} Profile`);
+  const titleLabel = heading ?? (editable ? 'Your Profile' : `${viewProfile.displayName} Profile`);
   const titleSub =
     subtitle ??
     (editable
-      ? 'Local-only profile data for the current serverless prototype. Online sections are visible now so the structure survives future backend work.'
-      : 'Read-only profile view. Online and long-term progression areas remain scaffolded for future milestones.');
+      ? 'Change your name, title, avatar and motto under Edit.'
+      : 'Read-only profile view.');
 
   async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -248,11 +253,27 @@ export default function ProfileSetup({
               Back
             </button>
             <div className={styles.heading}>
-              <span className={styles.kicker}>{editable ? 'Local Identity' : 'Profile Viewer'}</span>
+              <span className={styles.kicker}>{editable ? (guest ? 'Guest Profile' : 'Profile') : 'Profile Viewer'}</span>
               <h2 className={styles.title}>{titleLabel}</h2>
               <p className={styles.sub}>{titleSub}</p>
             </div>
           </header>
+
+          {guest && onLinkAccount && (
+            <section className={styles.linkBanner}>
+              <p className={styles.linkBannerText}>
+                This guest profile lives only on this device. Link an account to save it and play online.
+              </p>
+              <button
+                className={styles.primaryBtn}
+                onClick={() => {
+                  onLinkAccount();
+                }}
+              >
+                Link Account
+              </button>
+            </section>
+          )}
 
           <section className={styles.heroCard}>
             <div className={styles.avatarShell}>
@@ -305,7 +326,7 @@ export default function ProfileSetup({
                   }}
                   disabled={!canSave}
                 >
-                  {profile ? 'Save Profile' : 'Create Profile'}
+                  Save Profile
                 </button>
                 <input
                   ref={fileInputRef}
@@ -552,7 +573,7 @@ export default function ProfileSetup({
                     }}
                     disabled={!canSave}
                   >
-                    {profile ? 'Save Changes' : 'Create Profile'}
+                    Save Changes
                   </button>
                 </div>
               </div>

@@ -14,6 +14,8 @@ interface SettingsProps {
   account: AccountControls;
   /** Screen and match details attached to feedback. */
   feedbackContext: () => Record<string, unknown>;
+  /** Opens straight on the account tab with this form, e.g. from a "Link account" button. */
+  accountStart?: 'signin' | 'register';
 }
 
 // ── Primitive controls ──────────────────────────────────────────────────────
@@ -120,9 +122,9 @@ const TABS: { id: TabId; label: string }[] = [
 
 // ── Main component ──────────────────────────────────────────────────────────
 
-export default function Settings({ settings: initial, onSave, onBack, account, feedbackContext }: SettingsProps) {
+export default function Settings({ settings: initial, onSave, onBack, account, feedbackContext, accountStart }: SettingsProps) {
   const [s, setS] = useState<AppSettings>(initial);
-  const [activeTab, setActiveTab] = useState<TabId>(account.account ? 'audio' : 'account');
+  const [activeTab, setActiveTab] = useState<TabId>(account.account && !accountStart ? 'audio' : 'account');
 
   function update(partial: Partial<AppSettings>) {
     const next = { ...s, ...partial };
@@ -179,7 +181,7 @@ export default function Settings({ settings: initial, onSave, onBack, account, f
         {/* ── Tab panels ─────────────────────────────────────── */}
         <div className={styles.panel} role="tabpanel">
 
-          {activeTab === 'account' && <AccountPanel controls={account} />}
+          {activeTab === 'account' && <AccountPanel controls={account} startMode={accountStart} />}
 
           {activeTab === 'audio' && (
             <>
