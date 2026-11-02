@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type TouchEvent } from 'react';
 import type { Piece as PieceType, Square as SquareType, TileEffectType } from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import type { SquareView } from '../Board/boardView';
@@ -146,18 +146,24 @@ export default function Square({
     }
   }
 
+  // Touch: hold to read a square, let go to close it. A hold never counts as a tap.
   function handleTouchStart() {
+    longPressTriggeredRef.current = false;
     if (!hasTooltip) return;
     clearTouchTimer();
-    longPressTriggeredRef.current = false;
     touchTimerRef.current = window.setTimeout(() => {
       longPressTriggeredRef.current = true;
       setShowTooltip(true);
-    }, 450);
+    }, 400);
   }
 
-  function handleTouchEnd() {
+  function handleTouchEnd(event: TouchEvent) {
     clearTouchTimer();
+    if (longPressTriggeredRef.current) {
+      // Stop the browser turning the hold into a tap that selects or moves.
+      event.preventDefault();
+      setShowTooltip(false);
+    }
   }
 
   function handleClick() {
@@ -182,14 +188,17 @@ export default function Square({
     <div
       className={styles.square}
       onClick={handleClick}
-      onMouseEnter={() => hasTooltip && setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
+      // Hover is for a mouse only. Phones fake a hover on every tap, which
+      // used to leave a box open after selecting a piece.
+      onPointerEnter={event => event.pointerType === 'mouse' && hasTooltip && setShowTooltip(true)}
+      onPointerLeave={event => event.pointerType === 'mouse' && setShowTooltip(false)}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={() => {
         clearTouchTimer();
         setShowTooltip(false);
       }}
+      onContextMenu={event => event.preventDefault()}
       data-square={square}
       data-piece={piece ? `${piece.color}-${piece.type}` : undefined}
       data-legal={isLegalTarget || undefined}
