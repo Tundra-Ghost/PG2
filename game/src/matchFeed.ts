@@ -17,7 +17,7 @@ export interface MatchChatEntry {
   dialogueTheme?: 'player' | 'chick' | 'measured' | 'grandmaster' | 'npc';
   dialogueExpression?: 'neutral' | 'shocked' | 'smug' | 'frustrated';
   shownInDialogue?: boolean;
-  /** Already shown on screen as it was spoken, so it needs no chat bubble. */
+  /** Spoken in the dialogue box as it arrived, so it does not count as unread. */
   spokenLive?: boolean;
 }
 

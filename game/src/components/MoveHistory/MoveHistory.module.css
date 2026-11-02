@@ -15,10 +15,6 @@
   min-height: 300px;
 }
 
-.mobileDialogueOverlay {
-  display: none;
-}
-
 .header {
   flex-shrink: 0;
   display: flex;
@@ -381,14 +377,6 @@
     box-shadow: none;
   }
 
-  .mobileDialogueOverlay {
-    display: block;
-    position: absolute;
-    inset: 3.15rem 0 auto;
-    z-index: 4;
-    pointer-events: none;
-  }
-
   .header {
     padding: 0.65rem 0.8rem;
   }
@@ -413,10 +401,6 @@
 }
 
 @media (max-width: 480px) {
-  .mobileDialogueOverlay {
-    inset: 3rem 0 auto;
-  }
-
   .bubble {
     font-size: 0.8rem;
   }

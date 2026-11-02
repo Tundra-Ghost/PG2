@@ -8,7 +8,8 @@ import type { AppSettings } from './settings';
 import { applySettings, loadSettings, saveSettings } from './settings';
 import { useAccount } from './online/useAccount';
 import { useSocial } from './online/useSocial';
-import { ChatBubble, MatchDrawerBar, MatchTicker, useMatchDrawer } from './components/MatchDrawer/MatchDrawer';
+import { MatchDrawerBar, MatchTicker, useMatchDrawer } from './components/MatchDrawer/MatchDrawer';
+import { DialogueStage } from './components/DialogueBox/DialogueBox';
 import Friends from './components/Friends/Friends';
 import PostGameSurvey from './components/PostGameSurvey/PostGameSurvey';
 import { isFinished, resultFor, type GameSurveyContext } from './online/survey';
@@ -33,12 +34,12 @@ import PlayerBanner from './components/PlayerBanner/PlayerBanner';
 import ProfileSetup from './components/ProfileSetup/ProfileSetup';
 import SettingsScreen from './components/Settings/Settings';
 import OnlineMatch from './components/OnlineMatch/OnlineMatch';
+import LinkAccountGate from './components/LinkAccountGate/LinkAccountGate';
 import PuzzleScreen from './components/PuzzleScreen/PuzzleScreen';
 import {
-  createProfile,
   getProfileLevel,
   getSelectedTitle,
-  loadProfile,
+  ensureProfile,
   recordProfileMatchCompletion,
   recordProfileMatchStart,
   type LocalProfile,
@@ -71,6 +72,7 @@ interface ProfileViewerState {
 export default function App() {
   const [screen, setScreen] = useState<Screen>('menu');
   const [prevScreen, setPrevScreen] = useState<Screen>('menu');
+  const [accountStart, setAccountStart] = useState<'signin' | 'register' | undefined>(undefined);
   const [gameState, setGameState] = useState<GameState>(() => chessEngine.getInitialState());
   const [vsBot, setVsBot] = useState(false);
   const [selectedBot, setSelectedBot] = useState<BotId | null>(null);
@@ -89,7 +91,7 @@ export default function App() {
   const [chatEntries, setChatEntries] = useState<MatchChatEntry[]>([]);
   const [dialogueQueue, setDialogueQueue] = useState<MatchChatEntry[]>([]);
   const [pendingDialogue, setPendingDialogue] = useState<MatchChatEntry | null>(null);
-  const drawer = useMatchDrawer(chatEntries, pendingDialogue);
+  const drawer = useMatchDrawer(chatEntries);
   // Stable ref so handleDialogueDismiss never changes identity (avoids resetting DialogueBox timers)
   const pendingDialogueRef = useRef<MatchChatEntry | null>(null);
   useEffect(() => {
@@ -121,7 +123,7 @@ export default function App() {
     applySettings(loaded);
     return loaded;
   });
-  const [profile, setProfile] = useState<LocalProfile | null>(() => loadProfile());
+  const [profile, setProfile] = useState<LocalProfile>(() => ensureProfile());
   const account = useAccount(profile, setProfile);
   const social = useSocial(account.account?.username ?? null);
   /** A room the Online screen should sit down in when it opens. */
@@ -337,6 +339,15 @@ export default function App() {
 
   function goToSettings() {
     playClick();
+    setAccountStart(undefined);
+    setPrevScreen(screen);
+    setScreen('settings');
+  }
+
+  /** Opens Settings on the account form, ready to turn the guest profile into an account. */
+  function goToLinkAccount() {
+    playClick();
+    setAccountStart('register');
     setPrevScreen(screen);
     setScreen('settings');
   }
@@ -499,6 +510,7 @@ export default function App() {
         onBack={() => setScreen(prevScreen)}
         account={account}
         feedbackContext={feedbackContext}
+        accountStart={accountStart}
       />
     ) : null;
 
@@ -529,8 +541,10 @@ export default function App() {
             setScreen('online');
           }}
           onFriends={() => setScreen('friends')}
+          onLinkAccount={goToLinkAccount}
           friendsBadge={social.unread + social.list.incoming.length}
           profile={profile}
+          linked={Boolean(account.account) || !account.ready}
         />
         {settingsOverlay}
       </div>
@@ -543,6 +557,8 @@ export default function App() {
         <ProfileSetup
           profile={profile}
           editable
+          guest={account.ready && !account.account}
+          onLinkAccount={goToLinkAccount}
           onSave={nextProfile => {
             setProfile(nextProfile);
             setScreen('menu');
@@ -558,17 +574,7 @@ export default function App() {
     return (
       <div onClick={handleUnlock}>
         <ProfileSetup
-          profile={
-            profile ??
-            createProfile({
-              displayName: 'Player',
-              motto: '',
-              region: 'North America',
-              country: '',
-              avatarDataUrl: null,
-              selectedTitleId: 'title_street_pigeon',
-            })
-          }
+          profile={profile}
           editable={false}
           heading="The Roost"
           subtitle="Local records, titles, achievements, and offline history for the current serverless prototype. Online sections remain placeholder scaffolding."
@@ -591,6 +597,21 @@ export default function App() {
             setPendingRoomId(roomId);
             setScreen('online');
           }}
+        />
+        {settingsOverlay}
+      </div>
+    );
+  }
+
+  if (baseScreen === 'online' && !account.account) {
+    return (
+      <div onClick={handleUnlock}>
+        <LinkAccountGate
+          checking={!account.ready}
+          playerName={playerName}
+          onLink={goToLinkAccount}
+          onSignIn={goToSettings}
+          onBack={() => setScreen('menu')}
         />
         {settingsOverlay}
       </div>
@@ -712,7 +733,6 @@ export default function App() {
                 });
               }}
             />
-            <ChatBubble text={drawer.bubble?.side === 'self' ? drawer.bubble.text : null} />
             </div>
             <div className={styles.opponentSlot}>
             <PlayerBanner
@@ -736,7 +756,6 @@ export default function App() {
                 });
               }}
             />
-            <ChatBubble text={drawer.bubble?.side === 'opponent' ? drawer.bubble.text : null} />
             </div>
           </div>
 
@@ -752,8 +771,6 @@ export default function App() {
                 playerAvatarSrc={playerProfile?.avatarDataUrl ?? null}
                 opponentAvatarIcon={selectedBotProfile?.sprite ? null : selectedBotProfile?.icon ?? null}
                 opponentAvatarSrc={selectedBotProfile?.sprite ?? null}
-                pendingDialogue={pendingDialogue}
-                onDismissDialogue={handleDialogueDismiss}
                 viewerColor={vsBot ? 'white' : undefined}
               />
             </div>
@@ -797,6 +814,7 @@ export default function App() {
 
           <MatchTicker line={latestFeedLine(gameState, playerName, vsBot ? opponentName : 'Black', vsBot ? 'white' : undefined)} onOpen={() => drawer.setOpen(true)} />
           <MatchDrawerBar drawer={drawer} modifierCount={gameState.activeModifiers.length} />
+          <DialogueStage entry={pendingDialogue} onDismiss={handleDialogueDismiss} raised={drawer.open} />
         </section>
       </main>
 

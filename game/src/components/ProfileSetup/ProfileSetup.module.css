@@ -549,3 +549,24 @@
     height: 140px;
   }
 }
+
+.linkBanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgb(var(--gold-rgb) / 0.45);
+  border-radius: 12px;
+  background: rgb(var(--gold-rgb) / 0.1);
+}
+
+.linkBannerText {
+  flex: 1 1 16rem;
+  margin: 0;
+  color: rgb(var(--parchment-rgb) / 0.86);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}

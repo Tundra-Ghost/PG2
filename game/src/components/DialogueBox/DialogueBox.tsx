@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { MatchChatEntry } from '../../matchFeed';
 import styles from './DialogueBox.module.css';
 
 interface DialogueBoxProps {
   entry: MatchChatEntry;
   onDismiss: () => void;
-  variant?: 'default' | 'panelOverlay';
 }
 
 function cap(s: string): string {
@@ -24,11 +24,7 @@ function AvatarIcon({ entry, className }: { entry: MatchChatEntry; className: st
   );
 }
 
-export default function DialogueBox({
-  entry,
-  onDismiss,
-  variant = 'default',
-}: DialogueBoxProps) {
+export default function DialogueBox({ entry, onDismiss }: DialogueBoxProps) {
   const [count, setCount] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [exiting, setExiting] = useState(false);
@@ -80,15 +76,11 @@ export default function DialogueBox({
 
   return (
     <div
-      className={`${styles.root} ${styles[`root${cap(variant)}`] ?? ''} ${
-        exiting ? styles.rootExit : styles.rootEnter
-      }`}
+      className={`${styles.root} ${exiting ? styles.rootExit : styles.rootEnter}`}
     >
       <button
         type="button"
-        className={`${styles.box} ${styles[`box${cap(variant)}`] ?? ''} ${themeClass} ${
-          isPlayer ? styles.boxPlayer : ''
-        }`}
+        className={`${styles.box} ${themeClass} ${isPlayer ? styles.boxPlayer : ''}`}
         onClick={() => {
           if (!done) {
             clearTimers();
@@ -116,9 +108,52 @@ export default function DialogueBox({
         </div>
 
         <div className={styles.hint} aria-hidden="true">
-          {done ? '▶  Click to continue' : '▶  Click to reveal'}
+          {done ? '▶  Tap to continue' : '▶  Tap to reveal'}
         </div>
       </button>
     </div>
   );
+}
+
+interface DialogueStageProps {
+  entry: MatchChatEntry | null;
+  onDismiss: () => void;
+  /** The phone match drawer is open: sit above it instead of behind it. */
+  raised?: boolean;
+}
+
+/**
+ * The RPG text box, floating over the match near the bottom of the screen.
+ * One per match screen, so it shows on every screen size.
+ */
+export function DialogueStage({ entry, onDismiss, raised = false }: DialogueStageProps) {
+  if (!entry) return null;
+  // On the body, so no panel's stacking order can paint over it.
+  return createPortal(
+    <div className={`${styles.stage} ${raised ? styles.stageRaised : ''}`}>
+      <DialogueBox key={entry.id} entry={entry} onDismiss={onDismiss} />
+    </div>,
+    document.body,
+  );
+}
+
+/**
+ * Speaks chat lines one at a time as they arrive. Lines already there when the
+ * match opens, or several at once (history after a rejoin), go straight to the log.
+ */
+export function useDialogueQueue(entries: MatchChatEntry[]) {
+  const seen = useRef<Set<string> | null>(null);
+  const [queue, setQueue] = useState<MatchChatEntry[]>([]);
+
+  useEffect(() => {
+    const before = seen.current;
+    seen.current = new Set(entries.map(entry => entry.id));
+    if (!before) return;
+    const fresh = entries.filter(entry => !before.has(entry.id));
+    if (fresh.length === 1) setQueue(prev => [...prev, fresh[0]]);
+  }, [entries]);
+
+  const dismiss = useCallback(() => setQueue(prev => prev.slice(1)), []);
+  const current = queue[0] ?? null;
+  return useMemo(() => ({ current, dismiss }), [current, dismiss]);
 }

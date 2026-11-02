@@ -3,29 +3,16 @@ import type { MatchChatEntry } from '../../matchFeed';
 import { playClick } from '../../sound';
 import styles from './MatchDrawer.module.css';
 
-/** How long a chat bubble stays on a player strip. */
-const BUBBLE_MS = 4000;
-
 export type DrawerTab = 'feed' | 'modifiers';
-
-interface Bubble {
-  side: 'self' | 'opponent';
-  text: string;
-}
-
-const sideOf = (entry: MatchChatEntry): Bubble['side'] => (entry.source === 'player' ? 'self' : 'opponent');
 
 /**
  * The phone match panels: closed by default so the page never has to move,
- * with chat previewed as brief bubbles and an unread count on the bar.
- * `liveLine` is a line being spoken right now (a bot's dialogue); it is shown
- * for as long as it lasts instead of bubbling again when it reaches the log.
+ * with an unread count on the bar. New lines are spoken by the DialogueStage.
  */
-export function useMatchDrawer(chatEntries: MatchChatEntry[], liveLine: MatchChatEntry | null = null) {
+export function useMatchDrawer(chatEntries: MatchChatEntry[]) {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<DrawerTab>('feed');
   const [unread, setUnread] = useState(0);
-  const [flash, setFlash] = useState<Bubble | null>(null);
   const seen = useRef<Set<string> | null>(null);
   const openRef = useRef(open);
   openRef.current = open;
@@ -38,16 +25,9 @@ export function useMatchDrawer(chatEntries: MatchChatEntry[], liveLine: MatchCha
     const fresh = chatEntries.filter(entry => !before.has(entry.id));
     // More than one at once is history arriving after a rejoin, not news.
     if (fresh.length !== 1) return;
-    const entry = fresh[0];
-    if (entry.source !== 'player') setUnread(count => count + 1);
-    if (!entry.spokenLive) setFlash({ side: sideOf(entry), text: entry.text });
+    // A line already read in the dialogue box is not unread.
+    if (fresh[0].source !== 'player' && !fresh[0].spokenLive) setUnread(count => count + 1);
   }, [chatEntries]);
-
-  useEffect(() => {
-    if (!flash) return;
-    const timer = setTimeout(() => setFlash(null), BUBBLE_MS);
-    return () => clearTimeout(timer);
-  }, [flash]);
 
   const select = useCallback((next: DrawerTab) => {
     playClick();
@@ -61,26 +41,10 @@ export function useMatchDrawer(chatEntries: MatchChatEntry[], liveLine: MatchCha
     if (next) setUnread(0);
   }, []);
 
-  const bubble: Bubble | null = open
-    ? null
-    : liveLine
-      ? { side: sideOf(liveLine), text: liveLine.text }
-      : flash;
-
-  return { open, tab, unread, bubble, select, setOpen: setOpenAndClear };
+  return { open, tab, unread, select, setOpen: setOpenAndClear };
 }
 
 export type MatchDrawerState = ReturnType<typeof useMatchDrawer>;
-
-/** A chat line laid over a player strip. Sits inside the strip, so nothing moves and the board stays clear. */
-export function ChatBubble({ text }: { text: string | null }) {
-  if (!text) return null;
-  return (
-    <div className={styles.bubble} role="status">
-      {text}
-    </div>
-  );
-}
 
 /** One fixed-height line under the board: the latest move or event. */
 export function MatchTicker({ line, onOpen }: { line: string; onOpen: () => void }) {

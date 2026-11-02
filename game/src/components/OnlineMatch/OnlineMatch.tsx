@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ChatMessage, Color, GameSummary } from '@pigeon-chess/game-core';
 import { latestFeedLine, type MatchChatEntry } from '../../matchFeed';
-import { ChatBubble, MatchDrawerBar, MatchTicker, useMatchDrawer } from '../MatchDrawer/MatchDrawer';
+import { MatchDrawerBar, MatchTicker, useMatchDrawer } from '../MatchDrawer/MatchDrawer';
+import { DialogueStage, useDialogueQueue } from '../DialogueBox/DialogueBox';
 import type { AppSettings } from '../../settings';
 import { playClick } from '../../sound';
 import { useOnlineRoom } from '../../online/useOnlineRoom';
@@ -100,6 +101,7 @@ export default function OnlineMatch({
     [room.chat, room.color, playerName, opponentName],
   );
   const drawer = useMatchDrawer(chatEntries);
+  const dialogue = useDialogueQueue(chatEntries);
 
   if (!inGame) {
     return (
@@ -113,7 +115,7 @@ export default function OnlineMatch({
           <p className={styles.hint}>
             {account
               ? `Signed in as ${account}. Your games follow you to any device.`
-              : 'Playing as a guest: games are saved on this device. Sign in under Settings > Account to keep them on every device.'}
+              : 'Playing as a guest: games are saved on this device.'}
           </p>
 
           {room.roomId ? (
@@ -252,7 +254,6 @@ export default function OnlineMatch({
               badge={state.turn === myColor ? 'To Move' : 'Waiting'}
               portraitLabel={playerName.slice(0, 1).toUpperCase()}
             />
-            <ChatBubble text={drawer.bubble?.side === 'self' ? drawer.bubble.text : null} />
             </div>
             <div className={appStyles.opponentSlot}>
             <PlayerBanner
@@ -263,7 +264,6 @@ export default function OnlineMatch({
               portraitLabel={opponentName.slice(0, 1).toUpperCase()}
               align="right"
             />
-            <ChatBubble text={drawer.bubble?.side === 'opponent' ? drawer.bubble.text : null} />
             </div>
           </div>
 
@@ -282,6 +282,7 @@ export default function OnlineMatch({
             onOpen={() => drawer.setOpen(true)}
           />
           <MatchDrawerBar drawer={drawer} />
+          <DialogueStage entry={dialogue.current} onDismiss={dialogue.dismiss} raised={drawer.open} />
 
           <div className={styles.stageRow}>
             <div className={appStyles.logDock}>
@@ -357,7 +358,9 @@ function toChatEntries(messages: ChatMessage[], myColor: Color, myName: string, 
       source: mine ? 'player' : 'bot',
       sourceLabel: 'Opponent',
       avatarLabel: author.slice(0, 1).toUpperCase(),
+      dialogueTheme: mine ? 'player' : 'npc',
       shownInDialogue: true,
+      spokenLive: true,
     };
   });
 }
