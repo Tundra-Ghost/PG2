@@ -42,6 +42,9 @@ jobs:
           cp index.html _site/
           cp docs/*.md _site/docs/
           cp -r game/dist _site/play
+          # Screens have their own addresses (/play/online). Pages has no rewrites, so
+          # any unknown path gets the game; the page itself sends non-game paths home.
+          sed 's/<html lang="en">/<html lang="en" data-not-found>/' game/dist/index.html > _site/404.html
           cat > _site/game/dist/index.html <<'HTML'
           <!doctype html>
           <meta charset="utf-8">
