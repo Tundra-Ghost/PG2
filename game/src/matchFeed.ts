@@ -68,8 +68,8 @@ export function getDerivedFeedOrder(
   return Math.max(moveOrder, eventOrder, chatOrder);
 }
 
-export function getModifierEventBannerMessage(event: GameEvent): string {
-  const message = `${event.title}: ${event.message}`;
+export function getModifierEventBannerMessage(event: GameEvent, whiteLabel = 'White', blackLabel = 'Black'): string {
+  const message = `${event.title}: ${formatEventMessage(event.message, whiteLabel, blackLabel)}`;
   if (message.length <= 120) return message;
   return `${message.slice(0, 117)}...`;
 }

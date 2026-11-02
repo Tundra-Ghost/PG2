@@ -233,7 +233,7 @@ export default function App() {
 
     const bannerEvent = pickBannerEvent(gameState.eventHistory, lastAnnouncedEventId.current);
     lastAnnouncedEventId.current = latestEvent.id;
-    if (bannerEvent) setInfoMessage(getModifierEventBannerMessage(bannerEvent));
+    if (bannerEvent) setInfoMessage(getModifierEventBannerMessage(bannerEvent, playerName, vsBot ? opponentName : 'Black'));
   }, [gameState.eventHistory]);
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { GameEvent } from '@pigeon-chess/game-core';
-import { pickBannerEvent } from './matchFeed';
+import { getModifierEventBannerMessage, pickBannerEvent } from './matchFeed';
 
 function event(id: string, modifierId: string): GameEvent {
   return { id, ply: 1, type: 'modifier', modifierId, title: id, message: id };
@@ -20,5 +20,12 @@ describe('banner event choice', () => {
 
   it('returns null when nothing new arrived', () => {
     expect(pickBannerEvent([lava], 'lava')).toBeNull();
+  });
+});
+
+describe('banner message', () => {
+  it('names the players instead of white and black', () => {
+    const event = { id: 'e1', ply: 4, type: 'modifier', title: 'Smoke', message: 'The black side sees through it.' } as GameEvent;
+    expect(getModifierEventBannerMessage(event, 'Player', 'Chick')).toBe("Smoke: The Chick's side sees through it.");
   });
 });

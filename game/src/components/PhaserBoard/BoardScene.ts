@@ -67,6 +67,8 @@ function stripes(g: Phaser.GameObjects.Graphics, x: number, y: number, spacing: 
 
 /** A soft radial blob, built from stacked circles. */
 /** Fungal spots on an Infected tile: [x, y, radius] as fractions of a cell. */
+/** Smoke puffs in one cell: [x, y, radius] as fractions of a cell. */
+const SMOKE_PUFFS: [number, number, number][] = [[0.3, 0.35, 0.24], [0.68, 0.3, 0.2], [0.5, 0.68, 0.26], [0.85, 0.75, 0.16]];
 const SPORES: [number, number, number][] = [[0.28, 0.3, 0.16], [0.7, 0.42, 0.13], [0.42, 0.74, 0.14], [0.8, 0.8, 0.09]];
 
 function glow(g: Phaser.GameObjects.Graphics, cx: number, cy: number, radius: number, color: number, alpha: number) {
@@ -198,6 +200,7 @@ export class BoardScene extends Phaser.Scene {
         fog.fillStyle(0x2a2440, 0.18).fillCircle(x + CELL * 0.7, y + CELL * 0.65, CELL * 0.26);
       }
       if (view.blindSpot) this.drawBlindSpotEdges(index, x, y);
+      if (view.smoke) this.drawSmoke(x, y);
       // Drawn over the fog: both players always see the eye.
       if (view.surveillance) this.drawEye(cx, cy);
       if (view.burst) this.playBurst(view, cx, cy);
@@ -474,5 +477,14 @@ export class BoardScene extends Phaser.Scene {
     g.lineStyle(3, 0xe0b040, 0.95).strokeEllipse(cx, cy, CELL * 0.86, CELL * 0.5);
     g.fillStyle(0xe0b040, 0.95).fillCircle(cx, cy, CELL * 0.14);
     g.fillStyle(0x18120a, 1).fillCircle(cx, cy, CELL * 0.06);
+  }
+
+  /** What's In The Cloud, Bro: grey puffs, seen by both sides. */
+  private drawSmoke(x: number, y: number) {
+    const g = this.fogLayer;
+    g.fillStyle(0x9a9490, 0.28).fillRect(x, y, CELL, CELL);
+    for (const [sx, sy, r] of SMOKE_PUFFS) {
+      g.fillStyle(0xc8c2bc, 0.32).fillCircle(x + CELL * sx, y + CELL * sy, CELL * r);
+    }
   }
 }

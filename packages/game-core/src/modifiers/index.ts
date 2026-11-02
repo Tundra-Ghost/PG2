@@ -36,6 +36,7 @@ import { hatofulGambitDef } from './definitions/hatoful-gambit';
 import { darkAndScaredDef } from './definitions/dark-and-scared';
 import { knownUnknownsDef } from './definitions/known-unknowns';
 import { bigBeakDef } from './definitions/big-beak';
+import { smokeCloudDef } from './definitions/smoke-cloud';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -70,3 +71,4 @@ modifierRegistry.register(hatofulGambitDef);
 modifierRegistry.register(darkAndScaredDef);
 modifierRegistry.register(knownUnknownsDef);
 modifierRegistry.register(bigBeakDef);
+modifierRegistry.register(smokeCloudDef);
