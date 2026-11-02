@@ -5,6 +5,10 @@
   justify-content: center;
   cursor: pointer;
   aspect-ratio: 1;
+  /* A long press shows the square's info, not the phone's copy or image menu. */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .tooltip {

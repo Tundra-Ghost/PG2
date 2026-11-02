@@ -478,6 +478,14 @@ export default function App() {
   function handleNewGame() {
     playClick();
     commitAbandonmentIfNeeded();
+    // A modifier match starts over at the draft against the same bot, so the
+    // next game has modifiers too. Standard chess just resets the board.
+    if (vsBot && selectedBot && (botSelectMode === 'run' || botSelectMode === 'practice')) {
+      setPendingBotModifierIds([]);
+      setActivePlayerModifierIds([]);
+      setScreen('draft');
+      return;
+    }
     const state = chessEngine.beginTurn(chessEngine.getInitialState());
     setActivePlayerModifierIds([]);
     setPendingBotModifierIds([]);
