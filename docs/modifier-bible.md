@@ -349,9 +349,11 @@ The owner places 2 Ghost Pieces during setup. They look real to the opponent. A 
 - Open question: can a Ghost give check? Suggested rule: no, Ghosts never give check or capture.
 
 ### MOD-D003 · What's In The Cloud, Bro
-*Ref: smoke cloud memes* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Design**
+*Ref: smoke cloud memes* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
 
 Every 10 rounds, and on each capture, a 2×2 smoke cloud appears there for 3 rounds. Pieces inside are hidden from the opponent of whoever made the cloud. Movement through smoke is normal.
+
+- Built: a capture cloud covers the capture square (shifted to stay on the board). The timed cloud lands in the middle of the board and belongs to the side that just moved. Both sides see the smoke itself. Bots still see the whole board.
 
 ### MOD-D004 · Known Unknowns (The Rumsfeld)
 *Ref: Rumsfeld press conference* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Built**
@@ -484,7 +486,7 @@ Values the game uses today. "Built" cards match the build.
 | C008 | I've Been Waiting For This | C | B | 2 | 0 | Owner | Built |
 | D001 | It's Dark And I'm Scared | D | S | 4 | 1 | Shared | Built |
 | D002 | I'm Literally Right Here | D | A | 3 | 0 | Owner | Design |
-| D003 | What's In The Cloud, Bro | D | B | 2 | 0 | Shared | Design |
+| D003 | What's In The Cloud, Bro | D | B | 2 | 0 | Shared | Built |
 | D004 | Known Unknowns | D | B | 2 | 1 | Shared | Built |
 | D005 | Sus | D | A | 3 | 0 | Owner | Design |
 | D006 | Cat Mode | D | B | 1 | 0 | Owner | Design |
@@ -499,7 +501,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 
-33 of 40 built. Scope for Design cards is a proposal.
+34 of 40 built. Scope for Design cards is a proposal.
 
 ### Balance test plan
 

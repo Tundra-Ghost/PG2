@@ -450,6 +450,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Every 10 turns, and on each capture, a 2×2 smoke cloud appears for 3 turns. You see through your own smoke. Opponent does not. Pieces inside the cloud are invisible to them.',
     flavor: '"Something was captured in there. Viktor thinks it was his knight. Viktor is not sure anymore."',
+    prototypeRules:
+      'Every 10 rounds, and on each capture, a 2×2 smoke cloud appears for 3 rounds. A capture puts the cloud over the capture square. The side that made the cloud sees through it; the other side does not see pieces inside. Bots still see the whole board.',
   },
   {
     id: 'MOD-D004',
