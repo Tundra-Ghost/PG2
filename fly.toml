@@ -27,11 +27,12 @@ primary_region = "sjc"
 [http_service]
   internal_port = 8080
   force_https = true
-  # Idle stop keeps the free allowance; any request wakes it again.
-  # Rooms are reloaded from the volume on wake.
-  auto_stop_machines = "stop"
+  # One machine stays on all the time, so players never wait for a cold start.
+  # (About $2 a month for this size. To save that, set auto_stop_machines = "stop"
+  # and min_machines_running = 0: it then sleeps when idle and wakes on a request.)
+  auto_stop_machines = "off"
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
 
   [[http_service.checks]]
     grace_period = "10s"
