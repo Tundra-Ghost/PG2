@@ -46,20 +46,17 @@ import {
   type MatchMode,
 } from './profile';
 import styles from './App.module.css';
+import { appBase, pathFor, screenFromPath, type Screen } from './routes';
 
 
-type Screen =
-  | 'menu'
-  | 'botselect'
-  | 'draft'
-  | 'game'
-  | 'settings'
-  | 'profile'
-  | 'roost'
-  | 'collection'
-  | 'online'
-  | 'friends'
-  | 'puzzles';
+/** Where the game lives, read once: "/play/" on the site. */
+const BASE = appBase(window.location.pathname);
+
+/** The screen the address opens. A match or draft can't be resumed from a link, so those open the menu. */
+function initialScreen(): Screen {
+  const screen = screenFromPath(window.location.pathname, BASE);
+  return screen === 'game' || screen === 'draft' ? 'menu' : screen;
+}
 type BotSelectMode = 'run' | 'quick' | 'practice' | null;
 
 interface ProfileViewerState {
@@ -70,7 +67,7 @@ interface ProfileViewerState {
 }
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('menu');
+  const [screen, setScreen] = useState<Screen>(initialScreen);
   const [prevScreen, setPrevScreen] = useState<Screen>('menu');
   const [accountStart, setAccountStart] = useState<'signin' | 'register' | undefined>(undefined);
   const [gameState, setGameState] = useState<GameState>(() => chessEngine.getInitialState());
@@ -78,7 +75,8 @@ export default function App() {
   const [selectedBot, setSelectedBot] = useState<BotId | null>(null);
   /** The bot is working out its move. */
   const [botThinking, setBotThinking] = useState(false);
-  const [botSelectMode, setBotSelectMode] = useState<BotSelectMode>(null);
+  // A link straight to the opponent list starts on the modifier draft tab.
+  const [botSelectMode, setBotSelectMode] = useState<BotSelectMode>(() => (screen === 'botselect' ? 'run' : null));
   const [activePlayerModifierIds, setActivePlayerModifierIds] = useState<string[]>([]);
   const [pendingBotModifierIds, setPendingBotModifierIds] = useState<string[]>([]);
   const [currentMatchMode, setCurrentMatchMode] = useState<MatchMode>('quick');
@@ -138,6 +136,64 @@ export default function App() {
     // screen's scroll offset and opened the match with the board off-screen.
     window.scrollTo(0, 0);
   }, [screen]);
+
+  // ── Addresses: each screen has its own URL, and Back/Forward move between them ──
+  const lastScreen = useRef<Screen | null>(null);
+  /** Settings was opened with a history entry, so closing it can step back. */
+  const settingsPushed = useRef(false);
+  const screenRef = useRef(screen);
+  screenRef.current = screen;
+  const prevScreenRef = useRef(prevScreen);
+  prevScreenRef.current = prevScreen;
+  const abandonRef = useRef(commitAbandonmentIfNeeded);
+  abandonRef.current = commitAbandonmentIfNeeded;
+  const selectedBotRef = useRef(selectedBot);
+  selectedBotRef.current = selectedBot;
+
+  useEffect(() => {
+    const from = lastScreen.current;
+    lastScreen.current = screen;
+    const path = pathFor(screen, BASE);
+    if (window.location.pathname === path) return;
+    // Replace rather than add an entry for: the first load, closing Settings,
+    // and the draft turning into the match (Back from a match goes to the opponent list).
+    const replace = from === null || from === 'settings' || (from === 'draft' && screen === 'game');
+    if (replace) window.history.replaceState(null, '', path);
+    else window.history.pushState(null, '', path);
+    settingsPushed.current = screen === 'settings' && !replace;
+  }, [screen]);
+
+  useEffect(() => {
+    const onPop = () => {
+      const shown = screenRef.current;
+      // Settings is an overlay: what matters is the screen under it.
+      const current = shown === 'settings' ? prevScreenRef.current : shown;
+      let next = screenFromPath(window.location.pathname, BASE);
+      // Leaving a match by Back counts the same as the Menu button.
+      if (current === 'game' && next !== 'game') abandonRef.current();
+      // A finished or left match, or a draft with no opponent, can't be reopened.
+      if ((next === 'game' && current !== 'game') || (next === 'draft' && !selectedBotRef.current)) {
+        next = 'menu';
+        window.history.replaceState(null, '', pathFor(next, BASE));
+      }
+      if (next === 'settings') setPrevScreen(current);
+      settingsPushed.current = false;
+      lastScreen.current = next;
+      setScreen(next);
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  /** Closes Settings. Steps back through history when opening it added an entry. */
+  function closeSettings() {
+    if (settingsPushed.current) {
+      settingsPushed.current = false;
+      window.history.back();
+    } else {
+      setScreen(prevScreen);
+    }
+  }
 
   useEffect(() => {
     if (screen === 'game') {
@@ -507,7 +563,7 @@ export default function App() {
       <SettingsScreen
         settings={settings}
         onSave={handleSettingsSave}
-        onBack={() => setScreen(prevScreen)}
+        onBack={closeSettings}
         account={account}
         feedbackContext={feedbackContext}
         accountStart={accountStart}

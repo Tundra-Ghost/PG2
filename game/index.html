@@ -2,6 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Every screen has its own address (/play/online, /play/stats...). GitHub Pages
+      // serves those through a copy of this page as 404.html, so point relative asset
+      // links at the game folder. A missing page outside the game goes to the home page.
+      (function () {
+        var folder = location.pathname.match(/^(.*?\/play\/)/);
+        if (folder) {
+          var base = document.createElement('base');
+          base.href = folder[1];
+          document.head.appendChild(base);
+        } else if (document.documentElement.hasAttribute('data-not-found')) {
+          location.replace('/');
+        }
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pigeon Chess</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
