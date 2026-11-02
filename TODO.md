@@ -85,7 +85,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
   - [x] Draft rules and a two-player draft turn model live in game-core (server can enforce them)
   - [x] Server draft phase and socket events (room:create {draft}, draft:pick, draft:finish)
   - [x] Online draft screen (Modifier draft or Standard chess when creating a room)
-- [ ] Server deploy is paused: the Fly.io trial ended. Tanner set hosting aside on 2026-10-30; focus is core game features.
+- [x] Server hosting restored on paid Fly.io (2026-11); site lives at pigeonchess.app with the game at /play
 - [x] Site: publish to GitHub Pages from Actions on every merge (`.github/workflows/pages.yml`)
 - [x] Site: stop committing `game/dist` (Pages builds it fresh; 30+ green deploys confirmed it)
 - [x] Online: host the server so the Pages build can reach it (Fly.io: pigeon-chess-server.fly.dev, region sjc)
