@@ -493,6 +493,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Only useful alongside another Fog modifier. Extends visibility radius by 1 additional square beyond normal fog limits. Does nothing without an accompanying fog effect.',
     flavor: '"Viktor engaged Cat Mode. Viktor can see slightly more of the darkness. The darkness remains unimpressed."',
+    prototypeRules:
+      'You see 3 squares around your pieces in It\'s Dark And I\'m Scared instead of 2. The draft only offers Cat Mode once It\'s Dark And I\'m Scared is picked. It cannot see into a Blind Spot or smoke.',
   },
   {
     id: 'MOD-D007',
