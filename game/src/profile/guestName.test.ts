@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { randomGuestName } from '../profile';
+import { isGeneratedName, randomGuestName } from '../profile';
 
 describe('randomGuestName', () => {
   it('fits the 20 character display name limit, even at its longest', () => {
@@ -8,5 +8,14 @@ describe('randomGuestName', () => {
       expect(name.length).toBeLessThanOrEqual(20);
       expect(name).toMatch(/^[A-Za-z]+\d{4}$/);
     }
+  });
+});
+
+describe('isGeneratedName', () => {
+  it('spots guest names and the old default, not names a player picked', () => {
+    expect(isGeneratedName(randomGuestName())).toBe(true);
+    expect(isGeneratedName('Player')).toBe(true);
+    expect(isGeneratedName('TundraGhost')).toBe(false);
+    expect(isGeneratedName('SneakyBeak')).toBe(false);
   });
 });

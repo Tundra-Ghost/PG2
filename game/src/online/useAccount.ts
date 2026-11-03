@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { adoptProfile, type LocalProfile } from '../profile';
+import { adoptProfile, isGeneratedName, updateProfile, type LocalProfile } from '../profile';
 import {
   currentAccount,
   fetchProfile,
@@ -58,8 +58,15 @@ export function useAccount(
       setSync('syncing');
       try {
         const adopted = adoptProfile(await fetchProfile());
-        if (adopted) setProfile(adopted);
-        else if (profileRef.current) await uploadProfile(profileRef.current);
+        let current = adopted ?? profileRef.current;
+        // A profile still wearing its random guest name takes the account's username.
+        if (current && isGeneratedName(current.displayName)) {
+          current = updateProfile(current, { displayName: next.username });
+        }
+        if (current) {
+          setProfile(current);
+          await uploadProfile(current);
+        }
         setSync('synced');
       } catch {
         // Uploads wait until a sync succeeds, so a stale local copy can't

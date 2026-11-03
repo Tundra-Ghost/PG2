@@ -279,6 +279,13 @@ export function randomGuestName(random: () => number = Math.random): string {
   return `${pick(GUEST_ADJECTIVES, random)}${pick(GUEST_NOUNS, random)}${digits}`;
 }
 
+/** A name the game picked (a guest name, or the old "Player" default), not one the player chose. */
+export function isGeneratedName(name: string): boolean {
+  if (name === 'Player') return true;
+  const match = name.match(/^([A-Z][a-z]+)([A-Z][a-z]+)(\d{4})$/);
+  return Boolean(match && GUEST_ADJECTIVES.includes(match[1]) && GUEST_NOUNS.includes(match[2]));
+}
+
 /** This browser's profile, made on the spot with a random name the first time. */
 export function ensureProfile(): LocalProfile {
   const existing = loadProfile();
