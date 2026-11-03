@@ -7,7 +7,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Phase 0 prototype is playable locally in `game/`
 - Architecture is client-side today
 - TDD target architecture is server-authoritative shared game-core
-- 34 modifier definitions are registered, while the modifier bible defines 40 cards
+- 35 modifier definitions are registered, while the modifier bible defines 40 cards
 - Vitest is now installed in `game/` and baseline engine tests are passing
 - Engine tests now cover opening movement, wrong-turn rejection, self-check rejection, castling safety/rights, en passant, promotion, checkmate, stalemate, threefold repetition, 50-move rule, and insufficient material
 - Engine rule-regression coverage now also includes rook-capture castling-rights loss, en-passant expiry, pinned-piece legal movement along the pin line, and SAN disambiguation/capture notation
@@ -64,6 +64,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] MOD-D004 Known Unknowns (2×2 Blind Spot per side in ranks 3-6, dashed outline, shifts every 15 rounds)
 - [x] MOD-D008 Big Beak Is Watching (golden eye in the middle 4×4; pieces moving next to it are shown through fog for 3 rounds)
 - [x] MOD-D003 What's In The Cloud, Bro (2×2 smoke on captures and every 10 rounds for 3 rounds; the maker sees through it)
+- [x] MOD-D006 Cat Mode (owner sees 3 squares in It's Dark And I'm Scared)
 - [x] Event banners name the players instead of white and black
 - [ ] Fog: bots still see the whole board; online play shows fog from the player's side only once draft works online
 - [x] MOD-E001 Hatoful Gambit (owner's knights become Pigeons; every 5 rounds they announce a square and hop there one move later)
@@ -168,7 +169,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] Art guide 7.3: authored icons for piece status badges (replace G, O, B, ! letters)
 - [ ] Art guide 14: wire the made modifier sounds (lava, Gerald, freeze, cannon, storm, vent, traitor, gong)
 - [ ] Art guide 9/13: reduced-motion setting and screen reader labels for event banners
-- [ ] Bible D006: only offer Cat Mode once a fog card is drafted (when fog ships)
+- [x] Bible D006: only offer Cat Mode once It's Dark And I'm Scared is drafted
 - [ ] TDD 4: move bot tie-breaks and runRandomDraft to the seeded PRNG
 - [ ] Bible balance test plan: bot-vs-bot win-rate harness per modifier
 - [ ] Lava: amber preview of the next spots (Bible A002)

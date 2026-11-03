@@ -368,11 +368,12 @@ Each player has a 2×2 Blind Spot they cannot see into. Blind Spots differ per p
 One of the owner's pieces looks like a different type to the opponent. It moves like its true self. The King can never be Sus.
 
 ### MOD-D006 · Cat Mode (Night Vision Activated)
-*Ref: cat night vision* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: cat night vision* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Adds 1 square to the owner's view range in any fog card. Cat Mode is only offered in the draft once a fog card is already picked, so it is never a dead pick. It cannot see into a Blind Spot.
 
 - Changed from v0.2: draft gating added.
+- Built: only It's Dark And I'm Scared has a view range, so the draft waits for that card (picked by either side). The owner sees 3 squares instead of 2. Blind Spots and smoke still hide.
 
 ### MOD-D007 · Recalculating… (Move Hints Corrupted)
 *Ref: GPS rerouting* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: No Ranked · **Built**
@@ -489,7 +490,7 @@ Values the game uses today. "Built" cards match the build.
 | D003 | What's In The Cloud, Bro | D | B | 2 | 0 | Shared | Built |
 | D004 | Known Unknowns | D | B | 2 | 1 | Shared | Built |
 | D005 | Sus | D | A | 3 | 0 | Owner | Design |
-| D006 | Cat Mode | D | B | 1 | 0 | Owner | Design |
+| D006 | Cat Mode | D | B | 1 | 0 | Owner | Built |
 | D007 | Recalculating… | D | A | 3 | 1 | Shared | Built |
 | D008 | Big Beak Is Watching | D | B | 2 | 0 | Shared | Built |
 | E001 | Hatoful Gambit | E | S | 5 | 0 | Owner | Built |
@@ -501,7 +502,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 
-34 of 40 built. Scope for Design cards is a proposal.
+35 of 40 built. Scope for Design cards is a proposal.
 
 ### Balance test plan
 

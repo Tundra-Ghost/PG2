@@ -1,5 +1,13 @@
 import { ALL_MODIFIERS, type ModifierCard } from '../modifiers/data';
 import { isSharedDraftModifier } from '../modifiers/scope';
+import { MODIFIER_IDS } from '../modifiers/ids';
+
+/** Cat Mode only does something with It's Dark And I'm Scared, so it waits for that card. */
+function needsDarkFirst(cardId: string, ownIds: string[], otherIds: string[]): boolean {
+  return cardId === MODIFIER_IDS.catMode
+    && !ownIds.includes(MODIFIER_IDS.darkAndScared)
+    && !otherIds.includes(MODIFIER_IDS.darkAndScared);
+}
 
 export const BUDGET = 8;
 export const MAX_COUNT = 5;
@@ -36,6 +44,7 @@ export function getValidOptions(
     if (!implementedIds.has(card.id)) return false;
     if (ownIds.includes(card.id)) return false;
     if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return false;
+    if (needsDarkFirst(card.id, ownIds, otherIds)) return false;
     if (unlimited) return true;
     if (ownCards.length >= MAX_COUNT) return false;
     if (totalCost + card.cost > BUDGET) return false;
@@ -88,6 +97,7 @@ export function pickBlocker(
   if (!implementedIds.has(card.id)) return 'Not in this build yet.';
   if (ownIds.includes(card.id)) return 'Already in your draft.';
   if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return `${otherName} already claimed this shared modifier.`;
+  if (needsDarkFirst(card.id, ownIds, otherIds)) return 'Needs It\'s Dark And I\'m Scared in the match first.';
   if (unlimited) return null;
   if (ownCards.length >= MAX_COUNT) return `Your draft is full (${MAX_COUNT} modifiers).`;
   if (ownCost + card.cost > BUDGET) return `Over budget: ${BUDGET - ownCost} pts left.`;
