@@ -258,7 +258,9 @@ export class BoardScene extends Phaser.Scene {
         }
       }
 
-      worn.marks.forEach((mark, i) => {
+      // Sus: a ? badge so the owner knows which piece is disguised.
+      const badgeMarks = view.susAs ? [...worn.marks, '?'] : worn.marks;
+      badgeMarks.forEach((mark, i) => {
         const bx = x + CELL - 21;
         const by = y + 3 + i * 20;
         const hot = mark === 'B' ? 0x8a2410 : mark === '!' ? 0xc41e1e : 0xf5e8c0;

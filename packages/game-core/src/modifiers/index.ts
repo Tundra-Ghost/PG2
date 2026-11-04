@@ -38,6 +38,7 @@ import { knownUnknownsDef } from './definitions/known-unknowns';
 import { bigBeakDef } from './definitions/big-beak';
 import { smokeCloudDef } from './definitions/smoke-cloud';
 import { catModeDef } from './definitions/cat-mode';
+import { susDef } from './definitions/sus';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -74,3 +75,4 @@ modifierRegistry.register(knownUnknownsDef);
 modifierRegistry.register(bigBeakDef);
 modifierRegistry.register(smokeCloudDef);
 modifierRegistry.register(catModeDef);
+modifierRegistry.register(susDef);

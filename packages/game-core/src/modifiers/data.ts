@@ -480,6 +480,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'One of your opponent\'s pieces is displayed to you as a different piece type. The piece moves like its true self, revealing identity through movement patterns. The disguise is permanent.',
     flavor: '"That pawn moved like a rook. Viktor voted it out. Viktor was wrong. Viktor always votes wrong."',
+    prototypeRules:
+      'One of your pieces (never the King) looks like a different piece to your opponent. It still moves like its true self, and the move log shows the fake piece. You see a "Sus" badge on it. The disguise ends when the piece is captured or promotes.',
   },
   {
     id: 'MOD-D006',

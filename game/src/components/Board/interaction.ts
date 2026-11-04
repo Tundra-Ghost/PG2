@@ -36,6 +36,7 @@ const MARKER_LEGEND: Array<{ modifierId: string } & MarkerLegendEntry> = [
   { modifierId: MODIFIER_IDS.knownUnknowns, mark: '⬚', label: 'Blind Spot' },
   { modifierId: MODIFIER_IDS.bigBeak, mark: '◉', label: 'Surveillance Square' },
   { modifierId: MODIFIER_IDS.smokeCloud, mark: '☁', label: 'Smoke' },
+  { modifierId: MODIFIER_IDS.sus, mark: '?', label: 'Your Sus piece' },
 ];
 
 /** Legend rows for the markers that can appear in this match. */

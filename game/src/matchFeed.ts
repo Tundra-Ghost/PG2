@@ -1,5 +1,5 @@
 import type { GameEvent, GameState } from '@pigeon-chess/game-core';
-import { MODIFIER_IDS, blackoutMovesLeft, isHistoryBlackout, isMoveHidden, type Color } from '@pigeon-chess/game-core';
+import { MODIFIER_IDS, blackoutMovesLeft, getShownNotation, isHistoryBlackout, isMoveHidden, type Color } from '@pigeon-chess/game-core';
 
 export interface MatchChatEntry {
   id: string;
@@ -52,7 +52,7 @@ export function latestFeedLine(state: GameState, whiteLabel: string, blackLabel:
   if (!lastMove) return 'No moves yet.';
   const actor = lastMove.pieceMoved.color === 'white' ? whiteLabel : blackLabel;
   if (isMoveHidden(state, lastMove, viewer ?? state.turn)) return `${actor} moves in the dark.`;
-  return formatActorMove(actor, lastMove.notation);
+  return formatActorMove(actor, getShownNotation(state, lastMove, viewer ?? state.turn));
 }
 
 export function getDerivedFeedOrder(
