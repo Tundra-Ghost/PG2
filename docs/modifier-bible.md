@@ -363,9 +363,11 @@ Each player has a 2×2 Blind Spot they cannot see into. Blind Spots differ per p
 - Built: spots sit in ranks 3-6 and never overlap. Your own pieces inside your spot stay visible. Bots still see the whole board.
 
 ### MOD-D005 · Sus (One Of These Is Lying)
-*Ref: Among Us* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Among Us* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 One of the owner's pieces looks like a different type to the opponent. It moves like its true self. The King can never be Sus.
+
+- Built: the Sus piece is picked at random from the owner's pieces, and its fake type from pawn, knight, bishop, rook and queen. The opponent's move log shows the fake piece too. The owner sees a "?" badge on it. The disguise ends, with an event, when the piece is captured or promotes.
 
 ### MOD-D006 · Cat Mode (Night Vision Activated)
 *Ref: cat night vision* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -489,7 +491,7 @@ Values the game uses today. "Built" cards match the build.
 | D002 | I'm Literally Right Here | D | A | 3 | 0 | Owner | Design |
 | D003 | What's In The Cloud, Bro | D | B | 2 | 0 | Shared | Built |
 | D004 | Known Unknowns | D | B | 2 | 1 | Shared | Built |
-| D005 | Sus | D | A | 3 | 0 | Owner | Design |
+| D005 | Sus | D | A | 3 | 0 | Owner | Built |
 | D006 | Cat Mode | D | B | 1 | 0 | Owner | Built |
 | D007 | Recalculating… | D | A | 3 | 1 | Shared | Built |
 | D008 | Big Beak Is Watching | D | B | 2 | 0 | Shared | Built |
@@ -502,7 +504,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 
-35 of 40 built. Scope for Design cards is a proposal.
+36 of 40 built. Scope for Design cards is a proposal.
 
 ### Balance test plan
 

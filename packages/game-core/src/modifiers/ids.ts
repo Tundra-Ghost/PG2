@@ -34,6 +34,7 @@ export const MODIFIER_IDS = {
   bigBeak: 'MOD-D008',
   smokeCloud: 'MOD-D003',
   catMode: 'MOD-D006',
+  sus: 'MOD-D005',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { chessEngine } from '@pigeon-chess/game-core';
+import { chessEngine, MODIFIER_IDS } from '@pigeon-chess/game-core';
 import { buildSquareViews } from './boardView';
 
 const base = {
@@ -41,5 +41,16 @@ describe('buildSquareViews', () => {
     expect(at('f3').isLastMove).toBe(true);
     expect(buildSquareViews({ ...base, state, orientation: 'white', legalMoves: ['e4'], showLegalMoves: false })
       .find(v => v.square === 'e4')!.isLegalTarget).toBe(false);
+  });
+
+  it('draws a Sus piece as its disguise for the opponent only', () => {
+    const state = chessEngine.getInitialState();
+    const knight = state.pieces.get('g1')!;
+    state.modifierState[MODIFIER_IDS.sus] = { white: { pieceId: knight.id, shownAs: 'queen' } };
+    const at = (viewer: 'white' | 'black') => buildSquareViews({ ...base, state, orientation: 'white', viewer }).find(v => v.square === 'g1')!;
+    expect(at('black').piece?.type).toBe('queen');
+    expect(at('black').susAs).toBeUndefined();
+    expect(at('white').piece?.type).toBe('knight');
+    expect(at('white').susAs).toBe('queen');
   });
 });
