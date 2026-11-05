@@ -35,6 +35,7 @@ export const MODIFIER_IDS = {
   smokeCloud: 'MOD-D003',
   catMode: 'MOD-D006',
   sus: 'MOD-D005',
+  ghosts: 'MOD-D002',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];

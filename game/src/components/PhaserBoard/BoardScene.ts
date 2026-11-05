@@ -226,7 +226,7 @@ export class BoardScene extends Phaser.Scene {
             color: piece.color === 'white' ? '#f2ead8' : '#2a1c0e',
             stroke: piece.color === 'white' ? '#18120a' : '#c8a870',
             strokeThickness: 3,
-          }).setOrigin(0.5).setDepth(DEPTH.pieces),
+          }).setOrigin(0.5).setDepth(DEPTH.pieces).setAlpha(view.ghost ? 0.55 : 1),
         );
       } else {
         let sprite = this.pieceSprites.get(piece.id);
@@ -237,6 +237,8 @@ export class BoardScene extends Phaser.Scene {
           sprite.setTexture(texture).setDisplaySize(PIECE_PX, PIECE_PX);
         }
         this.placeSprite(sprite, cx, cy);
+        // Your own Ghosts are faded; the opponent sees them solid.
+        sprite.setAlpha(view.ghost ? 0.55 : 1);
       }
       // A red glow under Traitors and Berserkers. Drawn as shapes, not WebGL
       // effects: some phone browsers render those effects as solid boxes.

@@ -20,7 +20,7 @@ function ownTurnIndex(state: GameState): number {
 export function allValidMoves(state: GameState): Move[] {
   const moves: Move[] = [];
   for (const piece of state.pieces.values()) {
-    if (piece.color !== state.turn) continue;
+    if (piece.color !== state.turn || piece.isGhost) continue;
     for (const to of getLegalMovesForPiece(state, piece)) {
       const move = buildMove(state, piece.square, to);
       if (isPromotionMove(state, piece.square, to)) {

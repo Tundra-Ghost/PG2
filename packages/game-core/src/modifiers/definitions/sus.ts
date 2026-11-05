@@ -91,7 +91,7 @@ export const susDef: ModifierDefinition = {
     let next = cloneState(state);
     for (const color of owners) {
       const candidates = [...next.pieces.values()]
-        .filter(piece => piece.color === color && piece.type !== 'king' && !piece.isRealKing)
+        .filter(piece => piece.color === color && piece.type !== 'king' && !piece.isRealKing && !piece.isGhost)
         .sort((a, b) => a.id.localeCompare(b.id));
       if (candidates.length === 0) continue;
       const [pieceIdx, prngA] = prngPickIndex(next.prngState, candidates.length);

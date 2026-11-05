@@ -27,7 +27,7 @@ export interface Piece {
   type: PieceType;
   color: Color;
   square: Square;
-  isGhost?: boolean;     // future: MOD-D002
+  isGhost?: boolean;     // MOD-D002: decoy, never captures or gives check
   isBerserker?: boolean; // future: MOD-E006
   isPacifist?: boolean;  // future: MOD-B007
   isRealKing?: boolean;  // future: MOD-E003

@@ -53,4 +53,13 @@ describe('buildSquareViews', () => {
     expect(at('white').piece?.type).toBe('knight');
     expect(at('white').susAs).toBe('queen');
   });
+
+  it('fades a Ghost for its owner only', () => {
+    const state = chessEngine.getInitialState();
+    state.pieces.set('c3', { id: 'g', type: 'bishop', color: 'white', square: 'c3', isGhost: true, cooldowns: {} });
+    const at = (viewer: 'white' | 'black') => buildSquareViews({ ...base, state, orientation: 'white', viewer }).find(v => v.square === 'c3')!;
+    expect(at('white').ghost).toBe(true);
+    expect(at('black').ghost).toBeUndefined();
+    expect(at('black').piece?.type).toBe('bishop');
+  });
 });

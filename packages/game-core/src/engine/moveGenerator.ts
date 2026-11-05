@@ -227,6 +227,8 @@ export function getAttackSquares(state: GameState, color: Color): Set<Square> {
   const attacked = new Set<Square>();
   for (const piece of state.pieces.values()) {
     if (piece.color !== color) continue;
+    // MOD-D002: Ghost Pieces never give check.
+    if (piece.isGhost) continue;
     if (piece.type === 'pawn') {
       const f = fileIndex(piece.square);
       const r = rankIndex(piece.square);
