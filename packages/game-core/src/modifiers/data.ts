@@ -437,6 +437,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Each player places 2 Ghost Pieces — decoys that look real to the opponent. Ghosts vanish if an opponent piece passes through their square. You see your own Ghosts clearly.',
     flavor: '"One of those bishops isn\'t real. The opponent is very confident about which one. The opponent is wrong."',
+    prototypeRules:
+      'You get 2 Ghost knights or bishops on your third rank. They look real to your opponent and move like their type, but they never capture and never give check. An enemy that captures a Ghost finds nothing there. You see your Ghosts faded.',
   },
   {
     id: 'MOD-D003',

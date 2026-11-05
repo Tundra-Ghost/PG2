@@ -49,6 +49,8 @@ export interface SquareView {
   smoke?: 'white' | 'black';
   /** Sus: the viewer's own disguised piece, and what the opponent sees. */
   susAs?: PieceType;
+  /** I'm Literally Right Here: the viewer's own Ghost, drawn faded. */
+  ghost?: boolean;
 }
 
 export interface BoardViewInput {
@@ -117,6 +119,8 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(eye === square ? { surveillance: true } : {}),
         ...(smoke.has(square) ? { smoke: smoke.get(square) } : {}),
         ...(ownSus && real?.id === ownSus.pieceId ? { susAs: ownSus.shownAs } : {}),
+        // The opponent sees a Ghost as a normal piece.
+        ...(real?.isGhost && (!viewer || real.color === viewer) ? { ghost: true } : {}),
       });
     }
   }

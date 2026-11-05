@@ -341,12 +341,13 @@ Both players see only within 2 squares of their own pieces. The rest is dark. Pi
 - Synergy: Vent Tiles. Vents are invisible in fog.
 
 ### MOD-D002 · I'm Literally Right Here
-*Ref: invisible man memes* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: invisible man memes* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 The owner places 2 Ghost Pieces during setup. They look real to the opponent. A Ghost vanishes if an enemy piece passes through its square. The owner sees their Ghosts clearly.
 
 - Conflict: YOU DIED never picks a Ghost.
 - Open question: can a Ghost give check? Suggested rule: no, Ghosts never give check or capture.
+- Built: the 2 Ghosts are knights or bishops placed at random on the owner's empty third-rank squares. They move like their type and block lines like real pieces, but never capture and never give check. An enemy that captures a Ghost lands normally and an event says it was a Ghost. The owner sees them faded. Sus never picks a Ghost.
 
 ### MOD-D003 · What's In The Cloud, Bro
 *Ref: smoke cloud memes* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
@@ -488,7 +489,7 @@ Values the game uses today. "Built" cards match the build.
 | C007 | This Is Necessary | C | A | 4 | 0 | Owner | Built |
 | C008 | I've Been Waiting For This | C | B | 2 | 0 | Owner | Built |
 | D001 | It's Dark And I'm Scared | D | S | 4 | 1 | Shared | Built |
-| D002 | I'm Literally Right Here | D | A | 3 | 0 | Owner | Design |
+| D002 | I'm Literally Right Here | D | A | 3 | 0 | Owner | Built |
 | D003 | What's In The Cloud, Bro | D | B | 2 | 0 | Shared | Built |
 | D004 | Known Unknowns | D | B | 2 | 1 | Shared | Built |
 | D005 | Sus | D | A | 3 | 0 | Owner | Built |
@@ -504,7 +505,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 
-36 of 40 built. Scope for Design cards is a proposal.
+37 of 40 built. Scope for Design cards is a proposal.
 
 ### Balance test plan
 
