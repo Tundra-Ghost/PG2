@@ -201,6 +201,7 @@ export class BoardScene extends Phaser.Scene {
       }
       if (view.blindSpot) this.drawBlindSpotEdges(index, x, y);
       if (view.smoke) this.drawSmoke(x, y);
+      if (view.confession) this.drawConfession(view.confession, cx, cy);
       // Drawn over the fog: both players always see the eye.
       if (view.surveillance) this.drawEye(cx, cy);
       if (view.burst) this.playBurst(view, cx, cy);
@@ -489,6 +490,25 @@ export class BoardScene extends Phaser.Scene {
     g.fillStyle(0x9a9490, 0.28).fillRect(x, y, CELL, CELL);
     for (const [sx, sy, r] of SMOKE_PUFFS) {
       g.fillStyle(0xc8c2bc, 0.32).fillCircle(x + CELL * sx, y + CELL * sy, CELL * r);
+    }
+  }
+
+  /** Forgive Me: a violet ring on the confessing piece, a dashed ghost ring where it declared. */
+  private drawConfession(kind: 'piece' | 'target', cx: number, cy: number) {
+    const g = this.fogLayer;
+    const r = CELL * 0.42;
+    if (kind === 'piece') {
+      g.lineStyle(3, 0xb07ae0, 0.95).strokeCircle(cx, cy, r);
+      return;
+    }
+    g.fillStyle(0xb07ae0, 0.16).fillCircle(cx, cy, r);
+    g.lineStyle(3, 0xb07ae0, 0.95);
+    const dashes = 12;
+    for (let i = 0; i < dashes; i++) {
+      const a = (i / dashes) * Math.PI * 2;
+      g.beginPath();
+      g.arc(cx, cy, r, a, a + Math.PI / dashes);
+      g.strokePath();
     }
   }
 }
