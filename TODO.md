@@ -7,7 +7,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - Phase 0 prototype is playable locally in `game/`
 - Architecture is client-side today
 - TDD target architecture is server-authoritative shared game-core
-- 37 modifier definitions are registered, while the modifier bible defines 40 cards
+- 38 modifier definitions are registered, while the modifier bible defines 40 cards
 - Vitest is now installed in `game/` and baseline engine tests are passing
 - Engine tests now cover opening movement, wrong-turn rejection, self-check rejection, castling safety/rights, en passant, promotion, checkmate, stalemate, threefold repetition, 50-move rule, and insufficient material
 - Engine rule-regression coverage now also includes rook-capture castling-rights loss, en-passant expiry, pinned-piece legal movement along the pin line, and SAN disambiguation/capture notation
@@ -67,6 +67,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] MOD-D006 Cat Mode (owner sees 3 squares in It's Dark And I'm Scared)
 - [x] MOD-D005 Sus (one piece shows a fake type to the opponent, also in the move log)
 - [x] MOD-D002 I'm Literally Right Here (2 Ghost decoys that never capture or give check)
+- [x] MOD-C002 Forgive Me (bishop Confession: the target declares its move a turn early)
 - [x] Event banners name the players instead of white and black
 - [ ] Fog: bots still see the whole board; online play shows fog from the player's side only once draft works online
 - [x] MOD-E001 Hatoful Gambit (owner's knights become Pigeons; every 5 rounds they announce a square and hop there one move later)

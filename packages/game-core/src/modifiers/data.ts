@@ -316,6 +316,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Target one opponent piece. For 2 turns, that piece must reveal its intended destination before moving — a ghost outline appears. The opponent commits 1 turn early.',
     flavor: '"The bishop leaned in. The rook confessed where it was planning to go. The bishop did not offer absolution."',
+    prototypeRules:
+      'Bishop ability, every 5 turns: pick an enemy piece (not the King) on the bishop\'s diagonal. For its side\'s next 2 turns, moving that piece takes two steps. The first move only declares the square and spends the turn, with a ghost outline there. Then it can only move to that square. In check it moves freely.',
   },
   {
     id: 'MOD-C003',

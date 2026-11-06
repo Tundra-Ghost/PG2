@@ -40,6 +40,7 @@ import { smokeCloudDef } from './definitions/smoke-cloud';
 import { catModeDef } from './definitions/cat-mode';
 import { susDef } from './definitions/sus';
 import { ghostsDef } from './definitions/ghosts';
+import { forgiveMeDef } from './definitions/forgive-me';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -78,3 +79,4 @@ modifierRegistry.register(smokeCloudDef);
 modifierRegistry.register(catModeDef);
 modifierRegistry.register(susDef);
 modifierRegistry.register(ghostsDef);
+modifierRegistry.register(forgiveMeDef);

@@ -41,6 +41,7 @@ export { getFakeMoveHints } from './modifiers/definitions/recalculating';
 export { getPigeonHops } from './modifiers/definitions/hatoful-gambit';
 export { getBlindSpot } from './modifiers/definitions/known-unknowns';
 export { getSurveillanceSquare } from './modifiers/definitions/big-beak';
+export { getConfession } from './modifiers/definitions/forgive-me';
 export { getShownNotation, getShownType, getSusPiece } from './modifiers/definitions/sus';
 export { getSmokeSquares } from './modifiers/definitions/smoke-cloud';
 export { getVisibleSquares, isMoveHidden } from './engine/visibility';

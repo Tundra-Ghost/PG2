@@ -36,6 +36,7 @@ export const MODIFIER_IDS = {
   catMode: 'MOD-D006',
   sus: 'MOD-D005',
   ghosts: 'MOD-D002',
+  forgiveMe: 'MOD-C002',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];

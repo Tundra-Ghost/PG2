@@ -267,11 +267,12 @@ Select the King and press the ability button, then click a square on the King's 
 - Changed from v0.2: the line must pass through the King's square. Attacks still cross it.
 
 ### MOD-C002 · Forgive Me, For I Have Moved
-*Ref: Confession Bear* · **Tier A** · Cost 3 · Curse 0 · Bishop · Cooldown 5 · Modes: All · **Design**
+*Ref: Confession Bear* · **Tier A** · Cost 3 · Curse 0 · Bishop · Cooldown 5 · Modes: All · **Built**
 
 Target one enemy piece. For 2 of the opponent's moves, that piece must show its destination one move early. A ghost outline shows where it will go.
 
 - Synergy: fog cards. The confession reveals the target through fog and shows if it is a decoy or Sus.
+- Built: the target is an enemy piece (not the King) on one of the bishop's diagonals. The bishop does not move. For the target side's next 2 turns, the target's first move only declares the square: the turn is spent, an event names the square, and a dashed violet ring marks it. It can then only move to that square. In check it moves freely. Both squares are revealed through fog.
 
 ### MOD-C003 · Did I Do That? (Oops)
 *Ref: Urkel* · **Tier A** · Cost 3 · Curse 0 · Knight · Cooldown 6 · Modes: All · **Built**
@@ -481,7 +482,7 @@ Values the game uses today. "Built" cards match the build.
 | B007 | Conscientious Objector | B | B | -1 | 1 | Owner | Built |
 | B008 | 7/10, Too Many Pieces | B | B | 0 | 0 | Owner | Built |
 | C001 | I Hereby Declare | C | S | 4 | 0 | Owner | Built |
-| C002 | Forgive Me, For I Have Moved | C | A | 3 | 0 | Owner | Design |
+| C002 | Forgive Me, For I Have Moved | C | A | 3 | 0 | Owner | Built |
 | C003 | Did I Do That? | C | A | 3 | 0 | Owner | Built |
 | C004 | Retaliatory Swipe | C | B | 2 | 0 | Owner | Built |
 | C005 | Quiet Quitting | C | S | 5 | 0 | Owner | Built |
@@ -505,7 +506,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 
-37 of 40 built. Scope for Design cards is a proposal.
+38 of 40 built. Scope for Design cards is a proposal.
 
 ### Balance test plan
 
