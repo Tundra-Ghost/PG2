@@ -210,6 +210,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'For the first 5 turns, all your pieces move in the opposite direction to your click. Left becomes right. Forward becomes backward. Legal rules still apply — just inversely. A banner displays "NO, I DON\'T THINK I WILL" at match start.',
     flavor: '"Viktor clicked forward. His pawn went backward, with the energy of someone who has made peace with their decision."',
+    prototypeRules:
+      'For your first 5 moves, your clicks are flipped across the centre of the board: to play e2 to e4 you click d5. Picking up a piece works as normal, and the highlighted squares show where to click. Moves are still normal legal moves.',
   },
   {
     id: 'MOD-B004',

@@ -41,6 +41,7 @@ import { catModeDef } from './definitions/cat-mode';
 import { susDef } from './definitions/sus';
 import { ghostsDef } from './definitions/ghosts';
 import { forgiveMeDef } from './definitions/forgive-me';
+import { noIDontThinkIWillDef } from './definitions/no-i-dont-think-i-will';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -80,3 +81,4 @@ modifierRegistry.register(catModeDef);
 modifierRegistry.register(susDef);
 modifierRegistry.register(ghostsDef);
 modifierRegistry.register(forgiveMeDef);
+modifierRegistry.register(noIDontThinkIWillDef);

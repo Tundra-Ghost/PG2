@@ -195,12 +195,13 @@ At the start of the owner's move, if no piece is held, Gerald the pigeon lands o
 - Balance: likely under-priced. See Curse pricing.
 
 ### MOD-B003 · No, I Don't Think I Will
-*Ref: "No, I don't think I will" meme* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+*Ref: "No, I don't think I will" meme* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
 
 For the owner's first 5 moves, every piece moves in the opposite direction to the click. Forward becomes backward, left becomes right. Moves still have to be legal.
 
 - Synergy: Winter Is Coming. Inverted moves near frozen zones are risky.
 - Open question: what is the "opposite" of a knight jump or a castle? Define before building.
+- Built: clicks are flipped across the centre of the board (e4 ↔ d5), not through the piece. Flipping through the piece would send every opening move off the board, so the owner could not move at all. This works the same for knights and castling. Picking up a piece is not flipped, and the highlights show where to click. An event says when the 5 moves are over. Bots are not affected.
 
 ### MOD-B004 · Heavy Is The Crown (uneasy lies)
 *Ref: "Heavy is the head"* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Built**
@@ -475,7 +476,7 @@ Values the game uses today. "Built" cards match the build.
 | A008 | Bandersnatch Protocol | A | A | 3 | 1 | Shared | Design |
 | B001 | YOU DIED | B | S | -3 | 3 | Owner | Built |
 | B002 | Distracted Piece | B | A | -2 | 2 | Owner | Built |
-| B003 | No, I Don't Think I Will | B | B | -1 | 1 | Owner | Design |
+| B003 | No, I Don't Think I Will | B | B | -1 | 1 | Owner | Built |
 | B004 | Heavy Is The Crown | B | A | -2 | 2 | Owner | Built |
 | B005 | 50 First Moves | B | A | -2 | 2 | Owner | Built |
 | B006 | They Were The Traitor | B | S | -3 | 3 | Owner | Built |
@@ -506,7 +507,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 
-38 of 40 built. Scope for Design cards is a proposal.
+39 of 40 built. Scope for Design cards is a proposal.
 
 ### Balance test plan
 

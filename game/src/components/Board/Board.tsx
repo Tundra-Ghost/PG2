@@ -3,6 +3,8 @@ import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/ga
 import { chessEngine } from '@pigeon-chess/game-core';
 import { buildMove } from '@pigeon-chess/game-core';
 import {
+  flipSquare,
+  flippedMovesLeft,
   getFakeMoveHints,
   getAbilityChoices,
   getAbilityOptions,
@@ -146,14 +148,21 @@ export default function Board({
     ? getAbilityOptions(state, selected)
     : [];
 
+  // MOD-B003: the cursed side clicks the square across the board's centre.
+  const flip = state.status === 'active' && flippedMovesLeft(state, state.turn) > 0;
+  const onScreen = useCallback(
+    (squares: Square[]) => (flip ? squares.map(flipSquare) : squares),
+    [flip],
+  );
+
   const showMovesFor = useCallback(
     (square: Square) => {
       const real = getDisplayLegalMoves(state, square);
       const fakes = getFakeMoveHints(state, square, real);
-      setFakeMoves(fakes);
-      setLegalMoves([...real, ...fakes]);
+      setFakeMoves(onScreen(fakes));
+      setLegalMoves(onScreen([...real, ...fakes]));
     },
-    [state],
+    [onScreen, state],
   );
 
   const toggleAbility = useCallback(
@@ -168,9 +177,9 @@ export default function Board({
       if (!option || option.targets.length === 0) return;
       setAbilityMode(modifierId);
       setFakeMoves([]);
-      setLegalMoves(option.targets);
+      setLegalMoves(onScreen(option.targets));
     },
-    [abilityMode, selected, showMovesFor, state],
+    [abilityMode, onScreen, selected, showMovesFor, state],
   );
   const withTempo = useCallback(
     (move: Move): Move => (extraMode ? { ...move, extraTurn: true } : move),
@@ -279,10 +288,14 @@ export default function Board({
         return;
       }
 
+      // MOD-B003: a highlighted square stands for the square across the centre.
+      const isTarget = legalMoves.includes(square);
+      const to = flip ? flipSquare(square) : square;
+
       // Attempt an armed ability (it may target an own piece, so check first)
-      if (abilityMode && legalMoves.includes(square)) {
-        const move: Move = { from: selected, to: square, playerColor: state.turn, ability: abilityMode };
-        const choices = getAbilityChoices(state, selected, square, abilityMode);
+      if (abilityMode && isTarget) {
+        const move: Move = { from: selected, to, playerColor: state.turn, ability: abilityMode };
+        const choices = getAbilityChoices(state, selected, to, abilityMode);
         if (choices && choices.length > 1) {
           setPendingDrop({ move, choices });
           return;
@@ -290,7 +303,7 @@ export default function Board({
         if (choices?.length === 1) move.dropType = choices[0];
         const validation = chessEngine.validateMove(state, move);
         if (validation.valid) {
-          if (state.pieces.has(square)) playCapture();
+          if (state.pieces.has(to)) playCapture();
           else playMove();
           commitMove(move);
         } else if (validation.reason) {
@@ -302,7 +315,7 @@ export default function Board({
       }
 
       // Re-select own piece
-      if (clickedPiece && clickedPiece.color === state.turn && square !== selected) {
+      if (clickedPiece && clickedPiece.color === state.turn && square !== selected && !(flip && isTarget)) {
         if (shouldForfeitTurnForGerald(clickedPiece, state.turn)) {
           shooGeraldOrWarn();
           return;
@@ -316,7 +329,7 @@ export default function Board({
       }
 
       // Deselect same square
-      if (square === selected) {
+      if (square === selected && !(flip && isTarget)) {
         setSelected(null);
         setLegalMoves([]);
         return;
@@ -331,16 +344,16 @@ export default function Board({
       }
 
       // Attempt move
-      if (legalMoves.includes(square)) {
+      if (isTarget) {
         // Promotion
-        if (chessEngine.isPromotionMove(state, selected, square)) {
+        if (chessEngine.isPromotionMove(state, selected, to)) {
           if (autoQueen) {
             // Skip modal: promote to the best piece the modifiers allow
-            const move = withTempo(buildMove(state, selected, square));
-            move.promotion = getValidPromotionTypes(state, selected, square)[0] ?? 'queen';
+            const move = withTempo(buildMove(state, selected, to));
+            move.promotion = getValidPromotionTypes(state, selected, to)[0] ?? 'queen';
             const validation = chessEngine.validateMove(state, move);
             if (validation.valid) {
-              playSfxForMove(state, selected, square, false);
+              playSfxForMove(state, selected, to, false);
               commitMove(move);
             } else if (validation.reason) {
               onInfo?.(validation.reason);
@@ -348,15 +361,15 @@ export default function Board({
             setSelected(null);
             setLegalMoves([]);
           } else {
-            setPendingPromotion({ from: selected, to: square });
+            setPendingPromotion({ from: selected, to });
           }
           return;
         }
 
-        const move = withTempo(buildMove(state, selected, square));
+        const move = withTempo(buildMove(state, selected, to));
         const validation = chessEngine.validateMove(state, move);
         if (validation.valid) {
-          playSfxForMove(state, selected, square, !!move.isCastle);
+          playSfxForMove(state, selected, to, !!move.isCastle);
           commitMove(move);
         } else if (validation.reason) {
           onInfo?.(validation.reason);
@@ -370,7 +383,7 @@ export default function Board({
       setSelected(null);
       setLegalMoves([]);
     },
-    [abilityMode, autoQueen, commitMove, controlColor, fakeMoves, legalMoves, onInfo, pendingDrop, pendingPromotion, selected, shooGeraldOrWarn, showMovesFor, state, withTempo],
+    [abilityMode, autoQueen, commitMove, controlColor, fakeMoves, flip, legalMoves, onInfo, pendingDrop, pendingPromotion, selected, shooGeraldOrWarn, showMovesFor, state, withTempo],
   );
 
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
