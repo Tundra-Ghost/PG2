@@ -144,7 +144,7 @@ Every 12 rounds gravity pulls sideways, east then west, back and forth. Every pi
 - Changed from v0.2: sideways only. No flip to a new "bottom". Pawns do not re-orient. Kings do not slide.
 
 ### MOD-A008 · Bandersnatch Protocol
-*Ref: Black Mirror* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: Casual, Story · **Design**
+*Ref: Black Mirror* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: Casual, Story · **Built**
 
 The board is split by an invisible axis. A move on one half is mirrored on the other half. Pieces colliding on the axis swap places. Kings are exempt. Both players are affected equally.
 
@@ -153,6 +153,7 @@ The board is split by an invisible axis. A move on one half is mirrored on the o
 - Synergy: I'm Literally Right Here. Mirrored decoys add confusion.
 - Balance flag: needs edge case tests with castling.
 - Open question: which piece mirrors? The design text says "for that piece", which is unclear. Define before building.
+- Built: the mirror twin moves. When a piece moves, the own piece on the mirror of its start square (across the d/e line, same rank) makes the mirrored move if it is legal for it, and it can capture. Kings, castling and abilities never mirror, and a mirrored pawn that reaches the last rank becomes a Queen. Two pieces can never land on the same square, so the swap rule is not needed. A cyan line marks the axis.
 
 ## Category B: Cursed
 
@@ -473,7 +474,7 @@ Values the game uses today. "Built" cards match the build.
 | A005 | The Storm Closes In | A | A | 3 | 1 | Shared | Built |
 | A006 | This Is My Swamp | A | B | 2 | 0 | Shared | Built |
 | A007 | Gravitational Anomaly | A | S | 5 | 2 | Shared | Built |
-| A008 | Bandersnatch Protocol | A | A | 3 | 1 | Shared | Design |
+| A008 | Bandersnatch Protocol | A | A | 3 | 1 | Shared | Built |
 | B001 | YOU DIED | B | S | -3 | 3 | Owner | Built |
 | B002 | Distracted Piece | B | A | -2 | 2 | Owner | Built |
 | B003 | No, I Don't Think I Will | B | B | -1 | 1 | Owner | Built |
@@ -507,7 +508,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 
-39 of 40 built. Scope for Design cards is a proposal.
+40 of 40 built.
 
 ### Balance test plan
 

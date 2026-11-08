@@ -37,6 +37,7 @@ const MARKER_LEGEND: Array<{ modifierId: string } & MarkerLegendEntry> = [
   { modifierId: MODIFIER_IDS.bigBeak, mark: '◉', label: 'Surveillance Square' },
   { modifierId: MODIFIER_IDS.smokeCloud, mark: '☁', label: 'Smoke' },
   { modifierId: MODIFIER_IDS.sus, mark: '?', label: 'Your Sus piece' },
+  { modifierId: MODIFIER_IDS.bandersnatch, mark: '┃', label: 'Mirror line (twins copy moves)' },
   { modifierId: MODIFIER_IDS.noIDontThinkIWill, mark: '⇅', label: 'Your first 5 moves: click across the board' },
   { modifierId: MODIFIER_IDS.forgiveMe, mark: '✝', label: 'Confession and declared square' },
   { modifierId: MODIFIER_IDS.ghosts, mark: '◌', label: 'Your Ghost (faded)' },

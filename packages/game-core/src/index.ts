@@ -41,6 +41,7 @@ export { getFakeMoveHints } from './modifiers/definitions/recalculating';
 export { getPigeonHops } from './modifiers/definitions/hatoful-gambit';
 export { getBlindSpot } from './modifiers/definitions/known-unknowns';
 export { getSurveillanceSquare } from './modifiers/definitions/big-beak';
+export { isBandersnatchActive, mirrorSquare } from './modifiers/definitions/bandersnatch';
 export { flipSquare, flippedMovesLeft, FLIPPED_MOVES } from './modifiers/definitions/no-i-dont-think-i-will';
 export { getConfession } from './modifiers/definitions/forgive-me';
 export { getShownNotation, getShownType, getSusPiece } from './modifiers/definitions/sus';
