@@ -28,7 +28,7 @@
   padding: 1.5rem;
   background: var(--ui-bg-dark);
   border: 1px solid rgb(var(--gold-rgb) / 0.4);
-  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 24px 72px rgba(16, 37, 66, 0.7);
 }
 
 .header,

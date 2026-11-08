@@ -304,7 +304,7 @@ export default function DraftScreen({
   );
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} menu-theme`}>
       <header className={styles.topBar}>
         <div className={styles.topRow}>
           <button

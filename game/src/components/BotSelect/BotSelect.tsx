@@ -37,7 +37,7 @@ export default function BotSelect({
   onModeChange,
 }: BotSelectProps) {
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} menu-theme`}>
       <div className={styles.scroll}>
         <div className={styles.content}>
           <header className={styles.header}>

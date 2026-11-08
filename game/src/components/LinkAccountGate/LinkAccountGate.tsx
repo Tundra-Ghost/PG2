@@ -13,7 +13,7 @@ interface LinkAccountGateProps {
 /** Online play needs an account. Guests see this in place of the lobby. */
 export default function LinkAccountGate({ checking, playerName, onLink, onSignIn, onBack }: LinkAccountGateProps) {
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} menu-theme`}>
       <div className={styles.card}>
         <button
           className={styles.back}

@@ -105,7 +105,7 @@ export default function OnlineMatch({
 
   if (!inGame) {
     return (
-      <div className={styles.root}>
+      <div className={`${styles.root} menu-theme`}>
         <div className={styles.card}>
           <button className={styles.back} onClick={leave}>&lt;- Back</button>
           <h1 className={styles.title}>Play Online</h1>

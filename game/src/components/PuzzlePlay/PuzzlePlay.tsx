@@ -76,7 +76,7 @@ export default function PuzzlePlay({ puzzle, settings, onBack, backLabel = 'Puzz
         : 'Defender to move.';
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} menu-theme`}>
       <header className={styles.header}>
         <button
           type="button"
