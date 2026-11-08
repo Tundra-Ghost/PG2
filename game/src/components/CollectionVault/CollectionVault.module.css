@@ -4,8 +4,8 @@
   padding: clamp(0.8rem, 2vw, 1.4rem);
   color: var(--ui-parchment);
   background:
-    linear-gradient(120deg, rgba(13, 10, 6, 0.94), rgba(24, 25, 24, 0.94)),
-    #0d0a06;
+    linear-gradient(120deg, rgba(242, 245, 249, 0.94), rgba(205, 222, 243, 0.94)),
+    #f2f5f9;
 }
 
 .header {
@@ -90,7 +90,7 @@
 
 .summary div {
   padding: 0.65rem;
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(16, 37, 66, 0.066);
   border: 1px solid rgb(var(--gold-rgb) / 0.1);
 }
 
@@ -207,7 +207,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #0d0a06;
+  color: #f2f5f9;
   background: var(--category-color);
 }
 
@@ -273,7 +273,7 @@
   flex-direction: column;
   background:
     linear-gradient(180deg, rgb(var(--cream-rgb) / 0.045), rgb(var(--cream-rgb) / 0.015)),
-    #14110c;
+    #ebeff3;
   border: 1px solid rgb(var(--gold-rgb) / 0.12);
 }
 

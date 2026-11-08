@@ -403,7 +403,7 @@ export default function Board({
 
   return (
     <>
-      <div className={[styles.frame, markerLegend.length > 0 ? styles.withLegend : '', hasAbilityCards ? styles.withAbilities : ''].filter(Boolean).join(' ')}>
+      <div className={['pc-board', styles.frame, markerLegend.length > 0 ? styles.withLegend : '', hasAbilityCards ? styles.withAbilities : ''].filter(Boolean).join(' ')}>
         {/* Top file labels */}
         {showCoordinates && (
           <div className={styles.coordRowTop}>

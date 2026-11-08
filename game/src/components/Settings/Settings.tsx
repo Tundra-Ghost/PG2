@@ -134,7 +134,7 @@ export default function Settings({ settings: initial, onSave, onBack, account, f
   }
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} menu-theme`}>
       {/* Backdrop — click outside to close */}
       <div
         className={styles.backdrop}

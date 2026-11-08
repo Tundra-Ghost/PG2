@@ -4,7 +4,7 @@
   z-index: 220;
   background:
     radial-gradient(circle at top, rgb(var(--gold-rgb) / 0.12), transparent 32%),
-    linear-gradient(180deg, rgba(18, 13, 8, 0.98), rgba(9, 6, 4, 0.98));
+    linear-gradient(180deg, rgba(229, 237, 247, 0.98), rgba(244, 248, 253, 0.98));
 }
 
 .scroll {
@@ -87,12 +87,12 @@
   align-items: stretch;
   padding: 1rem;
   background:
-    linear-gradient(180deg, rgba(244, 226, 186, 0.96), rgba(203, 160, 94, 0.94));
-  border: 2px solid rgba(84, 48, 18, 0.78);
+    linear-gradient(180deg, rgba(14, 38, 66, 0.96), rgba(49, 118, 197, 0.94));
+  border: 2px solid rgba(171, 202, 237, 0.78);
   border-radius: 24px;
   box-shadow:
-    0 20px 42px rgba(0, 0, 0, 0.26),
-    inset 0 0 0 2px rgba(255, 246, 224, 0.34);
+    0 20px 42px rgba(16, 37, 66, 0.078),
+    inset 0 0 0 2px rgba(12, 32, 55, 0.34);
 }
 
 .avatarShell {
@@ -111,7 +111,7 @@
 
 .avatarImage {
   object-fit: cover;
-  border: 2px solid rgba(84, 48, 18, 0.14);
+  border: 2px solid rgba(171, 202, 237, 0.14);
 }
 
 .avatarPlaceholder {
@@ -120,10 +120,10 @@
   justify-content: center;
   background:
     radial-gradient(circle at 35% 25%, rgb(var(--cream-rgb) / 0.72), transparent 42%),
-    linear-gradient(180deg, rgba(230, 201, 141, 0.9), rgba(176, 128, 71, 0.5));
+    linear-gradient(180deg, rgba(71, 136, 209, 0.9), rgba(39, 94, 157, 0.5));
   font-family: var(--font-display);
   font-size: 3rem;
-  color: rgba(72, 44, 16, 0.82);
+  color: rgba(183, 209, 239, 0.82);
 }
 
 .heroCopy {
@@ -142,7 +142,7 @@
 .heroName {
   font-family: var(--font-display);
   font-size: clamp(1.6rem, 2.6vw, 2.4rem);
-  color: rgba(52, 30, 11, 0.96);
+  color: rgba(206, 222, 241, 0.96);
 }
 
 .heroTitle {
@@ -150,7 +150,7 @@
   font-size: 0.66rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(84, 52, 20, 0.62);
+  color: rgba(171, 201, 235, 0.62);
 }
 
 .heroMeta,
@@ -168,9 +168,9 @@
   font-size: 0.48rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(84, 52, 20, 0.82);
-  background: rgba(255, 248, 229, 0.52);
-  border: 1px solid rgba(84, 52, 20, 0.12);
+  color: rgba(171, 201, 235, 0.82);
+  background: rgba(12, 32, 55, 0.52);
+  border: 1px solid rgba(171, 201, 235, 0.12);
   padding: 0.24rem 0.45rem;
 }
 
@@ -179,7 +179,7 @@
   font-family: var(--font-body);
   font-size: 0.94rem;
   line-height: 1.55;
-  color: rgba(70, 43, 19, 0.78);
+  color: rgba(185, 209, 236, 0.78);
 }
 
 .heroActions {
@@ -200,9 +200,9 @@
 }
 
 .primaryBtn {
-  color: #201104;
-  border: 1px solid rgba(126, 83, 33, 0.8);
-  background: linear-gradient(180deg, #f1ca7f, #d79f47);
+  color: #e3ecf7;
+  border: 1px solid rgba(129, 172, 222, 0.8);
+  background: linear-gradient(180deg, #4788d1, #2f71bc);
 }
 
 .primaryBtn:disabled {
@@ -211,9 +211,9 @@
 }
 
 .secondaryBtn {
-  color: rgba(84, 52, 20, 0.84);
-  border: 1px solid rgba(84, 52, 20, 0.18);
-  background: rgba(255, 249, 234, 0.45);
+  color: rgba(171, 201, 235, 0.84);
+  border: 1px solid rgba(171, 201, 235, 0.18);
+  background: rgba(12, 32, 55, 0.45);
 }
 
 .fileInput {
@@ -238,7 +238,7 @@
 }
 
 .tabActive {
-  color: rgba(18, 12, 6, 0.92);
+  color: rgba(237, 243, 249, 0.92);
   background: rgb(var(--gold-rgb) / 0.82);
   border-color: rgb(var(--gold-rgb) / 0.78);
 }
@@ -271,7 +271,7 @@
 .achievementCard {
   padding: 0.9rem;
   border: 1px solid rgb(var(--gold-rgb) / 0.12);
-  background: rgba(0, 0, 0, 0.16);
+  background: rgba(16, 37, 66, 0.048);
 }
 
 .sectionHead {
@@ -495,7 +495,7 @@
   font-size: 0.78rem;
   letter-spacing: 0.04em;
   color: var(--ui-parchment);
-  background: rgba(0, 0, 0, 0.24);
+  background: rgba(16, 37, 66, 0.072);
   border: 1px solid rgb(var(--gold-rgb) / 0.18);
 }
 

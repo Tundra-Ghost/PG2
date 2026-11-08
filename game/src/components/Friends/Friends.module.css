@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
-  background-color: var(--board-frame);
+  background-color: #e5edf7;
   background-image: radial-gradient(ellipse 90% 80% at 50% 45%, rgb(var(--gold-rgb) / 0.08), transparent 70%);
 }
 
@@ -16,9 +16,9 @@
   flex-direction: column;
   gap: 0.9rem;
   padding: 1.75rem;
-  background: var(--board-dark-sq);
+  background: #ffffff;
   border: 1px solid rgb(var(--gold-rgb) / 0.25);
-  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 24px 52px rgba(16, 37, 66, 0.12);
 }
 
 .wide {

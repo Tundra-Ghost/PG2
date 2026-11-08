@@ -94,3 +94,45 @@ button:focus-visible {
   outline: 2px solid var(--ui-gold);
   outline-offset: 2px;
 }
+
+/* Blue and white theme for menu screens (Settings, Profile, opponent list,
+   draft, Online lobby, Friends, Puzzles, Collection, survey). The shared
+   tokens flip from dark brown and gold to white and blue. The main menu and
+   the match keep the original palette. */
+.menu-theme {
+  --ui-bg:         #112032;
+  --ui-bg-dark:    #e5edf7;
+  --ui-ink:        #e7eef5;
+  --ui-ink-soft:   #d1dbe7;
+  --ui-gold:       #2963a6;
+  --ui-gold-light: #4788d1;
+  --ui-gold-pale:  #0d233c;
+  --ui-parchment:  #112032;
+  --ui-parchment2: #17283b;
+  --board-mid:     #c2d5eb;
+  --ui-cream:      #112032;
+  --gold-rgb:      41 99 166;
+  --parchment-rgb: 17 32 50;
+  --cream-rgb:     17 32 50;
+  --ink-rgb:       231 238 245;
+  color: var(--ui-parchment);
+}
+
+/* A chessboard inside a menu screen (puzzles) keeps the board palette. */
+.menu-theme .pc-board {
+  --ui-bg:         #f2ead8;
+  --ui-bg-dark:    #1a1208;
+  --ui-ink:        #18120a;
+  --ui-ink-soft:   #2e2318;
+  --ui-gold:       #c8973a;
+  --ui-gold-light: #e8c870;
+  --ui-gold-pale:  #f5e8c0;
+  --ui-parchment:  #f2ead8;
+  --ui-parchment2: #e8ddc4;
+  --board-mid:     #3a2818;
+  --ui-cream:      #faf7f0;
+  --gold-rgb:      200 151 58;
+  --parchment-rgb: 242 234 216;
+  --cream-rgb:     250 247 240;
+  --ink-rgb:       24 18 10;
+}

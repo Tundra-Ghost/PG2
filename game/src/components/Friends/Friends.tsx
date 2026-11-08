@@ -26,7 +26,7 @@ export default function Friends({ account, social, onBack, onSignIn, onPlay }: F
 
   if (!account) {
     return (
-      <div className={styles.root}>
+      <div className={`${styles.root} menu-theme`}>
         <div className={styles.card}>
           <button className={styles.back} onClick={onBack}>&lt;- Back</button>
           <h1 className={styles.title}>Friends</h1>

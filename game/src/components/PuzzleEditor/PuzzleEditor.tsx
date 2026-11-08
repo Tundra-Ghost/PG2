@@ -193,7 +193,7 @@ export default function PuzzleEditor({ initial, onSave, onTest, onBack }: Puzzle
         : `Click a square to place a ${tool.color} ${PIECE_NAMES[tool.type]?.toLowerCase()}. Click it again to remove it.`;
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} menu-theme`}>
       <header className={styles.header}>
         <button type="button" className={styles.backButton} onClick={back}>
           Back

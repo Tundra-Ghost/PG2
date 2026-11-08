@@ -145,7 +145,7 @@ export default function CollectionVault({ onBack }: CollectionVaultProps) {
   }, [category, implementedIds, query, status]);
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} menu-theme`}>
       <header className={styles.header}>
         <button
           type="button"

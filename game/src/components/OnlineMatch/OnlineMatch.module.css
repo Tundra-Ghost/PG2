@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
-  background-color: #110d07;
+  background-color: #eef3f8;
   background-image: radial-gradient(ellipse 90% 80% at 50% 45%, rgb(var(--gold-rgb) / 0.08), transparent 70%);
 }
 
@@ -16,9 +16,9 @@
   flex-direction: column;
   gap: 0.9rem;
   padding: 1.75rem;
-  background: var(--board-dark-sq);
+  background: #ffffff;
   border: 1px solid rgb(var(--gold-rgb) / 0.25);
-  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 24px 52px rgba(16, 37, 66, 0.12);
 }
 
 .back {
@@ -128,7 +128,7 @@
   font-size: 1.1rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  background: #110d07;
+  background: #eef3f8;
   color: var(--ui-parchment);
   border: 1px solid rgb(var(--gold-rgb) / 0.35);
 }
@@ -315,7 +315,7 @@
 .modeOn {
   color: var(--ui-gold);
   border-color: var(--ui-gold);
-  background: rgb(0 0 0 / 0.2);
+  background: rgba(16, 37, 66, 0.06);
 }
 
 /* Draft errors float above the draft screen, which has no status bar. */

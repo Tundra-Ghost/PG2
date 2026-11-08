@@ -39,7 +39,7 @@ export default function PostGameSurvey({ context, onClose, onStopAsking }: PostG
   }
 
   return (
-    <div className={styles.backdrop} role="dialog" aria-modal="true" aria-labelledby="survey-title">
+    <div className={`${styles.backdrop} menu-theme`} role="dialog" aria-modal="true" aria-labelledby="survey-title">
       <div className={styles.card}>
         {sent ? (
           <div className={styles.thanks}>

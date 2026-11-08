@@ -4,8 +4,8 @@
   padding: clamp(0.8rem, 2vw, 1.4rem);
   color: var(--ui-parchment);
   background:
-    linear-gradient(120deg, rgba(13, 10, 6, 0.94), rgba(24, 25, 24, 0.94)),
-    #0d0a06;
+    linear-gradient(120deg, rgba(242, 245, 249, 0.94), rgba(205, 222, 243, 0.94)),
+    #f2f5f9;
 }
 
 .header {
@@ -88,7 +88,7 @@
   color: var(--ui-parchment);
   font-family: var(--font-mono);
   font-size: 0.85rem;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(16, 37, 66, 0.09);
   border: 1px solid rgb(var(--gold-rgb) / 0.22);
 }
 
