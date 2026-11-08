@@ -164,6 +164,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'The board is split by an invisible axis. Any move on the left half is simultaneously mirrored on the right for that piece. Pieces colliding on the axis swap positions. Kings are exempt.',
     flavor: '"Viktor moved his bishop left. His bishop also moved right. Viktor is questioning his own free will."',
+    prototypeRules:
+      'A line splits the board between the d and e files. When you move a piece, your piece on the mirror of its start square (c1 and f1 are twins) makes the mirrored move, if that move is legal for it. It can capture. Kings never mirror, and abilities and castling are not mirrored.',
   },
 
   // ── CATEGORY B — CURSED MODIFIERS ──────────────────────────────────────────

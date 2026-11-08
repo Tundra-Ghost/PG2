@@ -1,5 +1,5 @@
 import type { Color, GameState, Piece, PieceType, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getBlindSpot, getConfession, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
+import { getBlindSpot, getConfession, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -53,6 +53,8 @@ export interface SquareView {
   ghost?: boolean;
   /** Forgive Me: 'piece' on the confessing piece, 'target' on its declared square. */
   confession?: 'piece' | 'target';
+  /** Bandersnatch Protocol: the mirror axis runs along this edge of a d-file square. */
+  mirrorEdge?: 'left' | 'right';
 }
 
 export interface BoardViewInput {
@@ -83,6 +85,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const smoke = getSmokeSquares(state);
   const ownSus = viewer ? getSusPiece(state, viewer) : null;
   const confession = getConfession(state);
+  const mirrorEdge = isBandersnatchActive(state) ? (orientation === 'white' ? 'right' : 'left') : null;
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
   const fileOrder = orientation === 'white' ? [...FILES] : [...FILES].reverse();
 
@@ -122,6 +125,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(eye === square ? { surveillance: true } : {}),
         ...(smoke.has(square) ? { smoke: smoke.get(square) } : {}),
         ...(ownSus && real?.id === ownSus.pieceId ? { susAs: ownSus.shownAs } : {}),
+        ...(mirrorEdge && file === 'd' ? { mirrorEdge } : {}),
         ...(confession?.square === square ? { confession: 'piece' as const } : confession?.declared === square ? { confession: 'target' as const } : {}),
         // The opponent sees a Ghost as a normal piece.
         ...(real?.isGhost && (!viewer || real.color === viewer) ? { ghost: true } : {}),

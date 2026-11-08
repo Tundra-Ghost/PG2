@@ -202,6 +202,7 @@ export class BoardScene extends Phaser.Scene {
       if (view.blindSpot) this.drawBlindSpotEdges(index, x, y);
       if (view.smoke) this.drawSmoke(x, y);
       if (view.confession) this.drawConfession(view.confession, cx, cy);
+      if (view.mirrorEdge) this.drawMirrorEdge(view.mirrorEdge === 'right' ? x + CELL : x, y);
       // Drawn over the fog: both players always see the eye.
       if (view.surveillance) this.drawEye(cx, cy);
       if (view.burst) this.playBurst(view, cx, cy);
@@ -510,5 +511,12 @@ export class BoardScene extends Phaser.Scene {
       g.arc(cx, cy, r, a, a + Math.PI / dashes);
       g.strokePath();
     }
+  }
+
+  /** Bandersnatch Protocol: a glowing cyan seam down the middle of the board. */
+  private drawMirrorEdge(x: number, y: number) {
+    const g = this.fogLayer;
+    g.fillStyle(0x5ad8e6, 0.18).fillRect(x - 4, y, 8, CELL);
+    g.lineStyle(2, 0x5ad8e6, 0.9).lineBetween(x, y, x, y + CELL);
   }
 }
