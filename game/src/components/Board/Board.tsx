@@ -48,6 +48,8 @@ interface BoardProps {
   /** Which side sits at the bottom. Black players see the board flipped. */
   orientation?: Color;
   onInfo?: (message: string) => void;
+  /** A short message shown over the top of the board (why a click did nothing, event banners). */
+  notice?: string | null;
   showLegalMoves?: boolean;
   autoQueen?: boolean;
   showCoordinates?: boolean;
@@ -88,6 +90,7 @@ export default function Board({
   controlColor,
   orientation = 'white',
   onInfo,
+  notice = null,
   showLegalMoves = true,
   autoQueen = false,
   showCoordinates = true,
@@ -427,6 +430,9 @@ export default function Board({
 
           {/* Board grid */}
           <div className={styles.board}>
+            {notice && (
+              <div key={notice} className={styles.notice} role="status">{notice}</div>
+            )}
             {recalcKey > 0 && (
               <div key={recalcKey} className={styles.recalcFlash} role="status">RECALCULATING…</div>
             )}

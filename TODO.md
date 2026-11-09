@@ -74,7 +74,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] Fog: bots still see the whole board; online play shows fog from the player's side only once draft works online
 - [x] MOD-E001 Hatoful Gambit (owner's knights become Pigeons; every 5 rounds they announce a square and hop there one move later)
 - [x] MOD-D007 Recalculating… (1-2 fake dots per selection; picking one flashes RECALCULATING… and you pick again)
-- [ ] UX: info messages ("That piece is frozen", ability errors) show in the footer, below the fold on a 1366×768 screen. Show them near the board.
+- [x] UX: info messages ("That piece is frozen", ability errors) show in the footer, below the fold on a 1366×768 screen. Show them near the board. Done: they show over the top of the board.
 - [x] MOD-B004 Heavy Is The Crown (King moves take an order turn first; free in check; abilities now count as moves for skip-turn checks)
 - [x] MOD-E008 Moneyball (captures earn tokens, King's Buy back drops a lost piece; no check, no back-rank pawns)
 - [x] MOD-A001 The Cordyceptic Spread (new Infected tile every 5 rounds, 25% spread per round, sliders lose reach, pawns lose double step, bishop/queen clears)

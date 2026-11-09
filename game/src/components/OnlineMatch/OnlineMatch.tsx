@@ -305,6 +305,7 @@ export default function OnlineMatch({
                   controlColor={myColor}
                   orientation={myColor}
                   onInfo={setInfoMessage}
+                  notice={infoMessage}
                   showLegalMoves={settings.showLegalMoves}
                   autoQueen={settings.autoQueen}
                   showCoordinates={settings.showCoordinates}
@@ -317,7 +318,7 @@ export default function OnlineMatch({
             <GameStatus
               state={state}
               onNewGame={leave}
-              infoMessage={infoMessage ?? (opponentAway ? 'Opponent disconnected.' : null)}
+              infoMessage={opponentAway ? 'Opponent disconnected.' : null}
               actionLabel="Leave Room"
               controls={
                 <MatchControls
