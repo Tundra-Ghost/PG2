@@ -846,6 +846,7 @@ export default function App() {
                   onStateChange={setGameState}
                   controlColor={vsBot ? 'white' : undefined}
                   onInfo={setInfoMessage}
+                  notice={infoMessage}
                   showLegalMoves={settings.showLegalMoves}
                   autoQueen={settings.autoQueen}
                   showCoordinates={settings.showCoordinates}
@@ -872,7 +873,6 @@ export default function App() {
             <GameStatus
               state={gameState}
               onNewGame={handleNewGame}
-              infoMessage={infoMessage}
             />
           </div>
 
