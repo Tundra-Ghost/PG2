@@ -12,18 +12,14 @@
   background-color: #eef3f8;
 }
 
-/* Board grid background — matches MainMenu */
+/* The main menu's city skyline, tinted to match the blue and white menus. */
 .root::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: repeating-conic-gradient(
-    rgb(var(--gold-rgb) / 0.18) 0% 25%,
-    transparent 0% 50%
-  );
-  background-size: 72px 72px;
-  background-position: center center;
-  opacity: 0.30;
+  background: url('../../assets/menu/menu-background.webp') center bottom / cover no-repeat;
+  filter: sepia(0.6) hue-rotate(175deg) saturate(1.2) brightness(1.1);
+  opacity: 0.55;
   pointer-events: none;
 }
 
