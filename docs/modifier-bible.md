@@ -339,7 +339,7 @@ Information is power. These cards restrict, corrupt, or weaponise visibility. Th
 
 Both players see only within 2 squares of their own pieces. The rest is dark. Pigeon pieces are always visible.
 
-- Built: dark squares are drawn as fog. Enemy moves that land in the dark show as "moves in the dark" in the log. Bots still see the whole board for now.
+- Built: dark squares are drawn as fog. Enemy moves that land in the dark show as "moves in the dark" in the log. Bots plan with the same fog, but always know where the enemy King is.
 - Synergy: Forgive Me, For I Have Moved. Reveals the target through fog.
 - Synergy: Vent Tiles. Vents are invisible in fog.
 
@@ -357,14 +357,14 @@ The owner places 2 Ghost Pieces during setup. They look real to the opponent. A 
 
 Every 10 rounds, and on each capture, a 2×2 smoke cloud appears there for 3 rounds. Pieces inside are hidden from the opponent of whoever made the cloud. Movement through smoke is normal.
 
-- Built: a capture cloud covers the capture square (shifted to stay on the board). The timed cloud lands in the middle of the board and belongs to the side that just moved. Both sides see the smoke itself. Bots still see the whole board.
+- Built: a capture cloud covers the capture square (shifted to stay on the board). The timed cloud lands in the middle of the board and belongs to the side that just moved. Both sides see the smoke itself. Bots plan with the same fog, but always know where the enemy King is.
 
 ### MOD-D004 · Known Unknowns (The Rumsfeld)
 *Ref: Rumsfeld press conference* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
 Each player has a 2×2 Blind Spot they cannot see into. Blind Spots differ per player and move every 15 rounds. Players see the outline of their own Blind Spot.
 
-- Built: spots sit in ranks 3-6 and never overlap. Your own pieces inside your spot stay visible. Bots still see the whole board.
+- Built: spots sit in ranks 3-6 and never overlap. Your own pieces inside your spot stay visible. Bots plan with the same fog, but always know where the enemy King is.
 
 ### MOD-D005 · Sus (One Of These Is Lying)
 *Ref: Among Us* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
