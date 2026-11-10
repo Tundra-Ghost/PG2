@@ -429,7 +429,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'Both players can only see within 2 squares of their own pieces. The rest: black. Pigeon pieces are always visible — they have luminescent tail feathers.',
     flavor: '"Viktor can see two squares in any direction. The other sixty-one squares are a philosophical position."',
     prototypeRules:
-      'Each player sees only within 2 squares of their own pieces. The rest of the board is dark, and enemy moves into the dark are not shown in the log. Pigeons are always visible. Bots still see the whole board.',
+      'Each player sees only within 2 squares of their own pieces. The rest of the board is dark, and enemy moves into the dark are not shown in the log. Pigeons are always visible. Bots play with the same fog, but always know where your King is.',
   },
   {
     id: 'MOD-D002',
@@ -459,7 +459,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'Every 10 turns, and on each capture, a 2×2 smoke cloud appears for 3 turns. You see through your own smoke. Opponent does not. Pieces inside the cloud are invisible to them.',
     flavor: '"Something was captured in there. Viktor thinks it was his knight. Viktor is not sure anymore."',
     prototypeRules:
-      'Every 10 rounds, and on each capture, a 2×2 smoke cloud appears for 3 rounds. A capture puts the cloud over the capture square. The side that made the cloud sees through it; the other side does not see pieces inside. Bots still see the whole board.',
+      'Every 10 rounds, and on each capture, a 2×2 smoke cloud appears for 3 rounds. A capture puts the cloud over the capture square. The side that made the cloud sees through it; the other side does not see pieces inside. Bots play with the same fog, but always know where your King is.',
   },
   {
     id: 'MOD-D004',
@@ -474,7 +474,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'Each player has a randomly assigned 2×2 Blind Spot they cannot see even if adjacent. Blind Spots differ per player and shift every 15 turns. Players see their Blind Spot outline but not the contents.',
     flavor: '"Viktor knows there is a 2×2 area he cannot see. Viktor knows that he does not know. Viktor is spiralling."',
     prototypeRules:
-      'Each player has a 2×2 Blind Spot in the middle of the board, marked by a dashed outline. Enemy pieces inside it are hidden, and enemy moves into it are not shown in the log. The two spots never overlap and move every 15 rounds. Bots still see the whole board.',
+      'Each player has a 2×2 Blind Spot in the middle of the board, marked by a dashed outline. Enemy pieces inside it are hidden, and enemy moves into it are not shown in the log. The two spots never overlap and move every 15 rounds. Bots play with the same fog, but always know where your King is.',
   },
   {
     id: 'MOD-D005',

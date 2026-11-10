@@ -2,6 +2,7 @@ import type { Color, GameState, Move } from './types';
 import { chessEngine } from './ChessEngine';
 import { getAbilityOptions, performAbility } from './abilities';
 import { applyMoveInternal, buildMove, cloneState, getValidPromotionTypes } from './gameLoop';
+import { getVisibleSquares } from './visibility';
 
 /**
  * Chick Bot — depth-1 material evaluator.
@@ -53,7 +54,38 @@ export function listBotMoves(state: GameState, color: Color): Move[] {
   return moves;
 }
 
+/**
+ * What `color` can see under fog cards: enemy pieces on hidden squares are
+ * taken off. Kings stay, so check and mate still work. Without fog the
+ * state is returned as is.
+ */
+export function botView(state: GameState, color: Color): GameState {
+  const visible = getVisibleSquares(state, color);
+  if (!visible) return state;
+  const view = cloneState(state);
+  for (const [square, piece] of view.pieces) {
+    if (piece.color !== color && piece.type !== 'king' && !visible.has(square)) view.pieces.delete(square);
+  }
+  return view;
+}
+
+/**
+ * Plans on the fogged view. A plan that the hidden pieces make illegal
+ * (a slide through an unseen piece) falls back to a plan on the real board.
+ */
+function underFog(state: GameState, color: Color, pick: (view: GameState) => Move | null): Move | null {
+  const view = botView(state, color);
+  if (view === state) return pick(state);
+  const move = pick(view);
+  if (move && chessEngine.validateMove(state, move).valid) return move;
+  return pick(state);
+}
+
 export function getChickBotMove(state: GameState, color: Color): Move | null {
+  return underFog(state, color, view => chickMove(view, color));
+}
+
+function chickMove(state: GameState, color: Color): Move | null {
   let bestScore = -Infinity;
   const bestMoves: Move[] = [];
 
@@ -195,6 +227,10 @@ export interface PigeonBotOptions {
  * that finished inside the time budget. One ply always finishes.
  */
 export function getPigeonBotMove(state: GameState, color: Color, options: PigeonBotOptions = {}): Move | null {
+  return underFog(state, color, view => pigeonMove(view, color, options));
+}
+
+function pigeonMove(state: GameState, color: Color, options: PigeonBotOptions): Move | null {
   const { depth = DEFAULT_PIGEON_DEPTH, timeBudgetMs = DEFAULT_TIME_BUDGET_MS, random = Math.random } = options;
   const moves = orderMoves(state, listBotMoves(state, color));
   if (moves.length === 0) return null;

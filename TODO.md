@@ -71,7 +71,8 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] MOD-B003 No, I Don't Think I Will (first 5 moves: clicks flipped across the board centre)
 - [x] MOD-A008 Bandersnatch Protocol (mirror twin copies each move across the d/e line)
 - [x] Event banners name the players instead of white and black
-- [ ] Fog: bots still see the whole board; online play shows fog from the player's side only once draft works online
+- [x] Fog: bots plan on their own fogged view (they still know where the enemy King is)
+- [ ] Fog: online play shows fog from the player's side only once draft works online
 - [x] MOD-E001 Hatoful Gambit (owner's knights become Pigeons; every 5 rounds they announce a square and hop there one move later)
 - [x] MOD-D007 Recalculating… (1-2 fake dots per selection; picking one flashes RECALCULATING… and you pick again)
 - [x] UX: info messages ("That piece is frozen", ability errors) show in the footer, below the fold on a 1366×768 screen. Show them near the board. Done: they show over the top of the board.
