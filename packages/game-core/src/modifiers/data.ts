@@ -75,7 +75,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'Four tiles are Lava. Any piece landing on Lava is immediately captured — including your own. Every 10 turns, each Lava tile rotates clockwise one square. Next position is shown as an amber outline one turn in advance.',
     flavor: '"The floor is lava. Viktor\'s knight is on the floor. Viktor is processing this."',
     prototypeRules:
-      'Lava moves every 3 moves, counting both players. There is no preview of the next spot yet. Kings are immune.',
+      'Lava moves every 3 moves, counting both players. The next 4 spots show a dashed amber outline. Kings are immune.',
   },
   {
     id: 'MOD-A003',
