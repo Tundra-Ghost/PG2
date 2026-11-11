@@ -178,7 +178,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] Bible D006: only offer Cat Mode once It's Dark And I'm Scared is drafted
 - [ ] TDD 4: move bot tie-breaks and runRandomDraft to the seeded PRNG
 - [ ] Bible balance test plan: bot-vs-bot win-rate harness per modifier
-- [ ] Lava: amber preview of the next spots (Bible A002)
+- [x] Lava: amber preview of the next spots (Bible A002)
 
 ## Priority 5: Product Hygiene
 

@@ -201,6 +201,7 @@ export class BoardScene extends Phaser.Scene {
       }
       if (view.blindSpot) this.drawBlindSpotEdges(index, x, y);
       if (view.smoke) this.drawSmoke(x, y);
+      if (view.lavaNext) this.drawLavaNext(x, y);
       if (view.confession) this.drawConfession(view.confession, cx, cy);
       if (view.mirrorEdge) this.drawMirrorEdge(view.mirrorEdge === 'right' ? x + CELL : x, y);
       // Drawn over the fog: both players always see the eye.
@@ -474,6 +475,28 @@ export class BoardScene extends Phaser.Scene {
     if (!inSpot(index + 8)) dashed(x, y + CELL - 1.5, x + CELL, y + CELL - 1.5);
     if (col === 0 || !inSpot(index - 1)) dashed(x + 1.5, y, x + 1.5, y + CELL);
     if (col === 7 || !inSpot(index + 1)) dashed(x + CELL - 1.5, y, x + CELL - 1.5, y + CELL);
+  }
+
+  /** The Floor Is Lava: a dashed amber square where lava goes next. */
+  private drawLavaNext(x: number, y: number) {
+    const g = this.tileLayer;
+    const inset = CELL * 0.12;
+    const size = CELL - inset * 2;
+    g.fillStyle(0xff7a1a, 0.18).fillRect(x + inset, y + inset, size, size);
+    g.lineStyle(3, 0xe8660c, 0.95);
+    const steps = 5;
+    const side = (x1: number, y1: number, x2: number, y2: number) => {
+      for (let i = 0; i < steps; i++) {
+        const t0 = i / steps;
+        const t1 = (i + 0.55) / steps;
+        g.lineBetween(x1 + (x2 - x1) * t0, y1 + (y2 - y1) * t0, x1 + (x2 - x1) * t1, y1 + (y2 - y1) * t1);
+      }
+    };
+    const l = x + inset, t = y + inset, r = x + inset + size, b = y + inset + size;
+    side(l, t, r, t);
+    side(r, t, r, b);
+    side(r, b, l, b);
+    side(l, b, l, t);
   }
 
   /** Big Beak Is Watching: a golden eye on the Surveillance Square. */

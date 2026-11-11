@@ -1,5 +1,5 @@
 import type { Color, GameState, Piece, PieceType, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getBlindSpot, getConfession, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
+import { getBlindSpot, getConfession, getLavaPreview, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -53,6 +53,8 @@ export interface SquareView {
   ghost?: boolean;
   /** Forgive Me: 'piece' on the confessing piece, 'target' on its declared square. */
   confession?: 'piece' | 'target';
+  /** The Floor Is Lava: lava moves here at the next rotation. */
+  lavaNext?: boolean;
   /** Bandersnatch Protocol: the mirror axis runs along this edge of a d-file square. */
   mirrorEdge?: 'left' | 'right';
 }
@@ -83,6 +85,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const blindSpot = new Set(viewer ? getBlindSpot(state, viewer) : []);
   const eye = getSurveillanceSquare(state);
   const smoke = getSmokeSquares(state);
+  const lavaNext = new Set(getLavaPreview(state));
   const ownSus = viewer ? getSusPiece(state, viewer) : null;
   const confession = getConfession(state);
   const mirrorEdge = isBandersnatchActive(state) ? (orientation === 'white' ? 'right' : 'left') : null;
@@ -124,6 +127,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(blindSpot.has(square) ? { blindSpot: true } : {}),
         ...(eye === square ? { surveillance: true } : {}),
         ...(smoke.has(square) ? { smoke: smoke.get(square) } : {}),
+        ...(lavaNext.has(square) ? { lavaNext: true } : {}),
         ...(ownSus && real?.id === ownSus.pieceId ? { susAs: ownSus.shownAs } : {}),
         ...(mirrorEdge && file === 'd' ? { mirrorEdge } : {}),
         ...(confession?.square === square ? { confession: 'piece' as const } : confession?.declared === square ? { confession: 'target' as const } : {}),

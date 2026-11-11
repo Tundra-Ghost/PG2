@@ -77,7 +77,7 @@ Every 5 rounds, one random empty tile becomes Infected. A piece standing on an I
 ### MOD-A002 · The Floor Is Lava
 *Ref: "The floor is lava" meme* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
-Four tiles are Lava. A piece that lands on Lava is lost, either colour. Kings are immune. Lava moves every 3 moves (counting both players). There is no preview of the next spot yet. When a piece burns, its square flashes.
+Four tiles are Lava. A piece that lands on Lava is lost, either colour. Kings are immune. Lava moves every 3 moves (counting both players). The next 4 spots are shown with a dashed amber outline. If a piece stands on a shown spot when lava moves, that spot is swapped for a random empty square. When a piece burns, its square flashes.
 
 *Everyone knows the floor is lava. Nobody is handling it well.*
 
