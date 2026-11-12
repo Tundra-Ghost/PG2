@@ -17,3 +17,24 @@ export function prngPickIndex(state: number, length: number): [number, number] {
   const [f, next] = prngStep(state);
   return [Math.floor(f * length), next];
 }
+
+/**
+ * A `() => number` source in [0,1) driven by Mulberry32 from `seed`, for
+ * code that takes a random function (bot tie-breaks, the random draft).
+ */
+export function seededRandom(seed: number): () => number {
+  let state = seed | 0;
+  return () => {
+    const [f, next] = prngStep(state);
+    state = next;
+    return f;
+  };
+}
+
+/**
+ * A bot's random source for one position: the game seed and PRNG state
+ * mixed with the ply, so a replay of the same game gets the same bot moves.
+ */
+export function botRandom(state: { prngSeed: number; prngState: number; moveHistory: unknown[] }): () => number {
+  return seededRandom(Math.imul(state.prngSeed, 0x85ebca6b) ^ state.prngState ^ Math.imul(state.moveHistory.length + 1, 0x9e3779b1));
+}

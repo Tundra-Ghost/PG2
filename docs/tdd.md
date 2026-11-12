@@ -198,7 +198,7 @@ The card in `data.ts` is what the draft and UI read. It also carries `prototypeR
 
 All modifier randomness uses the seeded PRNG (`engine/prng.ts`, `prngState` on `GameState`).
 
-**Known debt:** the bots and the random draft still use `Math.random`. Bot tie-breaks and `runRandomDraft` should move to the game PRNG before replays ship.
+Bots break ties with `botRandom(state)`, seeded from `prngSeed`, `prngState` and the ply, so the same game gives the same bot moves. The draft screen runs bot picks and `runRandomDraft` from one `seededRandom` source per draft.
 
 ## 5. Real-time layer
 
@@ -270,7 +270,7 @@ Every match should be stored as a seed plus an ordered event list. Feeding the e
 Event types: `MOVE`, `ABILITY_USED`, `MODIFIER_TRIGGER`, `PIECE_DEFECTED`, `GERALD_LANDS`, `STORM_SHRINKS`, `VENT_TRIGGERED`, `PROMOTION`, `TURN_SKIPPED`, `DRAW_OFFER`, `RESIGN`, `GAME_END`.
 
 **Determinism rules**
-- All randomness from the seeded PRNG (see the known debt in section 4).
+- All randomness from the seeded PRNG (section 4).
 - Modifiers read only `GameState` and the event. No clock or network reads.
 - Replays must match the original game exactly at every move.
 
@@ -350,7 +350,7 @@ The original build order put the engine and multiplayer before modifiers. In pra
 
 ### Next
 
-1. Move bot and random-draft randomness to the seeded PRNG
+1. ~~Move bot and random-draft randomness to the seeded PRNG~~ (done)
 2. Balance test harness: bot-vs-bot runs per modifier, logged win rates
 3. Phaser board renderer (section 1.1)
 4. Per-player visibility in game-core, then the fog cards

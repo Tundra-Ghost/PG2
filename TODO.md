@@ -176,7 +176,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] Art guide 14: wire the made modifier sounds (lava, Gerald, freeze, cannon, storm, vent, traitor, gong)
 - [ ] Art guide 9/13: reduced-motion setting and screen reader labels for event banners
 - [x] Bible D006: only offer Cat Mode once It's Dark And I'm Scared is drafted
-- [ ] TDD 4: move bot tie-breaks and runRandomDraft to the seeded PRNG
+- [x] TDD 4: move bot tie-breaks and runRandomDraft to the seeded PRNG
 - [ ] Bible balance test plan: bot-vs-bot win-rate harness per modifier
 - [x] Lava: amber preview of the next spots (Bible A002)
 
