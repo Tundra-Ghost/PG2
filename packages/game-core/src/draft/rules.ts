@@ -53,9 +53,10 @@ export function getValidOptions(
   });
 }
 
-export function pickRandomCard(cards: ModifierCard[]): ModifierCard | null {
+/** `random` should come from `seededRandom` so the draft can be replayed. */
+export function pickRandomCard(cards: ModifierCard[], random: () => number): ModifierCard | null {
   if (cards.length === 0) return null;
-  return cards[Math.floor(Math.random() * cards.length)] ?? null;
+  return cards[Math.floor(random() * cards.length)] ?? null;
 }
 
 /**
@@ -66,7 +67,7 @@ export function runRandomDraft(
   playerIds: string[],
   botIds: string[],
   implementedIds: Set<string>,
-  random: () => number = Math.random,
+  random: () => number,
 ): { playerIds: string[]; botIds: string[] } {
   let player = [...playerIds];
   let bot = [...botIds];

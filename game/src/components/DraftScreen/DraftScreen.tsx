@@ -6,7 +6,7 @@ import {
   type ModifierCard,
   type ModifierCategory,
 } from '@pigeon-chess/game-core';
-import { modifierRegistry } from '@pigeon-chess/game-core';
+import { modifierRegistry, seededRandom } from '@pigeon-chess/game-core';
 import { isSharedDraftModifier } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './DraftScreen.module.css';
@@ -88,6 +88,8 @@ export default function DraftScreen({
 }: DraftScreenProps) {
   const [localPlayerIds, setPlayerSelectedIds] = useState<string[]>([]);
   const [localBotIds, setBotSelectedIds] = useState<string[]>(opponentModifierIds);
+  // One seeded source per draft, so bot picks and the random draft are replayable.
+  const [draftRandom] = useState(() => seededRandom(Date.now() | 0));
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('ALL');
   const [hideUnavailable, setHideUnavailable] = useState(true);
@@ -132,7 +134,7 @@ export default function DraftScreen({
     if (online || practice || draftTurn !== 'opponent') return;
 
     const timer = setTimeout(() => {
-      const botPick = pickRandomCard(botValidOptions);
+      const botPick = pickRandomCard(botValidOptions, draftRandom);
       const nextBotIds = botPick ? [...botSelectedIds, botPick.id] : botSelectedIds;
       if (botPick) {
         setBotSelectedIds(nextBotIds);
@@ -218,7 +220,7 @@ export default function DraftScreen({
   function handleRandomDraft() {
     if (draftTurn !== 'player' || playerSelectedIds.length > 0) return;
     playClick();
-    const result = runRandomDraft(playerSelectedIds, botSelectedIds, implementedIds);
+    const result = runRandomDraft(playerSelectedIds, botSelectedIds, implementedIds, draftRandom);
     setPlayerSelectedIds(result.playerIds);
     setBotSelectedIds(result.botIds);
     setRandomLocked(true);

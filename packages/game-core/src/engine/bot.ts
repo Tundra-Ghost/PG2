@@ -3,11 +3,12 @@ import { chessEngine } from './ChessEngine';
 import { getAbilityOptions, performAbility } from './abilities';
 import { applyMoveInternal, buildMove, cloneState, getValidPromotionTypes } from './gameLoop';
 import { getVisibleSquares } from './visibility';
+import { botRandom } from './prng';
 
 /**
  * Chick Bot — depth-1 material evaluator.
  * Tries every legal move, picks the one that maximises material score for `color`.
- * Ties are broken randomly (Math.random — bot evaluation doesn't need PRNG determinism).
+ * Ties are broken by the game PRNG, so replays get the same bot moves.
  */
 
 const PIECE_VALUE: Record<string, number> = {
@@ -81,11 +82,11 @@ function underFog(state: GameState, color: Color, pick: (view: GameState) => Mov
   return pick(state);
 }
 
-export function getChickBotMove(state: GameState, color: Color): Move | null {
-  return underFog(state, color, view => chickMove(view, color));
+export function getChickBotMove(state: GameState, color: Color, random: () => number = botRandom(state)): Move | null {
+  return underFog(state, color, view => chickMove(view, color, random));
 }
 
-function chickMove(state: GameState, color: Color): Move | null {
+function chickMove(state: GameState, color: Color, random: () => number): Move | null {
   let bestScore = -Infinity;
   const bestMoves: Move[] = [];
 
@@ -107,7 +108,7 @@ function chickMove(state: GameState, color: Color): Move | null {
   }
 
   if (bestMoves.length === 0) return null;
-  return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+  return bestMoves[Math.floor(random() * bestMoves.length)];
 }
 
 /**
@@ -219,6 +220,7 @@ export interface PigeonBotOptions {
   depth?: number;
   /** Stop deepening after this long, so slow phones never freeze the table. */
   timeBudgetMs?: number;
+  /** Tie-break source. Defaults to the game PRNG for this position. */
   random?: () => number;
 }
 
@@ -227,11 +229,12 @@ export interface PigeonBotOptions {
  * that finished inside the time budget. One ply always finishes.
  */
 export function getPigeonBotMove(state: GameState, color: Color, options: PigeonBotOptions = {}): Move | null {
-  return underFog(state, color, view => pigeonMove(view, color, options));
+  const random = options.random ?? botRandom(state);
+  return underFog(state, color, view => pigeonMove(view, color, { ...options, random }));
 }
 
 function pigeonMove(state: GameState, color: Color, options: PigeonBotOptions): Move | null {
-  const { depth = DEFAULT_PIGEON_DEPTH, timeBudgetMs = DEFAULT_TIME_BUDGET_MS, random = Math.random } = options;
+  const { depth = DEFAULT_PIGEON_DEPTH, timeBudgetMs = DEFAULT_TIME_BUDGET_MS, random = botRandom(state) } = options;
   const moves = orderMoves(state, listBotMoves(state, color));
   if (moves.length === 0) return null;
   const deadline = Date.now() + timeBudgetMs;

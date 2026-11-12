@@ -25,7 +25,7 @@ export { getChickBotMove, getPigeonBotMove } from './engine/bot';
 export { getAbilityChoices, getAbilityOptions } from './engine/abilities';
 export type { AbilityOption } from './engine/abilities';
 export { drawByAgreement, getWinner, resign } from './engine/result';
-export { prngPickIndex, prngStep } from './engine/prng';
+export { botRandom, prngPickIndex, prngStep, seededRandom } from './engine/prng';
 
 export type { AbilityResult, AbilitySpec, ModifierDefinition, PreMoveApplyResult, PreMoveResult } from './modifiers/types';
 export { ModifierRegistry, modifierRegistry } from './modifiers/registry';
