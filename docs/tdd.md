@@ -351,7 +351,7 @@ The original build order put the engine and multiplayer before modifiers. In pra
 ### Next
 
 1. ~~Move bot and random-draft randomness to the seeded PRNG~~ (done)
-2. Balance test harness: bot-vs-bot runs per modifier, logged win rates
+2. ~~Balance test harness: bot-vs-bot runs per modifier, logged win rates~~ (done, see `docs/balance-report.md`)
 3. Phaser board renderer (section 1.1)
 4. Per-player visibility in game-core, then the fog cards
 5. Replay log and viewer

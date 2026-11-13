@@ -12,7 +12,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "balance": "vitest run --config vitest.balance.config.ts"
   },
   "dependencies": {
     "uuid": "^9.0.1"
