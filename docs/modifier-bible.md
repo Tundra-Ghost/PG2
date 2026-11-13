@@ -519,6 +519,8 @@ Rule 07 needs win-rate data, but there are no live players yet. Until there are:
 3. Log the win rate of the side with the card. Flag any card outside 40% to 60%.
 4. Also log skipped turns and draws, to catch softlock risks (Rule 06).
 
+The harness is built: `pnpm --filter @pigeon-chess/game-core balance` plays the games and writes `docs/balance-report.md`. It uses Pigeon at depth 1 so a full run finishes in minutes. Settings are environment variables (see `packages/game-core/scripts/balance.run.ts`).
+
 ### Known balance watch list
 
 - **Distracted Piece:** likely under-priced (see Curse pricing).
