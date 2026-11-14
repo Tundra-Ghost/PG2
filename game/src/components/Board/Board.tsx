@@ -70,6 +70,15 @@ function getDisplayLegalMoves(state: GameState, from: Square): Square[] {
   });
 }
 
+/** Plain-chess refusals. Only a card's own reason is worth showing on select. */
+const ENGINE_REASONS = new Set([
+  'leaves king in check',
+  'illegal move for piece type',
+  'cannot castle while in check',
+  'cannot castle through check',
+  'blocked by modifier',
+]);
+
 function playSfxForMove(state: GameState, from: Square, to: Square, isCastle: boolean) {
   if (isCastle) {
     playCastle();
@@ -159,16 +168,17 @@ export default function Board({
   );
 
   const showMovesFor = useCallback(
-    (square: Square) => {
+    (square: Square, explain = true) => {
       const real = getDisplayLegalMoves(state, square);
-      // A card can leave a piece with no moves (Peer Pressure, Commitment Issues). Say why.
-      if (real.length === 0) {
+      const fakes = getFakeMoveHints(state, square, real);
+      // A card can leave a piece with no moves (such as Peer Pressure). Say why,
+      // unless Recalculating is drawing fake dots that the message would give away.
+      if (explain && real.length === 0 && fakes.length === 0) {
         const blocked = chessEngine.getLegalMoves(state, square)
           .map(to => chessEngine.validateMove(state, buildMove(state, square, to)).reason)
-          .find(reason => reason && reason !== 'leaves king in check');
+          .find(reason => reason && !ENGINE_REASONS.has(reason));
         if (blocked) onInfo?.(blocked);
       }
-      const fakes = getFakeMoveHints(state, square, real);
       setFakeMoves(onScreen(fakes));
       setLegalMoves(onScreen([...real, ...fakes]));
     },
@@ -180,7 +190,7 @@ export default function Board({
       if (!selected) return;
       if (abilityMode === modifierId) {
         setAbilityMode(null);
-        showMovesFor(selected);
+        showMovesFor(selected, false);
         return;
       }
       const option = getAbilityOptions(state, selected).find(o => o.modifierId === modifierId);
@@ -286,14 +296,15 @@ export default function Board({
             shooGeraldOrWarn();
             return;
           }
-          if ((clickedPiece.cooldowns[WINTER_ID] ?? 0) > 0) {
+          const frozen = (clickedPiece.cooldowns[WINTER_ID] ?? 0) > 0;
+          if (frozen) {
             onInfo?.('That piece is frozen this turn.');
           }
           if (clickedPiece.isPacifist) {
             onInfo?.('This piece refuses to capture.');
           }
           setSelected(square);
-          showMovesFor(square);
+          showMovesFor(square, !frozen && !clickedPiece.isPacifist);
         }
         return;
       }
@@ -334,7 +345,7 @@ export default function Board({
           onInfo?.('This piece refuses to capture.');
         }
         setSelected(square);
-        showMovesFor(square);
+        showMovesFor(square, !clickedPiece.isPacifist);
         return;
       }
 

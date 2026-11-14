@@ -497,6 +497,8 @@ If one of your pawns can capture, you must make a pawn capture. Your opponent ca
 - Built: while a pawn capture is forced, abilities, Moneyball drops and shooing Gerald are not allowed either. Selecting another piece shows why it cannot move.
 - Ruling: in check, any legal move is allowed.
 - Ruling: never a softlock. The card only binds you when a legal pawn capture exists, so you always have a move.
+- Ruling: pawn abilities do not count as the capture. Retaliatory Swipe and I've Been Waiting For This are blocked while a normal pawn capture is forced.
+- Ruling: under fog, only captures onto squares you can see force you, so the card never gives away a hidden piece.
 - Synergy: Conscientious Objector. The pacifist pawn is exempt and very smug about it.
 
 ### MOD-B020 · Roll For Initiative

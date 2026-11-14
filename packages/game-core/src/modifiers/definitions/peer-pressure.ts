@@ -3,6 +3,7 @@ import type { Color, GameState, Move, Square } from '../../engine/types';
 import { buildMove, getValidPromotionTypes, isPromotionMove } from '../../engine/gameLoop';
 import { getLegalMovesForPiece, isInCheck } from '../../engine/moveGenerator';
 import { validateMove } from '../../engine/moveValidator';
+import { getVisibleSquares } from '../../engine/visibility';
 import { MODIFIER_IDS } from '../ids';
 import { affectsColor } from '../owner';
 
@@ -19,14 +20,18 @@ function isPawnCapture(state: GameState, move: Move): boolean {
 /**
  * Every pawn capture `color` may play now, after every other card and the
  * self-check rule have had their say. Pawn captures always pass this card's
- * own check, so asking validateMove here cannot loop.
+ * own check, so asking validateMove here cannot loop. Under fog, only
+ * captures onto squares `color` can see count, so the card never gives
+ * away a hidden piece.
  */
 export function getForcedPawnCaptures(state: GameState, color: Color): Array<{ from: Square; to: Square }> {
   const captures: Array<{ from: Square; to: Square }> = [];
+  const visible = getVisibleSquares(state, color);
   for (const piece of state.pieces.values()) {
     if (piece.color !== color || piece.type !== 'pawn') continue;
     for (const to of getLegalMovesForPiece(state, piece)) {
       if (to[0] === piece.square[0]) continue;
+      if (visible && !visible.has(to)) continue;
       const legal = isPromotionMove(state, piece.square, to)
         ? getValidPromotionTypes(state, piece.square, to).length > 0
         : validateMove(state, { ...buildMove(state, piece.square, to), playerColor: color }).valid;
