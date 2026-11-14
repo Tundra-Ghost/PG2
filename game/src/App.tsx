@@ -6,6 +6,8 @@ import type { BotId } from './opponents';
 import { unlockBgm, playClick, playGameBgm, playMenuBgm } from './sound';
 import type { AppSettings } from './settings';
 import { applySettings, loadSettings, saveSettings } from './settings';
+import LeaveMatchDialog from './components/LeaveMatchDialog/LeaveMatchDialog';
+import { shouldAskBeforeLeaving } from './leaveMatch';
 import { useAccount } from './online/useAccount';
 import { useSocial } from './online/useSocial';
 import { MatchDrawerBar, MatchTicker, useMatchDrawer } from './components/MatchDrawer/MatchDrawer';
@@ -153,6 +155,13 @@ export default function App() {
   prevScreenRef.current = prevScreen;
   const abandonRef = useRef(commitAbandonmentIfNeeded);
   abandonRef.current = commitAbandonmentIfNeeded;
+  /** Which way out of a match is waiting on "Leave this match?". */
+  const [leaveAsk, setLeaveAsk] = useState<'menu' | 'new' | 'back' | null>(null);
+  /** Set while a confirmed Back is stepping through history, so it is not asked twice. */
+  const leaveConfirmed = useRef(false);
+  const closeLeaveAsk = useCallback(() => setLeaveAsk(null), []);
+  const askLeaveRef = useRef(askLeave);
+  askLeaveRef.current = askLeave;
   const selectedBotRef = useRef(selectedBot);
   selectedBotRef.current = selectedBot;
 
@@ -175,6 +184,13 @@ export default function App() {
       // Settings is an overlay: what matters is the screen under it.
       const current = shown === 'settings' ? prevScreenRef.current : shown;
       let next = screenFromPath(window.location.pathname, BASE);
+      // Back out of a match that would count as a loss asks first. The match
+      // address goes back on the stack so the board stays put while it asks.
+      if (current === 'game' && next !== 'game' && !leaveConfirmed.current && askLeaveRef.current('back')) {
+        window.history.pushState(null, '', pathFor('game', BASE));
+        return;
+      }
+      leaveConfirmed.current = false;
       // Leaving a match by Back counts the same as the Menu button.
       if (current === 'game' && next !== 'game') abandonRef.current();
       // A finished or left match, or a draft with no opponent, can't be reopened.
@@ -377,6 +393,33 @@ export default function App() {
     />
   ) : null;
 
+  /**
+   * Shows "Leave this match?" when leaving now would record a loss and the
+   * player wants a confirm step. Returns true when it is asking.
+   */
+  function askLeave(way: 'menu' | 'new' | 'back'): boolean {
+    const ask = shouldAskBeforeLeaving({
+      confirmResign: settings.confirmResign,
+      hasProfile: Boolean(profile),
+      state: gameState,
+      recordedIds: recordedCompletionIds.current,
+    });
+    if (!ask) return false;
+    setLeaveAsk(way);
+    return true;
+  }
+
+  function confirmLeave() {
+    const way = leaveAsk;
+    setLeaveAsk(null);
+    if (way === 'menu') leaveToMenu();
+    else if (way === 'new') startNewGame();
+    else if (way === 'back') {
+      leaveConfirmed.current = true;
+      window.history.back();
+    }
+  }
+
   function commitAbandonmentIfNeeded() {
     if (!profile) return;
     if (gameState.status !== 'active') return;
@@ -516,6 +559,11 @@ export default function App() {
 
   function handleNewGame() {
     playClick();
+    if (askLeave('new')) return;
+    startNewGame();
+  }
+
+  function startNewGame() {
     commitAbandonmentIfNeeded();
     // A modifier match starts over at the draft against the same bot, so the
     // next game has modifiers too. Standard chess just resets the board.
@@ -560,6 +608,11 @@ export default function App() {
 
   function handleBackToMenu() {
     playClick();
+    if (screen === 'game' && askLeave('menu')) return;
+    leaveToMenu();
+  }
+
+  function leaveToMenu() {
     if (screen === 'game') commitAbandonmentIfNeeded();
     setScreen('menu');
   }
@@ -923,6 +976,7 @@ export default function App() {
           <DialogueStage entry={pendingDialogue} onDismiss={handleDialogueDismiss} raised={drawer.open} />
         </section>
       </main>
+      {leaveAsk && <LeaveMatchDialog onLeave={() => { playClick(); confirmLeave(); }} onStay={closeLeaveAsk} />}
 
       {settingsOverlay}
       {surveyOverlay}
