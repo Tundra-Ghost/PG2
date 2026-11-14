@@ -1005,6 +1005,8 @@ Your pawns can also step one square sideways onto an empty square. They still ca
 - Ruling: a sideways step is not a double step and gives no en passant.
 - Ruling: a sideways step onto the en passant square is a plain step. It never takes en passant.
 - Ruling: a sideways step may not leave your King in check. It may block a check.
+- Ruling: with I've Been Waiting For This, a banked en passant ends once either pawn moves, even sideways and back.
+- Ruling: the move list writes a sideways step with its start square, like d4-e4.
 - Ruling: a sideways step never promotes, even next to the Storm or a closed square.
 - Ruling: a pawn that steps sideways along its start rank may still make its two-square first move.
 - Ruling: a sideways step can be undone, so it does not reset the 50-move count. Back-and-forth steps end in a repetition draw (Rule 06).

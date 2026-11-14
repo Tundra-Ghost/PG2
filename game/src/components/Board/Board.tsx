@@ -75,7 +75,9 @@ function playSfxForMove(state: GameState, from: Square, to: Square, isCastle: bo
     playCastle();
     return;
   }
-  if (state.pieces.has(to) || state.flags.enPassantSquare === to) {
+  // A sideways pawn step (MOD-E014) onto the en passant square is not a capture.
+  const enPassant = state.flags.enPassantSquare === to && from[1] !== to[1];
+  if (state.pieces.has(to) || enPassant) {
     playCapture();
     return;
   }

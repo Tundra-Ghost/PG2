@@ -84,6 +84,20 @@ export const bankedEnPassantDef: ModifierDefinition = {
   },
 
   onPostMove(state, move) {
+    // A bank ends as soon as either pawn moves, even back to the same square
+    // (MOD-E014 sideways steps).
+    const mover = state.pieces.get(move.to);
+    if (mover) {
+      const current = banks(state);
+      const stale = Object.keys(current).filter(id => id === mover.id || current[id].victimId === mover.id);
+      if (stale.length > 0) {
+        const kept = { ...current };
+        for (const id of stale) delete kept[id];
+        const next = cloneState(state);
+        next.modifierState[ID] = kept;
+        state = next;
+      }
+    }
     if (move.ability) return state;
     const moved = state.pieces.get(move.to);
     if (moved?.type !== 'pawn' || Math.abs(Number(move.to[1]) - Number(move.from[1])) !== 2) return state;

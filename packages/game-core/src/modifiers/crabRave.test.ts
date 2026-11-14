@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { chessEngine } from '../engine/ChessEngine';
+import { getAbilityOptions } from '../engine/abilities';
 import { buildMove } from '../engine/gameLoop';
 import { getLegalMovesForPiece } from '../engine/moveGenerator';
 import type { GameState, Piece, Square } from '../engine/types';
@@ -75,6 +76,45 @@ describe('MOD-E014 Crab Rave', () => {
     state = chessEngine.applyMove(state, move('d2', 'e2', 'white'));
     state = chessEngine.applyMove(state, move('h8', 'g8', 'black'));
     expect(movesFrom(state, 'e2')).toEqual(['d2', 'e3', 'e4', 'f2']);
+  });
+
+  it('writes a sideways step with its start square', () => {
+    let state = withCrab([makePiece('pawn', 'white', 'd4')]);
+    state = chessEngine.applyMove(state, move('d4', 'e4', 'white'));
+    expect(state.moveHistory[0].notation).toBe('d4-e4');
+  });
+
+  it('a banked en passant ends when either pawn steps sideways', () => {
+    let state = withCrab([makePiece('pawn', 'white', 'e5'), makePiece('pawn', 'black', 'd7'), makePiece('pawn', 'black', 'a7')]);
+    state = chessEngine.activateDraftModifiers(state, [
+      { id: CRAB, sourceColor: 'black' },
+      { id: MODIFIER_IDS.bankedEnPassant, sourceColor: 'white' },
+    ]);
+    state.turn = 'black';
+    state = chessEngine.applyMove(state, move('d7', 'd5', 'black'));
+    const banked = () => getAbilityOptions(state, 'e5').find(o => o.modifierId === MODIFIER_IDS.bankedEnPassant)?.targets ?? [];
+    expect(banked()).toEqual(['d6']);
+    // White steps away and back: the bank is gone.
+    state = chessEngine.applyMove(state, move('e5', 'f5', 'white'));
+    state = chessEngine.applyMove(state, move('a7', 'a6', 'black'));
+    state = chessEngine.applyMove(state, move('f5', 'e5', 'white'));
+    state = chessEngine.applyMove(state, move('a6', 'a5', 'black'));
+    expect(banked()).toEqual([]);
+  });
+
+  it('a banked en passant cannot follow a pawn that stepped sideways', () => {
+    let state = withCrab([makePiece('pawn', 'white', 'e5'), makePiece('pawn', 'black', 'd7')]);
+    state = chessEngine.activateDraftModifiers(state, [
+      { id: CRAB, sourceColor: 'black' },
+      { id: MODIFIER_IDS.bankedEnPassant, sourceColor: 'white' },
+    ]);
+    state.turn = 'black';
+    state = chessEngine.applyMove(state, move('d7', 'd5', 'black'));
+    state = chessEngine.applyMove(state, move('h1', 'g1', 'white'));
+    state = chessEngine.applyMove(state, move('d5', 'c5', 'black'));
+    state = chessEngine.applyMove(state, move('e5', 'd5', 'white'));
+    state = chessEngine.applyMove(state, move('h8', 'g8', 'black'));
+    expect(getAbilityOptions(state, 'd5').find(o => o.modifierId === MODIFIER_IDS.bankedEnPassant)?.targets ?? []).toEqual([]);
   });
 
   it('may not leave the King in check', () => {

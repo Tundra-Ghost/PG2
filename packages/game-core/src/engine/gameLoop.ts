@@ -434,6 +434,9 @@ function buildNotation(
     }
   }
 
+  // A sideways pawn step (MOD-E014) names its start square: d4-e4.
+  if (piece.type === 'pawn' && move.from[1] === move.to[1]) disambig = `${move.from}-`;
+
   // Pawn captures always include from-file
   const pawnFile = piece.type === 'pawn' && isCapture ? move.from[0] : '';
 
