@@ -9,7 +9,7 @@ const ID = MODIFIER_IDS.forgiveMe;
 export const CONFESSION_PLIES = 3;
 const DIAGONALS: [number, number][] = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
 const LETTER: Partial<Record<PieceType, string>> = {
-  queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', chancellor: 'C', royal_guard: 'G', pigeon: 'H',
+  queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', chancellor: 'C', archbishop: 'A', royal_guard: 'G', pigeon: 'H',
 };
 
 interface Confession {

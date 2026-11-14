@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 42 built, 58 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 43 built, 57 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -905,6 +905,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 
 - Conflict: The Storm Closes In. Crowded endgame.
 - Changed from v0.2: 8 pawns on rank 3 and 4 behind, instead of all 12 on rank 3.
+- Conflict: Holy Knight. One side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
 *Ref: John Wick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -968,12 +969,18 @@ Your Queen can also move like a knight.
 - Balance: the strongest piece in fairy chess. Full cost, no discount.
 
 ### MOD-E010 · Holy Knight (The Archbishop)
-*Ref: Capablanca chess* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Capablanca chess* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**
 
 One of your bishops becomes an Archbishop. Each move, it moves like a bishop or like a knight.
 
 *The bishop prayed for more options. The prayer was answered. The answer had a horse in it.*
 
+- Built: the bishop is picked at random with the seeded generator. The Archbishop has its own piece art (a knight head on a bishop, with a cross) and writes A in the move list.
+- Ruling: the Archbishop is not a bishop for other cards. Twin Telepathy does not move it, it cannot Confess (Forgive Me), and it does not clear infection.
+- Ruling: it never picks a Ghost bishop (I'm Literally Right Here).
+- Interaction: The Cordyceptic Spread. Infection slows it like a bishop. A knight jump counts as 2 squares, so at 1 square of reach it cannot jump.
+- Interaction: This Is My Swamp. In the Swamp it moves one square, with no knight jump. It is not stuck the way a knight is.
+- Conflict: The Small Council. It has no bishops, so one side cannot draft both.
 - Pair: the bishop-side twin of Equivalent Exchange.
 
 ### MOD-E011 · Lawrence Of Arabia
@@ -1164,7 +1171,7 @@ Values the game uses today. "Built" cards match the build.
 | D019 | Spoiler Alert | D | A | 3 | 1 | Shared | Design |
 | D020 | Masquerade | D | S | 4 | 2 | Shared | Design |
 | E009 | Slay Queen (The Amazon) | E | S | 5 | 0 | Owner | Built |
-| E010 | Holy Knight (The Archbishop) | E | A | 4 | 0 | Owner | Design |
+| E010 | Holy Knight (The Archbishop) | E | A | 4 | 0 | Owner | Built |
 | E011 | Lawrence Of Arabia | E | B | 1 | 0 | Owner | Design |
 | E012 | Hopscotch | E | B | 2 | 0 | Owner | Design |
 | E013 | Overseas Hire (The Cannon) | E | A | 3 | 0 | Owner | Design |
@@ -1176,7 +1183,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Design |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Design |
 
-42 of 100 built. The other 58 are designs (v0.4).
+43 of 100 built. The other 57 are designs (v0.4).
 
 ### Balance test plan
 

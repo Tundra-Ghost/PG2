@@ -74,7 +74,7 @@ describe('buildSquareViews', () => {
     expect(getPieceMarkers(queen).marks).toContain('A');
     expect(getPieceMarkers(queen).label).toContain('amazon');
     expect(getPieceMarkers({ ...queen, type: 'royal_guard' }).marks).not.toContain('A');
-    expect(getMarkerLegend([MODIFIER_IDS.slayQueen])).toEqual([{ mark: 'A', label: 'Amazon (Queen + knight)' }]);
+    expect(getMarkerLegend([MODIFIER_IDS.slayQueen])).toEqual([{ mark: 'A', label: 'Amazon badge (Queen + knight)' }]);
   });
 
   it('fades a Ghost for its owner only', () => {

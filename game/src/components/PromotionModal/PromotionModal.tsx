@@ -20,6 +20,7 @@ const CHOICES: { type: PieceType; label: string }[] = [
   { type: 'bishop', label: 'Bishop' },
   { type: 'knight', label: 'Knight' },
   { type: 'chancellor', label: 'Chancellor' },
+  { type: 'archbishop', label: 'Archbishop' },
   { type: 'royal_guard', label: 'Royal Guard' },
   { type: 'pigeon', label: 'Pigeon' },
   { type: 'pawn', label: 'Pawn' },

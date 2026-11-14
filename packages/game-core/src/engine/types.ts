@@ -11,6 +11,7 @@ export type PieceType =
   | 'pawn'
   | 'pigeon'       // future: MOD-E001 Hatoful Gambit
   | 'chancellor'   // MOD-E004 Equivalent Exchange
+  | 'archbishop'   // MOD-E010 Holy Knight
   | 'royal_guard'; // future: MOD-E003 Royal Guard
 
 export type Color = 'white' | 'black';

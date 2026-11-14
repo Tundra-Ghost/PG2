@@ -12,7 +12,7 @@ import { botRandom } from './prng';
  */
 
 const PIECE_VALUE: Record<string, number> = {
-  king: 0, queen: 900, chancellor: 800, royal_guard: 250, rook: 500, bishop: 320, knight: 310, pigeon: 300, pawn: 100,
+  king: 0, queen: 900, chancellor: 800, archbishop: 650, royal_guard: 250, rook: 500, bishop: 320, knight: 310, pigeon: 300, pawn: 100,
 };
 
 /** The Amazon (MOD-E009) is a queen and a knight in one. */
@@ -137,7 +137,7 @@ function positionalScore(state: GameState, color: Color): number {
     const file = piece.square.charCodeAt(0) - 97;
     const rank = Number(piece.square[1]) - 1;
     let bonus = 0;
-    if (piece.type === 'knight' || piece.type === 'pigeon' || piece.type === 'bishop' || piece.type === 'pawn') {
+    if (piece.type === 'knight' || piece.type === 'pigeon' || piece.type === 'bishop' || piece.type === 'archbishop' || piece.type === 'pawn') {
       const centreDistance = Math.max(Math.abs(file - 3.5), Math.abs(rank - 3.5));
       bonus += Math.round((3.5 - centreDistance) * (CENTRE_BONUS / 3));
     }
