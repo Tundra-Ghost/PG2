@@ -29,7 +29,7 @@
   font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 0.08em;
-  color: rgb(var(--gold-rgb) / 0.7);
+  color: rgb(var(--gold-rgb));
   cursor: pointer;
 }
 
@@ -51,11 +51,11 @@
 
 .lede,
 .hint {
-  color: rgb(var(--parchment-rgb) / 0.72);
+  color: rgb(var(--parchment-rgb) / 0.82);
 }
 
 .online {
-  color: #9bc700;
+  color: #2f6b00;
 }
 
 .error {
@@ -103,7 +103,7 @@
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.55);
+  color: rgb(var(--gold-rgb));
 }
 
 .divider::before,
@@ -144,7 +144,7 @@
   font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.7);
+  color: rgb(var(--gold-rgb));
 }
 
 .code {
@@ -190,8 +190,8 @@
 
 .controlBtn {
   background: transparent;
-  border: 1px solid rgba(200, 168, 75, 0.35);
-  color: rgba(200, 168, 75, 0.8);
+  border: 1px solid rgba(45, 108, 179, 0.35);
+  color: var(--ui-gold);
   font-family: var(--font-display);
   font-size: 0.875rem;
   letter-spacing: 0.1em;
@@ -241,19 +241,19 @@
 .savedMeta,
 .savedStatus {
   font-size: 0.75rem;
-  color: rgb(var(--parchment-rgb) / 0.65);
+  color: rgb(var(--parchment-rgb) / 0.82);
 }
 
 .yourTurn {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #9bc700;
+  color: #2f6b00;
 }
 
 .forget {
   background: transparent;
   border: none;
-  color: rgb(var(--parchment-rgb) / 0.5);
+  color: rgb(var(--parchment-rgb) / 0.82);
   font-size: 1.1rem;
   cursor: pointer;
   padding: 0 0.2rem;
@@ -275,10 +275,10 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.6rem 0.8rem;
-    border: 1px solid var(--ui-gold, #c8973a);
-    background: rgba(200, 151, 58, 0.12);
+    border: 1px solid var(--ui-gold, #2963a6);
+    background: rgba(41, 99, 166, 0.12);
     font-size: 0.9rem;
-    color: rgba(242, 234, 216, 0.95);
+    color: rgba(17, 32, 50, 0.95);
   }
 
   .drawBanner span {
@@ -307,7 +307,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  color: rgb(var(--parchment-rgb) / 0.75);
+  color: rgb(var(--parchment-rgb) / 0.82);
   background: transparent;
   border: 1px solid rgb(var(--parchment-rgb) / 0.25);
 }

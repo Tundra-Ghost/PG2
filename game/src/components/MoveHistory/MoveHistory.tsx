@@ -219,7 +219,7 @@ export default function MoveHistory({
   }
 
   return (
-    <aside className={styles.panel}>
+    <aside className={`on-dark ${styles.panel}`}>
       <header className={styles.header}>
         <span className={styles.headerTitle}>Chat / Moves</span>
         <span className={styles.moveCount}>

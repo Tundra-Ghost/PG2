@@ -7,7 +7,7 @@
   max-height: 132px;
   padding: 0.7rem;
   background:
-    linear-gradient(180deg, rgba(13, 36, 63, 0.96), rgba(71, 136, 209, 0.94));
+    linear-gradient(180deg, rgba(13, 36, 63, 0.96), rgba(31, 77, 135, 0.96));
   border: 2px solid rgba(171, 202, 237, 0.78);
   border-radius: 18px;
   box-shadow:
@@ -19,7 +19,7 @@
   width: 100%;
   border: none;
   background:
-    linear-gradient(180deg, rgba(13, 36, 63, 0.96), rgba(71, 136, 209, 0.94));
+    linear-gradient(180deg, rgba(13, 36, 63, 0.96), rgba(31, 77, 135, 0.96));
   text-align: left;
   cursor: pointer;
 }
@@ -59,10 +59,10 @@
   justify-content: center;
   font-family: var(--font-display);
   font-size: 2rem;
-  color: rgba(171, 202, 237, 0.78);
+  color: #ffffff;
   background:
-    radial-gradient(circle at 30% 20%, rgb(var(--cream-rgb) / 0.76), transparent 42%),
-    linear-gradient(180deg, rgba(17, 53, 94, 0.52), rgba(48, 116, 193, 0.14));
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.28), transparent 45%),
+    linear-gradient(180deg, #1f5590, #12304f);
 }
 
 .portraitImage {
@@ -100,7 +100,7 @@
 .role {
   font-family: var(--font-display);
   font-size: 1.05rem;
-  color: rgba(202, 219, 239, 0.9);
+  color: #ffffff;
   letter-spacing: 0.03em;
 }
 
@@ -109,7 +109,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(171, 202, 237, 0.75);
+  color: rgba(171, 202, 237, 0.9);
   background: rgba(12, 32, 55, 0.7);
   border: 1px solid rgba(171, 202, 237, 0.18);
   border-radius: 999px;
@@ -128,14 +128,14 @@
   font-size: 0.56rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(171, 202, 237, 0.52);
+  color: rgba(171, 202, 237, 0.9);
 }
 
 .subtitle {
   font-family: var(--font-mono);
   font-size: 0.68rem;
   letter-spacing: 0.08em;
-  color: rgba(171, 202, 237, 0.66);
+  color: rgba(171, 202, 237, 0.9);
   background: rgba(12, 32, 55, 0.46);
   border-radius: 8px;
   padding: 0.35rem 0.45rem;

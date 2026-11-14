@@ -42,7 +42,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.68);
+  color: rgb(var(--gold-rgb));
   background: transparent;
   border: 1px solid rgb(var(--gold-rgb) / 0.24);
   padding: 0.55rem 0.8rem;
@@ -60,7 +60,7 @@
   font-size: 0.56rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.5);
+  color: rgb(var(--gold-rgb));
 }
 
 .title {
@@ -77,7 +77,7 @@
   font-family: var(--font-body);
   font-size: 0.92rem;
   line-height: 1.5;
-  color: rgb(var(--parchment-rgb) / 0.72);
+  color: rgb(var(--parchment-rgb) / 0.82);
 }
 
 .heroCard {
@@ -87,7 +87,7 @@
   align-items: stretch;
   padding: 1rem;
   background:
-    linear-gradient(180deg, rgba(14, 38, 66, 0.96), rgba(49, 118, 197, 0.94));
+    linear-gradient(180deg, rgba(14, 38, 66, 0.96), rgba(31, 77, 135, 0.96));
   border: 2px solid rgba(171, 202, 237, 0.78);
   border-radius: 24px;
   box-shadow:
@@ -119,11 +119,11 @@
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(circle at 35% 25%, rgb(var(--cream-rgb) / 0.72), transparent 42%),
-    linear-gradient(180deg, rgba(71, 136, 209, 0.9), rgba(39, 94, 157, 0.5));
+    radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.28), transparent 45%),
+    linear-gradient(180deg, #1f5590, #12304f);
   font-family: var(--font-display);
   font-size: 3rem;
-  color: rgba(183, 209, 239, 0.82);
+  color: #ffffff;
 }
 
 .heroCopy {
@@ -150,7 +150,7 @@
   font-size: 0.66rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(171, 201, 235, 0.62);
+  color: rgba(171, 201, 235, 0.9);
 }
 
 .heroMeta,
@@ -168,7 +168,7 @@
   font-size: 0.48rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(171, 201, 235, 0.82);
+  color: rgba(171, 201, 235, 0.9);
   background: rgba(12, 32, 55, 0.52);
   border: 1px solid rgba(171, 201, 235, 0.12);
   padding: 0.24rem 0.45rem;
@@ -179,7 +179,7 @@
   font-family: var(--font-body);
   font-size: 0.94rem;
   line-height: 1.55;
-  color: rgba(185, 209, 236, 0.78);
+  color: rgba(185, 209, 236, 0.9);
 }
 
 .heroActions {
@@ -202,7 +202,7 @@
 .primaryBtn {
   color: #e3ecf7;
   border: 1px solid rgba(129, 172, 222, 0.8);
-  background: linear-gradient(180deg, #4788d1, #2f71bc);
+  background: linear-gradient(180deg, #2a64a8, #1f5590);
 }
 
 .primaryBtn:disabled {
@@ -211,9 +211,9 @@
 }
 
 .secondaryBtn {
-  color: rgba(171, 201, 235, 0.84);
-  border: 1px solid rgba(171, 201, 235, 0.18);
-  background: rgba(12, 32, 55, 0.45);
+  color: #1f5590;
+  border: 1px solid rgba(31, 85, 144, 0.35);
+  background: #ffffff;
 }
 
 .fileInput {
@@ -231,15 +231,15 @@
   font-size: 0.56rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.48);
-  background: rgb(var(--cream-rgb) / 0.03);
+  color: var(--ui-gold);
+  background: #ffffff;
   border: 1px solid rgb(var(--gold-rgb) / 0.12);
   cursor: pointer;
 }
 
 .tabActive {
   color: rgba(237, 243, 249, 0.92);
-  background: rgb(var(--gold-rgb) / 0.82);
+  background: var(--ui-gold);
   border-color: rgb(var(--gold-rgb) / 0.78);
 }
 
@@ -294,7 +294,7 @@
 .sectionTitle {
   font-size: 0.58rem;
   letter-spacing: 0.18em;
-  color: rgb(var(--gold-rgb) / 0.56);
+  color: #173f6b;
 }
 
 .infoMain,
@@ -318,7 +318,7 @@
   margin: 0.35rem 0 0;
   font-size: 0.84rem;
   line-height: 1.5;
-  color: rgb(var(--parchment-rgb) / 0.7);
+  color: var(--ui-parchment);
 }
 
 .infoList {
@@ -333,7 +333,7 @@
   margin-bottom: 0.35rem;
   font-size: 0.48rem;
   letter-spacing: 0.16em;
-  color: rgb(var(--gold-rgb) / 0.42);
+  color: #173f6b;
 }
 
 .statGrid {
@@ -345,7 +345,7 @@
   font-size: 0.54rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.62);
+  color: rgb(var(--gold-rgb));
 }
 
 .titleCard {
@@ -369,7 +369,7 @@
 }
 
 .titleCardLocked {
-  opacity: 0.52;
+  opacity: 0.92;
   cursor: default;
 }
 
@@ -394,7 +394,7 @@
 .achievementMeta {
   font-size: 0.5rem;
   letter-spacing: 0.12em;
-  color: rgb(var(--gold-rgb) / 0.48);
+  color: #173f6b;
 }
 
 .achievementCard {
@@ -410,13 +410,13 @@
 }
 
 .achievementLocked {
-  opacity: 0.65;
+  opacity: 0.92;
 }
 
 .achievementCategory {
   font-size: 0.48rem;
   letter-spacing: 0.16em;
-  color: rgb(var(--gold-rgb) / 0.44);
+  color: #173f6b;
 }
 
 .historyList {
@@ -445,7 +445,7 @@
 .historyResult {
   font-size: 0.56rem;
   letter-spacing: 0.14em;
-  color: rgb(var(--gold-rgb) / 0.76);
+  color: rgb(var(--gold-rgb));
 }
 
 .historyBody {
@@ -455,12 +455,12 @@
 }
 
 .placeholder {
-  color: rgb(var(--parchment-rgb) / 0.44);
+  color: rgb(var(--parchment-rgb) / 0.82);
 }
 
 .placeholderInline {
   font-size: 0.76rem;
-  color: rgb(var(--parchment-rgb) / 0.44);
+  color: rgb(var(--parchment-rgb) / 0.82);
 }
 
 .editGrid {
@@ -484,7 +484,7 @@
   font-size: 0.54rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.44);
+  color: #173f6b;
 }
 
 .input,

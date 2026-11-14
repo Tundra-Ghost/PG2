@@ -22,8 +22,8 @@
   --ui-bg-dark:   #e5edf7;   /* base tone */
   --ui-ink:       #e7eef5;
   --ui-ink-soft:  #d1dbe7;
-  --ui-gold:      #2963a6;
-  --ui-gold-light:#4788d1;
+  --ui-gold:      #1f5590;
+  --ui-gold-light:#2a64a8;
   --ui-gold-pale: #0d233c;
   --ui-chaos:     #b83228;
   --ui-parchment: #112032;
@@ -35,7 +35,7 @@
   --ui-cream:     #112032;   /* the brightest tone allowed: never pure white */
 
   /* Channels for translucent variants: rgb(var(--gold-rgb) / 0.2) */
-  --gold-rgb:      41 99 166;
+  --gold-rgb:      31 85 144;
   --parchment-rgb: 17 32 50;
   --cream-rgb:     17 32 50;
   --ink-rgb:       231 238 245;
@@ -99,3 +99,19 @@ button:focus-visible {
 
 /* .menu-theme is kept on the menu screens' roots as a hook; the whole app
    now uses the blue and white tokens in :root. */
+
+/* Navy surfaces (board frame, player banners, match panels, profile card).
+   Inside them the tokens flip back: light text, light-blue accents. */
+.on-dark {
+  --ui-parchment:  #eef3fa;
+  --ui-parchment2: #d6e2f1;
+  --parchment-rgb: 238 243 250;
+  --ui-cream:      #ffffff;
+  --cream-rgb:     255 255 255;
+  --ui-ink:        #112032;
+  --ink-rgb:       17 32 50;
+  --ui-gold:       #9cc8f7;
+  --ui-gold-light: #c4defb;
+  --gold-rgb:      156 200 247;
+  color: var(--ui-parchment);
+}

@@ -23,8 +23,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.28rem;
-  background: rgba(8, 10, 14, 0.96);
-  border: 1px solid rgb(var(--gold-rgb) / 0.24);
+  background: #ffffff;
+  border: 1px solid rgb(var(--gold-rgb) / 0.55);
   box-shadow: 0 12px 24px rgba(16, 37, 66, 0.162);
   pointer-events: none;
 }
@@ -33,7 +33,7 @@
   font-family: var(--font-body);
   font-size: 0.64rem;
   line-height: 1.3;
-  color: rgb(var(--parchment-rgb) / 0.86);
+  color: #112032;
 }
 
 @media (max-width: 720px) {

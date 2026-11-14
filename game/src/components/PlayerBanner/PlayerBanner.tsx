@@ -30,7 +30,7 @@ export default function PlayerBanner({
 
   return (
     <Tag
-      className={`${styles.card} ${align === 'right' ? styles.cardRight : ''} ${onClick ? styles.cardButton : ''}`}
+      className={`on-dark ${styles.card} ${align === 'right' ? styles.cardRight : ''} ${onClick ? styles.cardButton : ''}`}
       aria-label={`${role} banner`}
       onClick={onClick}
       {...(onClick ? { type: 'button' as const } : {})}

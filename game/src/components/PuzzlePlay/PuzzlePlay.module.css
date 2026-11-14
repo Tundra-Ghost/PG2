@@ -26,7 +26,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.85);
+  color: rgb(var(--gold-rgb));
   background: rgb(var(--gold-rgb) / 0.06);
   border: 1px solid rgb(var(--gold-rgb) / 0.22);
   cursor: pointer;
@@ -48,7 +48,7 @@
 
 .kicker {
   display: block;
-  color: rgb(var(--gold-rgb) / 0.58);
+  color: rgb(var(--gold-rgb));
   font-family: var(--font-mono);
   font-size: 0.58rem;
   letter-spacing: 0.18em;
@@ -118,7 +118,7 @@
 }
 
 .turn {
-  color: rgb(var(--parchment-rgb) / 0.65);
+  color: rgb(var(--parchment-rgb) / 0.82);
   font-size: 0.9rem;
 }
 
@@ -134,7 +134,7 @@
 }
 
 .solved {
-  color: #c9eba8;
+  color: #2f6b00;
   background: rgba(120, 180, 80, 0.14);
   border-left: 3px solid #7fb850;
 }

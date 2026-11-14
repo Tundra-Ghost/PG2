@@ -30,7 +30,7 @@
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.14em;
-  color: rgb(var(--gold-rgb) / 0.55);
+  color: rgb(var(--gold-rgb));
   background: transparent;
   border: 1px solid rgb(var(--gold-rgb) / 0.2);
   padding: 0.3rem 0.7rem;
@@ -47,7 +47,7 @@
 .settingsBtn {
   font-family: var(--font-body);
   font-size: 1rem;
-  color: rgb(var(--gold-rgb) / 0.45);
+  color: rgb(var(--gold-rgb));
   background: transparent;
   border: 1px solid rgb(var(--gold-rgb) / 0.18);
   min-width: 2rem;
@@ -71,8 +71,8 @@
   font-size: 0.6rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(45, 108, 179, 0.4);
-  border: 1px solid rgba(45, 108, 179, 0.2);
+  color: var(--ui-gold);
+  border: 1px solid rgb(var(--gold-rgb) / 0.4);
   padding: 0.15rem 0.5rem;
   margin-left: 0.25rem;
 }

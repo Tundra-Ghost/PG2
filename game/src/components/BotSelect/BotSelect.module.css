@@ -74,7 +74,7 @@
   font-family: var(--font-mono);
   font-size: 0.60rem;
   letter-spacing: 0.16em;
-  color: rgb(var(--gold-rgb) / 0.50);
+  color: rgb(var(--gold-rgb));
   background: transparent;
   border: 1px solid rgb(var(--gold-rgb) / 0.18);
   padding: 0.35rem 0.7rem;
@@ -109,7 +109,7 @@
   font-size: 0.55rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.40);
+  color: rgb(var(--gold-rgb));
   margin: 0;
 }
 
@@ -212,13 +212,13 @@
   font-size: 0.54rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.50);
+  color: rgb(var(--gold-rgb));
 }
 
 .cardDesc {
   font-family: var(--font-body);
   font-size: 0.78rem;
-  color: rgb(var(--parchment-rgb) / 0.45);
+  color: rgb(var(--parchment-rgb) / 0.82);
   line-height: 1.4;
   margin-top: 0.1rem;
 }
@@ -240,14 +240,14 @@
 }
 
 .pipFilled {
-  background: rgb(var(--gold-rgb) / 0.70);
+  background: var(--ui-gold);
   border-color: var(--ui-gold);
 }
 
 /* ── Play arrow / badge ──────────────────────────── */
 .cardPlay {
   font-size: 0.8rem;
-  color: rgb(var(--gold-rgb) / 0.60);
+  color: rgb(var(--gold-rgb));
   flex-shrink: 0;
   transition: color 0.18s, transform 0.18s;
 }
@@ -262,7 +262,7 @@
   font-size: 0.48rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.60);
+  color: rgb(var(--gold-rgb));
   border: 1px solid rgb(var(--gold-rgb) / 0.30);
   padding: 0.2rem 0.45rem;
   flex-shrink: 0;
@@ -291,7 +291,7 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   cursor: pointer;
-  color: rgb(var(--gold-rgb) / 0.55);
+  color: rgb(var(--gold-rgb));
   background: transparent;
   border: 1px solid rgb(var(--gold-rgb) / 0.25);
 }

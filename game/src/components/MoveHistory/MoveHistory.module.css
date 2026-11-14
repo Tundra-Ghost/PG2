@@ -5,7 +5,7 @@
   flex-direction: column;
   position: relative;
   background:
-    linear-gradient(180deg, rgba(12, 32, 55, 0.94), rgba(71, 136, 209, 0.9));
+    linear-gradient(180deg, rgba(12, 32, 55, 0.94), rgba(31, 77, 135, 0.96));
   border: 2px solid rgba(171, 202, 237, 0.72);
   border-radius: 18px;
   box-shadow:
@@ -63,7 +63,7 @@
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.08em;
-  color: rgba(171, 202, 237, 0.72);
+  color: rgba(171, 202, 237, 0.9);
 }
 
 .composerInput {
@@ -102,7 +102,7 @@
   font-size: 0.58rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(171, 202, 237, 0.46);
+  color: rgba(171, 202, 237, 0.9);
 }
 
 .list {
@@ -263,7 +263,7 @@
   font-size: 0.56rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(171, 202, 237, 0.52);
+  color: rgba(171, 202, 237, 0.9);
 }
 
 .entryDetail {
@@ -271,7 +271,7 @@
   font-size: 0.5rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(171, 202, 237, 0.36);
+  color: rgba(171, 202, 237, 0.9);
 }
 
 .bubble {
@@ -329,14 +329,14 @@
 .cursor {
   display: inline-block;
   margin-left: 1px;
-  color: rgba(168, 202, 240, 0.72);
+  color: rgba(168, 202, 240, 0.9);
 }
 
 .empty {
   font-family: var(--font-body);
   font-style: italic;
   font-size: 0.78rem;
-  color: rgba(171, 202, 237, 0.45);
+  color: rgba(171, 202, 237, 0.9);
   text-align: center;
   padding: 2rem 0.5rem;
   margin: 0;
@@ -355,7 +355,7 @@
   font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.14em;
-  color: rgba(168, 202, 240, 0.72);
+  color: rgba(168, 202, 240, 0.9);
 }
 
 @media (max-width: 900px) {
