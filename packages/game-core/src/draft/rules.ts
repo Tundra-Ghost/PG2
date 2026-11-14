@@ -9,6 +9,23 @@ function needsDarkFirst(cardId: string, ownIds: string[], otherIds: string[]): b
     && !otherIds.includes(MODIFIER_IDS.darkAndScared);
 }
 
+/**
+ * Cards one side cannot hold together, because one removes the piece the
+ * other upgrades: Three Of Them turns the Queen into a Royal Guard.
+ */
+const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
+  [MODIFIER_IDS.slayQueen, MODIFIER_IDS.threeKings],
+];
+
+/** The card in your draft that rules this one out, if any. */
+function ownConflict(cardId: string, ownIds: string[]): string | null {
+  for (const [a, b] of OWN_CONFLICTS) {
+    if (cardId === a && ownIds.includes(b)) return b;
+    if (cardId === b && ownIds.includes(a)) return a;
+  }
+  return null;
+}
+
 export const BUDGET = 8;
 export const MAX_COUNT = 5;
 export const MAX_PER_CATEGORY = 2;
@@ -45,6 +62,7 @@ export function getValidOptions(
     if (ownIds.includes(card.id)) return false;
     if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return false;
     if (needsDarkFirst(card.id, ownIds, otherIds)) return false;
+    if (ownConflict(card.id, ownIds)) return false;
     if (unlimited) return true;
     if (ownCards.length >= MAX_COUNT) return false;
     if (totalCost + card.cost > BUDGET) return false;
@@ -99,6 +117,11 @@ export function pickBlocker(
   if (ownIds.includes(card.id)) return 'Already in your draft.';
   if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return `${otherName} already claimed this shared modifier.`;
   if (needsDarkFirst(card.id, ownIds, otherIds)) return 'Needs It\'s Dark And I\'m Scared in the match first.';
+  const conflict = ownConflict(card.id, ownIds);
+  if (conflict) {
+    const name = ALL_MODIFIERS.find(c => c.id === conflict)?.name ?? conflict;
+    return `Does not work with ${name}.`;
+  }
   if (unlimited) return null;
   if (ownCards.length >= MAX_COUNT) return `Your draft is full (${MAX_COUNT} modifiers).`;
   if (ownCost + card.cost > BUDGET) return `Over budget: ${BUDGET - ownCost} pts left.`;

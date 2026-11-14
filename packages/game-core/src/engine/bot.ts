@@ -1,4 +1,4 @@
-import type { Color, GameState, Move } from './types';
+import type { Color, GameState, Move, Piece } from './types';
 import { chessEngine } from './ChessEngine';
 import { getAbilityOptions, performAbility } from './abilities';
 import { applyMoveInternal, buildMove, cloneState, getValidPromotionTypes } from './gameLoop';
@@ -15,10 +15,17 @@ const PIECE_VALUE: Record<string, number> = {
   king: 0, queen: 900, chancellor: 800, royal_guard: 250, rook: 500, bishop: 320, knight: 310, pigeon: 300, pawn: 100,
 };
 
+/** The Amazon (MOD-E009) is a queen and a knight in one. */
+const AMAZON_BONUS = 300;
+
+function pieceValue(piece: Piece): number {
+  return (PIECE_VALUE[piece.type] ?? 0) + (piece.isAmazon && piece.type === 'queen' ? AMAZON_BONUS : 0);
+}
+
 function materialScore(state: GameState, color: Color): number {
   let score = 0;
   for (const piece of state.pieces.values()) {
-    const val = PIECE_VALUE[piece.type] ?? 0;
+    const val = pieceValue(piece);
     score += piece.color === color ? val : -val;
   }
   return score;
@@ -157,7 +164,7 @@ function orderMoves(state: GameState, moves: Move[]): Move[] {
   const value = (move: Move) => {
     if (move.ability) return 50;
     const victim = state.pieces.get(move.to);
-    return victim ? (PIECE_VALUE[victim.type] ?? 0) : move.promotion ? 800 : 0;
+    return victim ? pieceValue(victim) : move.promotion ? 800 : 0;
   };
   return [...moves].sort((a, b) => value(b) - value(a));
 }

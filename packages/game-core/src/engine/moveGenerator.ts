@@ -191,11 +191,14 @@ function pieceMoves(state: GameState, piece: Piece): Square[] {
   switch (piece.type) {
     case 'king':
       return kingMoves(state, piece);
-    case 'queen':
-      return slidingMoves(state, piece, [
+    case 'queen': {
+      const queenMoves = slidingMoves(state, piece, [
         [1, 0], [-1, 0], [0, 1], [0, -1],
         [1, 1], [1, -1], [-1, 1], [-1, -1],
       ]);
+      // MOD-E009: the Amazon also jumps like a knight
+      return piece.isAmazon ? [...queenMoves, ...knightMoves(state, piece)] : queenMoves;
+    }
     case 'rook':
       return slidingMoves(state, piece, [[1, 0], [-1, 0], [0, 1], [0, -1]]);
     case 'bishop':

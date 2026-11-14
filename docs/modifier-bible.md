@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 41 built, 59 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 42 built, 58 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -912,6 +912,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 The owner's queen becomes a Royal Guard and a second Guard stands on their third rank. Guards step one square like a King and never castle. They can be captured like any piece. Only the real King matters for check.
 
 - Changed from v0.2: Guards are captured normally instead of being "checkmated".
+- Conflict: Slay Queen. One side cannot draft both.
 
 ### MOD-E004 · Equivalent Exchange (The Chancellor)
 *Ref: Fullmetal Alchemist* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**
@@ -951,12 +952,19 @@ Each piece the owner loses gives a Mercenary Token (max 3). Spend a Token (costs
 - Balance flag: the drop-check guard is critical.
 
 ### MOD-E009 · Slay Queen (The Amazon)
-*Ref: Fairy chess Amazon* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Fairy chess Amazon* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**
 
 Your Queen can also move like a knight.
 
 *She can go anywhere. She has decided to go everywhere.*
 
+- Built: the Amazon wears an A badge. Her knight jumps leap over pieces and give check like a knight.
+- Ruling: only your starting Queen is the Amazon. A queen you promote or buy back later is a normal queen.
+- Conflict: Yeah, There Are Three Of Them. It turns your Queen into a Royal Guard, so one side cannot draft both.
+- Interaction: They Were The Traitor. If the Amazon defects, she stays an Amazon for her new side.
+- Interaction: This Is My Swamp. In the Swamp she moves one square like any queen, with no knight jump.
+- Interaction: The Cordyceptic Spread. Infection slows her like any queen. A knight jump counts as 2 squares, so at 1 square of reach she cannot jump.
+- Interaction: Sus. A piece disguised as a queen wears the A badge too, so the badge never gives the disguise away.
 - Balance: the strongest piece in fairy chess. Full cost, no discount.
 
 ### MOD-E010 · Holy Knight (The Archbishop)
@@ -1155,7 +1163,7 @@ Values the game uses today. "Built" cards match the build.
 | D018 | Tells | D | B | 1 | 0 | Owner | Design |
 | D019 | Spoiler Alert | D | A | 3 | 1 | Shared | Design |
 | D020 | Masquerade | D | S | 4 | 2 | Shared | Design |
-| E009 | Slay Queen (The Amazon) | E | S | 5 | 0 | Owner | Design |
+| E009 | Slay Queen (The Amazon) | E | S | 5 | 0 | Owner | Built |
 | E010 | Holy Knight (The Archbishop) | E | A | 4 | 0 | Owner | Design |
 | E011 | Lawrence Of Arabia | E | B | 1 | 0 | Owner | Design |
 | E012 | Hopscotch | E | B | 2 | 0 | Owner | Design |
@@ -1168,7 +1176,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Design |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Design |
 
-41 of 100 built. The other 59 are designs (v0.4).
+42 of 100 built. The other 58 are designs (v0.4).
 
 ### Balance test plan
 

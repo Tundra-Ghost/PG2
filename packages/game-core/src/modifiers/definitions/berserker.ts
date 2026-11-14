@@ -79,7 +79,8 @@ export function getBestCaptureTarget(state: GameState, from: Square): Square | n
     if (!target || target.color === piece.color) continue;
     const projected = applyMoveInternal(state, buildMove(state, from, to));
     if (isInCheck(projected, piece.color)) continue;
-    const val = PIECE_VALUE[target.type] ?? 0;
+    // MOD-E009: the Amazon is worth more than a plain queen.
+    const val = (PIECE_VALUE[target.type] ?? 0) + (target.type === 'queen' && target.isAmazon ? 300 : 0);
     if (val > bestValue) {
       bestValue = val;
       bestTo = to;
