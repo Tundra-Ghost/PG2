@@ -105,6 +105,7 @@ describe('MOD-C020 Gotta Go Fast', () => {
 
   it('cannot dash out of the Swamp, where pieces move one square', () => {
     let state = withDash([makePiece('pawn', 'white', 'd4')]);
+    expect(dashTargets(state, 'd4')).toEqual(['d6']);
     state = chessEngine.activateDraftModifiers(state, [{ id: MODIFIER_IDS.thisIsMySwamp, sourceColor: null }]);
     expect(chessEngine.validateMove(state, move('d4', 'd6', 'white', { ability: DASH })).valid).toBe(false);
   });

@@ -929,7 +929,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     tier: 'B',
     scope: 'owned',
     description:
-      'A pawn moves two squares forward from any rank, if both squares are empty. No capture.',
+      'Select a pawn and press Dash. It moves two squares forward from any rank, if both squares are empty. No capture. Then that pawn waits 4 of your turns.',
     flavor: '"The pawn has been told about promotion. The pawn is in a hurry."',
     prototypeRules:
       'Select a pawn and press Dash. It moves two squares straight ahead from any rank, if both squares are empty. No capture. A dash cannot reach the last rank, so it never promotes. No en passant can be taken against it. Then that pawn waits 4 of your turns.',
