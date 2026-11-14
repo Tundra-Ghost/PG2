@@ -958,6 +958,8 @@ Your Queen can also move like a knight.
 - Conflict: Yeah, There Are Three Of Them. It turns your Queen into a Royal Guard, so one side cannot draft both.
 - Interaction: They Were The Traitor. If the Amazon defects, she stays an Amazon for her new side.
 - Interaction: This Is My Swamp. In the Swamp she moves one square like any queen, with no knight jump.
+- Interaction: The Cordyceptic Spread. Infection slows her like any queen. A knight jump counts as 2 squares, so at 1 square of reach she cannot jump.
+- Interaction: Sus. A piece disguised as a queen wears the A badge too, so the badge never gives the disguise away.
 - Balance: the strongest piece in fairy chess. Full cost, no discount.
 
 ### MOD-E010 · Holy Knight (The Archbishop)

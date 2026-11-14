@@ -7,6 +7,8 @@ import { getValidOptions, pickBlocker } from '../draft/rules';
 import { ALL_MODIFIERS } from './data';
 import { modifierRegistry } from './registry';
 import './index';
+import { traitorDef } from './definitions/traitor';
+import { getInfectedReach } from './definitions/cordyceptic-spread';
 import { MODIFIER_IDS } from './ids';
 import { makeEmptyState, makePiece, move } from './testHelpers';
 
@@ -126,5 +128,41 @@ describe('MOD-E009 Slay Queen (The Amazon)', () => {
     expect(pickBlocker(card, [MODIFIER_IDS.threeKings], [], built)).toMatch(/Does not work with/);
     // The other side may still take it.
     expect(getValidOptions([], [MODIFIER_IDS.threeKings], built).map(c => c.id)).toContain(AMAZON);
+  });
+
+  it('a defecting Amazon stays an Amazon for her new side', () => {
+    const state = chessEngine.activateDraftModifiers(chessEngine.getInitialState(), [
+      { id: AMAZON, sourceColor: 'white' },
+    ]);
+    const queen = state.pieces.get('d1')!;
+    state.modifierState[MODIFIER_IDS.traitor] = { white: { phase: 'warned', pieceId: queen.id } };
+    state.activeModifiers.push({ id: MODIFIER_IDS.traitor, name: 'Traitor', activeFor: 'both', sourceColor: 'white' });
+    const defected = traitorDef.onTurnStart!(state);
+    expect(defected.pieces.get('d1')).toMatchObject({ color: 'black', isAmazon: true });
+  });
+
+  it('infection slows her like a queen: at reach 1 she cannot jump', () => {
+    const state = withAmazon([makePiece('king', 'white', 'a1'), amazon('d4'), makePiece('king', 'black', 'h8')]);
+    state.activeModifiers = [{ id: MODIFIER_IDS.cordycepticSpread, name: 'Spread', activeFor: 'both', sourceColor: null }];
+    state.tiles.set('d4', { square: 'd4', effects: [{ type: 'infected', turnsRemaining: -1 }] });
+    state.modifierState[MODIFIER_IDS.cordycepticSpread] = { rot: { [state.pieces.get('d4')!.id]: 6 } };
+    expect(getInfectedReach(state, 'd4')).toBe(1);
+    expect(chessEngine.validateMove(state, move('d4', 'e6', 'white')).valid).toBe(false);
+    expect(chessEngine.validateMove(state, move('d4', 'd5', 'white')).valid).toBe(true);
+  });
+
+  it('a Berserker chain picks the Amazon over a plain queen', () => {
+    const state = withAmazon([
+      makePiece('king', 'white', 'a1'),
+      { ...makePiece('rook', 'white', 'd1'), isBerserker: true },
+      makePiece('pawn', 'black', 'd4'),
+      makePiece('queen', 'black', 'g4'),
+      amazon('d7', 'black'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+    state.activeModifiers = [{ id: MODIFIER_IDS.berserker, name: 'BOY.', activeFor: 'both', sourceColor: 'white' }];
+    const next = chessEngine.applyMove(state, move('d1', 'd4', 'white'));
+    expect(next.pieces.get('d7')).toMatchObject({ type: 'rook', color: 'white' });
+    expect(next.pieces.get('g4')?.type).toBe('queen');
   });
 });
