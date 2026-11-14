@@ -14,7 +14,7 @@ For each card:
 3. Add the definition, register it in `modifiers/index.ts`, and add its id to `modifiers/ids.ts`.
 4. In `modifiers/data.ts`, add `prototypeRules` in plain words describing exactly what the build does. If the build differs from the design text, say so in the bible with a "Changed from design" note.
 5. Write tests next to the other modifier tests. Cover the main rule, every ruling in the bible (King safety, no self-check, no softlock), and one interaction with an existing card.
-6. Draw a 48×48 line icon in `game/src/assets/modifier-icons/<ID>.svg`, in the same style as the others (stroke currentColor, stroke-width 2.5, round caps).
+6. Icons belong to the graphic artist. If `game/src/assets/modifier-icons/<ID>.svg` exists, use it. If not, draw a simple 48×48 line icon in the same style as the others (stroke currentColor, stroke-width 2.5, round caps); the artist may refine it later.
 7. If the card needs UI (a button, a marker, a legend entry), add it in `game/src` and check it on a phone-sized screen.
 8. In the bible, change the card's status from **Design** to **Built**, and update the Balance summary row and the "N of 100 built" count.
 
