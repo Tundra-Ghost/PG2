@@ -1350,7 +1350,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'Each of your pieces captured earns a Mercenary Token (max 3). Select your King and press Buy back to spend one: pick a lost piece and drop it on any empty square. It costs your turn. A drop may not give check, and pawns may not drop on rank 1 or 8.',
   },
 
-  // Design cards (not built yet): Asymmetric Armies 009-020
+  // Asymmetric Armies 009-020: designs, except cards that have prototypeRules (built)
 
   {
     id: 'MOD-E009',

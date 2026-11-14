@@ -907,6 +907,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 The owner's queen becomes a Royal Guard and a second Guard stands on their third rank. Guards step one square like a King and never castle. They can be captured like any piece. Only the real King matters for check.
 
 - Changed from v0.2: Guards are captured normally instead of being "checkmated".
+- Conflict: Slay Queen. One side cannot draft both.
 
 ### MOD-E004 · Equivalent Exchange (The Chancellor)
 *Ref: Fullmetal Alchemist* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**
@@ -946,7 +947,7 @@ Each piece the owner loses gives a Mercenary Token (max 3). Spend a Token (costs
 - Balance flag: the drop-check guard is critical.
 
 ### MOD-E009 · Slay Queen (The Amazon)
-*Ref: Fairy chess Amazon* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All · **Built**
+*Ref: Fairy chess Amazon* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**
 
 Your Queen can also move like a knight.
 
@@ -955,6 +956,8 @@ Your Queen can also move like a knight.
 - Built: the Amazon wears an A badge. Her knight jumps leap over pieces and give check like a knight.
 - Ruling: only your starting Queen is the Amazon. A queen you promote or buy back later is a normal queen.
 - Conflict: Yeah, There Are Three Of Them. It turns your Queen into a Royal Guard, so one side cannot draft both.
+- Interaction: They Were The Traitor. If the Amazon defects, she stays an Amazon for her new side.
+- Interaction: This Is My Swamp. In the Swamp she moves one square like any queen, with no knight jump.
 - Balance: the strongest piece in fairy chess. Full cost, no discount.
 
 ### MOD-E010 · Holy Knight (The Archbishop)
