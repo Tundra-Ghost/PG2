@@ -14,6 +14,7 @@ export interface PieceMarkers {
 /** What a piece wears on the board. Shared by the DOM and Phaser boards. */
 export function getPieceMarkers(piece: Piece): PieceMarkers {
   const { cooldowns, isPacifist, isBerserker, isTraitor, hasPromotionChain } = piece;
+  const amazon = piece.isAmazon === true && piece.type === 'queen';
   const gerald = (cooldowns[MODIFIER_IDS.gerald] ?? 0) > 0;
   const frozen = (cooldowns[MODIFIER_IDS.winterIsComing] ?? 0) > 0;
   const stuck = (cooldowns[MODIFIER_IDS.thisIsMySwamp] ?? 0) > 0;
@@ -25,6 +26,7 @@ export function getPieceMarkers(piece: Piece): PieceMarkers {
   if (isBerserker) marks.push('B');
   if (isTraitor) marks.push('!');
   if (hasPromotionChain) marks.push('»');
+  if (amazon) marks.push('A');
 
   const label = [
     gerald ? 'gerald blocked' : null,
@@ -34,6 +36,7 @@ export function getPieceMarkers(piece: Piece): PieceMarkers {
     isBerserker ? 'berserker' : null,
     isTraitor ? 'traitor' : null,
     hasPromotionChain ? 'chain ready' : null,
+    amazon ? 'amazon, also moves like a knight' : null,
   ]
     .filter(Boolean)
     .join(', ');

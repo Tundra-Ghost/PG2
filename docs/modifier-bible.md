@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 40 built, 60 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 41 built, 59 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -946,12 +946,15 @@ Each piece the owner loses gives a Mercenary Token (max 3). Spend a Token (costs
 - Balance flag: the drop-check guard is critical.
 
 ### MOD-E009 · Slay Queen (The Amazon)
-*Ref: Fairy chess Amazon* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Fairy chess Amazon* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Your Queen can also move like a knight.
 
 *She can go anywhere. She has decided to go everywhere.*
 
+- Built: the Amazon wears an A badge. Her knight jumps leap over pieces and give check like a knight.
+- Ruling: only your starting Queen is the Amazon. A queen you promote or buy back later is a normal queen.
+- Conflict: Yeah, There Are Three Of Them. It turns your Queen into a Royal Guard, so one side cannot draft both.
 - Balance: the strongest piece in fairy chess. Full cost, no discount.
 
 ### MOD-E010 · Holy Knight (The Archbishop)
@@ -1150,7 +1153,7 @@ Values the game uses today. "Built" cards match the build.
 | D018 | Tells | D | B | 1 | 0 | Owner | Design |
 | D019 | Spoiler Alert | D | A | 3 | 1 | Shared | Design |
 | D020 | Masquerade | D | S | 4 | 2 | Shared | Design |
-| E009 | Slay Queen (The Amazon) | E | S | 5 | 0 | Owner | Design |
+| E009 | Slay Queen (The Amazon) | E | S | 5 | 0 | Owner | Built |
 | E010 | Holy Knight (The Archbishop) | E | A | 4 | 0 | Owner | Design |
 | E011 | Lawrence Of Arabia | E | B | 1 | 0 | Owner | Design |
 | E012 | Hopscotch | E | B | 2 | 0 | Owner | Design |
@@ -1163,7 +1166,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Design |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Design |
 
-40 of 100 built. The other 60 are designs (v0.4).
+41 of 100 built. The other 59 are designs (v0.4).
 
 ### Balance test plan
 

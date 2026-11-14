@@ -1365,6 +1365,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your Queen can also move like a knight.',
     flavor: '"She can go anywhere. She has decided to go everywhere."',
+    prototypeRules:
+      'Your starting Queen also moves like a knight. A queen you promote later is a normal queen. Cannot be drafted with Yeah, There Are Three Of Them.',
   },
   {
     id: 'MOD-E010',

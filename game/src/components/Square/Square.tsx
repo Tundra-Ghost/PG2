@@ -43,6 +43,9 @@ function getPieceTooltipLines(piece: PieceType | undefined, infectedReach: numbe
   if (piece.type === 'chancellor') {
     lines.push('Chancellor: Moves like a rook or a knight.');
   }
+  if (piece.type === 'queen' && piece.isAmazon) {
+    lines.push('Slay Queen: This Queen also moves like a knight.');
+  }
   if (piece.type === 'royal_guard') {
     lines.push('Royal Guard: Steps one square like a king. Losing it does not lose the game.');
   }
