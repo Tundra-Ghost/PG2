@@ -976,7 +976,10 @@ One of your bishops becomes an Archbishop. Each move, it moves like a bishop or 
 *The bishop prayed for more options. The prayer was answered. The answer had a horse in it.*
 
 - Built: the bishop is picked at random with the seeded generator. The Archbishop has its own piece art (a knight head on a bishop, with a cross) and writes A in the move list.
-- Ruling: the Archbishop is not a bishop for other cards. Twin Telepathy does not move it, and it does not clear infection.
+- Ruling: the Archbishop is not a bishop for other cards. Twin Telepathy does not move it, it cannot Confess (Forgive Me), and it does not clear infection.
+- Ruling: it never picks a Ghost bishop (I'm Literally Right Here).
+- Interaction: The Cordyceptic Spread. Infection slows it like a bishop. A knight jump counts as 2 squares, so at 1 square of reach it cannot jump.
+- Interaction: This Is My Swamp. In the Swamp it moves one square, with no knight jump. It is not stuck the way a knight is.
 - Conflict: The Small Council. It has no bishops, so one side cannot draft both.
 - Pair: the bishop-side twin of Equivalent Exchange.
 

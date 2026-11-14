@@ -7,7 +7,10 @@ import { getModifierOwner } from '../owner';
 
 const ID = MODIFIER_IDS.holyKnight;
 
-/** MOD-E010 Holy Knight: one random bishop of the owner becomes an Archbishop (bishop + knight moves). */
+/**
+ * MOD-E010 Holy Knight: one random bishop of the owner becomes an Archbishop
+ * (bishop + knight moves). Ghost bishops (MOD-D002) are never picked.
+ */
 export const holyKnightDef: ModifierDefinition = {
   id: ID,
   name: 'Holy Knight (The Archbishop)',
@@ -22,7 +25,7 @@ export const holyKnightDef: ModifierDefinition = {
     const colors: Color[] = owner ? [owner] : ['white', 'black'];
     const next = cloneState(state);
     for (const color of colors) {
-      const bishops = Array.from(next.pieces.values()).filter(p => p.color === color && p.type === 'bishop');
+      const bishops = Array.from(next.pieces.values()).filter(p => p.color === color && p.type === 'bishop' && !p.isGhost);
       if (bishops.length === 0) continue;
       const [idx, prng] = prngPickIndex(next.prngState, bishops.length);
       next.prngState = prng;

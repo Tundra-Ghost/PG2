@@ -137,7 +137,7 @@ function positionalScore(state: GameState, color: Color): number {
     const file = piece.square.charCodeAt(0) - 97;
     const rank = Number(piece.square[1]) - 1;
     let bonus = 0;
-    if (piece.type === 'knight' || piece.type === 'pigeon' || piece.type === 'bishop' || piece.type === 'pawn') {
+    if (piece.type === 'knight' || piece.type === 'pigeon' || piece.type === 'bishop' || piece.type === 'archbishop' || piece.type === 'pawn') {
       const centreDistance = Math.max(Math.abs(file - 3.5), Math.abs(rank - 3.5));
       bonus += Math.round((3.5 - centreDistance) * (CENTRE_BONUS / 3));
     }

@@ -6,6 +6,7 @@ import { getValidOptions, pickBlocker } from '../draft/rules';
 import { ALL_MODIFIERS } from './data';
 import { modifierRegistry } from './registry';
 import './index';
+import { isInfectedSquare } from './definitions/cordyceptic-spread';
 import { MODIFIER_IDS } from './ids';
 import { makeEmptyState, makePiece, move } from './testHelpers';
 
@@ -105,5 +106,32 @@ describe('MOD-E010 Holy Knight (The Archbishop)', () => {
     const card = ALL_MODIFIERS.find(c => c.id === HOLY)!;
     expect(pickBlocker(card, [MODIFIER_IDS.smallCouncil], [], built)).toBe('Does not work with The Small Council.');
     expect(getValidOptions([], [MODIFIER_IDS.smallCouncil], built).map(c => c.id)).toContain(HOLY);
+  });
+
+  it('never turns a Ghost bishop into the Archbishop', () => {
+    for (let seed = 1; seed <= 30; seed++) {
+      const start = chessEngine.getInitialState();
+      start.prngSeed = seed;
+      start.prngState = seed;
+      const state = chessEngine.activateDraftModifiers(start, [
+        { id: MODIFIER_IDS.ghosts, sourceColor: 'white' },
+        { id: HOLY, sourceColor: 'white' },
+      ]);
+      const arch = Array.from(state.pieces.values()).find(p => p.type === 'archbishop')!;
+      expect(arch.isGhost, `seed ${seed}`).toBeFalsy();
+      expect(['c1', 'f1']).toContain(arch.square);
+    }
+  });
+
+  it('does not clear infection when it crosses an infected square', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'a1'),
+      makePiece('archbishop', 'white', 'c1'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+    state.activeModifiers = [{ id: MODIFIER_IDS.cordycepticSpread, name: 'Spread', activeFor: 'both', sourceColor: null }];
+    state.tiles.set('d2', { square: 'd2', effects: [{ type: 'infected', turnsRemaining: -1 }] });
+    const next = chessEngine.applyMove(state, move('c1', 'e3', 'white'));
+    expect(isInfectedSquare(next, 'd2')).toBe(true);
   });
 });

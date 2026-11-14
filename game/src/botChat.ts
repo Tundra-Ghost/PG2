@@ -165,7 +165,7 @@ function pickLine(lines: string[], seed: number): string | null {
 
 function classifyCapture(pieceType: PieceType): ReactionEventKey {
   if (pieceType === 'queen') return 'lost_queen';
-  if (pieceType === 'rook') return 'lost_major';
+  if (pieceType === 'rook' || pieceType === 'chancellor' || pieceType === 'archbishop') return 'lost_major';
   if (pieceType === 'bishop' || pieceType === 'knight') return 'lost_minor';
   return 'lost_pawn';
 }
