@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 44 built, 56 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 45 built, 55 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -447,14 +447,18 @@ After your Queen captures, she doubts herself. Her next move can only be one squ
 - Synergy: Main Character Syndrome. She must move, but only a little. Character development.
 
 ### MOD-B015 · Commitment Issues
-*Ref: The touch-move rule* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+*Ref: The touch-move rule* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
 
 Touch-move rules apply to you. Once you select a piece that has a legal move, you must move that piece.
 
 *Viktor touched the knight. The knight looked at him. They both knew what had to happen.*
 
+- Built: the touch is part of the game state, so the server enforces it online. The touched piece wears a T and stays selected. Tapping another piece says why it cannot move.
+- Built: the touched piece may move or use its ability. Shooing Gerald is not allowed after a touch.
 - Ruling: selecting a piece with no legal moves does not count.
-- Phones: hold-to-read never counts as touching. Only a tap selects.
+- Ruling: never a softlock. Only a piece with a legal move can be touched, so you always have a move.
+- Phones: hold-to-read never counts as touching. Only a tap selects. This holds on every square, even one with nothing to read.
+- Bots do not touch. A bot that owns the card picks one piece and moves it, which already keeps the rule.
 
 ### MOD-B016 · Lunch Break
 *Ref: Union rules* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
@@ -1145,7 +1149,7 @@ Values the game uses today. "Built" cards match the build.
 | B012 | Bless You | B | B | -1 | 1 | Owner | Design |
 | B013 | Death And Taxes | B | S | -3 | 3 | Owner | Design |
 | B014 | Imposter Syndrome | B | B | -1 | 1 | Owner | Design |
-| B015 | Commitment Issues | B | B | -1 | 1 | Owner | Design |
+| B015 | Commitment Issues | B | B | -1 | 1 | Owner | Built |
 | B016 | Lunch Break | B | A | -2 | 2 | Owner | Design |
 | B017 | MINE! | B | A | -2 | 2 | Owner | Design |
 | B018 | Rubber Banding | B | A | -2 | 2 | Owner | Design |
@@ -1188,7 +1192,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Design |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Design |
 
-44 of 100 built. The other 56 are designs (v0.4).
+45 of 100 built. The other 55 are designs (v0.4).
 
 ### Balance test plan
 

@@ -43,6 +43,9 @@ function getPieceTooltipLines(piece: PieceType | undefined, infectedReach: numbe
   if (piece.type === 'chancellor') {
     lines.push('Chancellor: Moves like a rook or a knight.');
   }
+  if (piece.isTouched) {
+    lines.push('Commitment Issues: This piece was touched. It must move this turn.');
+  }
   if (piece.type === 'archbishop') {
     lines.push('Archbishop: Moves like a bishop or a knight.');
   }
@@ -164,13 +167,14 @@ export default function Square({
   }
 
   // Touch: hold to read a square, let go to close it. A hold never counts as a tap.
+  // Every hold counts as a hold, even on a square with nothing to read, so it
+  // never selects a piece (MOD-B015 Commitment Issues: only a tap touches).
   function handleTouchStart() {
     longPressTriggeredRef.current = false;
-    if (!hasTooltip) return;
     clearTouchTimer();
     touchTimerRef.current = window.setTimeout(() => {
       longPressTriggeredRef.current = true;
-      setShowTooltip(true);
+      if (hasTooltip) setShowTooltip(true);
     }, 400);
   }
 

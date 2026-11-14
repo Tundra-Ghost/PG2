@@ -8,6 +8,7 @@ import type {
   GameSummary,
   RoomAck,
   ServerToClientEvents,
+  Square,
 } from '@pigeon-chess/game-core';
 import { registerAccountRoutes, type Accounts } from './accounts';
 import { createFeedbackStore, registerFeedbackRoutes } from './feedback';
@@ -148,6 +149,17 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
       const ack = safeAck<ActionAck>(rawAck);
       if (!seat) return ack({ ok: false, reason: 'Join a room first.' });
       const res = rooms.shooGerald(seat.roomId, seat.color);
+      ack(res);
+      if (res.ok) broadcast(seat.roomId);
+    });
+
+    socket.on('game:touch', (req, rawAck) => {
+      const ack = safeAck<ActionAck>(rawAck);
+      if (!seat) return ack({ ok: false, reason: 'Join a room first.' });
+      if (!req || typeof req.square !== 'string' || !/^[a-h][1-8]$/.test(req.square)) {
+        return ack({ ok: false, reason: 'Bad touch request.' });
+      }
+      const res = rooms.touchPiece(seat.roomId, seat.color, req.square as Square);
       ack(res);
       if (res.ok) broadcast(seat.roomId);
     });

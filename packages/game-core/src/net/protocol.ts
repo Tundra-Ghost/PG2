@@ -114,6 +114,8 @@ export interface ClientToServerEvents {
   'room:list': (seats: SeatRef[], ack: (games: GameSummary[]) => void) => void;
   'game:move': (req: MoveRequest, ack: (res: ActionAck) => void) => void;
   'game:shoo_gerald': (ack: (res: ActionAck) => void) => void;
+  /** MOD-B015: the player selected (touched) a piece and must now move it. */
+  'game:touch': (req: { square: Square }, ack: (res: ActionAck) => void) => void;
   'game:resign': (ack: (res: ActionAck) => void) => void;
   'game:draw_offer': (req: DrawOfferRequest, ack: (res: ActionAck) => void) => void;
   'chat:send': (req: { text: string }, ack: (res: ActionAck) => void) => void;

@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
-import { buildMove, getShooBlocker } from '@pigeon-chess/game-core';
+import { buildMove, getShooBlocker, getTouchedPiece, hasTouchMove, touchPiece, touchedReason } from '@pigeon-chess/game-core';
 import {
   flipSquare,
   flippedMovesLeft,
@@ -43,6 +43,8 @@ interface BoardProps {
   /** Online play: the board only sends intents. The server applies them. */
   onMove?: (move: Move) => void;
   onShooGerald?: () => void;
+  /** Online play: MOD-B015 sends the touched piece to the server. Local play applies it here. */
+  onTouchPiece?: (square: Square) => void;
   /** The side this player controls. Clicks are ignored on the other side's turn. */
   controlColor?: Color;
   /** Which side sits at the bottom. Black players see the board flipped. */
@@ -96,6 +98,7 @@ export default function Board({
   onStateChange,
   onMove,
   onShooGerald,
+  onTouchPiece,
   controlColor,
   orientation = 'white',
   onInfo,
@@ -281,6 +284,29 @@ export default function Board({
     onInfo?.('Gerald chased off. Turn forfeited.');
   }, [state, onStateChange, onShooGerald, onInfo]);
 
+  // MOD-B015 Commitment Issues: a tap on an own piece touches it, and a touched piece must move.
+  const touchMove = state.status === 'active' && hasTouchMove(state, state.turn) && (!controlColor || controlColor === state.turn);
+  const touched = touchMove ? getTouchedPiece(state, state.turn) : null;
+  const touchedSquare = touched?.square ?? null;
+  const touch = useCallback(
+    (square: Square) => {
+      if (!touchMove || touchedSquare) return;
+      if (onTouchPiece) {
+        onTouchPiece(square);
+        return;
+      }
+      const next = touchPiece(state, square);
+      if (next !== state) onStateChange?.(next);
+    },
+    [onStateChange, onTouchPiece, state, touchMove, touchedSquare],
+  );
+  // Keep the touched piece selected, also after a reload or a refused move.
+  useEffect(() => {
+    if (!touchedSquare || selected === touchedSquare) return;
+    setSelected(touchedSquare);
+    showMovesFor(touchedSquare, false);
+  }, [touchedSquare, selected, showMovesFor]);
+
   const handleSquareClick = useCallback(
     (square: Square) => {
       if (state.status !== 'active') return;
@@ -288,6 +314,12 @@ export default function Board({
       if (pendingPromotion || pendingDrop) return; // modal is open — ignore board clicks
 
       const clickedPiece = state.pieces.get(square);
+
+      // MOD-B015: once a piece is touched, only its own moves (or abilities) go through.
+      if (touched && !(selected === touched.square && legalMoves.includes(square))) {
+        if (square !== touched.square && clickedPiece?.color === state.turn) onInfo?.(touchedReason(touched));
+        return;
+      }
 
       // Nothing selected yet
       if (!selected) {
@@ -305,6 +337,7 @@ export default function Board({
           }
           setSelected(square);
           showMovesFor(square, !frozen && !clickedPiece.isPacifist);
+          touch(square);
         }
         return;
       }
@@ -346,6 +379,7 @@ export default function Board({
         }
         setSelected(square);
         showMovesFor(square, !clickedPiece.isPacifist);
+        touch(square);
         return;
       }
 
@@ -404,7 +438,7 @@ export default function Board({
       setSelected(null);
       setLegalMoves([]);
     },
-    [abilityMode, autoQueen, commitMove, controlColor, fakeMoves, flip, legalMoves, onInfo, pendingDrop, pendingPromotion, selected, shooGeraldOrWarn, showMovesFor, state, withTempo],
+    [abilityMode, autoQueen, commitMove, controlColor, fakeMoves, flip, legalMoves, onInfo, pendingDrop, pendingPromotion, selected, shooGeraldOrWarn, showMovesFor, state, touch, touched, withTempo],
   );
 
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];

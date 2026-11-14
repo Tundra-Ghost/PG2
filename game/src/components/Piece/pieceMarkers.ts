@@ -27,6 +27,7 @@ export function getPieceMarkers(piece: Piece): PieceMarkers {
   if (isTraitor) marks.push('!');
   if (hasPromotionChain) marks.push('»');
   if (amazon) marks.push('A');
+  if (piece.isTouched) marks.push('T');
 
   const label = [
     gerald ? 'gerald blocked' : null,
@@ -37,6 +38,7 @@ export function getPieceMarkers(piece: Piece): PieceMarkers {
     isTraitor ? 'traitor' : null,
     hasPromotionChain ? 'chain ready' : null,
     amazon ? 'amazon, also moves like a knight' : null,
+    piece.isTouched ? 'touched, must move' : null,
   ]
     .filter(Boolean)
     .join(', ');

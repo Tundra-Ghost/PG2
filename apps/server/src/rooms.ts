@@ -1,6 +1,7 @@
 import { randomInt, randomUUID } from 'node:crypto';
 import {
   getShooBlocker,
+  touchPiece,
   buildMove,
   chessEngine,
   createOnlineDraft,
@@ -25,6 +26,7 @@ import {
   type RoomAck,
   type RoomSnapshot,
   type SeatStatus,
+  type Square,
 } from '@pigeon-chess/game-core';
 import { MemoryStore, type RoomStore } from './store';
 
@@ -205,6 +207,19 @@ export class RoomManager {
     }
     room.state = chessEngine.shooGerald(room.state);
     room.drawOffer = null;
+    this.touch(room);
+    return { ok: true };
+  }
+
+  /** MOD-B015: records the piece the player touched. A touch that does not count changes nothing. */
+  touchPiece(roomId: string, color: Color, square: Square): ActionAck {
+    const room = this.rooms.get(roomId);
+    if (!room) return { ok: false, reason: 'Room closed.' };
+    if (drafting(room)) return { ok: false, reason: DRAFT_RUNNING };
+    if (room.state.turn !== color) return { ok: false, reason: 'not your turn' };
+    const next = touchPiece(room.state, square);
+    if (next === room.state) return { ok: true };
+    room.state = next;
     this.touch(room);
     return { ok: true };
   }

@@ -567,6 +567,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Touch-move rules apply to you. Once you select a piece that has a legal move, you must move that piece.',
     flavor: '"Viktor touched the knight. The knight looked at him. They both knew what had to happen."',
+    prototypeRules:
+      'Tap a piece that can move and it is touched: you must move it this turn. It wears a T. A piece with no legal move does not count. On phones, holding a square to read it never touches. You cannot shoo Gerald after a touch.',
   },
   {
     id: 'MOD-B016',
