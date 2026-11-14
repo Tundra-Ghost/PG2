@@ -7,7 +7,7 @@ import {
   type ModifierCategory,
 } from '@pigeon-chess/game-core';
 import { modifierRegistry, seededRandom } from '@pigeon-chess/game-core';
-import { isSharedDraftModifier } from '@pigeon-chess/game-core';
+import { getModifierSummary, isSharedDraftModifier } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './DraftScreen.module.css';
 import PrototypeRules from '../PrototypeRules/PrototypeRules';
@@ -439,7 +439,8 @@ export default function DraftScreen({
                   <span className={`${styles.cost} ${card.cost < 0 ? styles.costRefund : ''}`}>{getCostDisplay(card.cost)}</span>
                 </span>
                 <span className={styles.cardType}>{card.typeLine}</span>
-                <span className={styles.cardDesc}>{card.description}</span>
+                {/* The plain one-liner; the full rules open with the card. */}
+                <span className={styles.cardDesc}>{getModifierSummary(card.id) ?? card.description}</span>
                 {tag && <span className={`${styles.tag} ${mine ? styles.tagMine : ''}`}>{tag}</span>}
               </button>
             );
@@ -509,6 +510,9 @@ export default function DraftScreen({
             <p className={styles.detailType}>
               {getTierLabel(detailCard.tier)} · {getCurseLabel(detailCard.curseLevel)} <CursePips level={detailCard.curseLevel} />
             </p>
+            {getModifierSummary(detailCard.id) && (
+              <p className={styles.detailSummary}>{getModifierSummary(detailCard.id)}</p>
+            )}
             <p className={styles.detailDesc}>{detailCard.description}</p>
             <PrototypeRules text={detailCard.prototypeRules} />
             {detailCard.flavor && <p className={styles.flavor}>{detailCard.flavor}</p>}

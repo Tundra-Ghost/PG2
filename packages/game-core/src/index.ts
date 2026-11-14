@@ -34,6 +34,7 @@ export type { ModifierId } from './modifiers/ids';
 export { getDraftScope, isSharedDraftModifier } from './modifiers/scope';
 export type { DraftScope } from './modifiers/scope';
 export * from './modifiers/data';
+export { MODIFIER_SUMMARIES, getModifierSummary } from './modifiers/summaries';
 export { isFrozenZoneSquare } from './modifiers/definitions/winter';
 export { getInfectedReach } from './modifiers/definitions/cordyceptic-spread';
 export { getCrownOrders } from './modifiers/definitions/heavy-is-the-crown';

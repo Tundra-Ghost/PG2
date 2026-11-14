@@ -71,8 +71,8 @@
   gap: 0.55rem;
   padding: 1rem 1.4rem 0.9rem;
   background:
-    radial-gradient(ellipse at 4% 0%, rgba(255, 246, 210, 0.055) 0%, transparent 45%),
-    linear-gradient(180deg, rgb(22, 14, 7) 0%, rgb(12, 8, 3) 100%);
+    radial-gradient(ellipse at 4% 0%, rgba(12, 32, 55, 0.055) 0%, transparent 45%),
+    linear-gradient(180deg, #e9f0f8 0%, #f3f7fc 100%);
   border: 1px solid rgb(var(--gold-rgb) / 0.28);
   border-top: 2px solid rgb(var(--gold-rgb) / 0.52);
   border-radius: 16px;
@@ -81,13 +81,13 @@
   pointer-events: all;
   position: relative;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.48),
+    0 8px 32px rgba(16, 37, 66, 0.216),
     0 2px 8px rgb(var(--gold-rgb) / 0.07),
     inset 0 1px 0 rgb(var(--cream-rgb) / 0.03);
 
   /* Default theme (npc) */
   --dlg-accent: rgb(var(--gold-rgb) / 0.95);
-  --dlg-nameplate-bg: linear-gradient(90deg, rgba(92, 52, 16, 0.9), rgba(54, 30, 8, 0.9));
+  --dlg-nameplate-bg: linear-gradient(90deg, rgba(163, 198, 239, 0.9), rgba(207, 223, 241, 0.9));
 }
 
 /* Player dialogue: right-align the nameplate row */
@@ -103,8 +103,8 @@
 }
 
 .themeChick {
-  --dlg-accent: rgba(228, 186, 70, 0.95);
-  --dlg-nameplate-bg: linear-gradient(90deg, rgba(106, 62, 16, 0.9), rgba(68, 38, 8, 0.9));
+  --dlg-accent: rgba(49, 119, 198, 0.95);
+  --dlg-nameplate-bg: linear-gradient(90deg, rgba(151, 191, 237, 0.9), rgba(196, 216, 238, 0.9));
 }
 
 .themeMeasured {
@@ -119,7 +119,7 @@
 
 .themeNpc {
   --dlg-accent: rgb(var(--gold-rgb) / 0.95);
-  --dlg-nameplate-bg: linear-gradient(90deg, rgba(92, 52, 16, 0.9), rgba(54, 30, 8, 0.9));
+  --dlg-nameplate-bg: linear-gradient(90deg, rgba(163, 198, 239, 0.9), rgba(207, 223, 241, 0.9));
 }
 
 /* ---- Nameplate row (avatar + name label) ---- */
@@ -157,7 +157,7 @@
   font-size: 2rem;
   line-height: 1;
   display: block;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 2px 6px rgba(246, 249, 253, 0.5));
 }
 
 .avatarInitial {
@@ -195,7 +195,7 @@
   font-family: var(--font-display);
   font-size: 0.875rem;
   letter-spacing: 0.04em;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 3px 10px rgba(16, 37, 66, 0.158);
 }
 
 /* ---- Text ---- */
@@ -215,7 +215,7 @@
   font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.55;
-  color: rgba(245, 228, 196, 0.95);
+  color: rgba(12, 33, 57, 0.95);
 }
 
 .cursor {

@@ -754,3 +754,12 @@
     font-size: 1.45rem;
   }
 }
+
+.detailSummary {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ui-parchment);
+}

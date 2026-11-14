@@ -18,6 +18,8 @@ interface MainMenuProps {
   onOnline: () => void;
   onFriends: () => void;
   onLinkAccount: () => void;
+  /** Starts the guided first match against Chick. */
+  onTutorial: () => void;
   /** Signed in (or still checking). False shows the guest prompt. */
   linked: boolean;
   /** Friend requests plus unread messages; 0 hides the badge. */
@@ -104,6 +106,7 @@ export default function MainMenu({
   onOnline,
   onFriends,
   onLinkAccount,
+  onTutorial,
   linked,
   friendsBadge,
   profile,
@@ -287,6 +290,18 @@ export default function MainMenu({
               {friendsBadge > 0 && (
                 <span className={styles.friendsBadge} aria-label={`${friendsBadge} new`}>{friendsBadge}</span>
               )}
+            </button>
+
+            <button
+              type="button"
+              className={styles.friendsButton}
+              onClick={() => {
+                playClick();
+                onTutorial();
+              }}
+            >
+              <span>How to play</span>
+              <span className={styles.linkHint}>Guided match vs Chick</span>
             </button>
 
             <dl className={styles.brandStats}>
