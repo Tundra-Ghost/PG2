@@ -1,0 +1,153 @@
+/* The tour's popup. It floats over the screen and only its own card takes
+   clicks, so the player can keep playing while it is open. */
+.stage {
+  position: fixed;
+  z-index: 70;
+  right: 1rem;
+  bottom: 1rem;
+  width: min(calc(100% - 2rem), 360px);
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+.card,
+.pill {
+  pointer-events: auto;
+}
+
+.card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 1.1rem;
+  color: #112032;
+  background: #ffffff;
+  border: 2px solid #2963a6;
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(16, 37, 66, 0.28);
+  animation: coachIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes coachIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.count {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #2963a6;
+}
+
+.hide {
+  padding: 0.2rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #4a5f7a;
+  background: none;
+  border: 1px solid rgba(16, 37, 66, 0.2);
+  border-radius: 6px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+.body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.skip {
+  padding: 0.3rem 0;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: #4a5f7a;
+  text-decoration: underline;
+  background: none;
+}
+
+.next {
+  min-height: 44px;
+  padding: 0.55rem 1.2rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #ffffff;
+  background: #2963a6;
+  border-radius: 10px;
+}
+
+.pill {
+  padding: 0.55rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: #2963a6;
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(16, 37, 66, 0.3);
+}
+
+/* Desktop draft: the bottom holds the draft's Start match bar, so sit top right. */
+.onDraft {
+  top: 1rem;
+  bottom: auto;
+}
+
+/* Phones: full width. In a match it sits at the top, clear of the board's
+   lower half, the dialogue box and the drawer bar. Elsewhere it sits above
+   the screen's bottom buttons. */
+@media (max-width: 720px) {
+  .stage {
+    left: 0.75rem;
+    right: 0.75rem;
+    width: auto;
+    justify-content: center;
+  }
+
+  .onMenu,
+  .onDraft {
+    top: auto;
+    bottom: calc(4.75rem + env(safe-area-inset-bottom));
+  }
+
+  .onGame {
+    top: calc(3.6rem + env(safe-area-inset-top));
+    bottom: auto;
+  }
+
+  .card {
+    padding: 0.85rem 0.95rem;
+  }
+
+  .body {
+    font-size: 0.9rem;
+  }
+}

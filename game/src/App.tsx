@@ -47,6 +47,8 @@ import {
 } from './profile';
 import styles from './App.module.css';
 import { appBase, pathFor, screenFromPath, type Screen } from './routes';
+import { markTutorialSeen, stepForScreen, tutorialSeen, type TutorialStep } from './tutorial';
+import TutorialCoach from './components/TutorialCoach/TutorialCoach';
 
 
 /** Where the game lives, read once: "/play/" on the site. */
@@ -68,6 +70,10 @@ interface ProfileViewerState {
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>(initialScreen);
+  /** The guided first match, as an index into TUTORIAL_STEPS. New players get it on the menu. */
+  const [tutorialStep, setTutorialStep] = useState<number | null>(() =>
+    screen === 'menu' && !tutorialSeen() ? 0 : null,
+  );
   const [prevScreen, setPrevScreen] = useState<Screen>('menu');
   const [accountStart, setAccountStart] = useState<'signin' | 'register' | undefined>(undefined);
   const [gameState, setGameState] = useState<GameState>(() => chessEngine.getInitialState());
@@ -423,6 +429,39 @@ export default function App() {
     setScreen('collection');
   }
 
+  // Keep the tour in step with the screen: a new screen opens its first step,
+  // and leaving the tour's path (Menu, Back, another mode) ends it.
+  useEffect(() => {
+    if (tutorialStep === null) return;
+    const next = stepForScreen(tutorialStep, screen);
+    if (next === null) {
+      markTutorialSeen('skipped');
+      setTutorialStep(null);
+    } else if (next !== tutorialStep) {
+      setTutorialStep(next);
+    }
+  }, [screen, tutorialStep]);
+
+  function handleTutorialAction(step: TutorialStep) {
+    if (step.action === 'start-match') {
+      // The tour always plays Chick with a modifier draft.
+      handleMenuPlay('run');
+      setSelectedBot('chick');
+      setVsBot(true);
+      setScreen('draft');
+    } else if (step.action === 'finish') {
+      markTutorialSeen('done');
+      setTutorialStep(null);
+    } else {
+      setTutorialStep(current => (current === null ? null : current + 1));
+    }
+  }
+
+  function skipTutorial() {
+    markTutorialSeen('skipped');
+    setTutorialStep(null);
+  }
+
   function handleMenuPlay(mode: 'run' | 'quick') {
     setVsBot(false);
     setSelectedBot(null);
@@ -576,6 +615,8 @@ export default function App() {
         feedbackContext={feedbackContext}
         accountStart={accountStart}
       />
+    ) : tutorialStep !== null ? (
+      <TutorialCoach step={tutorialStep} onAction={handleTutorialAction} onSkip={skipTutorial} />
     ) : null;
 
   const viewedProfileOverlay = profileViewer ? (
@@ -606,6 +647,7 @@ export default function App() {
           }}
           onFriends={() => setScreen('friends')}
           onLinkAccount={goToLinkAccount}
+          onTutorial={() => setTutorialStep(0)}
           friendsBadge={social.unread + social.list.incoming.length}
           profile={profile}
           linked={Boolean(account.account) || !account.ready}

@@ -3,7 +3,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.72);
+  background: rgba(246, 249, 253, 0.72);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,7 +26,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 20px 60px rgba(16, 37, 66, 0.36);
   animation: slideUp 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -86,7 +86,7 @@
 /* Piece symbol sizing */
 .symbol {
   font-size: 2.5rem;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
+  filter: drop-shadow(0 1px 3px rgba(246, 249, 253, 0.8));
 }
 
 .label {

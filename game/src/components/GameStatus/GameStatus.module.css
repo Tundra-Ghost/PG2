@@ -7,11 +7,11 @@
   width: 100%;
   padding: 0.85rem 1rem;
   background:
-    linear-gradient(180deg, rgba(32, 23, 14, 0.96), rgba(17, 12, 8, 0.96));
-  border: 1px solid rgba(200, 168, 75, 0.18);
+    linear-gradient(180deg, rgba(223, 231, 241, 0.96), rgba(238, 242, 247, 0.96));
+  border: 1px solid rgba(45, 108, 179, 0.18);
   border-radius: 18px;
   box-shadow:
-    0 12px 28px rgba(0, 0, 0, 0.22),
+    0 12px 28px rgba(16, 37, 66, 0.099),
     inset 0 0 0 1px rgb(var(--cream-rgb) / 0.02);
 }
 
@@ -37,15 +37,15 @@
 }
 
 .dotWhite {
-  background: #f8f5ee;
-  border: 1px solid rgba(0, 0, 0, 0.3);
+  background: #122030;
+  border: 1px solid rgba(16, 37, 66, 0.09);
   box-shadow: 0 0 6px rgb(var(--cream-rgb) / 0.5);
 }
 
 .dotBlack {
-  background: #1a1008;
+  background: #e5edf7;
   border: 1px solid rgb(var(--cream-rgb) / 0.15);
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 6px rgba(16, 37, 66, 0.36);
 }
 
 .turnText {
@@ -58,7 +58,7 @@
 .moveNum {
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  color: rgba(200, 168, 75, 0.5);
+  color: rgba(45, 108, 179, 0.5);
   letter-spacing: 0.1em;
 }
 
@@ -66,9 +66,9 @@
   font-family: var(--font-mono);
   font-size: 0.54rem;
   letter-spacing: 0.08em;
-  color: rgba(245, 232, 192, 0.92);
-  border: 1px solid rgba(200, 168, 75, 0.28);
-  background: rgba(200, 168, 75, 0.12);
+  color: rgba(13, 35, 60, 0.92);
+  border: 1px solid rgba(45, 108, 179, 0.28);
+  background: rgba(45, 108, 179, 0.12);
   padding: 0.2rem 0.45rem;
 }
 
@@ -77,7 +77,7 @@
   font-size: 0.54rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(200, 168, 75, 0.48);
+  color: rgba(45, 108, 179, 0.48);
 }
 
 .overlay {
@@ -87,7 +87,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(0, 0, 0, 0.72);
+  background: rgba(246, 249, 253, 0.72);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -104,7 +104,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 20px 60px rgba(16, 37, 66, 0.36);
 }
 
 .overlayEmoji {
@@ -124,7 +124,7 @@
   font-family: var(--font-body);
   font-style: italic;
   font-size: 1.1rem;
-  color: rgba(237, 230, 214, 0.7);
+  color: rgba(18, 32, 48, 0.7);
   margin-bottom: 0.5rem;
 }
 
@@ -142,14 +142,14 @@
 }
 
 .newGameBtn:hover {
-  background: #e0bc5a;
+  background: #397fce;
   transform: translateY(-1px);
 }
 
 .newGameBtnSmall {
   background: transparent;
-  border: 1px solid rgba(200, 168, 75, 0.35);
-  color: rgba(200, 168, 75, 0.7);
+  border: 1px solid rgba(45, 108, 179, 0.35);
+  color: rgba(45, 108, 179, 0.7);
   font-family: var(--font-display);
   font-size: 0.875rem;
   letter-spacing: 0.1em;
