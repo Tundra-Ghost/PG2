@@ -10,6 +10,8 @@ import styles from './Square.module.css';
  */
 interface SquareProps extends SquareView {
   onClick: (square: SquareType) => void;
+  /** MOD-B015: a hold on this square must never count as a tap, even with nothing to read. */
+  holdNeverTaps?: boolean;
 }
 
 const GERALD_ID = MODIFIER_IDS.gerald;
@@ -42,6 +44,9 @@ function getPieceTooltipLines(piece: PieceType | undefined, infectedReach: numbe
   }
   if (piece.type === 'chancellor') {
     lines.push('Chancellor: Moves like a rook or a knight.');
+  }
+  if (piece.isTouched) {
+    lines.push('Commitment Issues: This piece was touched. It must move this turn.');
   }
   if (piece.type === 'archbishop') {
     lines.push('Archbishop: Moves like a bishop or a knight.');
@@ -132,6 +137,7 @@ export default function Square({
   quietZone,
   noFlyZone,
   onClick,
+  holdNeverTaps = false,
 }: SquareProps) {
   const [showTooltip, setShowTooltip] = useState(false);
   const touchTimerRef = useRef<number | null>(null);
@@ -164,13 +170,15 @@ export default function Square({
   }
 
   // Touch: hold to read a square, let go to close it. A hold never counts as a tap.
+  // A hold on a square with something to read never counts as a tap. Under
+  // MOD-B015 the same holds for your own pieces, so only a tap touches one.
   function handleTouchStart() {
     longPressTriggeredRef.current = false;
-    if (!hasTooltip) return;
+    if (!hasTooltip && !holdNeverTaps) return;
     clearTouchTimer();
     touchTimerRef.current = window.setTimeout(() => {
       longPressTriggeredRef.current = true;
-      setShowTooltip(true);
+      if (hasTooltip) setShowTooltip(true);
     }, 400);
   }
 

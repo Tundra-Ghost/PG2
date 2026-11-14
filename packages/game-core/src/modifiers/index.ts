@@ -46,6 +46,7 @@ import { bandersnatchDef } from './definitions/bandersnatch';
 import { slayQueenDef } from './definitions/slay-queen';
 import { holyKnightDef } from './definitions/holy-knight';
 import { peerPressureDef } from './definitions/peer-pressure';
+import { commitmentIssuesDef } from './definitions/commitment-issues';
 import { gottaGoFastDef } from './definitions/gotta-go-fast';
 
 modifierRegistry.register(floorIsLavaDef);
@@ -91,4 +92,5 @@ modifierRegistry.register(bandersnatchDef);
 modifierRegistry.register(slayQueenDef);
 modifierRegistry.register(holyKnightDef);
 modifierRegistry.register(peerPressureDef);
+modifierRegistry.register(commitmentIssuesDef);
 modifierRegistry.register(gottaGoFastDef);

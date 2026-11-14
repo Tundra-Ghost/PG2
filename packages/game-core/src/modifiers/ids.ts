@@ -43,6 +43,7 @@ export const MODIFIER_IDS = {
   slayQueen: 'MOD-E009',
   holyKnight: 'MOD-E010',
   peerPressure: 'MOD-B019',
+  commitmentIssues: 'MOD-B015',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];

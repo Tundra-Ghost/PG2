@@ -33,6 +33,7 @@ export interface Piece {
   isPacifist?: boolean;  // future: MOD-B007
   isRealKing?: boolean;  // future: MOD-E003
   isAmazon?: boolean;    // MOD-E009: a queen that also moves like a knight
+  isTouched?: boolean;   // MOD-B015: touched this turn, so it must move
   isTraitor?: boolean;   // MOD-B006: warned, defects next turn
   hasPromotionChain?: boolean; // MOD-E007: chain-captures on its next capture
   cooldowns: Record<ModifierID, number>;
