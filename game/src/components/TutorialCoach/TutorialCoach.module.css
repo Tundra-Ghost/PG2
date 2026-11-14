@@ -1,8 +1,10 @@
 /* The tour's popup. It floats over the screen and only its own card takes
-   clicks, so the player can keep playing while it is open. */
+   clicks, so the player can keep playing while it is open. It sits below
+   every popup (sheets 60, dialogue box 60, promotion 100, settings 200)
+   and above the match drawer (42), so it can never cover a popup's buttons. */
 .stage {
   position: fixed;
-  z-index: 70;
+  z-index: 50;
   right: 1rem;
   bottom: 1rem;
   width: min(calc(100% - 2rem), 360px);
@@ -103,8 +105,14 @@
   border-radius: 10px;
 }
 
+.pillCount {
+  margin-left: 0.35rem;
+}
+
 .pill {
-  padding: 0.55rem 0.9rem;
+  margin-right: auto;
+  min-height: 36px;
+  padding: 0.4rem 0.7rem;
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.1em;
@@ -129,7 +137,7 @@
     left: 0.75rem;
     right: 0.75rem;
     width: auto;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .onMenu,
@@ -141,6 +149,19 @@
   .onGame {
     top: calc(3.6rem + env(safe-area-inset-top));
     bottom: auto;
+  }
+
+  /* In a match the hidden tour is just a "?" over the opponent's portrait,
+     so it never hides a name, a status or the board. */
+  .onGame .pill {
+    width: 40px;
+    min-height: 40px;
+    margin-top: 0.4rem;
+    padding: 0;
+  }
+
+  .onGame .pillCount {
+    display: none;
   }
 
   .card {
