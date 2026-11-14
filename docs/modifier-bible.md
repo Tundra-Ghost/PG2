@@ -699,6 +699,7 @@ Select a pawn and press Dash. It moves two squares forward from any rank, if bot
 - Ruling: no en passant can be taken against a dash. I've Been Waiting For This does not bank it either.
 - Ruling: the dash may not leave your King in check. It may block a check.
 - Ruling: in the Swamp a pawn moves only 1 square, so it cannot dash out.
+- Ruling: a pawn slowed by The Cordyceptic Spread has lost its double step, so it cannot dash.
 - Ruling: under The Storm Closes In, the last open rank counts as the last rank.
 - Changed from design: a dash cannot reach the last rank, so it never promotes. The design gave no cooldown; the build uses 4 of your moves.
 

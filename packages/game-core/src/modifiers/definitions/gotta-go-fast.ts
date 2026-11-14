@@ -3,6 +3,7 @@ import type { GameState, Piece, Square } from '../../engine/types';
 import { appendGameEvent, cloneState, isPromotionMove } from '../../engine/gameLoop';
 import { isVoidSquare } from '../../engine/moveGenerator';
 import { MODIFIER_IDS } from '../ids';
+import { getInfectedReach } from './cordyceptic-spread';
 
 const ID = MODIFIER_IDS.gottaGoFast;
 
@@ -24,6 +25,8 @@ export function getDashTarget(state: GameState, pawn: Piece): Square | null {
   const one = rank + dir;
   const two = rank + 2 * dir;
   if (two < 1 || two > 8) return null;
+  // An infected pawn has lost its double step (MOD-A001), and its dash too.
+  if (getInfectedReach(state, pawn.square) !== null) return null;
   const oneSq = `${file}${one}` as Square;
   const twoSq = `${file}${two}` as Square;
   if (!open(state, oneSq) || !open(state, twoSq)) return null;

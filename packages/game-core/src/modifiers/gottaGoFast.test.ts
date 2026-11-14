@@ -110,6 +110,16 @@ describe('MOD-C020 Gotta Go Fast', () => {
     expect(chessEngine.validateMove(state, move('d4', 'd6', 'white', { ability: DASH })).valid).toBe(false);
   });
 
+  it('cannot dash while slowed by infection', () => {
+    const state = withDash([makePiece('pawn', 'white', 'e3', 'dasher')]);
+    expect(dashTargets(state, 'e3')).toEqual(['e5']);
+    state.activeModifiers.push({ id: MODIFIER_IDS.cordycepticSpread, name: 'The Cordyceptic Spread', activeFor: 'both', sourceColor: null });
+    state.tiles.set('e3', { square: 'e3', effects: [{ type: 'infected', turnsRemaining: -1 }] });
+    state.modifierState[MODIFIER_IDS.cordycepticSpread] = { rot: { dasher: 1 } };
+    expect(dashTargets(state, 'e3')).toEqual([]);
+    expect(chessEngine.validateMove(state, move('e3', 'e5', 'white', { ability: DASH })).valid).toBe(false);
+  });
+
   it('is not banked by I\'ve Been Waiting For This', () => {
     let state = withDash([makePiece('pawn', 'white', 'e3'), makePiece('pawn', 'black', 'd5')]);
     state = chessEngine.activateDraftModifiers(state, [{ id: MODIFIER_IDS.bankedEnPassant, sourceColor: 'black' }]);
