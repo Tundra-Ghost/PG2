@@ -28,7 +28,10 @@ describe('MOD-E010 Holy Knight (The Archbishop)', () => {
 
   it('picks the same bishop for the same seed', () => {
     const pick = () => {
-      const state = chessEngine.activateDraftModifiers(chessEngine.getInitialState(), [{ id: HOLY, sourceColor: 'black' }]);
+      const start = chessEngine.getInitialState();
+      start.prngSeed = 7;
+      start.prngState = 7;
+      const state = chessEngine.activateDraftModifiers(start, [{ id: HOLY, sourceColor: 'black' }]);
       return Array.from(state.pieces.values()).find(p => p.type === 'archbishop')!.square;
     };
     expect(pick()).toBe(pick());
