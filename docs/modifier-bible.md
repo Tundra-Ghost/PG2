@@ -1,9 +1,9 @@
 # Pigeon Chess: Modifier Design Bible
 
-**Ref:** PC-MOD-001 · **Version:** 0.3 · **Status:** Draft, pre-production
+**Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-40 modifiers in 5 categories. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 40 built, 60 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -14,6 +14,12 @@
 | E | Asymmetric Armies | Non-standard piece configurations |
 
 ## Change log
+
+**v0.4 (2026-11-14)**
+- 60 new design cards, 12 per category (A009 to E020), for 100 in all. None are built yet. They show in the Collection and under "Show upcoming" in the draft, and the draft never offers them.
+- Each new card was checked against the design rules: legible at a glance (Rule 03), skill still decides (Pillar 2), the King is never removed or hidden (Rule 04), no softlocks (Rule 06), curses priced by moves lost (Rule 08). The rulings under each card record how.
+- Three new support cards (Footprints, Flashlight, Crystal Ball) and Tells are gated in the draft like Cat Mode, so they are never dead picks.
+- New conflicts to enforce when built: The Magic Roundabout with This Is My Swamp, and Night Shift with It's Dark And I'm Scared (one of each pair per match).
 
 **v0.3 (2026-10-30)**
 - Converted from HTML to Markdown.
@@ -155,6 +161,132 @@ The board is split by an invisible axis. A move on one half is mirrored on the o
 - Open question: which piece mirrors? The design text says "for that piece", which is unclear. Define before building.
 - Built: the mirror twin moves. When a piece moves, the own piece on the mirror of its start square (across the d/e line, same rank) makes the mirrored move if it is legal for it, and it can capture. Kings, castling and abilities never mirror, and a mirrored pawn that reaches the last rank becomes a Queen. Two pieces can never land on the same square, so the swap rule is not needed. A cyan line marks the axis.
 
+### MOD-A009 · The Birds (Hitchcock Mode)
+*Ref: The Birds (1963)* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Design**
+
+Every 6 rounds a flock lands on a random empty 2×2 area of ranks 3 to 6. Nothing can land on or cross those squares for 2 rounds. The landing spot is shown one round ahead.
+
+*The pigeons have chosen a spot. It is the spot Viktor needed. This is not a coincidence.*
+
+- Ruling: the flock only lands on empty squares, so it never removes a piece.
+- Synergy: The Storm Closes In. Fewer open lanes on a shrinking board.
+- Safety: a flock never lands on a square that would leave a King with no legal move.
+
+### MOD-A010 · The Factory Must Grow
+*Ref: Factorio* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
+
+Ranks 4 and 5 are conveyor belts. At the end of each round, every piece on rank 4 slides one square right and every piece on rank 5 slides one square left. A piece stops at the board edge or behind another piece. Arrows show the belt direction.
+
+*Viktor placed his knight on the belt. The knight is now somewhere else. The factory is pleased.*
+
+- Ruling: belts never capture. A blocked piece stays put.
+- Ruling: a King rides the belt only if the new square is safe. Otherwise it stays.
+- Conflict: This Is My Swamp. Pieces may ride into the Swamp. Intended.
+
+### MOD-A011 · Thinking With Portals
+*Ref: Portal* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Design**
+
+A blue portal sits on c4 and an orange portal on f5. A non-King piece that ends its move on one portal steps out of the other, if that square is empty. Portals never capture and stay all match.
+
+*Viktor's rook entered on the left. It left on the right. Viktor is still on the left.*
+
+- Ruling: if the exit is occupied, the piece simply stays on the entry portal.
+- Ruling: the jump may not leave its own King in check; if it would, it does not happen.
+- Not Vent Tiles: portals are visible, permanent and never capture.
+
+### MOD-A012 · Let It Go
+*Ref: Frozen* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
+
+The central 4×4 squares are ice. A rook, bishop or queen that moves onto ice keeps sliding the same way until it reaches the edge of the ice or the square before a piece. It may still capture the piece it was moving to.
+
+*The queen stepped onto the ice. The queen is now on the other side of the ice. The queen did not plan this.*
+
+- Ruling: knights, pawns and kings are not affected. They have good shoes.
+- Ruling: a slide that would leave its own King in check stops on the first legal square.
+- Not Winter Is Coming: winter stops pieces, ice keeps them going.
+
+### MOD-A013 · The Magic Roundabout
+*Ref: Swindon's Magic Roundabout* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Design**
+
+The four centre squares are a roundabout. At the end of each round, pieces on d4, e4, e5 and d5 move one step clockwise around it, if the next square is free.
+
+*Viktor entered the roundabout in round 6. He is still deciding where to exit.*
+
+- Conflict: This Is My Swamp. Both use the centre; only one may be in a match.
+- Ruling: a King rotates only if the new square is safe.
+- Ruling: rotation never captures. A blocked piece waits.
+
+### MOD-A014 · Minesweeper
+*Ref: Minesweeper* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
+
+Four hidden mines sit on ranks 3 to 6, two on each half of the board. When a piece stops next to a mine, its square shows how many mines touch it, like the classic game. The first non-King piece to land on a mine is lost and the mine is used up.
+
+*Viktor has studied the numbers. Viktor believes the mine is on f5. Viktor sends a pawn to check.*
+
+- Ruling: Kings never trigger mines and mines are never placed next to a starting King.
+- Skill: the numbers turn a random loss into a deduction puzzle.
+- Not Vent Tiles: vents relocate pieces, mines remove them, and mines give clues.
+
+### MOD-A015 · The Roomba
+*Ref: Robot vacuum videos* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Design**
+
+A robot vacuum travels clockwise around the outer ring of the board, one square per round. When it reaches a piece, it pushes that piece one square inward if that square is empty. Otherwise it waits.
+
+*It has bumped into Viktor's rook four times. It will bump into it again. It has no other plans.*
+
+- Ruling: the Roomba never captures and never pushes a King into check.
+- Synergy: The Storm Closes In. Once the storm takes the edge, the Roomba parks itself.
+
+### MOD-A016 · Monument To Gerald
+*Ref: Pigeons and statues, forever* · **Tier B** · Cost 1 · Curse 0 · Scope: Shared · Modes: All · **Design**
+
+A statue of Gerald stands on e4. Nothing can land on it or pass through it. A piece moving into it from an adjacent square pushes it one square the same way, if that square is empty. The push is the whole move.
+
+*They built him a statue. Gerald has been sitting on it since the ribbon was cut.*
+
+- Ruling: the statue cannot be captured. Like any piece, it blocks lines, including lines of check.
+- Synergy: Distracted Piece. Gerald is now in two places. Nobody can explain this.
+
+### MOD-A017 · Tide Goes In, Tide Goes Out
+*Ref: "You can't explain that" meme* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
+
+Every 8 rounds the tide comes in and ranks 4 and 5 become water for 4 rounds. Pieces may cross water but only knights may stop on it. A piece already on water when the tide arrives may only move off it. A warning shows the round before.
+
+*The tide came in. The tide went out. Viktor cannot explain that.*
+
+- Ruling: a King caught by the tide may still move normally. The King is sacred.
+- Conflict: The Factory Must Grow. Belts stop while flooded.
+
+### MOD-A018 · Shake It Off
+*Ref: Taylor Swift* · **Tier S** · Cost 4 · Curse 2 · Scope: Shared · Modes: All · **Design**
+
+Every 10 rounds an earthquake moves every non-King piece one square in a random direction, if that square is empty. Each piece shows its arrow one round ahead, so both players can prepare.
+
+*The ground is shaking. Viktor's pieces are shaking. The pigeons are dancing.*
+
+- Ruling: no piece is ever shaken off the board, onto another piece, or into a square that leaves its King in check.
+- Skill: the one-round warning is the point. A prepared player gains from the quake.
+
+### MOD-A019 · Crop Circles
+*Ref: Signs / The X-Files* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Design**
+
+Every 8 rounds a 3×3 crop circle appears on the middle ranks for 3 rounds. Pieces inside it cannot be captured. They can still move and capture out of it.
+
+*Something made these patterns overnight. Viktor's bishop is inside one. It feels safe. It has not asked why.*
+
+- Ruling: a King in the circle is still in check normally. Safe zones never break check.
+- Synergy: FOR THE EMPEROR. The cannonball passes over circle pieces.
+
+### MOD-A020 · One Way Street
+*Ref: Every city centre* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Design**
+
+The c-file runs north only and the f-file runs south only. A piece moving along one of those files may only move in its arrow's direction. Crossing the file sideways is allowed.
+
+*Viktor's rook wished to go home. The sign said no.*
+
+- Ruling: Kings ignore the signs. They have a motorcade.
+- Ruling: arrows only limit movement along the file, never captures that happen to cross it.
+
 ## Category B: Cursed
 
 Negative effects that grant extra point budget. Curses fill the Madness Meter. All curses are Scope: Owner.
@@ -253,6 +385,127 @@ After each of the owner's moves, the pigeon critic Reginald Beak reviews it in t
 - Content: about 30 review lines written. Target 150.
 - Changed from v0.2: cost 0 and curse 0 (was -1 / 1). A curse with no downside was free points. If Reginald ever gets a small gameplay effect, re-price it.
 
+### MOD-B009 · Speedrun Any%
+*Ref: Speedrunning* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
+
+You have 15 seconds for each move. If the timer runs out, a random legal move is played for you. The timer pauses while any popup is open.
+
+*Viktor has never been rushed. Viktor is being rushed. Viktor finds it invigorating and upsetting.*
+
+- Modes: not in correspondence-style online games.
+- Ruling: the random move never leaves your King in check.
+- Pricing: a fast player loses almost nothing, a slow one a lot. Skill matters.
+
+### MOD-B010 · Main Character Syndrome
+*Ref: Social media* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+
+Your Queen must move at least once every 4 of your moves. If you skip her too long, your next move must be a Queen move if she has one.
+
+*The queen would like to remind everyone that this is her story.*
+
+- Ruling: in check, you may make any legal move. The demand waits.
+- Ruling: once your Queen is captured, the curse ends.
+
+### MOD-B011 · Case Of The Mondays
+*Ref: Office Space / Garfield* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+
+For your first 6 moves, none of your pieces may move more than 2 squares.
+
+*It is round one. Viktor's bishop has not had its coffee.*
+
+- Ruling: knights are unaffected; a knight jump counts as 2 squares.
+- Ruling: castling is allowed. The King moves 2 squares, which is fine.
+
+### MOD-B012 · Bless You
+*Ref: Sneezing, universally* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+
+Every 8th move you make with a rook, bishop or queen, the piece sneezes and stops one square short. A counter on the piece shows when the next sneeze is due.
+
+*The bishop sneezed. The bishop is very sorry. The bishop is one square short of where it meant to be.*
+
+- Ruling: if stopping short is illegal (it leaves your King in check), the move happens in full.
+- Ruling: a one-square slide cannot sneeze. It does not have room.
+
+### MOD-B013 · Death And Taxes
+*Ref: Benjamin Franklin* · **Tier S** · Cost -3 · Curse 3 · Scope: Owner · Modes: All · **Design**
+
+Every 10 of your moves, the tax office collects one of your pawns: the one furthest back. You are warned one move before. Once you have no pawns, the curse ends.
+
+*Viktor has filed his return. The pawn has been seized. Viktor is told this is normal.*
+
+- Pricing: costs about 4 pawns in a 40-round game, so it grants the full 3 points.
+- Ruling: the tax never takes a pawn that is shielding your King from check; it takes the next one.
+
+### MOD-B014 · Imposter Syndrome
+*Ref: Every new job* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+
+After your Queen captures, she doubts herself. Her next move can only be one square, like a King.
+
+*She took the rook. She is not sure she deserved to take the rook. She will take one small step now.*
+
+- Ruling: the doubt shows as a small cloud over the Queen.
+- Synergy: Main Character Syndrome. She must move, but only a little. Character development.
+
+### MOD-B015 · Commitment Issues
+*Ref: The touch-move rule* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+
+Touch-move rules apply to you. Once you select a piece that has a legal move, you must move that piece.
+
+*Viktor touched the knight. The knight looked at him. They both knew what had to happen.*
+
+- Ruling: selecting a piece with no legal moves does not count.
+- Phones: hold-to-read never counts as touching. Only a tap selects.
+
+### MOD-B016 · Lunch Break
+*Ref: Union rules* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
+
+Every 10 of your moves, your rooks and Queen go on lunch. On your next move they cannot move. A sign shows the round before.
+
+*The rooks have gone to lunch. They took the queen. They did not invite Viktor.*
+
+- Ruling: in check, lunch is cancelled. Everyone works.
+- Not Quiet Quitting: this is a curse on a schedule, not a choice.
+
+### MOD-B017 · MINE!
+*Ref: Finding Nemo* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
+
+Every 8 of your moves, a seagull swoops in and carries your most advanced pawn one square back toward your side, if that square is empty.
+
+*The seagull took the pawn. The seagull said mine. Viktor disagrees about whose it was.*
+
+- Ruling: the seagull never lands a pawn on rank 1 or 8 and never exposes your King.
+- Lore: the seagull is not a pigeon. The pigeons are embarrassed for it.
+
+### MOD-B018 · Rubber Banding
+*Ref: Online game lag* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
+
+Every 7th move you make lags: the piece moves, then snaps back to where it started. The move still counts as your turn. A ping counter shows when the next lag is due.
+
+*Viktor moved the bishop. The bishop moved back. Viktor blames his internet. Viktor does not have internet.*
+
+- Ruling: captures never lag, and a move out of check never lags.
+- Skill: the counter is visible, so you can spend the lag on a move you did not need.
+
+### MOD-B019 · Peer Pressure
+*Ref: Checkers* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
+
+If one of your pawns can capture, you must make a pawn capture. Your opponent can use this to drag your pawns out of position.
+
+*All the other pawns were capturing. This pawn did not want to. This pawn captured.*
+
+- Ruling: in check, any legal move is allowed.
+- Synergy: Conscientious Objector. The pacifist pawn is exempt and very smug about it.
+
+### MOD-B020 · Roll For Initiative
+*Ref: Dungeons & Dragons* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
+
+On every 3rd move you make, a die picks a piece type. You must move a piece of that type if you can. If you cannot, you choose freely.
+
+*The die says knight. Viktor wanted the queen. The die does not care what Viktor wanted.*
+
+- Ruling: in check, any legal move is allowed.
+- Ruling: the die only rolls types you still have, so it is never a dead roll.
+
 ## Category C: Active Abilities
 
 Cooldown powers on piece types. Select a piece, press the ability button. Using an ability costs your move. Cooldowns count the owner's moves and are tracked per piece. All abilities are Scope: Owner.
@@ -330,6 +583,121 @@ When an enemy pawn double-steps past your pawn, your pawn banks the en passant. 
 - Conflict: 50 First Moves. A banked capture is lost in a blackout.
 - Changed from v0.2: both pawns must stay put.
 
+### MOD-C009 · YEET
+*Ref: The internet* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Your rook shoves an adjacent enemy piece one square straight away from it, if that square is empty. The rook stays put. Uses your move.
+
+*The rook did not ask. The bishop is now somewhere else.*
+
+- Ruling: cannot shove a King, and cannot shove a piece off the board or into a capture.
+- Synergy: The Floor Is Lava. Yes. That is what it is for.
+
+### MOD-C010 · Leap Of Faith
+*Ref: Assassin's Creed* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Your bishop jumps over the first piece on one of its diagonals and lands on the empty square right behind it. No capture. Uses your move.
+
+*The bishop jumped. There was a haystack. There is always a haystack.*
+
+- Ruling: the landing square must be empty and the jump may not leave your King in check.
+
+### MOD-C011 · GET OVER HERE!
+*Ref: Mortal Kombat* · **Tier S** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Your Queen pulls the first enemy piece on one of her lines to the square next to her. Uses your move. The piece is not captured, but now it is very close.
+
+*The queen threw a chain. Nobody knows where she got the chain.*
+
+- Ruling: cannot pull a King, and the pull may not leave your own King in check.
+- Balance: the pulled piece may defend itself next move. The pull sets up, it does not win.
+
+### MOD-C012 · Freaky Friday
+*Ref: Freaky Friday* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Two of your adjacent pieces swap places. Neither may be your King. Uses your move.
+
+*The knight is the bishop now. The bishop is the knight. They are learning a lot about each other.*
+
+- Ruling: a pawn may not be swapped onto rank 1 or 8.
+- Ruling: the swap may not leave your King in check.
+
+### MOD-C013 · Hold My Bread
+*Ref: "Hold my beer" meme* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+A pawn guards an adjacent friendly piece. That piece cannot be captured during your opponent's next move. Uses your move.
+
+*The pawn said hold my bread. The bishop held the bread. The bishop survived.*
+
+- Ruling: cannot shield your King. Check is check.
+
+### MOD-C014 · Run, Forrest, Run
+*Ref: Forrest Gump* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Your King runs two squares in a straight line, if both squares are empty and safe. Uses your move.
+
+*Viktor's king just felt like running.*
+
+- Ruling: allowed in check, as long as it ends out of check. It may not run through an attacked square.
+- King review: the King only gains movement. Core rule 1 holds.
+
+### MOD-C015 · Ctrl+Z
+*Ref: Every computer ever* · **Tier S** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Once per match, before your move, undo the last round: your last move and your opponent's reply both go back. Then you move again.
+
+*Viktor pressed undo. The universe complied. The pigeons noticed.*
+
+- Ruling: random events of that round (lava, storm, gravity) are not rerolled. The seed is kept, so the world repeats.
+- Ruling: cannot undo a round that ended the game.
+
+### MOD-C016 · Bullet Time
+*Ref: The Matrix* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Your knight makes two jumps in one move. The first jump cannot capture. The second can.
+
+*Everything slowed down. The knight did not.*
+
+- Ruling: neither jump may leave your King in check, and the knight cannot give check with the first jump.
+
+### MOD-C017 · Get Off My Lawn
+*Ref: Gran Torino* · **Tier B** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Every enemy pawn next to your King is pushed one square back toward its own side, if that square is empty. Uses your move.
+
+*Viktor's king has asked the pawns to leave. The pawns have left. They will be back.*
+
+- Ruling: allowed in check only if the push ends the check.
+
+### MOD-C018 · Dirt Hut
+*Ref: Minecraft* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Your rook places a wall on an empty square next to it. Nothing can land on or cross the wall for 4 rounds. Uses your move.
+
+*Viktor built a wall. It is made of dirt. It is the best wall he has ever built.*
+
+- Ruling: a wall never cuts off the last legal move of either King.
+- Safety: at most 2 walls of yours at a time.
+
+### MOD-C019 · Everyone Has A Price
+*Ref: Every heist movie* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+An enemy pawn next to your Queen accepts a bribe and joins your side. It must be on its own half of the board. Uses your move.
+
+*Viktor offered bread. The pawn accepted bread. Loyalty is a matter of bread.*
+
+- Ruling: a bribed pawn may not give check on the move it changes sides.
+- Balance: on its own half only, so the bribe cannot buy a pawn about to promote.
+
+### MOD-C020 · Gotta Go Fast
+*Ref: Sonic the Hedgehog* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+A pawn moves two squares forward from any rank, if both squares are empty. No capture.
+
+*The pawn has been told about promotion. The pawn is in a hurry.*
+
+- Ruling: no en passant can be taken against a dash.
+
 ## Category D: Fog of War
 
 Information is power. These cards restrict, corrupt, or weaponise visibility. They apply to both players unless stated. All fog cards need per-player views, so none are built yet. Online, the server must never send hidden pieces to a player (see TDD).
@@ -396,6 +764,122 @@ One tile is the Surveillance Square, a golden eye both players see. Any piece th
 
 - Built: the eye sits in the middle 4×4 and does not move. Moving onto the eye counts. Each sighting is announced in the log, so the card still does something without a fog card.
 
+### MOD-D009 · Invisibility Cloak
+*Ref: Harry Potter* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+At match start, pick one of your non-King pieces. It is invisible to your opponent for the first 10 rounds, or until it captures or gives check.
+
+*Viktor's bishop is wearing a cloak. Viktor's opponent is very confused about the missing bishop.*
+
+- Ruling: enemy pieces still cannot move through it. They bump into it and it is revealed.
+- Bots: bots play with the same blindness, so it works against them too.
+
+### MOD-D010 · Night Shift
+*Ref: Minecraft day and night* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
+
+Every 8 rounds night falls for 4 rounds. At night, each player sees only within 2 squares of their own pieces. The sky in the header shows the time of day.
+
+*It is night. The pigeons have gone to sleep. Viktor has not. Viktor cannot sleep during a match.*
+
+- Conflict: It's Dark And I'm Scared. Already always night. Only one may be in a match.
+- Synergy: Cat Mode. Works at night too.
+
+### MOD-D011 · Footprints
+*Ref: CSI* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+When an enemy piece moves out of your sight, it leaves footprints on the square it left for 2 rounds. Only offered once a fog card is in the draft.
+
+*Something walked through here. It had small feet. Viktor suspects a pawn.*
+
+- Draft: gated like Cat Mode, so it is never a dead pick.
+
+### MOD-D012 · Flashlight
+*Ref: Five Nights at Freddy's* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Once every 4 of your moves, shine a light on any 3×3 area. You see through fog, smoke and blind spots there for 1 round. It does not use your move. Only offered once a fog card is in the draft.
+
+*Viktor shone the light. Something was there. It was a knight. It was so much worse than a knight.*
+
+- Draft: gated like Cat Mode.
+
+### MOD-D013 · Poker Face
+*Ref: Lady Gaga* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Your opponent's move log shows only the squares your pieces moved to, not which piece moved. Your captured-pieces tray is hidden from them.
+
+*Viktor's face reveals nothing. It never has. That is not the card. That is just Viktor.*
+
+- Ruling: the board itself is unchanged. This only hides the bookkeeping.
+- Why: punishes players who read the log instead of the board.
+
+### MOD-D014 · Shell Game
+*Ref: The cups and ball trick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Your Queen and two of your pawns look like cups to your opponent. Each cup shows its true piece the first time it moves or is attacked.
+
+*Three cups. One queen. Viktor's opponent is watching very carefully. It will not help.*
+
+- Ruling: the King is never disguised. Core rule 1.
+- Not Sus: Sus fakes one piece forever; the shell game hides three until they move.
+
+### MOD-D015 · Camouflage
+*Ref: Predator* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Any of your non-King pieces that stays still for 4 of your moves blends in and turns invisible to your opponent. It reappears when it moves, gives check, or is touched by an enemy move.
+
+*The rook has been very still. The rook is part of the board now. The rook has achieved peace.*
+
+- Ruling: enemy moves still bump into hidden pieces, revealing them.
+- Skill: rewards patient, planned ambushes.
+
+### MOD-D016 · Jump Scare
+*Ref: Five Nights at Freddy's* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Design**
+
+Every 10 rounds the lights go out for one round. Both players make one move with every piece hidden except their own King. A warning flickers the round before.
+
+*The lights went out. Viktor moved his knight from memory. The knight was not where Viktor remembered.*
+
+- Ruling: illegal blind moves are rejected and you pick again. No move is lost.
+- Skill: the warning gives a round to memorise the board.
+
+### MOD-D017 · Crystal Ball
+*Ref: Fortune tellers* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+You see every timed event two rounds earlier than normal: lava moves, storm waves, gravity shifts, pigeon hops, earthquakes, tides and the like.
+
+*The ball shows lava. The ball always shows lava. This time it is right.*
+
+- Draft: only offered once a card with timed events is in the draft.
+
+### MOD-D018 · Tells
+*Ref: Poker* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+You see a glow on every enemy piece whose ability is ready to use, and the number of turns left on the rest.
+
+*The rook twitched. Viktor knows what a twitching rook means.*
+
+- Draft: only offered once your opponent has an ability card.
+
+### MOD-D019 · Spoiler Alert
+*Ref: Spoilers, everywhere* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
+
+After each move, the player must mark which piece they will move next. Both players see the mark. In check, the mark is cancelled.
+
+*Viktor has been told the ending. He is disappointed. He will still play the move.*
+
+- Ruling: if the marked piece has no legal move, any move is allowed.
+- Not Forgive Me: that card targets one enemy piece; this binds both players every move.
+
+### MOD-D020 · Masquerade
+*Ref: The Phantom of the Opera* · **Tier S** · Cost 4 · Curse 2 · Scope: Shared · Modes: All · **Design**
+
+For the first 6 rounds, every piece except the Kings wears the same mask, for both players. Pieces still move as themselves. Remember your setup.
+
+*Everyone is wearing a mask. Viktor is wearing a mask. Viktor's mask has a better jawline.*
+
+- Ruling: moves are legal by true type; selecting a piece still shows its real moves to its owner.
+- Skill: a memory test that the stronger player wins.
+
 ## Category E: Asymmetric Armies
 
 Non-standard piece setups. Both players see both armies before the match.
@@ -461,6 +945,117 @@ Each piece the owner loses gives a Mercenary Token (max 3). Spend a Token (costs
 - Ruling: a defected Traitor piece that is captured can be bought back. (Not built yet: the build counts the piece's colour when it is captured.)
 - Balance flag: the drop-check guard is critical.
 
+### MOD-E009 · Slay Queen (The Amazon)
+*Ref: Fairy chess Amazon* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Your Queen can also move like a knight.
+
+*She can go anywhere. She has decided to go everywhere.*
+
+- Balance: the strongest piece in fairy chess. Full cost, no discount.
+
+### MOD-E010 · Holy Knight (The Archbishop)
+*Ref: Capablanca chess* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+One of your bishops becomes an Archbishop. Each move, it moves like a bishop or like a knight.
+
+*The bishop prayed for more options. The prayer was answered. The answer had a horse in it.*
+
+- Pair: the bishop-side twin of Equivalent Exchange.
+
+### MOD-E011 · Lawrence Of Arabia
+*Ref: Lawrence of Arabia* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Your knights become Camels. A Camel leaps three squares one way and one square the other, jumping over pieces.
+
+*The camel has crossed the desert. The desert was the queenside. Nobody was ready.*
+
+- Balance: a Camel stays on one square colour, like a bishop. Cheap trade, real tradeoffs.
+
+### MOD-E012 · Hopscotch
+*Ref: Fairy chess Grasshopper* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+One of your rooks becomes a Grasshopper. It moves along any queen line but must hop over exactly one piece and land on the square right behind it, capturing anything there.
+
+*It needs something to jump over. It is always looking for something to jump over. It is exhausting.*
+
+- Ruling: with nothing to hop over, a Grasshopper cannot move. It still gives check by hopping.
+
+### MOD-E013 · Overseas Hire (The Cannon)
+*Ref: Xiangqi, Chinese chess* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+One of your rooks becomes a Cannon. It moves like a rook, but captures only by jumping over exactly one piece on its line to take the next one.
+
+*The cannon arrived from abroad. It brought its own rules. It is very proud of them.*
+
+- Ruling: the Cannon gives check only through a screen piece, like in xiangqi.
+
+### MOD-E014 · Crab Rave
+*Ref: Crab Rave* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Your pawns can also step one square sideways onto an empty square. They still capture only diagonally forward.
+
+*The pawns have learned to walk sideways. The pawns will not stop walking sideways.*
+
+- Ruling: a sideways step is not a double step and gives no en passant.
+
+### MOD-E015 · Stonks
+*Ref: Stonks meme* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Start the match with two fewer pawns (the a- and h-pawns) and an extra knight on b3.
+
+*Viktor sold two pawns. Viktor bought a horse. The market reacted.*
+
+- Balance: two pawns are worth about one knight. The trade buys tempo, not material.
+
+### MOD-E016 · Hatchery
+*Ref: Pigeons, and their eggs* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+A pigeon Egg sits on your d3 square. It cannot move. If it survives 10 rounds, it hatches into a Pigeon, which moves like a knight.
+
+*Viktor is guarding an egg. The egg is the most important piece on the board. The egg disagrees.*
+
+- Ruling: the Egg can be captured like a pawn, and it blocks like any piece.
+- Synergy: Hatoful Gambit. Your flock grows to three.
+
+### MOD-E017 · The Bodyguard
+*Ref: The Bodyguard (1992)* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+A Bodyguard replaces your g-pawn. It moves like a King. As its move, it may swap places with your King if they are next to each other.
+
+*He will take the check for the King. He has said this many times. Nobody asked.*
+
+- Ruling: a swap may not leave your King in check, and a swap out of check is allowed if it ends the check.
+- King review: the King only gains a way out. Core rule 1 holds.
+
+### MOD-E018 · Zerg Rush
+*Ref: StarCraft* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Your pawns may move two squares forward from any rank, if both squares are empty. They capture normally.
+
+*The pawns are coming. All of them. Right now.*
+
+- Ruling: en passant works against every two-square move, from any rank.
+- Not Gotta Go Fast: that is one pawn on a cooldown; this is all of them, always.
+
+### MOD-E019 · Knight Rider
+*Ref: Knight Rider (KITT)* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
+
+Your knights may repeat the same L-jump in a straight line, as long as each landing square is empty, stopping on or capturing at the last.
+
+*The knight has a talking car. The knight will not stop talking about the talking car.*
+
+- Ruling: known in fairy chess as the Nightrider.
+
+### MOD-E020 · Elephant In The Room
+*Ref: Xiangqi elephants* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+
+Your bishops become Elephants. An Elephant moves exactly two squares diagonally, jumping over the square between.
+
+*Nobody is talking about the elephants. The elephants are fine with this.*
+
+- Pricing: a weaker piece, so the card pays back a point, like a curse.
+
 ## Balance summary
 
 Values the game uses today. "Built" cards match the build.
@@ -507,8 +1102,68 @@ Values the game uses today. "Built" cards match the build.
 | E006 | BOY. | E | A | 4 | 0 | Owner | Built |
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
+| A009 | The Birds (Hitchcock Mode) | A | B | 2 | 0 | Shared | Design |
+| A010 | The Factory Must Grow | A | A | 3 | 1 | Shared | Design |
+| A011 | Thinking With Portals | A | B | 2 | 0 | Shared | Design |
+| A012 | Let It Go | A | A | 3 | 1 | Shared | Design |
+| A013 | The Magic Roundabout | A | B | 2 | 0 | Shared | Design |
+| A014 | Minesweeper | A | A | 3 | 1 | Shared | Design |
+| A015 | The Roomba | A | B | 2 | 0 | Shared | Design |
+| A016 | Monument To Gerald | A | B | 1 | 0 | Shared | Design |
+| A017 | Tide Goes In, Tide Goes Out | A | A | 3 | 1 | Shared | Design |
+| A018 | Shake It Off | A | S | 4 | 2 | Shared | Design |
+| A019 | Crop Circles | A | B | 2 | 0 | Shared | Design |
+| A020 | One Way Street | A | B | 2 | 1 | Shared | Design |
+| B009 | Speedrun Any% | B | A | -2 | 2 | Owner | Design |
+| B010 | Main Character Syndrome | B | B | -1 | 1 | Owner | Design |
+| B011 | Case Of The Mondays | B | B | -1 | 1 | Owner | Design |
+| B012 | Bless You | B | B | -1 | 1 | Owner | Design |
+| B013 | Death And Taxes | B | S | -3 | 3 | Owner | Design |
+| B014 | Imposter Syndrome | B | B | -1 | 1 | Owner | Design |
+| B015 | Commitment Issues | B | B | -1 | 1 | Owner | Design |
+| B016 | Lunch Break | B | A | -2 | 2 | Owner | Design |
+| B017 | MINE! | B | A | -2 | 2 | Owner | Design |
+| B018 | Rubber Banding | B | A | -2 | 2 | Owner | Design |
+| B019 | Peer Pressure | B | A | -2 | 2 | Owner | Design |
+| B020 | Roll For Initiative | B | A | -2 | 2 | Owner | Design |
+| C009 | YEET | C | A | 3 | 0 | Owner | Design |
+| C010 | Leap Of Faith | C | A | 3 | 0 | Owner | Design |
+| C011 | GET OVER HERE! | C | S | 4 | 0 | Owner | Design |
+| C012 | Freaky Friday | C | B | 2 | 0 | Owner | Design |
+| C013 | Hold My Bread | C | B | 2 | 0 | Owner | Design |
+| C014 | Run, Forrest, Run | C | B | 2 | 0 | Owner | Design |
+| C015 | Ctrl+Z | C | S | 4 | 0 | Owner | Design |
+| C016 | Bullet Time | C | A | 4 | 0 | Owner | Design |
+| C017 | Get Off My Lawn | C | B | 3 | 0 | Owner | Design |
+| C018 | Dirt Hut | C | A | 3 | 0 | Owner | Design |
+| C019 | Everyone Has A Price | C | S | 5 | 0 | Owner | Design |
+| C020 | Gotta Go Fast | C | B | 2 | 0 | Owner | Design |
+| D009 | Invisibility Cloak | D | A | 3 | 0 | Owner | Design |
+| D010 | Night Shift | D | A | 3 | 1 | Shared | Design |
+| D011 | Footprints | D | B | 1 | 0 | Owner | Design |
+| D012 | Flashlight | D | B | 2 | 0 | Owner | Design |
+| D013 | Poker Face | D | B | 1 | 0 | Owner | Design |
+| D014 | Shell Game | D | A | 3 | 0 | Owner | Design |
+| D015 | Camouflage | D | A | 3 | 0 | Owner | Design |
+| D016 | Jump Scare | D | B | 2 | 1 | Shared | Design |
+| D017 | Crystal Ball | D | B | 1 | 0 | Owner | Design |
+| D018 | Tells | D | B | 1 | 0 | Owner | Design |
+| D019 | Spoiler Alert | D | A | 3 | 1 | Shared | Design |
+| D020 | Masquerade | D | S | 4 | 2 | Shared | Design |
+| E009 | Slay Queen (The Amazon) | E | S | 5 | 0 | Owner | Design |
+| E010 | Holy Knight (The Archbishop) | E | A | 4 | 0 | Owner | Design |
+| E011 | Lawrence Of Arabia | E | B | 1 | 0 | Owner | Design |
+| E012 | Hopscotch | E | B | 2 | 0 | Owner | Design |
+| E013 | Overseas Hire (The Cannon) | E | A | 3 | 0 | Owner | Design |
+| E014 | Crab Rave | E | A | 3 | 0 | Owner | Design |
+| E015 | Stonks | E | B | 2 | 0 | Owner | Design |
+| E016 | Hatchery | E | A | 3 | 0 | Owner | Design |
+| E017 | The Bodyguard | E | A | 3 | 0 | Owner | Design |
+| E018 | Zerg Rush | E | A | 3 | 0 | Owner | Design |
+| E019 | Knight Rider | E | A | 4 | 0 | Owner | Design |
+| E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Design |
 
-40 of 40 built.
+40 of 100 built. The other 60 are designs (v0.4).
 
 ### Balance test plan
 
