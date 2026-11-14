@@ -1,4 +1,4 @@
-import type { Color, GameState, PieceType, Square } from '../engine/types';
+import type { Color, GameState, ModifierID, PieceType, Square } from '../engine/types';
 import type { OnlineDraft } from '../draft/online';
 import type { WireGameState } from './wire';
 
@@ -51,6 +51,10 @@ export interface MoveRequest {
   from: Square;
   to: Square;
   promotion?: PieceType;
+  /** An active ability (C cards) played instead of a normal move. */
+  ability?: ModifierID;
+  /** The piece an ability places, such as a Moneyball drop. */
+  dropType?: PieceType;
 }
 
 /**
