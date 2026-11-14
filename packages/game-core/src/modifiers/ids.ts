@@ -20,6 +20,7 @@ export const MODIFIER_IDS = {
   forTheEmperor: 'MOD-C006',
   theSnap: 'MOD-C007',
   bankedEnPassant: 'MOD-C008',
+  gottaGoFast: 'MOD-C020',
   smallCouncil: 'MOD-E002',
   threeKings: 'MOD-E003',
   berserker: 'MOD-E006',

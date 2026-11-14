@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 41 built, 59 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 42 built, 58 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -690,13 +690,18 @@ An enemy pawn next to your Queen accepts a bribe and joins your side. It must be
 - Balance: on its own half only, so the bribe cannot buy a pawn about to promote.
 
 ### MOD-C020 · Gotta Go Fast
-*Ref: Sonic the Hedgehog* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Sonic the Hedgehog* · **Tier B** · Cost 2 · Curse 0 · Pawn · Cooldown 4 · Scope: Owner · Modes: All · **Built**
 
-A pawn moves two squares forward from any rank, if both squares are empty. No capture.
+Select a pawn and press Dash. It moves two squares forward from any rank, if both squares are empty. No capture. Then that pawn waits 4 of your moves.
 
 *The pawn has been told about promotion. The pawn is in a hurry.*
 
-- Ruling: no en passant can be taken against a dash.
+- Ruling: no en passant can be taken against a dash. I've Been Waiting For This does not bank it either.
+- Ruling: the dash may not leave your King in check. It may block a check.
+- Ruling: in the Swamp a pawn moves only 1 square, so it cannot dash out.
+- Ruling: a pawn slowed by The Cordyceptic Spread has lost its double step, so it cannot dash.
+- Ruling: under The Storm Closes In, the last open rank counts as the last rank.
+- Changed from design: a dash cannot reach the last rank, so it never promotes. The design gave no cooldown; the build uses 4 of your moves.
 
 ## Category D: Fog of War
 
@@ -1145,7 +1150,7 @@ Values the game uses today. "Built" cards match the build.
 | C017 | Get Off My Lawn | C | B | 3 | 0 | Owner | Design |
 | C018 | Dirt Hut | C | A | 3 | 0 | Owner | Design |
 | C019 | Everyone Has A Price | C | S | 5 | 0 | Owner | Design |
-| C020 | Gotta Go Fast | C | B | 2 | 0 | Owner | Design |
+| C020 | Gotta Go Fast | C | B | 2 | 0 | Owner | Built |
 | D009 | Invisibility Cloak | D | A | 3 | 0 | Owner | Design |
 | D010 | Night Shift | D | A | 3 | 1 | Shared | Design |
 | D011 | Footprints | D | B | 1 | 0 | Owner | Design |
@@ -1171,7 +1176,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Design |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Design |
 
-41 of 100 built. The other 59 are designs (v0.4).
+42 of 100 built. The other 58 are designs (v0.4).
 
 ### Balance test plan
 

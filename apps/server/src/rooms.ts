@@ -18,6 +18,7 @@ import {
   type GameSummary,
   type SeatRef,
   type GameState,
+  type Move,
   type MoveRequest,
   type OnlineDraft,
   type RoomAck,
@@ -167,6 +168,17 @@ export class RoomManager {
 
     // The seat decides the colour, never the client payload.
     const state = room.state;
+    if (req.ability) {
+      // Abilities follow their own target rules; validateMove checks them.
+      const ability: Move = { from: req.from, to: req.to, playerColor: color, ability: req.ability };
+      if (req.dropType) ability.dropType = req.dropType;
+      const checked = chessEngine.validateMove(state, ability);
+      if (!checked.valid) return { ok: false, reason: checked.reason ?? 'Illegal move.' };
+      room.state = chessEngine.applyMove(state, ability);
+      room.drawOffer = null;
+      this.touch(room);
+      return { ok: true };
+    }
     const move = { ...buildMove(state, req.from, req.to), playerColor: color };
     if (isPromotionMove(state, req.from, req.to)) {
       if (!req.promotion) return { ok: false, reason: 'Choose a promotion piece.' };
