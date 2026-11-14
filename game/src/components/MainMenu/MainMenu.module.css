@@ -359,7 +359,7 @@
 
 .tonePlum {
   color: var(--ui-cream);
-  background: #82718a;
+  background: #7a6982;
 }
 
 .toneSlate {
@@ -964,4 +964,10 @@
 .toneOlive .cardCopy,
 .toneSand .cardCopy {
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.55), 0 0 10px rgba(255, 255, 255, 0.35);
+}
+
+/* On the light cards the arrow text is dark, so its circle lightens instead of darkening. */
+.toneOlive .cardArrow,
+.toneSand .cardArrow {
+  background: rgba(255, 255, 255, 0.72);
 }
