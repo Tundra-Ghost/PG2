@@ -44,6 +44,7 @@ import { forgiveMeDef } from './definitions/forgive-me';
 import { noIDontThinkIWillDef } from './definitions/no-i-dont-think-i-will';
 import { bandersnatchDef } from './definitions/bandersnatch';
 import { gottaGoFastDef } from './definitions/gotta-go-fast';
+import { crabRaveDef } from './definitions/crab-rave';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -86,3 +87,4 @@ modifierRegistry.register(forgiveMeDef);
 modifierRegistry.register(noIDontThinkIWillDef);
 modifierRegistry.register(bandersnatchDef);
 modifierRegistry.register(gottaGoFastDef);
+modifierRegistry.register(crabRaveDef);

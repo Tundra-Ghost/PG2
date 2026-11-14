@@ -222,7 +222,8 @@ export function buildMove(state: GameState, from: Square, to: Square): Move {
   }
 
   if (piece.type === 'pawn') {
-    if (to === state.flags.enPassantSquare) {
+    // A sideways step (MOD-E014) stays on its rank and is never en passant.
+    if (to === state.flags.enPassantSquare && to[1] !== from[1]) {
       move.isEnPassant = true;
     }
     // Promotion flag — caller (Board) is responsible for setting move.promotion
@@ -263,7 +264,9 @@ export function applyMoveInternal(state: GameState, move: Move): GameState {
   next.flags.enPassantSquare = null;
 
   const isCapture = next.pieces.has(move.to) || move.isEnPassant === true;
-  if (piece.type === 'pawn' || isCapture) {
+  // A sideways pawn step (MOD-E014) can be undone, so it does not reset the clock.
+  const pawnAdvance = piece.type === 'pawn' && move.from[1] !== move.to[1];
+  if (pawnAdvance || isCapture) {
     next.flags.halfMoveClock = 0;
   } else {
     next.flags.halfMoveClock++;
