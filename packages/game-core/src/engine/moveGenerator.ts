@@ -155,8 +155,8 @@ function pawnMoves(state: GameState, piece: Piece): Square[] {
   const oneAhead = toSquare(f, r + dir);
   if (oneAhead && !state.pieces.has(oneAhead) && !isVoidSquare(state, oneAhead)) {
     result.push(oneAhead);
-    // Double push from starting rank
-    if (r === startRank) {
+    // Double push from the starting rank, or from any rank with MOD-E018 Zerg Rush
+    if (r === startRank || affectsColor(state, MODIFIER_IDS.zergRush, piece.color)) {
       const twoAhead = toSquare(f, r + 2 * dir);
       if (twoAhead && !state.pieces.has(twoAhead)) {
         result.push(twoAhead);

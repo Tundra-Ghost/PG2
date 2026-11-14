@@ -45,6 +45,7 @@ export const MODIFIER_IDS = {
   holyKnight: 'MOD-E010',
   peerPressure: 'MOD-B019',
   commitmentIssues: 'MOD-B015',
+  zergRush: 'MOD-E018',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];

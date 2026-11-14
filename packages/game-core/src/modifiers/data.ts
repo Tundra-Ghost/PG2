@@ -1503,6 +1503,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your pawns may move two squares forward from any rank, if both squares are empty. They capture normally.',
     flavor: '"The pawns are coming. All of them. Right now."',
+    prototypeRules:
+      'Your pawns may move two squares straight ahead from any rank, if both squares are empty. A two-square move may reach the last rank and promote. They capture normally. Your opponent may take any two-square move en passant.',
   },
   {
     id: 'MOD-E019',

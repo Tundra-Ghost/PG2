@@ -49,6 +49,7 @@ import { peerPressureDef } from './definitions/peer-pressure';
 import { commitmentIssuesDef } from './definitions/commitment-issues';
 import { gottaGoFastDef } from './definitions/gotta-go-fast';
 import { crabRaveDef } from './definitions/crab-rave';
+import { zergRushDef } from './definitions/zerg-rush';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -96,3 +97,4 @@ modifierRegistry.register(peerPressureDef);
 modifierRegistry.register(commitmentIssuesDef);
 modifierRegistry.register(gottaGoFastDef);
 modifierRegistry.register(crabRaveDef);
+modifierRegistry.register(zergRushDef);
