@@ -91,6 +91,15 @@ describe('MOD-E018 Zerg Rush', () => {
     expect(movesFrom(state, 'e4')).toEqual(['e5']);
   });
 
+  it('an infected pawn loses its two-square move', () => {
+    const state = withZerg([makePiece('pawn', 'white', 'd4', 'rusher')]);
+    state.activeModifiers.push({ id: MODIFIER_IDS.cordycepticSpread, name: 'The Cordyceptic Spread', activeFor: 'both', sourceColor: null });
+    state.tiles.set('d4', { square: 'd4', effects: [{ type: 'infected', turnsRemaining: -1 }] });
+    state.modifierState[MODIFIER_IDS.cordycepticSpread] = { rot: { rusher: 1 } };
+    expect(chessEngine.validateMove(state, move('d4', 'd6', 'white')).valid).toBe(false);
+    expect(chessEngine.validateMove(state, move('d4', 'd5', 'white')).valid).toBe(true);
+  });
+
   it('lets Small Council third-rank pawns double step', () => {
     let state = makeEmptyState([makePiece('king', 'white', 'e1'), makePiece('king', 'black', 'e8')]);
     state = chessEngine.activateDraftModifiers(state, [
