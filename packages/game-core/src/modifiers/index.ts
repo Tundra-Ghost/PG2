@@ -45,6 +45,7 @@ import { noIDontThinkIWillDef } from './definitions/no-i-dont-think-i-will';
 import { bandersnatchDef } from './definitions/bandersnatch';
 import { slayQueenDef } from './definitions/slay-queen';
 import { holyKnightDef } from './definitions/holy-knight';
+import { peerPressureDef } from './definitions/peer-pressure';
 import { gottaGoFastDef } from './definitions/gotta-go-fast';
 
 modifierRegistry.register(floorIsLavaDef);
@@ -89,4 +90,5 @@ modifierRegistry.register(noIDontThinkIWillDef);
 modifierRegistry.register(bandersnatchDef);
 modifierRegistry.register(slayQueenDef);
 modifierRegistry.register(holyKnightDef);
+modifierRegistry.register(peerPressureDef);
 modifierRegistry.register(gottaGoFastDef);

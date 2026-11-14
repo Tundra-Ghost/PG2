@@ -711,10 +711,23 @@ export function getValidPromotionTypes(state: GameState, from: Square, to: Squar
   });
 }
 
-/** The side to move may shoo Gerald (spending its turn) unless it is in check. */
+/**
+ * Why the side to move may not shoo Gerald now, or null. In check it may
+ * not; a card that forces a move (MOD-B019) may also say no.
+ */
+export function getShooBlocker(state: GameState): string | null {
+  if (isInCheck(state, state.turn)) return 'You are in check. Gerald stays put.';
+  for (const def of getActiveDefinitions(state)) {
+    const reason = def.blocksPass?.(state);
+    if (reason) return reason;
+  }
+  return null;
+}
+
+/** The side to move may shoo Gerald (spending its turn) unless it is in check or a card forbids it. */
 export function canShooGerald(state: GameState): boolean {
   if (state.status !== 'active') return false;
-  if (isInCheck(state, state.turn)) return false;
+  if (getShooBlocker(state)) return false;
   return Array.from(state.pieces.values()).some(
     piece => piece.color === state.turn && (piece.cooldowns[GERALD_ID] ?? 0) > 0,
   );

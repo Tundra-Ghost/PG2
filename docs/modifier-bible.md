@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 43 built, 57 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 44 built, 56 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -487,13 +487,18 @@ Every 7th move you make lags: the piece moves, then snaps back to where it start
 - Skill: the counter is visible, so you can spend the lag on a move you did not need.
 
 ### MOD-B019 · Peer Pressure
-*Ref: Checkers* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
+*Ref: Checkers* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Built**
 
 If one of your pawns can capture, you must make a pawn capture. Your opponent can use this to drag your pawns out of position.
 
 *All the other pawns were capturing. This pawn did not want to. This pawn captured.*
 
+- Built: only a fully legal pawn capture counts, after every other card has had its say. En passant counts. If several pawns can capture, you pick one.
+- Built: while a pawn capture is forced, abilities, Moneyball drops and shooing Gerald are not allowed either. Selecting another piece shows why it cannot move.
 - Ruling: in check, any legal move is allowed.
+- Ruling: never a softlock. The card only binds you when a legal pawn capture exists, so you always have a move.
+- Ruling: pawn abilities do not count as the capture. Retaliatory Swipe and I've Been Waiting For This are blocked while a normal pawn capture is forced.
+- Ruling: under fog, only captures onto squares you can see force you, so the card never gives away a hidden piece.
 - Synergy: Conscientious Objector. The pacifist pawn is exempt and very smug about it.
 
 ### MOD-B020 · Roll For Initiative
@@ -1144,7 +1149,7 @@ Values the game uses today. "Built" cards match the build.
 | B016 | Lunch Break | B | A | -2 | 2 | Owner | Design |
 | B017 | MINE! | B | A | -2 | 2 | Owner | Design |
 | B018 | Rubber Banding | B | A | -2 | 2 | Owner | Design |
-| B019 | Peer Pressure | B | A | -2 | 2 | Owner | Design |
+| B019 | Peer Pressure | B | A | -2 | 2 | Owner | Built |
 | B020 | Roll For Initiative | B | A | -2 | 2 | Owner | Design |
 | C009 | YEET | C | A | 3 | 0 | Owner | Design |
 | C010 | Leap Of Faith | C | A | 3 | 0 | Owner | Design |
@@ -1183,7 +1188,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Design |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Design |
 
-43 of 100 built. The other 57 are designs (v0.4).
+44 of 100 built. The other 56 are designs (v0.4).
 
 ### Balance test plan
 
