@@ -51,7 +51,7 @@
 
 .abilityHint {
   font-size: 0.75rem;
-  color: rgb(var(--parchment-rgb) / 0.6);
+  color: rgb(var(--parchment-rgb) / 0.82);
 }
 
 .abilityButton {
@@ -108,7 +108,7 @@
   border-top: 1px solid rgba(45, 108, 179, 0.15);
   font-family: var(--font-body);
   font-size: 0.7rem;
-  color: rgb(var(--parchment-rgb) / 0.8);
+  color: rgb(var(--parchment-rgb) / 0.82);
 }
 
 .legendItem {
@@ -126,8 +126,9 @@
   justify-content: center;
   font-family: var(--font-mono);
   font-size: 0.62rem;
-  color: var(--ui-ink);
+  color: #ffffff;
   background: rgba(13, 35, 60, 0.95);
+  border: 1px solid rgba(196, 222, 251, 0.5);
 }
 
 /* ── Coordinate labels ── */
@@ -153,7 +154,7 @@
 .coordLabel {
   font-family: var(--font-mono);
   font-size: 0.62rem;
-  color: var(--board-border);
+  color: #c4defb;
   text-align: center;
   flex: 1;
   display: flex;

@@ -64,7 +64,7 @@
 .closeBtn {
   font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: rgb(var(--gold-rgb) / 0.45);
+  color: rgb(var(--gold-rgb));
   background: transparent;
   border: 1px solid rgb(var(--gold-rgb) / 0.18);
   width: 1.75rem;
@@ -95,7 +95,7 @@
   font-size: 0.56rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.38);
+  color: rgb(var(--gold-rgb));
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
@@ -105,7 +105,7 @@
 }
 
 .tab:hover:not(.tabActive) {
-  color: rgb(var(--gold-rgb) / 0.70);
+  color: rgb(var(--gold-rgb));
   background: rgb(var(--gold-rgb) / 0.04);
 }
 
@@ -155,16 +155,16 @@
   font-size: 0.52rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.38);
+  color: rgb(var(--gold-rgb));
 }
 
 .rowDisabled {
-  opacity: 0.40;
+  opacity: 0.85;
   pointer-events: none;
 }
 
 .rowLocked {
-  opacity: 0.32;
+  opacity: 0.85;
 }
 
 .rowStatic {
@@ -250,7 +250,7 @@
   font-size: 0.46rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.55);
+  color: rgb(var(--gold-rgb));
   border: 1px solid rgb(var(--gold-rgb) / 0.28);
   padding: 0.18rem 0.42rem;
   flex-shrink: 0;
@@ -307,7 +307,7 @@
   padding: 0.75rem;
   color: #e3ecf7;
   border: 1px solid rgba(129, 172, 222, 0.8);
-  background: linear-gradient(180deg, #4788d1, #2f71bc);
+  background: linear-gradient(180deg, #2a64a8, #1f5590);
 }
 
 .accountPrimary:disabled {
@@ -347,7 +347,7 @@
   font-family: var(--font-body);
   font-size: 0.76rem;
   line-height: 1.5;
-  color: rgb(var(--parchment-rgb) / 0.55);
+  color: rgb(var(--parchment-rgb) / 0.82);
 }
 
 .accountForm .accountNote {
@@ -387,7 +387,7 @@
   font-size: 0.6rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.6);
+  color: rgb(var(--gold-rgb));
   background: transparent;
   border: 1px solid rgb(var(--gold-rgb) / 0.25);
   cursor: pointer;

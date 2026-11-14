@@ -28,7 +28,7 @@
   font-size: 0.62rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.85);
+  color: rgb(var(--gold-rgb));
   background: rgb(var(--gold-rgb) / 0.06);
   border: 1px solid rgb(var(--gold-rgb) / 0.22);
   cursor: pointer;
@@ -66,7 +66,7 @@
 
 .kicker {
   display: block;
-  color: rgb(var(--gold-rgb) / 0.58);
+  color: rgb(var(--gold-rgb));
   font-size: 0.58rem;
 }
 
@@ -81,7 +81,7 @@
 
 .goalLine {
   margin: 0.35rem 0 0;
-  color: rgb(var(--parchment-rgb) / 0.75);
+  color: rgb(var(--parchment-rgb) / 0.82);
   font-family: var(--font-body);
 }
 
@@ -118,7 +118,7 @@
 
 .sectionTitle {
   margin: 0;
-  color: rgb(var(--gold-rgb) / 0.7);
+  color: rgb(var(--gold-rgb));
   font-size: 0.62rem;
   font-weight: 500;
 }
@@ -162,7 +162,7 @@
 
 .hint {
   margin: 0.6rem 0 0;
-  color: rgb(var(--parchment-rgb) / 0.6);
+  color: rgb(var(--parchment-rgb) / 0.82);
   font-family: var(--font-body);
   font-size: 0.85rem;
   line-height: 1.45;
@@ -213,7 +213,7 @@
 
 .closed .rankLabel,
 .closed .fileLabel {
-  color: rgb(var(--gold-rgb) / 0.4);
+  color: rgb(var(--gold-rgb));
 }
 
 .shaping:hover {
@@ -264,18 +264,18 @@
   position: absolute;
   font-family: var(--font-mono);
   font-size: 0.6rem;
-  opacity: 0.7;
+  opacity: 0.9;
   pointer-events: none;
 }
 
 .light .rankLabel,
 .light .fileLabel {
-  color: var(--board-dark-sq);
+  color: #1f5590;
 }
 
 .dark .rankLabel,
 .dark .fileLabel {
-  color: var(--board-light-sq);
+  color: #0d233c;
 }
 
 .rankLabel {
@@ -294,7 +294,7 @@
 }
 
 .field > span {
-  color: rgb(var(--gold-rgb) / 0.55);
+  color: rgb(var(--gold-rgb));
   font-size: 0.55rem;
 }
 
@@ -330,7 +330,7 @@
   flex: 1;
   min-height: 2.1rem;
   padding: 0 0.6rem;
-  color: rgb(var(--parchment-rgb) / 0.7);
+  color: rgb(var(--parchment-rgb) / 0.82);
   font-family: var(--font-body);
   font-size: 0.85rem;
   background: transparent;
@@ -367,7 +367,7 @@
 }
 
 .modIcon {
-  color: var(--category-color, var(--ui-gold));
+  color: color-mix(in srgb, var(--category-color, var(--ui-gold)) 50%, #0b1726);
 }
 
 .modText {
@@ -383,7 +383,7 @@
 .modText span {
   font-size: 0.8rem;
   line-height: 1.4;
-  color: rgb(var(--parchment-rgb) / 0.6);
+  color: rgb(var(--parchment-rgb) / 0.82);
 }
 
 .modControls {
@@ -403,13 +403,13 @@
   font-size: 0.6rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgb(var(--parchment-rgb) / 0.6);
+  color: rgb(var(--parchment-rgb) / 0.82);
 }
 
 .removeButton {
   width: 2rem;
   height: 2rem;
-  color: rgb(var(--parchment-rgb) / 0.7);
+  color: rgb(var(--parchment-rgb) / 0.82);
   font-size: 1.2rem;
   background: transparent;
   border: 1px solid rgb(var(--gold-rgb) / 0.22);
@@ -439,7 +439,7 @@
 }
 
 .ready {
-  color: #bfe3a0;
+  color: #2f6b00;
   background: rgba(120, 180, 80, 0.12);
   border-left: 3px solid #7fb850;
 }

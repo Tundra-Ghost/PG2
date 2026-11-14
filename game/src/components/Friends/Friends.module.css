@@ -33,7 +33,7 @@
   font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: 0.08em;
-  color: rgb(var(--gold-rgb) / 0.7);
+  color: rgb(var(--gold-rgb));
   cursor: pointer;
 }
 
@@ -57,7 +57,7 @@
 
 .lede,
 .hint {
-  color: rgb(var(--parchment-rgb) / 0.62);
+  color: rgb(var(--parchment-rgb) / 0.82);
 }
 
 .ok {
@@ -141,7 +141,7 @@
 
 .ghost {
   padding: 0.45rem 0.6rem;
-  color: rgb(var(--parchment-rgb) / 0.55);
+  color: rgb(var(--parchment-rgb) / 0.82);
   background: transparent;
   border: none;
 }
@@ -159,7 +159,7 @@
   font-weight: 400;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgb(var(--gold-rgb) / 0.55);
+  color: rgb(var(--gold-rgb));
 }
 
 .row .name {
@@ -200,7 +200,7 @@
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.1em;
-  color: rgb(var(--parchment-rgb) / 0.5);
+  color: rgb(var(--parchment-rgb) / 0.82);
 }
 
 .dot {

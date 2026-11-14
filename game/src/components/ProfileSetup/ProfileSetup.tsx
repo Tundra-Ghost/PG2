@@ -275,7 +275,7 @@ export default function ProfileSetup({
             </section>
           )}
 
-          <section className={styles.heroCard}>
+          <section className={`on-dark ${styles.heroCard}`}>
             <div className={styles.avatarShell}>
               {viewProfile.avatarDataUrl ? (
                 <img src={viewProfile.avatarDataUrl} alt={`${viewProfile.displayName} avatar`} className={styles.avatarImage} />

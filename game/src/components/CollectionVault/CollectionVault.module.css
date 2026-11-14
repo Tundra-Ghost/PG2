@@ -21,7 +21,7 @@
 .backButton {
   min-height: 2.4rem;
   padding: 0 0.9rem;
-  color: rgb(var(--gold-rgb) / 0.78);
+  color: rgb(var(--gold-rgb));
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.14em;
@@ -58,7 +58,7 @@
 
 .kicker {
   display: block;
-  color: rgb(var(--gold-rgb) / 0.58);
+  color: rgb(var(--gold-rgb));
   font-size: 0.58rem;
   letter-spacing: 0.18em;
 }
@@ -74,7 +74,7 @@
 .subtitle {
   max-width: 48rem;
   margin: 0.55rem 0 0;
-  color: rgb(var(--parchment-rgb) / 0.64);
+  color: rgb(var(--parchment-rgb) / 0.82);
   font-family: var(--font-body);
   font-size: 0.95rem;
   line-height: 1.55;
@@ -95,7 +95,7 @@
 }
 
 .summary dt {
-  color: rgb(var(--gold-rgb) / 0.5);
+  color: rgb(var(--gold-rgb));
   font-size: 0.5rem;
   letter-spacing: 0.14em;
 }
@@ -121,7 +121,7 @@
 }
 
 .searchWrap span {
-  color: rgb(var(--gold-rgb) / 0.5);
+  color: rgb(var(--gold-rgb));
   font-size: 0.52rem;
   letter-spacing: 0.14em;
 }
@@ -151,7 +151,7 @@
 .filterButton {
   min-height: 2.35rem;
   padding: 0 0.7rem;
-  color: rgb(var(--gold-rgb) / 0.58);
+  color: rgb(var(--gold-rgb));
   font-family: var(--font-mono);
   font-size: 0.56rem;
   letter-spacing: 0.12em;
@@ -162,7 +162,7 @@
 }
 
 .filterActive {
-  color: var(--filter-color, var(--ui-gold));
+  color: color-mix(in srgb, var(--filter-color, var(--ui-gold)) 50%, #0b1726);
   background: color-mix(in srgb, var(--filter-color, var(--ui-gold)) 14%, transparent);
   border-color: color-mix(in srgb, var(--filter-color, var(--ui-gold)) 58%, transparent);
 }
@@ -189,7 +189,7 @@
   gap: 0.5rem;
   align-items: center;
   padding: 0.65rem;
-  color: rgb(var(--parchment-rgb) / 0.72);
+  color: rgb(var(--parchment-rgb) / 0.82);
   text-align: left;
   background: rgb(var(--cream-rgb) / 0.035);
   border: 1px solid rgb(var(--gold-rgb) / 0.12);
@@ -218,7 +218,7 @@
 }
 
 .cardIcon {
-  color: var(--category-color);
+  color: color-mix(in srgb, var(--category-color) 50%, #0b1726);
 }
 
 .categoryName {
@@ -233,7 +233,7 @@
 
 .categoryMeta {
   grid-column: 2;
-  color: rgb(var(--parchment-rgb) / 0.42);
+  color: rgb(var(--parchment-rgb) / 0.82);
   font-size: 0.48rem;
   letter-spacing: 0.12em;
 }
@@ -247,7 +247,7 @@
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 0.55rem;
-  color: rgb(var(--gold-rgb) / 0.48);
+  color: rgb(var(--gold-rgb));
   font-size: 0.52rem;
   letter-spacing: 0.12em;
 }
@@ -260,7 +260,7 @@
 
 .empty {
   margin: 2rem 0;
-  color: rgb(var(--parchment-rgb) / 0.54);
+  color: rgb(var(--parchment-rgb) / 0.82);
   font-family: var(--font-body);
   text-align: center;
 }
@@ -295,7 +295,7 @@
 }
 
 .cardId {
-  color: rgb(var(--gold-rgb) / 0.42);
+  color: rgb(var(--gold-rgb));
   font-size: 0.52rem;
   letter-spacing: 0.12em;
 }
@@ -309,11 +309,11 @@
 }
 
 .statusLive {
-  color: #7ed994;
+  color: #186a31;
 }
 
 .statusDesign {
-  color: rgb(var(--parchment-rgb) / 0.36);
+  color: rgb(var(--parchment-rgb) / 0.82);
 }
 
 .cardName {
@@ -326,7 +326,7 @@
 
 .typeLine {
   margin: 0.38rem 0.8rem 0;
-  color: var(--category-color);
+  color: color-mix(in srgb, var(--category-color) 50%, #0b1726);
   font-size: 0.52rem;
   letter-spacing: 0.1em;
   line-height: 1.45;
@@ -345,7 +345,7 @@
 }
 
 .metaGrid dt {
-  color: rgb(var(--parchment-rgb) / 0.35);
+  color: rgb(var(--parchment-rgb) / 0.82);
   font-size: 0.45rem;
   letter-spacing: 0.12em;
 }
@@ -358,12 +358,12 @@
 }
 
 .negativeCost {
-  color: #7ed994 !important;
+  color: #186a31 !important;
 }
 
 .description {
   margin: 0.75rem 0.8rem 0;
-  color: rgb(var(--parchment-rgb) / 0.7);
+  color: rgb(var(--parchment-rgb) / 0.82);
   font-family: var(--font-body);
   font-size: 0.83rem;
   line-height: 1.55;
@@ -377,7 +377,7 @@
   width: fit-content;
   margin: auto 0.8rem 0;
   padding: 0.45rem 0 0;
-  color: rgb(var(--gold-rgb) / 0.55);
+  color: rgb(var(--gold-rgb));
   font-size: 0.52rem;
   letter-spacing: 0.12em;
   background: none;
@@ -392,7 +392,7 @@
 .flavor {
   margin: 0.55rem 0.8rem 0;
   padding-left: 0.55rem;
-  color: rgb(var(--gold-rgb) / 0.58);
+  color: rgb(var(--gold-rgb));
   font-family: var(--font-display);
   font-size: 0.875rem;
   font-style: italic;

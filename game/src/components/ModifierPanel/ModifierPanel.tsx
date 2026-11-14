@@ -255,7 +255,7 @@ export default function ModifierPanel({
 
   return (
     <aside
-      className={`${styles.panel} ${collapsed ? styles.panelCollapsed : ''}`}
+      className={`on-dark ${styles.panel} ${collapsed ? styles.panelCollapsed : ''}`}
     >
       <header className={styles.header}>
         <div className={styles.headerCopy}>
