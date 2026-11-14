@@ -1,5 +1,6 @@
 import { randomInt, randomUUID } from 'node:crypto';
 import {
+  getShooBlocker,
   buildMove,
   chessEngine,
   createOnlineDraft,
@@ -199,7 +200,9 @@ export class RoomManager {
     if (!room) return { ok: false, reason: 'Room closed.' };
     if (drafting(room)) return { ok: false, reason: DRAFT_RUNNING };
     if (room.state.turn !== color) return { ok: false, reason: 'not your turn' };
-    if (!chessEngine.canShooGerald(room.state)) return { ok: false, reason: 'Gerald cannot be shooed right now.' };
+    if (!chessEngine.canShooGerald(room.state)) {
+      return { ok: false, reason: getShooBlocker(room.state) ?? 'Gerald cannot be shooed right now.' };
+    }
     room.state = chessEngine.shooGerald(room.state);
     room.drawOffer = null;
     this.touch(room);

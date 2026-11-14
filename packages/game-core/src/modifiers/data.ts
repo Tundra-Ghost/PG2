@@ -623,6 +623,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'If one of your pawns can capture, you must make a pawn capture. Your opponent can use this to drag your pawns out of position.',
     flavor: '"All the other pawns were capturing. This pawn did not want to. This pawn captured."',
+    prototypeRules:
+      'If one of your pawns can make a legal capture, you must capture with a pawn. You choose which. No other move, ability or Gerald shoo is allowed. In check, any legal move is allowed.',
   },
   {
     id: 'MOD-B020',

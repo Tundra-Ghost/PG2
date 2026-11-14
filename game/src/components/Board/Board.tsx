@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
-import { buildMove } from '@pigeon-chess/game-core';
+import { buildMove, getShooBlocker } from '@pigeon-chess/game-core';
 import {
   flipSquare,
   flippedMovesLeft,
@@ -161,11 +161,18 @@ export default function Board({
   const showMovesFor = useCallback(
     (square: Square) => {
       const real = getDisplayLegalMoves(state, square);
+      // A card can leave a piece with no moves (Peer Pressure, Commitment Issues). Say why.
+      if (real.length === 0) {
+        const blocked = chessEngine.getLegalMoves(state, square)
+          .map(to => chessEngine.validateMove(state, buildMove(state, square, to)).reason)
+          .find(reason => reason && reason !== 'leaves king in check');
+        if (blocked) onInfo?.(blocked);
+      }
       const fakes = getFakeMoveHints(state, square, real);
       setFakeMoves(onScreen(fakes));
       setLegalMoves(onScreen([...real, ...fakes]));
     },
-    [onScreen, state],
+    [onInfo, onScreen, state],
   );
 
   const toggleAbility = useCallback(
@@ -256,7 +263,7 @@ export default function Board({
     setSelected(null);
     setLegalMoves([]);
     if (!chessEngine.canShooGerald(state)) {
-      onInfo?.('You are in check. Gerald stays put.');
+      onInfo?.(getShooBlocker(state) ?? 'Gerald stays put.');
       return;
     }
     if (onShooGerald) onShooGerald();

@@ -81,6 +81,12 @@ export interface ModifierDefinition {
   /** Called after the move is applied to the board. */
   onPostMove?: (state: GameState, move: Move) => GameState;
 
+  /**
+   * Return a reason when the side to move may not spend its turn without a
+   * move (shooing Gerald), such as a forced capture. Null allows it.
+   */
+  blocksPass?: (state: GameState) => string | null;
+
   /** Called at the end of a turn, after game-end detection. */
   onTurnEnd?: (state: GameState) => GameState;
 

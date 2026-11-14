@@ -17,6 +17,7 @@ export {
   applyMoveInternal,
   buildMove,
   cloneState,
+  getShooBlocker,
   getValidPromotionTypes,
   isPromotionMove,
   PROMOTION_TYPES,
@@ -37,6 +38,7 @@ export * from './modifiers/data';
 export { MODIFIER_SUMMARIES, getModifierSummary } from './modifiers/summaries';
 export { isFrozenZoneSquare } from './modifiers/definitions/winter';
 export { getInfectedReach } from './modifiers/definitions/cordyceptic-spread';
+export { getForcedPawnCaptures, isUnderPeerPressure } from './modifiers/definitions/peer-pressure';
 export { getCrownOrders } from './modifiers/definitions/heavy-is-the-crown';
 export { getFakeMoveHints } from './modifiers/definitions/recalculating';
 export { getPigeonHops } from './modifiers/definitions/hatoful-gambit';
