@@ -1,4 +1,6 @@
 import type { Color, GameState, Piece, Square } from './types';
+import { MODIFIER_IDS } from '../modifiers/ids';
+import { affectsColor } from '../modifiers/owner';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -159,6 +161,15 @@ function pawnMoves(state: GameState, piece: Piece): Square[] {
       if (twoAhead && !state.pieces.has(twoAhead)) {
         result.push(twoAhead);
       }
+    }
+  }
+
+  // MOD-E014 Crab Rave: the owner's pawns may also step one square sideways
+  // onto an empty square. Never a capture.
+  if (affectsColor(state, MODIFIER_IDS.crabRave, piece.color)) {
+    for (const df of [-1, 1]) {
+      const side = toSquare(f + df, r);
+      if (side && !state.pieces.has(side) && !isVoidSquare(state, side)) result.push(side);
     }
   }
 
