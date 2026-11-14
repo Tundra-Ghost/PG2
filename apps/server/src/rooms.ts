@@ -212,16 +212,16 @@ export class RoomManager {
   }
 
   /** MOD-B015: records the piece the player touched. A touch that does not count changes nothing. */
-  touchPiece(roomId: string, color: Color, square: Square): ActionAck {
-    const room = this.rooms.get(roomId);
-    if (!room) return { ok: false, reason: 'Room closed.' };
-    if (drafting(room)) return { ok: false, reason: DRAFT_RUNNING };
+  touchPiece(roomId: string, color: Color, square: Square): ActionAck & { changed?: boolean } {
+    const found = this.activeRoom(roomId);
+    if (!found.ok) return found;
+    const { room } = found;
     if (room.state.turn !== color) return { ok: false, reason: 'not your turn' };
     const next = touchPiece(room.state, square);
-    if (next === room.state) return { ok: true };
+    if (next === room.state) return { ok: true, changed: false };
     room.state = next;
     this.touch(room);
-    return { ok: true };
+    return { ok: true, changed: true };
   }
 
   resign(roomId: string, color: Color): ActionAck {

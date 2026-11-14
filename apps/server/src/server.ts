@@ -159,9 +159,10 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
       if (!req || typeof req.square !== 'string' || !/^[a-h][1-8]$/.test(req.square)) {
         return ack({ ok: false, reason: 'Bad touch request.' });
       }
-      const res = rooms.touchPiece(seat.roomId, seat.color, req.square as Square);
+      const { changed, ...res } = rooms.touchPiece(seat.roomId, seat.color, req.square as Square);
       ack(res);
-      if (res.ok) broadcast(seat.roomId);
+      // Only a touch that counts changes the game, so only that one is sent out.
+      if (changed) broadcast(seat.roomId);
     });
 
     socket.on('game:resign', rawAck => {

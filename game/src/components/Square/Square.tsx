@@ -10,6 +10,8 @@ import styles from './Square.module.css';
  */
 interface SquareProps extends SquareView {
   onClick: (square: SquareType) => void;
+  /** MOD-B015: a hold on this square must never count as a tap, even with nothing to read. */
+  holdNeverTaps?: boolean;
 }
 
 const GERALD_ID = MODIFIER_IDS.gerald;
@@ -135,6 +137,7 @@ export default function Square({
   quietZone,
   noFlyZone,
   onClick,
+  holdNeverTaps = false,
 }: SquareProps) {
   const [showTooltip, setShowTooltip] = useState(false);
   const touchTimerRef = useRef<number | null>(null);
@@ -167,10 +170,11 @@ export default function Square({
   }
 
   // Touch: hold to read a square, let go to close it. A hold never counts as a tap.
-  // Every hold counts as a hold, even on a square with nothing to read, so it
-  // never selects a piece (MOD-B015 Commitment Issues: only a tap touches).
+  // A hold on a square with something to read never counts as a tap. Under
+  // MOD-B015 the same holds for your own pieces, so only a tap touches one.
   function handleTouchStart() {
     longPressTriggeredRef.current = false;
+    if (!hasTooltip && !holdNeverTaps) return;
     clearTouchTimer();
     touchTimerRef.current = window.setTimeout(() => {
       longPressTriggeredRef.current = true;

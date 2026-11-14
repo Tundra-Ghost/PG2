@@ -125,10 +125,12 @@ export default function Board({
   const [abilityMode, setAbilityMode] = useState<string | null>(null);
 
   // A new selection (or none) always disarms the ability.
-  useEffect(() => setAbilityMode(null), [selected, state]);
+  // Keyed on the move count, not the state object: a touch (MOD-B015) makes a new state mid-turn.
+  const movesPlayed = state.moveHistory.length;
+  useEffect(() => setAbilityMode(null), [selected, movesPlayed, state.turn]);
   /** MOD-C007: the next normal move spends a tempo token and keeps the turn. */
   const [extraMode, setExtraMode] = useState(false);
-  useEffect(() => setExtraMode(false), [state]);
+  useEffect(() => setExtraMode(false), [movesPlayed, state.turn]);
 
   // MOD-B001: flash "A PIECE MOVED" when a piece moved on its own.
   const [pieceMovedFlash, setPieceMovedFlash] = useState(false);
@@ -495,7 +497,12 @@ export default function Board({
               <PhaserBoard views={squareViews} />
             </Suspense>
             {squareViews.map(view => (
-              <SquareComponent key={view.square} {...view} onClick={handleSquareClick} />
+              <SquareComponent
+                key={view.square}
+                {...view}
+                holdNeverTaps={touchMove && view.piece?.color === state.turn}
+                onClick={handleSquareClick}
+              />
             ))}
           </div>
 

@@ -453,12 +453,14 @@ Touch-move rules apply to you. Once you select a piece that has a legal move, yo
 
 *Viktor touched the knight. The knight looked at him. They both knew what had to happen.*
 
-- Built: the touch is part of the game state, so the server enforces it online. The touched piece wears a T and stays selected. Tapping another piece says why it cannot move.
+- Built: the touch is part of the game state. Online, the client reports every select, and once a touch is reported the server enforces it. The touched piece wears a T and stays selected. Tapping another piece says why it cannot move.
 - Built: the touched piece may move or use its ability. Shooing Gerald is not allowed after a touch.
 - Ruling: selecting a piece with no legal moves does not count.
 - Ruling: never a softlock. Only a piece with a legal move can be touched, so you always have a move.
 - Phones: hold-to-read never counts as touching. Only a tap selects. This holds on every square, even one with nothing to read.
 - Bots do not touch. A bot that owns the card picks one piece and moves it, which already keeps the rule.
+- Interaction: Recalculating. A piece whose dots are all fake cannot be touched, so no T appears on it. A careful player can use this to spot fakes.
+- Balance: bots never touch, so for a bot the curse costs nothing. The balance harness cannot measure this card; leave it out of the 40% to 60% flags.
 
 ### MOD-B016 · Lunch Break
 *Ref: Union rules* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
