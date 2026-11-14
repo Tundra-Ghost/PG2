@@ -63,6 +63,20 @@ describe('MOD-E014 Crab Rave', () => {
     expect(state.flags.halfMoveClock).toBe(11);
   });
 
+  it('never promotes with a sideways step, even facing the Storm', () => {
+    const state = withCrab([makePiece('pawn', 'white', 'c6')]);
+    state.tiles.set('d7', { square: 'd7', effects: [], storm: 'active' });
+    expect(chessEngine.isPromotionMove(state, 'c6', 'd6')).toBe(false);
+    expect(chessEngine.isPromotionMove(state, 'c6', 'c7')).toBe(false);
+  });
+
+  it('a pawn that stepped along its start rank may still make a two-square move', () => {
+    let state = withCrab([makePiece('pawn', 'white', 'd2')]);
+    state = chessEngine.applyMove(state, move('d2', 'e2', 'white'));
+    state = chessEngine.applyMove(state, move('h8', 'g8', 'black'));
+    expect(movesFrom(state, 'e2')).toEqual(['d2', 'e3', 'e4', 'f2']);
+  });
+
   it('may not leave the King in check', () => {
     // The d4 pawn shields the king on c3 from the bishop on f6.
     const state = withCrab([

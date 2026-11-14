@@ -243,6 +243,8 @@ export function buildMove(state: GameState, from: Square, to: Square): Move {
 export function isPromotionMove(state: GameState, from: Square, to: Square): boolean {
   const piece = state.pieces.get(from);
   if (!piece || piece.type !== 'pawn') return false;
+  // A sideways step (MOD-E014) stays on its rank and never promotes.
+  if (from[1] === to[1]) return false;
   const toRank = rankIndex(to);
   if ((piece.color === 'white' && toRank === 7) || (piece.color === 'black' && toRank === 0)) {
     return true;
