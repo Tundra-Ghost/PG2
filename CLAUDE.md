@@ -6,3 +6,20 @@
 
 ## Checks
 - `pnpm typecheck`, `pnpm test`, and `pnpm --filter @pigeon-chess/web build` are what CI runs.
+
+## The team
+Role agents live in `.claude/agents/`. Each has one job:
+
+| Agent | Job |
+|---|---|
+| `builder` | Turns design cards from `docs/modifier-bible.md` into playable modifiers, with tests and an icon |
+| `playtester` | Plays the local build in a browser at phone and desktop sizes, files `playtest` issues |
+| `balance-analyst` | Runs the balance harness and flags cards outside 40% to 60% win rate |
+| `rules-keeper` | Checks cards against the bible's rules and keeps the bible matching the code |
+| `reviewer` | Reviews every PR for bugs, interactions, contrast and phone use before merge |
+
+How work flows:
+- A builder takes cards nobody else is building. Each builder works on its own branch and merges `origin/main` before opening its PR.
+- Before merging a modifier PR, run the `rules-keeper` and `reviewer` agents on it and fix what they find.
+- Playtest issues are the bug queue. Fix them in small PRs that reference the issue.
+- Never build a card that conflicts with one being built on another branch; check open PRs first.
