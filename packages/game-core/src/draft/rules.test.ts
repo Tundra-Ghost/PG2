@@ -62,9 +62,11 @@ describe('pickBlocker', () => {
 
 describe('unlimited practice drafts', () => {
   it('lifts the budget, count and category caps but keeps shared cards exclusive', () => {
-    // Slay Queen is left out: one side cannot hold it with Three Of Them, even in practice.
+    // Slay Queen and Holy Knight are left out: one side cannot hold them with
+    // Three Of Them or The Small Council, even in practice.
+    const conflicting: string[] = [MODIFIER_IDS.slayQueen, MODIFIER_IDS.holyKnight];
     const all = ALL_MODIFIERS
-      .filter(c => implemented.has(c.id) && !isSharedDraftModifier(c.id) && c.id !== MODIFIER_IDS.slayQueen)
+      .filter(c => implemented.has(c.id) && !isSharedDraftModifier(c.id) && !conflicting.includes(c.id))
       .map(c => c.id);
     expect(all.length).toBeGreaterThan(MAX_COUNT);
     expect(getValidOptions(all.slice(0, -1), [], implemented)).toEqual([]);
@@ -74,6 +76,8 @@ describe('unlimited practice drafts', () => {
 
     expect(getValidOptions([MODIFIER_IDS.slayQueen], [], implemented, { unlimited: true }).map(c => c.id))
       .not.toContain(MODIFIER_IDS.threeKings);
+    expect(getValidOptions([MODIFIER_IDS.holyKnight], [], implemented, { unlimited: true }).map(c => c.id))
+      .not.toContain(MODIFIER_IDS.smallCouncil);
 
     const shared = ALL_MODIFIERS.find(c => implemented.has(c.id) && isSharedDraftModifier(c.id))!;
     expect(pickBlocker(shared, [], [shared.id], implemented, 'Bot', { unlimited: true })).toBe(
