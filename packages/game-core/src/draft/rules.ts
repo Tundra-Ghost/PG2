@@ -11,10 +11,12 @@ function needsDarkFirst(cardId: string, ownIds: string[], otherIds: string[]): b
 
 /**
  * Cards one side cannot hold together, because one removes the piece the
- * other upgrades: Three Of Them turns the Queen into a Royal Guard.
+ * other upgrades: Three Of Them turns the Queen into a Royal Guard, and
+ * The Small Council has no bishops.
  */
 const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.slayQueen, MODIFIER_IDS.threeKings],
+  [MODIFIER_IDS.holyKnight, MODIFIER_IDS.smallCouncil],
 ];
 
 /** The card in your draft that rules this one out, if any. */

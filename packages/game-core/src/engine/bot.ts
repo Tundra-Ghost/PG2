@@ -12,7 +12,7 @@ import { botRandom } from './prng';
  */
 
 const PIECE_VALUE: Record<string, number> = {
-  king: 0, queen: 900, chancellor: 800, royal_guard: 250, rook: 500, bishop: 320, knight: 310, pigeon: 300, pawn: 100,
+  king: 0, queen: 900, chancellor: 800, archbishop: 650, royal_guard: 250, rook: 500, bishop: 320, knight: 310, pigeon: 300, pawn: 100,
 };
 
 /** The Amazon (MOD-E009) is a queen and a knight in one. */

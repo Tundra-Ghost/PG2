@@ -380,7 +380,7 @@ export function isStalemate(state: GameState, color: Color): boolean {
 
 /** Standard piece letter. Pawn = ''. Knight = 'N' (NOT 'K'). */
 const PIECE_SYM: Partial<Record<PieceType, string>> = {
-  king: 'K', queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: '', chancellor: 'C', royal_guard: 'G', pigeon: 'H',
+  king: 'K', queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: '', chancellor: 'C', archbishop: 'A', royal_guard: 'G', pigeon: 'H',
 };
 
 /** Promotion suffix letter. */

@@ -43,6 +43,9 @@ function getPieceTooltipLines(piece: PieceType | undefined, infectedReach: numbe
   if (piece.type === 'chancellor') {
     lines.push('Chancellor: Moves like a rook or a knight.');
   }
+  if (piece.type === 'archbishop') {
+    lines.push('Archbishop: Moves like a bishop or a knight.');
+  }
   if (piece.type === 'queen' && piece.isAmazon) {
     lines.push('Slay Queen: This Queen also moves like a knight.');
   }

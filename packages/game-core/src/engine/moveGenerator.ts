@@ -213,6 +213,12 @@ function pieceMoves(state: GameState, piece: Piece): Square[] {
         ...slidingMoves(state, piece, [[1, 0], [-1, 0], [0, 1], [0, -1]]),
         ...knightMoves(state, piece),
       ];
+    case 'archbishop':
+      // MOD-E010: bishop or knight movement
+      return [
+        ...slidingMoves(state, piece, [[1, 1], [1, -1], [-1, 1], [-1, -1]]),
+        ...knightMoves(state, piece),
+      ];
     case 'royal_guard':
       // MOD-E003: steps like a king, never castles, can be captured
       return stepMoves(state, piece);
