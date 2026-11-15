@@ -3,12 +3,18 @@ import type { Color, GameState, Piece, PieceType, Square } from '../../engine/ty
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { prngPickIndex } from '../../engine/prng';
 import { MODIFIER_IDS } from '../ids';
-import { getModifierOwner } from '../owner';
+import { affectsColor, getModifierOwner } from '../owner';
 
 const ID = MODIFIER_IDS.ghosts;
 export const GHOSTS_PER_SIDE = 2;
 const GHOST_TYPES: PieceType[] = ['knight', 'bishop'];
 const FILES = 'abcdefgh';
+
+/** A Ghost copies its side's army, so it never stands out as the only plain bishop. */
+function ghostType(state: GameState, color: Color, type: PieceType): PieceType {
+  if (type === 'bishop' && affectsColor(state, MODIFIER_IDS.elephantInTheRoom, color)) return 'elephant';
+  return type;
+}
 
 /** Empty squares on the owner's third rank, where a developed piece could sit. */
 function ghostSquares(state: GameState, color: Color): Square[] {
@@ -43,7 +49,7 @@ export const ghostsDef: ModifierDefinition = {
         const [typeIdx, prngB] = prngPickIndex(prngA, GHOST_TYPES.length);
         next.prngState = prngB;
         const square = free[sqIdx];
-        const ghost: Piece = { id: `ghost-${color}-${i + 1}`, type: GHOST_TYPES[typeIdx], color, square, isGhost: true, cooldowns: {} };
+        const ghost: Piece = { id: `ghost-${color}-${i + 1}`, type: ghostType(next, color, GHOST_TYPES[typeIdx]), color, square, isGhost: true, cooldowns: {} };
         next.pieces.set(square, ghost);
       }
     }

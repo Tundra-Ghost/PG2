@@ -9,6 +9,9 @@ const ID = MODIFIER_IDS.thisIsMySwamp;
 // two full blocked turns for the knight (same pattern as Winter).
 const KNIGHT_TRAP_TICKS = 3;
 
+/** Leapers cannot make a 1-square move, so the Swamp traps them instead (MOD-E020 Elephant too). */
+const LEAPERS = new Set(['knight', 'pigeon', 'elephant']);
+
 function distance(from: string, to: string): number {
   const df = Math.abs(from.charCodeAt(0) - to.charCodeAt(0));
   const dr = Math.abs(from.charCodeAt(1) - to.charCodeAt(1));
@@ -38,12 +41,12 @@ export const thisIsMySwampDef: ModifierDefinition = {
     if (!piece) return { blocked: false };
 
     if ((piece.cooldowns[ID] ?? 0) > 0) {
-      return { blocked: true, reason: 'That knight is stuck in the Swamp.' };
+      return { blocked: true, reason: 'That piece is stuck in the Swamp.' };
     }
 
     // Knights cannot make a 1-square move, so once free they leap out normally.
     // Ability moves (a knight moving like a rook) get no such pass.
-    const exempt = (piece.type === 'knight' || piece.type === 'pigeon') && !move.ability;
+    const exempt = LEAPERS.has(piece.type) && !move.ability;
     if (!exempt && isSwampSquare(move.from) && distance(move.from, move.to) > 1) {
       return { blocked: true, reason: 'In the Swamp a piece moves only 1 square.' };
     }
@@ -53,7 +56,7 @@ export const thisIsMySwampDef: ModifierDefinition = {
 
   onPostMove(state, move) {
     const piece = state.pieces.get(move.to);
-    if (!piece || (piece.type !== 'knight' && piece.type !== 'pigeon')) return state;
+    if (!piece || !LEAPERS.has(piece.type)) return state;
     if (!isSwampSquare(move.to) || isSwampSquare(move.from)) return state;
 
     const next = cloneState(state);
