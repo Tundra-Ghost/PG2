@@ -54,6 +54,9 @@ function getPieceTooltipLines(piece: PieceType | undefined, infectedReach: numbe
   if (piece.type === 'elephant') {
     lines.push('Elephant: Jumps exactly 2 squares diagonally.');
   }
+  if (piece.type === 'camel') {
+    lines.push('Camel: Leaps 3 squares one way and 1 the other.');
+  }
   if (piece.type === 'queen' && piece.isAmazon) {
     lines.push('Slay Queen: This Queen also moves like a knight.');
   }

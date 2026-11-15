@@ -41,7 +41,7 @@ function toSquare(f: number, r: number): Square {
 
 /** Position-key letters where the first letter of the type would collide. */
 const POSITION_SYM: Partial<Record<PieceType, string>> = {
-  knight: 'N', pigeon: 'H', royal_guard: 'G', elephant: 'El',
+  knight: 'N', pigeon: 'H', royal_guard: 'G', elephant: 'El', camel: 'Cm',
 };
 
 /**
@@ -93,7 +93,7 @@ function isInsufficientMaterial(state: GameState): boolean {
 
   // K+B vs K  or  K+N vs K
   if (pieces.length === 3) {
-    const minor = pieces.find(p => p.type === 'bishop' || p.type === 'knight' || p.type === 'pigeon' || p.type === 'elephant');
+    const minor = pieces.find(p => p.type === 'bishop' || p.type === 'knight' || p.type === 'pigeon' || p.type === 'elephant' || p.type === 'camel');
     if (minor) return true;
   }
 
@@ -390,7 +390,7 @@ export function isStalemate(state: GameState, color: Color): boolean {
 
 /** Standard piece letter. Pawn = ''. Knight = 'N' (NOT 'K'). */
 const PIECE_SYM: Partial<Record<PieceType, string>> = {
-  king: 'K', queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: '', chancellor: 'C', archbishop: 'A', elephant: 'E', royal_guard: 'G', pigeon: 'H',
+  king: 'K', queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: '', chancellor: 'C', archbishop: 'A', elephant: 'E', camel: 'L', royal_guard: 'G', pigeon: 'H',
 };
 
 /** Promotion suffix letter. */

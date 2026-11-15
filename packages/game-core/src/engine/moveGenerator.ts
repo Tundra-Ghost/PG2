@@ -148,6 +148,8 @@ function leaperVectors(a: number, b: number): [number, number][] {
 export const KNIGHT_VECTORS = leaperVectors(1, 2);
 /** MOD-E020 Elephant: exactly two squares diagonally. */
 export const ELEPHANT_VECTORS = leaperVectors(2, 2);
+/** MOD-E011 Camel: three squares one way, one the other. */
+export const CAMEL_VECTORS = leaperVectors(3, 1);
 
 /** Pseudo-legal squares a leaper reaches: it jumps straight to each target, ignoring pieces between. */
 export function leaperMoves(state: GameState, piece: Piece, vectors: [number, number][]): Square[] {
@@ -242,6 +244,9 @@ function pieceMoves(state: GameState, piece: Piece): Square[] {
     case 'elephant':
       // MOD-E020: exactly two squares diagonally, jumping the square between
       return leaperMoves(state, piece, ELEPHANT_VECTORS);
+    case 'camel':
+      // MOD-E011: a (3,1) leaper
+      return leaperMoves(state, piece, CAMEL_VECTORS);
     case 'pawn':
       return pawnMoves(state, piece);
     case 'chancellor':

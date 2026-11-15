@@ -44,6 +44,7 @@ export const MODIFIER_IDS = {
   slayQueen: 'MOD-E009',
   holyKnight: 'MOD-E010',
   elephantInTheRoom: 'MOD-E020',
+  lawrenceOfArabia: 'MOD-E011',
   peerPressure: 'MOD-B019',
   commitmentIssues: 'MOD-B015',
 } as const;

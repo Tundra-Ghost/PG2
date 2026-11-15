@@ -3,18 +3,13 @@ import type { Color, GameState, MoveRecord, Piece, PieceType } from '../../engin
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { prngPickIndex } from '../../engine/prng';
 import { MODIFIER_IDS } from '../ids';
-import { affectsColor, getModifierOwner } from '../owner';
+import { getModifierOwner } from '../owner';
+import { armyType } from '../army';
 
 const ID = MODIFIER_IDS.sus;
 /** Types a disguise can show. Special pieces from other cards are never shown. */
 const DISGUISES: PieceType[] = ['pawn', 'knight', 'bishop', 'rook', 'queen'];
-const LETTERS: Partial<Record<PieceType, string>> = { knight: 'N', bishop: 'B', elephant: 'E', rook: 'R', queen: 'Q' };
-
-/** A disguise copies its side's army: with Elephant In The Room there are no bishops to pose as. */
-function armyType(state: GameState, color: Color, type: PieceType): PieceType {
-  if (type === 'bishop' && affectsColor(state, MODIFIER_IDS.elephantInTheRoom, color)) return 'elephant';
-  return type;
-}
+const LETTERS: Partial<Record<PieceType, string>> = { knight: 'N', bishop: 'B', elephant: 'E', camel: 'L', rook: 'R', queen: 'Q' };
 
 /** Called when a card swaps a whole piece type for `color`, so the disguise keeps blending in. */
 export function remapDisguise(state: GameState, color: Color, from: PieceType, to: PieceType): GameState {
