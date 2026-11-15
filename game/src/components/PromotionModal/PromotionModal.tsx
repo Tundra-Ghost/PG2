@@ -22,6 +22,7 @@ const CHOICES: { type: PieceType; label: string }[] = [
   { type: 'chancellor', label: 'Chancellor' },
   { type: 'archbishop', label: 'Archbishop' },
   { type: 'elephant', label: 'Elephant' },
+  { type: 'camel', label: 'Camel' },
   { type: 'royal_guard', label: 'Royal Guard' },
   { type: 'pigeon', label: 'Pigeon' },
   { type: 'pawn', label: 'Pawn' },

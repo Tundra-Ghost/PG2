@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 47 built, 53 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 48 built, 52 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -130,7 +130,7 @@ Promotion: once the square ahead of a pawn is storm, that pawn promotes on the l
 ### MOD-A006 · This Is My Swamp
 *Ref: Shrek* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
 
-The four centre squares (d4, d5, e4, e5) are the Swamp. A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant) that lands in the Swamp is stuck for 2 of its owner's moves, then leaps out normally. Swamp pieces still give check at full range (Core rule 3).
+The four centre squares (d4, d5, e4, e5) are the Swamp. A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant, Camel) that lands in the Swamp is stuck for 2 of its owner's moves, then leaps out normally. Swamp pieces still give check at full range (Core rule 3).
 
 *The Swamp is contested. The Swamp is disgusting. The Swamp is strategically essential.*
 
@@ -549,6 +549,7 @@ The knight moves like a rook this move and can capture. It cannot start from the
 *The Knight has no regrets.*
 
 - Synergy: The Storm Closes In. Escape the edge in one move.
+- Built: Pigeons (Hatoful Gambit) and Camels (Lawrence Of Arabia) can use it too.
 
 ### MOD-C004 · Retaliatory Swipe (Look What You Made Me Do)
 *Ref: Taylor Swift, Reputation* · **Tier B** · Cost 2 · Curse 0 · Pawn · Cooldown 4 · Modes: All · **Built**
@@ -909,6 +910,7 @@ Both of the owner's knights become Pigeons. Pigeons move like knights. Every 5 r
 - Built: the hop square shows as a dashed teal ring. A hop never takes a King or leaves a King in check. If the square is no longer safe, the Pigeon stays put.
 - Gerald will not sit on Pigeons.
 - Synergy: Did I Do That? Pigeons can use the rook move.
+- Conflict: Lawrence Of Arabia. It turns every knight into a Camel, so one side cannot draft both.
 
 ### MOD-E002 · The Small Council (Do You Hear The Pawns Sing)
 *Ref: Les Misérables* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -919,6 +921,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 - Changed from v0.2: 8 pawns on rank 3 and 4 behind, instead of all 12 on rank 3.
 - Conflict: Holy Knight. One side cannot draft both.
 - Conflict: Elephant In The Room. It turns every bishop into an Elephant, so one side cannot draft both.
+- Conflict: Lawrence Of Arabia. It turns every knight into a Camel, so one side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
 *Ref: John Wick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -998,13 +1001,19 @@ One of your bishops becomes an Archbishop. Each move, it moves like a bishop or 
 - Conflict: Elephant In The Room. It turns every bishop into an Elephant, so one side cannot draft both.
 
 ### MOD-E011 · Lawrence Of Arabia
-*Ref: Lawrence of Arabia* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Lawrence of Arabia* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Your knights become Camels. A Camel leaps three squares one way and one square the other, jumping over pieces.
 
 *The camel has crossed the desert. The desert was the queenside. Nobody was ready.*
 
 - Balance: a Camel stays on one square colour, like a bishop. Cheap trade, real tradeoffs.
+- Built: Camels have their own piece art and write L in the move list (C is the Chancellor).
+- Ruling: only your starting knights become Camels. A knight you promote to later is a normal knight. A captured Camel bought back with Moneyball is still a Camel.
+- Ruling: Ghost knights become Ghost Camels, and a Sus disguise shows a Camel instead of a knight.
+- Interaction: Did I Do That? A Camel can use the rook move, like a knight.
+- Interaction: This Is My Swamp. A Camel is trapped for 2 turns like a knight, then leaps out.
+- Conflict: Hatoful Gambit and The Small Council. Each one replaces or removes the knights, so one side cannot draft them with this card.
 
 ### MOD-E012 · Hopscotch
 *Ref: Fairy chess Grasshopper* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1201,7 +1210,7 @@ Values the game uses today. "Built" cards match the build.
 | D020 | Masquerade | D | S | 4 | 2 | Shared | Design |
 | E009 | Slay Queen (The Amazon) | E | S | 5 | 0 | Owner | Built |
 | E010 | Holy Knight (The Archbishop) | E | A | 4 | 0 | Owner | Built |
-| E011 | Lawrence Of Arabia | E | B | 1 | 0 | Owner | Design |
+| E011 | Lawrence Of Arabia | E | B | 1 | 0 | Owner | Built |
 | E012 | Hopscotch | E | B | 2 | 0 | Owner | Design |
 | E013 | Overseas Hire (The Cannon) | E | A | 3 | 0 | Owner | Design |
 | E014 | Crab Rave | E | A | 3 | 0 | Owner | Built |
@@ -1212,7 +1221,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Design |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
-47 of 100 built. The other 53 are designs (v0.4).
+48 of 100 built. The other 52 are designs (v0.4).
 
 ### Balance test plan
 

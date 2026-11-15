@@ -17,7 +17,7 @@ export const didIDoThatDef: ModifierDefinition = {
   ability: {
     label: 'Oops: rook move',
     hint: 'This knight moves like a rook this turn. It can capture.',
-    pieceTypes: ['knight', 'pigeon'],
+    pieceTypes: ['knight', 'pigeon', 'camel'],
     cooldown: 6,
     getTargets: (state, piece) => slidingMoves(state, piece, [[1, 0], [-1, 0], [0, 1], [0, -1]]),
   },

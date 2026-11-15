@@ -141,7 +141,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'The four central squares (d4, d5, e4, e5) are the Swamp. Any piece in the Swamp moves at 1 square per turn. Knights and other leapers are trapped for 2 turns upon entering.',
     flavor: '"Viktor entered the Swamp to seize the centre. The Swamp seized Viktor. They are negotiating terms."',
     prototypeRules:
-      'A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant) that lands in the Swamp is stuck for 2 turns, then leaps out normally. Swamp pieces still give check at full range.',
+      'A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant, Camel) that lands in the Swamp is stuck for 2 turns, then leaps out normally. Swamp pieces still give check at full range.',
   },
   {
     id: 'MOD-A007',
@@ -1403,6 +1403,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your knights become Camels. A Camel leaps three squares one way and one square the other, jumping over pieces.',
     flavor: '"The camel has crossed the desert. The desert was the queenside. Nobody was ready."',
+    prototypeRules:
+      'Your starting knights become Camels. A Camel leaps 3 squares one way and 1 the other, over pieces. It stays on one square colour. A knight you promote to later is a normal knight. Cannot be drafted with Hatoful Gambit or The Small Council.',
   },
   {
     id: 'MOD-E012',
