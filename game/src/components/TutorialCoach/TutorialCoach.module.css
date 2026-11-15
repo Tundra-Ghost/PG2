@@ -129,9 +129,8 @@
   bottom: auto;
 }
 
-/* Phones: full width. In a match it sits at the top, clear of the board's
-   lower half, the dialogue box and the drawer bar. Elsewhere it sits above
-   the screen's bottom buttons. */
+/* Phones: full width, above the screen's bottom buttons. In a match it sits
+   at the top (see below for taller phones). Hidden, it is a "?" at the top. */
 @media (max-width: 720px) {
   .stage {
     left: 0.75rem;
@@ -149,6 +148,30 @@
   .onGame {
     top: calc(3.6rem + env(safe-area-inset-top));
     bottom: auto;
+  }
+
+  /* A tighter card in a match, so it overlaps as little as it can on short phones. */
+  .onGame .card {
+    gap: 0.3rem;
+    padding: 0.65rem 0.85rem;
+  }
+
+  .onGame .title {
+    font-size: 1.05rem;
+  }
+
+  .onGame .body {
+    font-size: 0.86rem;
+    line-height: 1.35;
+  }
+
+  .onGame .actions {
+    margin-top: 0;
+  }
+
+  .onGame .next {
+    min-height: 40px;
+    padding: 0.4rem 1.1rem;
   }
 
   /* In a match the hidden tour is just a "?" over the opponent's portrait,
@@ -170,5 +193,16 @@
 
   .body {
     font-size: 0.9rem;
+  }
+}
+
+/* Taller phones: in a match the open card sits just above the drawer bar,
+   over the legend and the player banner, so the whole board stays visible
+   and every square takes taps. Short phones keep it at the top, where it
+   covers the opponent's side instead of the player's own pieces. */
+@media (max-width: 720px) and (min-height: 740px) {
+  .onGame.open {
+    top: auto;
+    bottom: calc(4.6rem + env(safe-area-inset-bottom));
   }
 }
