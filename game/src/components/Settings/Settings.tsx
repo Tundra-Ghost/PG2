@@ -116,7 +116,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'audio',         label: 'Audio' },
   { id: 'display',       label: 'Display' },
   { id: 'gameplay',      label: 'Gameplay' },
-  { id: 'accessibility', label: 'Access.' },
+  { id: 'accessibility', label: 'Accessibility' },
   { id: 'feedback',      label: 'Feedback' },
 ];
 
@@ -236,7 +236,7 @@ export default function Settings({ settings: initial, onSave, onBack, account, f
               />
               <Toggle
                 label="Auto-Queen on Promotion"
-                sub="Skip the modal — always promote to queen"
+                sub="Skip the choice and always promote to a queen"
                 value={s.autoQueen}
                 onChange={v => update({ autoQueen: v })}
               />
