@@ -205,4 +205,11 @@
     top: auto;
     bottom: calc(4.6rem + env(safe-area-inset-bottom));
   }
+
+  /* Chick's dialogue box and the open match drawer use that same space, so
+     while either shows, the card goes back to the top. */
+  :global(body:has([data-dialogue-stage], [data-drawer='open'])) .onGame.open {
+    top: calc(3.6rem + env(safe-area-inset-top));
+    bottom: auto;
+  }
 }

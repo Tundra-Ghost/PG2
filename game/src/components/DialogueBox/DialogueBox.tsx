@@ -130,7 +130,7 @@ export function DialogueStage({ entry, onDismiss, raised = false }: DialogueStag
   if (!entry) return null;
   // On the body, so no panel's stacking order can paint over it.
   return createPortal(
-    <div className={`${styles.stage} ${raised ? styles.stageRaised : ''}`}>
+    <div className={`${styles.stage} ${raised ? styles.stageRaised : ''}`} data-dialogue-stage="">
       <DialogueBox key={entry.id} entry={entry} onDismiss={onDismiss} />
     </div>,
     document.body,
