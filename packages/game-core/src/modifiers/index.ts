@@ -49,6 +49,7 @@ import { elephantInTheRoomDef } from './definitions/elephant-in-the-room';
 import { peerPressureDef } from './definitions/peer-pressure';
 import { commitmentIssuesDef } from './definitions/commitment-issues';
 import { gottaGoFastDef } from './definitions/gotta-go-fast';
+import { crabRaveDef } from './definitions/crab-rave';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -96,3 +97,4 @@ modifierRegistry.register(elephantInTheRoomDef);
 modifierRegistry.register(peerPressureDef);
 modifierRegistry.register(commitmentIssuesDef);
 modifierRegistry.register(gottaGoFastDef);
+modifierRegistry.register(crabRaveDef);

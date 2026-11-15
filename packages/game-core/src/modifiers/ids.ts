@@ -40,6 +40,7 @@ export const MODIFIER_IDS = {
   forgiveMe: 'MOD-C002',
   noIDontThinkIWill: 'MOD-B003',
   bandersnatch: 'MOD-A008',
+  crabRave: 'MOD-E014',
   slayQueen: 'MOD-E009',
   holyKnight: 'MOD-E010',
   elephantInTheRoom: 'MOD-E020',

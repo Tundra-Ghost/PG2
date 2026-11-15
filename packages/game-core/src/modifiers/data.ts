@@ -1445,6 +1445,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your pawns can also step one square sideways onto an empty square. They still capture only diagonally forward.',
     flavor: '"The pawns have learned to walk sideways. The pawns will not stop walking sideways."',
+    prototypeRules:
+      'Your pawns can also step one square left or right onto an empty square. They still capture only diagonally forward. A sideways step never captures or promotes, is never en passant, gives no en passant, and does not reset the 50-move count.',
   },
   {
     id: 'MOD-E015',

@@ -309,3 +309,7 @@ Assessment:
 3. Decide whether `MOD-A004` should stay prototype-simplified or move toward real frozen-zone tiles.
 4. Implement Gerald's "clear Gerald, lose turn" interaction if this card remains shipped.
 5. Decide whether `MOD-E006` should remain "single extra chain" for prototype readability or move toward true indefinite chaining.
+
+## Pawn movement cards
+
+- `MOD-E014` Crab Rave: `pawnMoves` in `engine/moveGenerator.ts` adds a one-square sideways step onto an empty, non-void square for the owner's pawns. It is in the move generator, so checkmate, stalemate and the bot all see it. `buildMove` never marks a same-rank pawn step as en passant, and a same-rank pawn step does not reset the 50-move clock.
