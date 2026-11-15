@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 45 built, 55 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 46 built, 54 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -1022,13 +1022,20 @@ One of your rooks becomes a Cannon. It moves like a rook, but captures only by j
 - Ruling: the Cannon gives check only through a screen piece, like in xiangqi.
 
 ### MOD-E014 · Crab Rave
-*Ref: Crab Rave* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Crab Rave* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Your pawns can also step one square sideways onto an empty square. They still capture only diagonally forward.
 
 *The pawns have learned to walk sideways. The pawns will not stop walking sideways.*
 
 - Ruling: a sideways step is not a double step and gives no en passant.
+- Ruling: a sideways step onto the en passant square is a plain step. It never takes en passant.
+- Ruling: a sideways step may not leave your King in check. It may block a check.
+- Ruling: with I've Been Waiting For This, a banked en passant ends once either pawn moves, even sideways and back.
+- Ruling: the move list writes a sideways step with its start square, like d4-e4.
+- Ruling: a sideways step never promotes, even next to the Storm or a closed square.
+- Ruling: a pawn that steps sideways along its start rank may still make its two-square first move.
+- Ruling: a sideways step can be undone, so it does not reset the 50-move count. Back-and-forth steps end in a repetition draw (Rule 06).
 
 ### MOD-E015 · Stonks
 *Ref: Stonks meme* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1186,7 +1193,7 @@ Values the game uses today. "Built" cards match the build.
 | E011 | Lawrence Of Arabia | E | B | 1 | 0 | Owner | Design |
 | E012 | Hopscotch | E | B | 2 | 0 | Owner | Design |
 | E013 | Overseas Hire (The Cannon) | E | A | 3 | 0 | Owner | Design |
-| E014 | Crab Rave | E | A | 3 | 0 | Owner | Design |
+| E014 | Crab Rave | E | A | 3 | 0 | Owner | Built |
 | E015 | Stonks | E | B | 2 | 0 | Owner | Design |
 | E016 | Hatchery | E | A | 3 | 0 | Owner | Design |
 | E017 | The Bodyguard | E | A | 3 | 0 | Owner | Design |
@@ -1194,7 +1201,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Design |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Design |
 
-45 of 100 built. The other 55 are designs (v0.4).
+46 of 100 built. The other 54 are designs (v0.4).
 
 ### Balance test plan
 

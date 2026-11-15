@@ -222,7 +222,8 @@ export function buildMove(state: GameState, from: Square, to: Square): Move {
   }
 
   if (piece.type === 'pawn') {
-    if (to === state.flags.enPassantSquare) {
+    // A sideways step (MOD-E014) stays on its rank and is never en passant.
+    if (to === state.flags.enPassantSquare && to[1] !== from[1]) {
       move.isEnPassant = true;
     }
     // Promotion flag — caller (Board) is responsible for setting move.promotion
@@ -242,6 +243,8 @@ export function buildMove(state: GameState, from: Square, to: Square): Move {
 export function isPromotionMove(state: GameState, from: Square, to: Square): boolean {
   const piece = state.pieces.get(from);
   if (!piece || piece.type !== 'pawn') return false;
+  // A sideways step (MOD-E014) stays on its rank and never promotes.
+  if (from[1] === to[1]) return false;
   const toRank = rankIndex(to);
   if ((piece.color === 'white' && toRank === 7) || (piece.color === 'black' && toRank === 0)) {
     return true;
@@ -263,7 +266,9 @@ export function applyMoveInternal(state: GameState, move: Move): GameState {
   next.flags.enPassantSquare = null;
 
   const isCapture = next.pieces.has(move.to) || move.isEnPassant === true;
-  if (piece.type === 'pawn' || isCapture) {
+  // A sideways pawn step (MOD-E014) can be undone, so it does not reset the clock.
+  const pawnAdvance = piece.type === 'pawn' && move.from[1] !== move.to[1];
+  if (pawnAdvance || isCapture) {
     next.flags.halfMoveClock = 0;
   } else {
     next.flags.halfMoveClock++;
@@ -428,6 +433,9 @@ function buildNotation(
       else                  disambig = move.from;            // need both
     }
   }
+
+  // A sideways pawn step (MOD-E014) names its start square: d4-e4.
+  if (piece.type === 'pawn' && move.from[1] === move.to[1]) disambig = `${move.from}-`;
 
   // Pawn captures always include from-file
   const pawnFile = piece.type === 'pawn' && isCapture ? move.from[0] : '';
