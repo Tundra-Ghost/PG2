@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 50 built, 50 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 51 built, 49 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -1054,13 +1054,16 @@ Your pawns can also step one square sideways onto an empty square. They still ca
 - Ruling: a sideways step can be undone, so it does not reset the 50-move count. Back-and-forth steps end in a repetition draw (Rule 06).
 
 ### MOD-E015 · Stonks
-*Ref: Stonks meme* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Stonks meme* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Start the match with two fewer pawns (the a- and h-pawns) and an extra knight on b3.
 
 *Viktor sold two pawns. Viktor bought a horse. The market reacted.*
 
 - Balance: two pawns are worth about one knight. The trade buys tempo, not material.
+- Ruling: if b3 is taken by another card's piece, the knight takes the next free square on that rank (c3, a3, d3 and so on).
+- Synergy: Hatoful Gambit, Lawrence Of Arabia and Knight Rider. The new knight changes with the others.
+- Conflict: The Small Council. Both rebuild your army, so one side cannot draft both.
 
 ### MOD-E016 · Hatchery
 *Ref: Pigeons, and their eggs* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1230,14 +1233,14 @@ Values the game uses today. "Built" cards match the build.
 | E012 | Hopscotch | E | B | 2 | 0 | Owner | Design |
 | E013 | Overseas Hire (The Cannon) | E | A | 3 | 0 | Owner | Design |
 | E014 | Crab Rave | E | A | 3 | 0 | Owner | Built |
-| E015 | Stonks | E | B | 2 | 0 | Owner | Design |
+| E015 | Stonks | E | B | 2 | 0 | Owner | Built |
 | E016 | Hatchery | E | A | 3 | 0 | Owner | Design |
 | E017 | The Bodyguard | E | A | 3 | 0 | Owner | Design |
 | E018 | Zerg Rush | E | A | 3 | 0 | Owner | Built |
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
-50 of 100 built. The other 50 are designs (v0.4).
+51 of 100 built. The other 49 are designs (v0.4).
 
 ### Balance test plan
 

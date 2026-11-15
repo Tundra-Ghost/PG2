@@ -1388,7 +1388,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'One of your bishops becomes an Archbishop. Each move, it moves like a bishop or like a knight.',
     flavor: '"The bishop prayed for more options. The prayer was answered. The answer had a horse in it."',
     prototypeRules:
-      'One of your bishops, picked at random, becomes an Archbishop. It moves like a bishop or a knight. Cannot be drafted with The Small Council.',
+      'One of your bishops, picked at random, becomes an Archbishop. It moves like a bishop or a knight. With Hatoful Gambit, Lawrence Of Arabia or Knight Rider the new knight changes too. Cannot be drafted with The Small Council.',
   },
   {
     id: 'MOD-E011',
@@ -1463,6 +1463,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Start the match with two fewer pawns (the a- and h-pawns) and an extra knight on b3.',
     flavor: '"Viktor sold two pawns. Viktor bought a horse. The market reacted."',
+    prototypeRules:
+      'You start without your a- and h-pawns, and with an extra knight on b3 (b6 for Black). With Hatoful Gambit, Lawrence Of Arabia or Knight Rider the new knight changes too. Cannot be drafted with The Small Council.',
   },
   {
     id: 'MOD-E016',

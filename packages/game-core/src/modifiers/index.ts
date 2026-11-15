@@ -53,6 +53,7 @@ import { commitmentIssuesDef } from './definitions/commitment-issues';
 import { gottaGoFastDef } from './definitions/gotta-go-fast';
 import { crabRaveDef } from './definitions/crab-rave';
 import { zergRushDef } from './definitions/zerg-rush';
+import { stonksDef } from './definitions/stonks';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -104,3 +105,4 @@ modifierRegistry.register(commitmentIssuesDef);
 modifierRegistry.register(gottaGoFastDef);
 modifierRegistry.register(crabRaveDef);
 modifierRegistry.register(zergRushDef);
+modifierRegistry.register(stonksDef);
