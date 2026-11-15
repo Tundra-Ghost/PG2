@@ -103,7 +103,7 @@ export const MODIFIER_SUMMARIES: Record<string, string> = {
   'MOD-E015': 'Trade your two edge pawns for an extra knight.',
   'MOD-E016': 'An Egg on your side hatches into a Pigeon after 10 rounds.',
   'MOD-E017': 'A Bodyguard that moves like a King can swap places with your King.',
-  'MOD-E018': 'Your pawns can always move two squares forward.',
+  'MOD-E018': 'Your pawns can always move two squares forward, if both are empty.',
   'MOD-E019': 'Your knights can repeat the same L-jump across the board.',
   'MOD-E020': 'Your bishops become Elephants that only jump two squares diagonally.',
 };

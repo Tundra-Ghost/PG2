@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { chessEngine } from '../engine/ChessEngine';
+import { getAbilityOptions } from '../engine/abilities';
 import { buildMove, getValidPromotionTypes } from '../engine/gameLoop';
 import { getLegalMovesForPiece } from '../engine/moveGenerator';
 import type { GameState, Piece, Square } from '../engine/types';
@@ -49,6 +50,21 @@ describe('MOD-E018 Zerg Rush', () => {
     expect(movesFrom(state, 'b6')).toEqual(['b7', 'b8']);
     expect(chessEngine.isPromotionMove(state, 'b6', 'b8')).toBe(true);
     expect(getValidPromotionTypes(state, 'b6', 'b8')).toContain('queen');
+  });
+
+  it('a two-square move that promotes leaves no en passant', () => {
+    let state = withZerg([makePiece('pawn', 'white', 'b6'), makePiece('pawn', 'black', 'a8')]);
+    state = chessEngine.applyMove(state, move('b6', 'b8', 'white', { promotion: 'queen' }));
+    expect(state.pieces.get('b8')).toMatchObject({ type: 'queen', color: 'white' });
+    expect(state.flags.enPassantSquare).toBeNull();
+  });
+
+  it('I\'ve Been Waiting For This banks a two-square move from any rank', () => {
+    let state = withZerg([makePiece('pawn', 'white', 'd4'), makePiece('pawn', 'black', 'e6')]);
+    state = chessEngine.activateDraftModifiers(state, [{ id: MODIFIER_IDS.bankedEnPassant, sourceColor: 'black' }]);
+    state = chessEngine.applyMove(state, move('d4', 'd6', 'white'));
+    const banked = getAbilityOptions(state, 'e6').find(o => o.modifierId === MODIFIER_IDS.bankedEnPassant);
+    expect(banked?.targets).toEqual(['d5']);
   });
 
   it('can be taken en passant from any rank', () => {

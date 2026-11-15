@@ -313,8 +313,9 @@ export function applyMoveInternal(state: GameState, move: Move): GameState {
   const promotedType: PieceType = move.promotion ?? piece.type;
   next.pieces.set(move.to, { ...piece, square: move.to, type: promotedType });
 
-  // Double-pawn-push → set en passant square
-  if (piece.type === 'pawn') {
+  // Double-pawn-push → set en passant square. A push that promotes (MOD-E018)
+  // is no longer a pawn, so it cannot be taken en passant.
+  if (piece.type === 'pawn' && !move.promotion) {
     const rankDiff = Math.abs(rankIndex(move.to) - rankIndex(move.from));
     if (rankDiff === 2) {
       const epRank = (rankIndex(move.from) + rankIndex(move.to)) / 2;

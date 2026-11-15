@@ -1074,7 +1074,7 @@ Your pawns may move two squares forward from any rank, if both squares are empty
 *The pawns are coming. All of them. Right now.*
 
 - Ruling: en passant works against every two-square move, from any rank.
-- Ruling: a two-square move may reach the last rank and promote.
+- Ruling: a two-square move may reach the last rank and promote. The promoted piece cannot be taken en passant.
 - Ruling: a two-square move may not leave your King in check. It may block a check.
 - Ruling: a pawn slowed by The Cordyceptic Spread still loses its two-square move.
 - Not Gotta Go Fast: that is one pawn on a cooldown; this is all of them, always.
