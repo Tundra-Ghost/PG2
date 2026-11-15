@@ -77,7 +77,7 @@ Every 5 rounds, one random empty tile becomes Infected. A piece standing on an I
 
 - Synergy: It's Dark And I'm Scared. Hidden infected tiles are catastrophic.
 - Conflict: The Floor Is Lava. Infection cannot spread onto Lava.
-- Ruling: rooks, bishops, queens and chancellors lose reach. Pawns lose their double step. Knights, kings and other leapers (Pigeons, Elephants, Camels, Nightriders) are not slowed. Moving the piece resets its count. The slowed piece shows its reach on its square.
+- Ruling: rooks, bishops, queens and chancellors lose reach. Pawns lose their double step. Knights, kings, leapers (Pigeons, Elephants, Camels) and Nightriders are not slowed. Moving the piece resets its count. The slowed piece shows its reach on its square.
 - Ruling: lava burns infection away.
 
 ### MOD-A002 · The Floor Is Lava
@@ -1101,11 +1101,12 @@ Your knights may repeat the same L-jump in a straight line, as long as each land
 
 - Ruling: known in fairy chess as the Nightrider.
 - Built: your starting knights become Nightriders. They have their own piece art (a knight with speed lines) and write NN in the move list. One jump is a normal knight move. A piece on any landing square ends the line; pieces between landing squares do not matter.
+- Ruling: a void square (Storm, used vent) on a landing square ends the line, like a piece.
 - Ruling: it gives check down its whole line, so a piece on a landing square in between blocks the check.
 - Ruling: a knight you promote to later is a normal knight. A captured Nightrider bought back with Moneyball is still a Nightrider.
 - Ruling: Ghost knights become Ghost Nightriders, and a Sus disguise shows a Nightrider instead of a knight.
 - Interaction: This Is My Swamp. Landing in the Swamp traps it for 2 turns like a knight. Then it leaves with a single jump, since a piece in the Swamp moves only one step.
-- Interaction: The Cordyceptic Spread. Infection does not slow it, like a knight.
+- Interaction: The Cordyceptic Spread. Infection does not shorten its ride. A ride is at most 3 jumps on an 8x8 board, so this was kept simple.
 - Interaction: Did I Do That? A Nightrider can use the rook move, like a knight.
 - Conflict: Hatoful Gambit, The Small Council and Lawrence Of Arabia. Each one replaces or removes the knights, so one side cannot draft them with this card.
 
