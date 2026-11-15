@@ -58,7 +58,7 @@ export default function TutorialCoach({ step, onAction, onSkip }: TutorialCoachP
     <div
       className={`${styles.stage} ${
         current.screen === 'game' ? styles.onGame : current.screen === 'draft' ? styles.onDraft : styles.onMenu
-      }`}
+      } ${hidden ? '' : styles.open}`}
     >
       {hidden ? (
         <button
