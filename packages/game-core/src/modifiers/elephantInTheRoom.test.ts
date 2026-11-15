@@ -7,6 +7,7 @@ import { ALL_MODIFIERS } from './data';
 import { modifierRegistry } from './registry';
 import './index';
 import { MODIFIER_IDS } from './ids';
+import { getSusPiece } from './definitions/sus';
 import { makeEmptyState, makePiece, move } from './testHelpers';
 
 const ELEPHANT = MODIFIER_IDS.elephantInTheRoom;
@@ -149,6 +150,21 @@ describe('MOD-E020 Elephant In The Room', () => {
       );
       const white = Array.from(state.pieces.values()).filter(p => p.color === 'white');
       expect(white.some(p => p.type === 'bishop')).toBe(false);
+    }
+  });
+
+  it('never lets a Sus disguise pose as a bishop, whichever card comes first', () => {
+    for (let seed = 1; seed <= 40; seed++) {
+      for (const order of [[ELEPHANT, MODIFIER_IDS.sus], [MODIFIER_IDS.sus, ELEPHANT]]) {
+        const start = chessEngine.getInitialState();
+        start.prngSeed = seed;
+        start.prngState = seed;
+        const state = chessEngine.activateDraftModifiers(start, order.map(id => ({ id, sourceColor: 'white' as const })));
+        const disguise = getSusPiece(state, 'white')!;
+        const real = Array.from(state.pieces.values()).find(p => p.id === disguise.pieceId)!;
+        expect(disguise.shownAs, `seed ${seed}`).not.toBe('bishop');
+        expect(disguise.shownAs, `seed ${seed}`).not.toBe(real.type);
+      }
     }
   });
 

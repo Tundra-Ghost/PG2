@@ -138,10 +138,10 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     curseLevel: 0,
     tier: 'B',
     description:
-      'The four central squares (d4, d5, e4, e5) are the Swamp. Any piece in the Swamp moves at 1 square per turn. Knights are trapped for 2 turns upon entering.',
+      'The four central squares (d4, d5, e4, e5) are the Swamp. Any piece in the Swamp moves at 1 square per turn. Knights and other leapers are trapped for 2 turns upon entering.',
     flavor: '"Viktor entered the Swamp to seize the centre. The Swamp seized Viktor. They are negotiating terms."',
     prototypeRules:
-      'A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight that lands in the Swamp is stuck for 2 turns, then leaps out normally. Swamp pieces still give check at full range.',
+      'A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant) that lands in the Swamp is stuck for 2 turns, then leaps out normally. Swamp pieces still give check at full range.',
   },
   {
     id: 'MOD-A007',
@@ -1532,6 +1532,6 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'Your bishops become Elephants. An Elephant moves exactly two squares diagonally, jumping over the square between.',
     flavor: '"Nobody is talking about the elephants. The elephants are fine with this."',
     prototypeRules:
-      'Your starting bishops become Elephants. An Elephant moves exactly 2 squares diagonally and jumps the square between. A bishop you promote or buy back later is a normal bishop. Cannot be drafted with Holy Knight, The Small Council or Forgive Me.',
+      'Your starting bishops become Elephants. An Elephant moves exactly 2 squares diagonally and jumps the square between. A bishop you promote to later is a normal bishop. Cannot be drafted with Holy Knight, The Small Council or Forgive Me.',
   },
 ];

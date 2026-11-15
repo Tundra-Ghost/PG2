@@ -3,12 +3,26 @@ import type { Color, GameState, MoveRecord, Piece, PieceType } from '../../engin
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { prngPickIndex } from '../../engine/prng';
 import { MODIFIER_IDS } from '../ids';
-import { getModifierOwner } from '../owner';
+import { affectsColor, getModifierOwner } from '../owner';
 
 const ID = MODIFIER_IDS.sus;
 /** Types a disguise can show. Special pieces from other cards are never shown. */
 const DISGUISES: PieceType[] = ['pawn', 'knight', 'bishop', 'rook', 'queen'];
-const LETTERS: Partial<Record<PieceType, string>> = { knight: 'N', bishop: 'B', rook: 'R', queen: 'Q' };
+const LETTERS: Partial<Record<PieceType, string>> = { knight: 'N', bishop: 'B', elephant: 'E', rook: 'R', queen: 'Q' };
+
+/** A disguise copies its side's army: with Elephant In The Room there are no bishops to pose as. */
+function armyType(state: GameState, color: Color, type: PieceType): PieceType {
+  if (type === 'bishop' && affectsColor(state, MODIFIER_IDS.elephantInTheRoom, color)) return 'elephant';
+  return type;
+}
+
+/** Called when a card swaps a whole piece type for `color`, so the disguise keeps blending in. */
+export function remapDisguise(state: GameState, color: Color, from: PieceType, to: PieceType): GameState {
+  const disguise = sus(state)[color];
+  if (!disguise || disguise.shownAs !== from) return state;
+  state.modifierState = { ...state.modifierState, [ID]: { ...sus(state), [color]: { ...disguise, shownAs: to } } };
+  return state;
+}
 
 interface Disguise {
   pieceId: string;
@@ -96,7 +110,7 @@ export const susDef: ModifierDefinition = {
       if (candidates.length === 0) continue;
       const [pieceIdx, prngA] = prngPickIndex(next.prngState, candidates.length);
       const piece = candidates[pieceIdx];
-      const choices = DISGUISES.filter(type => type !== piece.type);
+      const choices = DISGUISES.map(type => armyType(next, color, type)).filter(type => type !== piece.type);
       const [typeIdx, prngB] = prngPickIndex(prngA, choices.length);
       next.prngState = prngB;
       next.modifierState = {
