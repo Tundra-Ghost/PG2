@@ -13,6 +13,7 @@ import {
   type RoomAck,
   type RoomSnapshot,
   type SeatStatus,
+  type Square,
   type ServerToClientEvents,
 } from '@pigeon-chess/game-core';
 
@@ -73,6 +74,8 @@ export interface OnlineRoom {
   joinRoom: (code: string) => void;
   sendMove: (move: Move) => void;
   shooGerald: () => void;
+  /** MOD-B015: tell the server which piece was touched. */
+  touchPiece: (square: Square) => void;
   resign: () => void;
   /** Offers a draw, or accepts the opponent's open offer. */
   offerDraw: () => void;
@@ -193,6 +196,7 @@ export function useOnlineRoom(account: string | null = null): OnlineRoom {
         actionAck,
       ),
     shooGerald: () => socketRef.current?.emit('game:shoo_gerald', actionAck),
+    touchPiece: square => socketRef.current?.emit('game:touch', { square }, actionAck),
     resign: () => socketRef.current?.emit('game:resign', actionAck),
     offerDraw: () => socketRef.current?.emit('game:draw_offer', {}, actionAck),
     answerDraw: accept => socketRef.current?.emit('game:draw_offer', { accept }, actionAck),

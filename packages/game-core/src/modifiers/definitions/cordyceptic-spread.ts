@@ -12,7 +12,7 @@ export const INFECTION_SPAWN_PLIES = 10;
 /** Each Infected tile spreads to a neighbour with this chance, once per round. */
 export const INFECTION_SPREAD_CHANCE = 0.25;
 
-const SLIDERS = new Set(['rook', 'bishop', 'queen', 'chancellor']);
+const SLIDERS = new Set(['rook', 'bishop', 'queen', 'chancellor', 'archbishop']);
 const CLEANSERS = new Set(['bishop', 'queen']);
 
 interface SpreadState {

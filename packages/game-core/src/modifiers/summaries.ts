@@ -64,7 +64,7 @@ export const MODIFIER_SUMMARIES: Record<string, string> = {
   'MOD-B012': 'Every 8th slider move, your piece sneezes and stops one square short.',
   'MOD-B013': 'Every 10 of your moves, you lose your rearmost pawn to taxes.',
   'MOD-B014': 'After your Queen captures, her next move is only one square.',
-  'MOD-B015': 'Touch-move: once you select a piece, you must move it.',
+  'MOD-B015': 'Touch-move: select a piece that can move and you must move it.',
   'MOD-B016': 'Every 10 of your moves, your rooks and Queen skip a move for lunch.',
   'MOD-B017': 'Every 8 moves, a seagull drags your most advanced pawn one square back.',
   'MOD-B018': 'Every 7th move lags and your piece snaps back to where it started.',

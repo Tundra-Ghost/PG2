@@ -218,6 +218,24 @@ describe('online modifier draft', () => {
     expect(await pick(white, MODIFIER_IDS.berserker)).toEqual({ ok: false, reason: 'The draft is over.' });
   });
 
+  it('Commitment Issues: the server records a touch and refuses other pieces', async () => {
+    const { white, black } = await startDraft();
+    const touchPiece = (c: Client, square: string) =>
+      new Promise<ActionAck>(resolve => c.emit('game:touch', { square } as { square: never }, resolve));
+    expect(await pick(white, MODIFIER_IDS.commitmentIssues)).toEqual({ ok: true });
+    expect(await finish(white)).toEqual({ ok: true });
+    expect(await finish(black)).toEqual({ ok: true });
+
+    expect(await touchPiece(black, 'g8')).toEqual({ ok: false, reason: 'not your turn' });
+    expect((await touchPiece(white, 'z9')).ok).toBe(false);
+    const touched = stateWhere(black, s => fromWire(s.state).pieces.get('g1')?.isTouched === true);
+    expect(await touchPiece(white, 'g1')).toEqual({ ok: true });
+    await touched;
+    const refused = await move(white, { from: 'e2', to: 'e4' });
+    expect(refused.ok).toBe(false);
+    expect(await move(white, { from: 'g1', to: 'f3' })).toEqual({ ok: true });
+  });
+
   it('refuses picks that break the draft rules', async () => {
     const { white, black } = await startDraft();
     expect(await pick(white, MODIFIER_IDS.floorIsLava)).toEqual({ ok: true });

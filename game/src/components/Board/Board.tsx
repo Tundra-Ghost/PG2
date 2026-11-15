@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
-import { buildMove } from '@pigeon-chess/game-core';
+import { buildMove, getShooBlocker, getTouchedPiece, hasTouchMove, touchPiece, touchedReason } from '@pigeon-chess/game-core';
 import {
   flipSquare,
   flippedMovesLeft,
@@ -43,6 +43,8 @@ interface BoardProps {
   /** Online play: the board only sends intents. The server applies them. */
   onMove?: (move: Move) => void;
   onShooGerald?: () => void;
+  /** Online play: MOD-B015 sends the touched piece to the server. Local play applies it here. */
+  onTouchPiece?: (square: Square) => void;
   /** The side this player controls. Clicks are ignored on the other side's turn. */
   controlColor?: Color;
   /** Which side sits at the bottom. Black players see the board flipped. */
@@ -70,6 +72,15 @@ function getDisplayLegalMoves(state: GameState, from: Square): Square[] {
   });
 }
 
+/** Plain-chess refusals. Only a card's own reason is worth showing on select. */
+const ENGINE_REASONS = new Set([
+  'leaves king in check',
+  'illegal move for piece type',
+  'cannot castle while in check',
+  'cannot castle through check',
+  'blocked by modifier',
+]);
+
 function playSfxForMove(state: GameState, from: Square, to: Square, isCastle: boolean) {
   if (isCastle) {
     playCastle();
@@ -89,6 +100,7 @@ export default function Board({
   onStateChange,
   onMove,
   onShooGerald,
+  onTouchPiece,
   controlColor,
   orientation = 'white',
   onInfo,
@@ -115,10 +127,12 @@ export default function Board({
   const [abilityMode, setAbilityMode] = useState<string | null>(null);
 
   // A new selection (or none) always disarms the ability.
-  useEffect(() => setAbilityMode(null), [selected, state]);
+  // Keyed on the move count, not the state object: a touch (MOD-B015) makes a new state mid-turn.
+  const movesPlayed = state.moveHistory.length;
+  useEffect(() => setAbilityMode(null), [selected, movesPlayed, state.turn]);
   /** MOD-C007: the next normal move spends a tempo token and keeps the turn. */
   const [extraMode, setExtraMode] = useState(false);
-  useEffect(() => setExtraMode(false), [state]);
+  useEffect(() => setExtraMode(false), [movesPlayed, state.turn]);
 
   // MOD-B001: flash "A PIECE MOVED" when a piece moved on its own.
   const [pieceMovedFlash, setPieceMovedFlash] = useState(false);
@@ -161,13 +175,21 @@ export default function Board({
   );
 
   const showMovesFor = useCallback(
-    (square: Square) => {
+    (square: Square, explain = true) => {
       const real = getDisplayLegalMoves(state, square);
       const fakes = getFakeMoveHints(state, square, real);
+      // A card can leave a piece with no moves (such as Peer Pressure). Say why,
+      // unless Recalculating is drawing fake dots that the message would give away.
+      if (explain && real.length === 0 && fakes.length === 0) {
+        const blocked = chessEngine.getLegalMoves(state, square)
+          .map(to => chessEngine.validateMove(state, buildMove(state, square, to)).reason)
+          .find(reason => reason && !ENGINE_REASONS.has(reason));
+        if (blocked) onInfo?.(blocked);
+      }
       setFakeMoves(onScreen(fakes));
       setLegalMoves(onScreen([...real, ...fakes]));
     },
-    [onScreen, state],
+    [onInfo, onScreen, state],
   );
 
   const toggleAbility = useCallback(
@@ -175,7 +197,7 @@ export default function Board({
       if (!selected) return;
       if (abilityMode === modifierId) {
         setAbilityMode(null);
-        showMovesFor(selected);
+        showMovesFor(selected, false);
         return;
       }
       const option = getAbilityOptions(state, selected).find(o => o.modifierId === modifierId);
@@ -258,13 +280,36 @@ export default function Board({
     setSelected(null);
     setLegalMoves([]);
     if (!chessEngine.canShooGerald(state)) {
-      onInfo?.('You are in check. Gerald stays put.');
+      onInfo?.(getShooBlocker(state) ?? 'Gerald stays put.');
       return;
     }
     if (onShooGerald) onShooGerald();
     else onStateChange?.(chessEngine.shooGerald(state));
     onInfo?.('Gerald chased off. Turn forfeited.');
   }, [state, onStateChange, onShooGerald, onInfo]);
+
+  // MOD-B015 Commitment Issues: a tap on an own piece touches it, and a touched piece must move.
+  const touchMove = state.status === 'active' && hasTouchMove(state, state.turn) && (!controlColor || controlColor === state.turn);
+  const touched = touchMove ? getTouchedPiece(state, state.turn) : null;
+  const touchedSquare = touched?.square ?? null;
+  const touch = useCallback(
+    (square: Square) => {
+      if (!touchMove || touchedSquare) return;
+      if (onTouchPiece) {
+        onTouchPiece(square);
+        return;
+      }
+      const next = touchPiece(state, square);
+      if (next !== state) onStateChange?.(next);
+    },
+    [onStateChange, onTouchPiece, state, touchMove, touchedSquare],
+  );
+  // Keep the touched piece selected, also after a reload or a refused move.
+  useEffect(() => {
+    if (!touchedSquare || selected === touchedSquare) return;
+    setSelected(touchedSquare);
+    showMovesFor(touchedSquare, false);
+  }, [touchedSquare, selected, showMovesFor]);
 
   const handleSquareClick = useCallback(
     (square: Square) => {
@@ -274,6 +319,12 @@ export default function Board({
 
       const clickedPiece = state.pieces.get(square);
 
+      // MOD-B015: once a piece is touched, only its own moves (or abilities) go through.
+      if (touched && !(selected === touched.square && legalMoves.includes(square))) {
+        if (square !== touched.square && clickedPiece?.color === state.turn) onInfo?.(touchedReason(touched));
+        return;
+      }
+
       // Nothing selected yet
       if (!selected) {
         if (clickedPiece && clickedPiece.color === state.turn) {
@@ -281,14 +332,16 @@ export default function Board({
             shooGeraldOrWarn();
             return;
           }
-          if ((clickedPiece.cooldowns[WINTER_ID] ?? 0) > 0) {
+          const frozen = (clickedPiece.cooldowns[WINTER_ID] ?? 0) > 0;
+          if (frozen) {
             onInfo?.('That piece is frozen this turn.');
           }
           if (clickedPiece.isPacifist) {
             onInfo?.('This piece refuses to capture.');
           }
           setSelected(square);
-          showMovesFor(square);
+          showMovesFor(square, !frozen && !clickedPiece.isPacifist);
+          touch(square);
         }
         return;
       }
@@ -329,7 +382,8 @@ export default function Board({
           onInfo?.('This piece refuses to capture.');
         }
         setSelected(square);
-        showMovesFor(square);
+        showMovesFor(square, !clickedPiece.isPacifist);
+        touch(square);
         return;
       }
 
@@ -388,7 +442,7 @@ export default function Board({
       setSelected(null);
       setLegalMoves([]);
     },
-    [abilityMode, autoQueen, commitMove, controlColor, fakeMoves, flip, legalMoves, onInfo, pendingDrop, pendingPromotion, selected, shooGeraldOrWarn, showMovesFor, state, withTempo],
+    [abilityMode, autoQueen, commitMove, controlColor, fakeMoves, flip, legalMoves, onInfo, pendingDrop, pendingPromotion, selected, shooGeraldOrWarn, showMovesFor, state, touch, touched, withTempo],
   );
 
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
@@ -445,7 +499,12 @@ export default function Board({
               <PhaserBoard views={squareViews} />
             </Suspense>
             {squareViews.map(view => (
-              <SquareComponent key={view.square} {...view} onClick={handleSquareClick} />
+              <SquareComponent
+                key={view.square}
+                {...view}
+                holdNeverTaps={touchMove && view.piece?.color === state.turn}
+                onClick={handleSquareClick}
+              />
             ))}
           </div>
 

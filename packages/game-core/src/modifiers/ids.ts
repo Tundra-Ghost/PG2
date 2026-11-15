@@ -41,6 +41,10 @@ export const MODIFIER_IDS = {
   noIDontThinkIWill: 'MOD-B003',
   bandersnatch: 'MOD-A008',
   crabRave: 'MOD-E014',
+  slayQueen: 'MOD-E009',
+  holyKnight: 'MOD-E010',
+  peerPressure: 'MOD-B019',
+  commitmentIssues: 'MOD-B015',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];

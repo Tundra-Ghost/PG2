@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ALL_MODIFIERS, isSharedDraftModifier, modifierRegistry } from '../index';
+import { ALL_MODIFIERS, MODIFIER_IDS, isSharedDraftModifier, modifierRegistry } from '../index';
 import { BUDGET, MAX_COUNT, MAX_PER_CATEGORY, getSelectedCards, getValidOptions, pickBlocker, runRandomDraft } from './rules';
 
 const implemented = new Set(modifierRegistry.getAll().map(mod => mod.id));
@@ -62,12 +62,22 @@ describe('pickBlocker', () => {
 
 describe('unlimited practice drafts', () => {
   it('lifts the budget, count and category caps but keeps shared cards exclusive', () => {
-    const all = ALL_MODIFIERS.filter(c => implemented.has(c.id) && !isSharedDraftModifier(c.id)).map(c => c.id);
+    // Slay Queen and Holy Knight are left out: one side cannot hold them with
+    // Three Of Them or The Small Council, even in practice.
+    const conflicting: string[] = [MODIFIER_IDS.slayQueen, MODIFIER_IDS.holyKnight];
+    const all = ALL_MODIFIERS
+      .filter(c => implemented.has(c.id) && !isSharedDraftModifier(c.id) && !conflicting.includes(c.id))
+      .map(c => c.id);
     expect(all.length).toBeGreaterThan(MAX_COUNT);
     expect(getValidOptions(all.slice(0, -1), [], implemented)).toEqual([]);
     const left = getValidOptions(all.slice(0, -1), [], implemented, { unlimited: true }).map(c => c.id);
     expect(left).toContain(all[all.length - 1]);
     expect(left.every(id => id === all[all.length - 1] || isSharedDraftModifier(id))).toBe(true);
+
+    expect(getValidOptions([MODIFIER_IDS.slayQueen], [], implemented, { unlimited: true }).map(c => c.id))
+      .not.toContain(MODIFIER_IDS.threeKings);
+    expect(getValidOptions([MODIFIER_IDS.holyKnight], [], implemented, { unlimited: true }).map(c => c.id))
+      .not.toContain(MODIFIER_IDS.smallCouncil);
 
     const shared = ALL_MODIFIERS.find(c => implemented.has(c.id) && isSharedDraftModifier(c.id))!;
     expect(pickBlocker(shared, [], [shared.id], implemented, 'Bot', { unlimited: true })).toBe(

@@ -74,6 +74,14 @@ export interface BoardViewInput {
 }
 
 /** The 64 squares in screen order: top-left first, row by row. */
+/** MOD-E009: a Sus piece shown as a queen wears the A badge when its side has an Amazon, so the badge never gives the disguise away. */
+function hasAmazon(state: GameState, color: Color): boolean {
+  for (const piece of state.pieces.values()) {
+    if (piece.color === color && piece.type === 'queen' && piece.isAmazon) return true;
+  }
+  return false;
+}
+
 export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const { state, orientation, selected, legalMoves, showLegalMoves, checkSquare, lastFrom, lastTo, bursts, viewer } = input;
   const visible = viewer ? getVisibleSquares(state, viewer) : null;
@@ -102,7 +110,9 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
       const real = hidden ? undefined : state.pieces.get(square);
       // Sus: the opponent's disguised piece is drawn as its fake type.
       const shownType = real && viewer ? getShownType(state, real, viewer) : real?.type;
-      const piece = real && shownType !== real.type ? { ...real, type: shownType! } : real;
+      const piece = real && shownType !== real.type
+        ? { ...real, type: shownType!, isAmazon: shownType === 'queen' && hasAmazon(state, real.color) }
+        : real;
       views.push({
         square,
         isLight: (FILES.indexOf(file) + RANKS.indexOf(rank)) % 2 !== 0,

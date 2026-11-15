@@ -18,7 +18,7 @@ import { MODIFIER_IDS } from '../ids';
 const ID = MODIFIER_IDS.berserker;
 
 const PIECE_VALUE: Partial<Record<string, number>> = {
-  queen: 900, chancellor: 800, rook: 500, bishop: 320, knight: 310, pawn: 100,
+  queen: 900, chancellor: 800, archbishop: 650, rook: 500, bishop: 320, knight: 310, pawn: 100,
 };
 
 function findBerserker(state: GameState): Piece | undefined {
@@ -79,7 +79,8 @@ export function getBestCaptureTarget(state: GameState, from: Square): Square | n
     if (!target || target.color === piece.color) continue;
     const projected = applyMoveInternal(state, buildMove(state, from, to));
     if (isInCheck(projected, piece.color)) continue;
-    const val = PIECE_VALUE[target.type] ?? 0;
+    // MOD-E009: the Amazon is worth more than a plain queen.
+    const val = (PIECE_VALUE[target.type] ?? 0) + (target.type === 'queen' && target.isAmazon ? 300 : 0);
     if (val > bestValue) {
       bestValue = val;
       bestTo = to;

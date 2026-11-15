@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 42 built, 58 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 46 built, 54 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -447,14 +447,20 @@ After your Queen captures, she doubts herself. Her next move can only be one squ
 - Synergy: Main Character Syndrome. She must move, but only a little. Character development.
 
 ### MOD-B015 · Commitment Issues
-*Ref: The touch-move rule* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+*Ref: The touch-move rule* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
 
 Touch-move rules apply to you. Once you select a piece that has a legal move, you must move that piece.
 
 *Viktor touched the knight. The knight looked at him. They both knew what had to happen.*
 
+- Built: the touch is part of the game state. Online, the client reports every select, and once a touch is reported the server enforces it. The touched piece wears a T and stays selected. Tapping another piece says why it cannot move.
+- Built: the touched piece may move or use its ability. Shooing Gerald is not allowed after a touch.
 - Ruling: selecting a piece with no legal moves does not count.
-- Phones: hold-to-read never counts as touching. Only a tap selects.
+- Ruling: never a softlock. Only a piece with a legal move can be touched, so you always have a move.
+- Phones: hold-to-read never counts as touching. Only a tap selects. This holds on every square, even one with nothing to read.
+- Bots do not touch. A bot that owns the card picks one piece and moves it, which already keeps the rule.
+- Interaction: Recalculating. A piece whose dots are all fake cannot be touched, so no T appears on it. A careful player can use this to spot fakes.
+- Balance: bots never touch, so for a bot the curse costs nothing. The balance harness cannot measure this card; leave it out of the 40% to 60% flags.
 
 ### MOD-B016 · Lunch Break
 *Ref: Union rules* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
@@ -487,13 +493,18 @@ Every 7th move you make lags: the piece moves, then snaps back to where it start
 - Skill: the counter is visible, so you can spend the lag on a move you did not need.
 
 ### MOD-B019 · Peer Pressure
-*Ref: Checkers* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
+*Ref: Checkers* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Built**
 
 If one of your pawns can capture, you must make a pawn capture. Your opponent can use this to drag your pawns out of position.
 
 *All the other pawns were capturing. This pawn did not want to. This pawn captured.*
 
+- Built: only a fully legal pawn capture counts, after every other card has had its say. En passant counts. If several pawns can capture, you pick one.
+- Built: while a pawn capture is forced, abilities, Moneyball drops and shooing Gerald are not allowed either. Selecting another piece shows why it cannot move.
 - Ruling: in check, any legal move is allowed.
+- Ruling: never a softlock. The card only binds you when a legal pawn capture exists, so you always have a move.
+- Ruling: pawn abilities do not count as the capture. Retaliatory Swipe and I've Been Waiting For This are blocked while a normal pawn capture is forced.
+- Ruling: under fog, only captures onto squares you can see force you, so the card never gives away a hidden piece.
 - Synergy: Conscientious Objector. The pacifist pawn is exempt and very smug about it.
 
 ### MOD-B020 · Roll For Initiative
@@ -905,6 +916,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 
 - Conflict: The Storm Closes In. Crowded endgame.
 - Changed from v0.2: 8 pawns on rank 3 and 4 behind, instead of all 12 on rank 3.
+- Conflict: Holy Knight. One side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
 *Ref: John Wick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -912,6 +924,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 The owner's queen becomes a Royal Guard and a second Guard stands on their third rank. Guards step one square like a King and never castle. They can be captured like any piece. Only the real King matters for check.
 
 - Changed from v0.2: Guards are captured normally instead of being "checkmated".
+- Conflict: Slay Queen. One side cannot draft both.
 
 ### MOD-E004 · Equivalent Exchange (The Chancellor)
 *Ref: Fullmetal Alchemist* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**
@@ -951,21 +964,34 @@ Each piece the owner loses gives a Mercenary Token (max 3). Spend a Token (costs
 - Balance flag: the drop-check guard is critical.
 
 ### MOD-E009 · Slay Queen (The Amazon)
-*Ref: Fairy chess Amazon* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Fairy chess Amazon* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**
 
 Your Queen can also move like a knight.
 
 *She can go anywhere. She has decided to go everywhere.*
 
+- Built: the Amazon wears an A badge. Her knight jumps leap over pieces and give check like a knight.
+- Ruling: only your starting Queen is the Amazon. A queen you promote or buy back later is a normal queen.
+- Conflict: Yeah, There Are Three Of Them. It turns your Queen into a Royal Guard, so one side cannot draft both.
+- Interaction: They Were The Traitor. If the Amazon defects, she stays an Amazon for her new side.
+- Interaction: This Is My Swamp. In the Swamp she moves one square like any queen, with no knight jump.
+- Interaction: The Cordyceptic Spread. Infection slows her like any queen. A knight jump counts as 2 squares, so at 1 square of reach she cannot jump.
+- Interaction: Sus. A piece disguised as a queen wears the A badge too, so the badge never gives the disguise away.
 - Balance: the strongest piece in fairy chess. Full cost, no discount.
 
 ### MOD-E010 · Holy Knight (The Archbishop)
-*Ref: Capablanca chess* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Capablanca chess* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**
 
 One of your bishops becomes an Archbishop. Each move, it moves like a bishop or like a knight.
 
 *The bishop prayed for more options. The prayer was answered. The answer had a horse in it.*
 
+- Built: the bishop is picked at random with the seeded generator. The Archbishop has its own piece art (a knight head on a bishop, with a cross) and writes A in the move list.
+- Ruling: the Archbishop is not a bishop for other cards. Twin Telepathy does not move it, it cannot Confess (Forgive Me), and it does not clear infection.
+- Ruling: it never picks a Ghost bishop (I'm Literally Right Here).
+- Interaction: The Cordyceptic Spread. Infection slows it like a bishop. A knight jump counts as 2 squares, so at 1 square of reach it cannot jump.
+- Interaction: This Is My Swamp. In the Swamp it moves one square, with no knight jump. It is not stuck the way a knight is.
+- Conflict: The Small Council. It has no bishops, so one side cannot draft both.
 - Pair: the bishop-side twin of Equivalent Exchange.
 
 ### MOD-E011 · Lawrence Of Arabia
@@ -1132,11 +1158,11 @@ Values the game uses today. "Built" cards match the build.
 | B012 | Bless You | B | B | -1 | 1 | Owner | Design |
 | B013 | Death And Taxes | B | S | -3 | 3 | Owner | Design |
 | B014 | Imposter Syndrome | B | B | -1 | 1 | Owner | Design |
-| B015 | Commitment Issues | B | B | -1 | 1 | Owner | Design |
+| B015 | Commitment Issues | B | B | -1 | 1 | Owner | Built |
 | B016 | Lunch Break | B | A | -2 | 2 | Owner | Design |
 | B017 | MINE! | B | A | -2 | 2 | Owner | Design |
 | B018 | Rubber Banding | B | A | -2 | 2 | Owner | Design |
-| B019 | Peer Pressure | B | A | -2 | 2 | Owner | Design |
+| B019 | Peer Pressure | B | A | -2 | 2 | Owner | Built |
 | B020 | Roll For Initiative | B | A | -2 | 2 | Owner | Design |
 | C009 | YEET | C | A | 3 | 0 | Owner | Design |
 | C010 | Leap Of Faith | C | A | 3 | 0 | Owner | Design |
@@ -1162,8 +1188,8 @@ Values the game uses today. "Built" cards match the build.
 | D018 | Tells | D | B | 1 | 0 | Owner | Design |
 | D019 | Spoiler Alert | D | A | 3 | 1 | Shared | Design |
 | D020 | Masquerade | D | S | 4 | 2 | Shared | Design |
-| E009 | Slay Queen (The Amazon) | E | S | 5 | 0 | Owner | Design |
-| E010 | Holy Knight (The Archbishop) | E | A | 4 | 0 | Owner | Design |
+| E009 | Slay Queen (The Amazon) | E | S | 5 | 0 | Owner | Built |
+| E010 | Holy Knight (The Archbishop) | E | A | 4 | 0 | Owner | Built |
 | E011 | Lawrence Of Arabia | E | B | 1 | 0 | Owner | Design |
 | E012 | Hopscotch | E | B | 2 | 0 | Owner | Design |
 | E013 | Overseas Hire (The Cannon) | E | A | 3 | 0 | Owner | Design |
@@ -1175,7 +1201,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Design |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Design |
 
-42 of 100 built. The other 58 are designs (v0.4).
+46 of 100 built. The other 54 are designs (v0.4).
 
 ### Balance test plan
 

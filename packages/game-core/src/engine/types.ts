@@ -11,6 +11,7 @@ export type PieceType =
   | 'pawn'
   | 'pigeon'       // future: MOD-E001 Hatoful Gambit
   | 'chancellor'   // MOD-E004 Equivalent Exchange
+  | 'archbishop'   // MOD-E010 Holy Knight
   | 'royal_guard'; // future: MOD-E003 Royal Guard
 
 export type Color = 'white' | 'black';
@@ -31,6 +32,8 @@ export interface Piece {
   isBerserker?: boolean; // future: MOD-E006
   isPacifist?: boolean;  // future: MOD-B007
   isRealKing?: boolean;  // future: MOD-E003
+  isAmazon?: boolean;    // MOD-E009: a queen that also moves like a knight
+  isTouched?: boolean;   // MOD-B015: touched this turn, so it must move
   isTraitor?: boolean;   // MOD-B006: warned, defects next turn
   hasPromotionChain?: boolean; // MOD-E007: chain-captures on its next capture
   cooldowns: Record<ModifierID, number>;

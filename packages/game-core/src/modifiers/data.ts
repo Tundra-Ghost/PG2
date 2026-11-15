@@ -567,6 +567,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Touch-move rules apply to you. Once you select a piece that has a legal move, you must move that piece.',
     flavor: '"Viktor touched the knight. The knight looked at him. They both knew what had to happen."',
+    prototypeRules:
+      'Tap a piece that can move and it is touched: you must move it this turn. It wears a T. It may move or use its ability. A piece with no legal move does not count. Bots do not touch. On phones, holding a square to read it never touches. You cannot shoo Gerald after a touch.',
   },
   {
     id: 'MOD-B016',
@@ -623,6 +625,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'If one of your pawns can capture, you must make a pawn capture. Your opponent can use this to drag your pawns out of position.',
     flavor: '"All the other pawns were capturing. This pawn did not want to. This pawn captured."',
+    prototypeRules:
+      'If one of your pawns can make a legal capture, you must capture with a pawn. You choose which. No other move, ability or Gerald shoo is allowed. In check, any legal move is allowed.',
   },
   {
     id: 'MOD-B020',
@@ -1352,7 +1356,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'Each of your pieces captured earns a Mercenary Token (max 3). Select your King and press Buy back to spend one: pick a lost piece and drop it on any empty square. It costs your turn. A drop may not give check, and pawns may not drop on rank 1 or 8.',
   },
 
-  // Design cards (not built yet): Asymmetric Armies 009-020
+  // Asymmetric Armies 009-020: designs, except cards that have prototypeRules (built)
 
   {
     id: 'MOD-E009',
@@ -1367,6 +1371,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your Queen can also move like a knight.',
     flavor: '"She can go anywhere. She has decided to go everywhere."',
+    prototypeRules:
+      'Your starting Queen also moves like a knight. A queen you promote later is a normal queen. Cannot be drafted with Yeah, There Are Three Of Them.',
   },
   {
     id: 'MOD-E010',
@@ -1381,6 +1387,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'One of your bishops becomes an Archbishop. Each move, it moves like a bishop or like a knight.',
     flavor: '"The bishop prayed for more options. The prayer was answered. The answer had a horse in it."',
+    prototypeRules:
+      'One of your bishops, picked at random, becomes an Archbishop. It moves like a bishop or a knight. Cannot be drafted with The Small Council.',
   },
   {
     id: 'MOD-E011',

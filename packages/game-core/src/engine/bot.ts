@@ -1,4 +1,4 @@
-import type { Color, GameState, Move } from './types';
+import type { Color, GameState, Move, Piece } from './types';
 import { chessEngine } from './ChessEngine';
 import { getAbilityOptions, performAbility } from './abilities';
 import { applyMoveInternal, buildMove, cloneState, getValidPromotionTypes } from './gameLoop';
@@ -12,13 +12,20 @@ import { botRandom } from './prng';
  */
 
 const PIECE_VALUE: Record<string, number> = {
-  king: 0, queen: 900, chancellor: 800, royal_guard: 250, rook: 500, bishop: 320, knight: 310, pigeon: 300, pawn: 100,
+  king: 0, queen: 900, chancellor: 800, archbishop: 650, royal_guard: 250, rook: 500, bishop: 320, knight: 310, pigeon: 300, pawn: 100,
 };
+
+/** The Amazon (MOD-E009) is a queen and a knight in one. */
+const AMAZON_BONUS = 300;
+
+function pieceValue(piece: Piece): number {
+  return (PIECE_VALUE[piece.type] ?? 0) + (piece.isAmazon && piece.type === 'queen' ? AMAZON_BONUS : 0);
+}
 
 function materialScore(state: GameState, color: Color): number {
   let score = 0;
   for (const piece of state.pieces.values()) {
-    const val = PIECE_VALUE[piece.type] ?? 0;
+    const val = pieceValue(piece);
     score += piece.color === color ? val : -val;
   }
   return score;
@@ -130,7 +137,7 @@ function positionalScore(state: GameState, color: Color): number {
     const file = piece.square.charCodeAt(0) - 97;
     const rank = Number(piece.square[1]) - 1;
     let bonus = 0;
-    if (piece.type === 'knight' || piece.type === 'pigeon' || piece.type === 'bishop' || piece.type === 'pawn') {
+    if (piece.type === 'knight' || piece.type === 'pigeon' || piece.type === 'bishop' || piece.type === 'archbishop' || piece.type === 'pawn') {
       const centreDistance = Math.max(Math.abs(file - 3.5), Math.abs(rank - 3.5));
       bonus += Math.round((3.5 - centreDistance) * (CENTRE_BONUS / 3));
     }
@@ -157,7 +164,7 @@ function orderMoves(state: GameState, moves: Move[]): Move[] {
   const value = (move: Move) => {
     if (move.ability) return 50;
     const victim = state.pieces.get(move.to);
-    return victim ? (PIECE_VALUE[victim.type] ?? 0) : move.promotion ? 800 : 0;
+    return victim ? pieceValue(victim) : move.promotion ? 800 : 0;
   };
   return [...moves].sort((a, b) => value(b) - value(a));
 }
