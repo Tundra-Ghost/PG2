@@ -319,6 +319,7 @@ export default function OnlineMatch({
             <GameStatus
               state={state}
               onNewGame={leave}
+              sides={{ you: myColor, names: { [opponentColor]: opponentName } }}
               infoMessage={opponentAway ? 'Opponent disconnected.' : null}
               actionLabel="Leave Room"
               controls={

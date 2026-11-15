@@ -146,6 +146,44 @@
   transform: translateY(-1px);
 }
 
+.overlayLinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.5rem;
+  margin-top: 0.25rem;
+}
+
+.overlayLink {
+  min-height: 40px;
+  padding: 0.4rem 0.25rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--ui-gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.resultLine {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--ui-parchment);
+}
+
+.resultLine strong {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--ui-gold);
+}
+
+.resultActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
 .newGameBtnSmall {
   background: transparent;
   border: 1px solid rgba(45, 108, 179, 0.35);
@@ -196,6 +234,11 @@
   .newGameBtnSmall {
     width: 100%;
     padding-block: 0.35rem;
+  }
+
+  .resultActions .newGameBtnSmall {
+    flex: 1;
+    min-height: 40px;
   }
 
   .overlayCard {
