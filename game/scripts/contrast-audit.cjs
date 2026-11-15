@@ -122,7 +122,7 @@ async function audit(page, label) {
 
     await go(''); await audit(p, `${n} menu`);
     await go('settings');
-    for (const tab of ['Account', 'Audio', 'Display', 'Gameplay', 'Access.', 'Feedback']) {
+    for (const tab of ['Account', 'Audio', 'Display', 'Gameplay', 'Accessibility', 'Feedback']) {
       const t = p.getByRole('tab', { name: tab, exact: true });
       if (await t.count()) { await click(t); await audit(p, `${n} settings/${tab}`); }
     }
