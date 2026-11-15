@@ -47,11 +47,14 @@ export default function OnlineMatch({
 }: OnlineMatchProps) {
   const room = useOnlineRoom(account);
   const [surveyFor, setSurveyFor] = useState<GameSurveyContext | null>(null);
+  /** The finished game the result card offers a debrief for, until it is taken. */
+  const [debriefReady, setDebriefReady] = useState<GameSurveyContext | null>(null);
   /** The last status seen per room, so only a game that ends while watched asks. */
   const lastStatus = useRef<{ roomId: string; status: string } | null>(null);
 
   useEffect(() => {
     const state = room.state;
+    if (!state || !isFinished(state)) setDebriefReady(null);
     if (!state || !room.roomId || !room.color) return;
     const previous = lastStatus.current;
     lastStatus.current = { roomId: room.roomId, status: state.status };
@@ -63,8 +66,8 @@ export default function OnlineMatch({
       result: resultFor(state, room.color),
       details: { room: room.roomId, moves: state.moveHistory.length, ending: state.status, signedIn: Boolean(account) },
     };
-    const timer = setTimeout(() => setSurveyFor(context), 1500);
-    return () => clearTimeout(timer);
+    // Offered on the result card, never opened by itself, so the final board shows first.
+    setDebriefReady(context);
   }, [room.state, room.roomId, room.color, settings.postGameSurveys, account]);
 
   useEffect(() => {
@@ -320,6 +323,14 @@ export default function OnlineMatch({
               state={state}
               onNewGame={leave}
               sides={{ you: myColor, names: { [opponentColor]: opponentName } }}
+              onDebrief={
+                debriefReady
+                  ? () => {
+                      setSurveyFor(debriefReady);
+                      setDebriefReady(null);
+                    }
+                  : undefined
+              }
               infoMessage={opponentAway ? 'Opponent disconnected.' : null}
               actionLabel="Leave Room"
               controls={

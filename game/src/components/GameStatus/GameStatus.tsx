@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { getWinner, type GameState } from '@pigeon-chess/game-core';
+import type { GameState } from '@pigeon-chess/game-core';
+import { getStatusMessage, type ResultSides } from './resultText';
 import { playClick } from '../../sound';
 import styles from './GameStatus.module.css';
 
@@ -12,44 +13,9 @@ interface GameStatusProps {
   /** Extra match controls shown next to the action button (online resign / draw). */
   controls?: ReactNode;
   /** Who the player is, so the result says "You win" or "Chick wins" instead of a colour. */
-  sides?: { you?: Side; names?: Partial<Record<Side, string>> };
+  sides?: ResultSides;
   /** Opens the optional post-game debrief. The result card shows a button for it when set. */
   onDebrief?: () => void;
-}
-
-type Side = 'white' | 'black';
-
-function sideName(side: Side, sides: GameStatusProps['sides'], subject = false): string {
-  if (sides?.you === side) return subject ? 'You' : 'you';
-  return sides?.names?.[side] ?? (side === 'white' ? 'White' : 'Black');
-}
-
-const DRAW_LABELS: Record<string, string> = {
-  stalemate:   'by stalemate',
-  '50-move':   '50-move rule',
-  threefold:   'threefold repetition',
-  insufficient: 'insufficient material',
-  agreement:   'by agreement',
-};
-
-function getStatusMessage(
-  state: GameState,
-  sides: GameStatusProps['sides'],
-): { emoji: string; headline: string; sub: string } | null {
-  const winner = getWinner(state);
-  if (winner && winner !== 'draw') {
-    const resigned = state.resignedBy as Side | undefined;
-    return {
-      emoji: winner === 'white' ? '♔' : '♚',
-      headline: sides?.you === winner ? 'You win' : `${sideName(winner, sides, true)} wins`,
-      sub: state.status === 'resigned' && resigned ? `${sideName(resigned, sides, true)} resigned` : 'by checkmate',
-    };
-  }
-  if (winner === 'draw') {
-    const label = DRAW_LABELS[state.drawReason ?? 'stalemate'] ?? 'draw';
-    return { emoji: '🕊️', headline: 'Draw', sub: label };
-  }
-  return null;
 }
 
 export default function GameStatus({
