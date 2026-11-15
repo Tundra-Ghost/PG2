@@ -688,7 +688,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'This turn, your Knight moves like a Rook — any distance horizontally or vertically. It can capture on this move. The Knight is fully aware this is illegal. It moves anyway.',
     flavor: '"The knight moved in a straight line. It looked around. Nobody stopped it. Viktor pretended this was planned."',
     prototypeRules:
-      'Select a knight and press the ability button. It moves like a rook this turn and can capture. Then that knight waits 6 of your turns. Cannot start from the Swamp.',
+      'Select a knight (or Pigeon or Camel) and press the ability button. It moves like a rook this turn and can capture. Then that knight waits 6 of your turns. Cannot start from the Swamp.',
   },
   {
     id: 'MOD-C004',

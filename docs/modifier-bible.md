@@ -77,7 +77,7 @@ Every 5 rounds, one random empty tile becomes Infected. A piece standing on an I
 
 - Synergy: It's Dark And I'm Scared. Hidden infected tiles are catastrophic.
 - Conflict: The Floor Is Lava. Infection cannot spread onto Lava.
-- Ruling: rooks, bishops, queens and chancellors lose reach. Pawns lose their double step. Knights and kings are not slowed. Moving the piece resets its count. The slowed piece shows its reach on its square.
+- Ruling: rooks, bishops, queens and chancellors lose reach. Pawns lose their double step. Knights, kings and other leapers (Pigeons, Elephants, Camels) are not slowed. Moving the piece resets its count. The slowed piece shows its reach on its square.
 - Ruling: lava burns infection away.
 
 ### MOD-A002 · The Floor Is Lava
@@ -1011,6 +1011,7 @@ Your knights become Camels. A Camel leaps three squares one way and one square t
 - Built: Camels have their own piece art and write L in the move list (C is the Chancellor).
 - Ruling: only your starting knights become Camels. A knight you promote to later is a normal knight. A captured Camel bought back with Moneyball is still a Camel.
 - Ruling: Ghost knights become Ghost Camels, and a Sus disguise shows a Camel instead of a knight.
+- Ruling: infection does not slow a Camel, like a knight.
 - Interaction: Did I Do That? A Camel can use the rook move, like a knight.
 - Interaction: This Is My Swamp. A Camel is trapped for 2 turns like a knight, then leaps out.
 - Conflict: Hatoful Gambit and The Small Council. Each one replaces or removes the knights, so one side cannot draft them with this card.
