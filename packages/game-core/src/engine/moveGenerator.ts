@@ -125,21 +125,44 @@ function stepMoves(state: GameState, piece: Piece): Square[] {
   return result;
 }
 
-function knightMoves(state: GameState, piece: Piece): Square[] {
+/** Every (±a, ±b) and (±b, ±a) jump, without duplicates. (1,2) is the knight. */
+function leaperVectors(a: number, b: number): [number, number][] {
+  const seen = new Set<string>();
+  const result: [number, number][] = [];
+  for (const [x, y] of [[a, b], [b, a]]) {
+    for (const sf of [1, -1]) {
+      for (const sr of [1, -1]) {
+        const v: [number, number] = [x * sf, y * sr];
+        const key = v.join(',');
+        if (seen.has(key)) continue;
+        seen.add(key);
+        result.push(v);
+      }
+    }
+  }
+  return result;
+}
+
+export const KNIGHT_VECTORS = leaperVectors(1, 2);
+/** MOD-E020 Elephant: exactly two squares diagonally. */
+export const ELEPHANT_VECTORS = leaperVectors(2, 2);
+
+/** Pseudo-legal squares a leaper reaches: it jumps straight to each target, ignoring pieces between. */
+export function leaperMoves(state: GameState, piece: Piece, vectors: [number, number][]): Square[] {
   const result: Square[] = [];
   const f = fileIndex(piece.square);
   const r = rankIndex(piece.square);
-  const jumps: [number, number][] = [
-    [-2, -1], [-2, 1], [-1, -2], [-1, 2],
-    [1, -2],  [1, 2],  [2, -1], [2, 1],
-  ];
-  for (const [df, dr] of jumps) {
+  for (const [df, dr] of vectors) {
     const sq = toSquare(f + df, r + dr);
     if (!sq) continue;
     const occupant = state.pieces.get(sq);
     if (!occupant || occupant.color !== piece.color) result.push(sq);
   }
   return result;
+}
+
+function knightMoves(state: GameState, piece: Piece): Square[] {
+  return leaperMoves(state, piece, KNIGHT_VECTORS);
 }
 
 function pawnMoves(state: GameState, piece: Piece): Square[] {
@@ -205,6 +228,9 @@ function pieceMoves(state: GameState, piece: Piece): Square[] {
       return slidingMoves(state, piece, [[1, 1], [1, -1], [-1, 1], [-1, -1]]);
     case 'knight':
       return knightMoves(state, piece);
+    case 'elephant':
+      // MOD-E020: exactly two squares diagonally, jumping the square between
+      return leaperMoves(state, piece, ELEPHANT_VECTORS);
     case 'pawn':
       return pawnMoves(state, piece);
     case 'chancellor':

@@ -42,6 +42,7 @@ export const MODIFIER_IDS = {
   bandersnatch: 'MOD-A008',
   slayQueen: 'MOD-E009',
   holyKnight: 'MOD-E010',
+  elephantInTheRoom: 'MOD-E020',
   peerPressure: 'MOD-B019',
   commitmentIssues: 'MOD-B015',
 } as const;

@@ -1529,5 +1529,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your bishops become Elephants. An Elephant moves exactly two squares diagonally, jumping over the square between.',
     flavor: '"Nobody is talking about the elephants. The elephants are fine with this."',
+    prototypeRules:
+      'Your starting bishops become Elephants. An Elephant moves exactly 2 squares diagonally and jumps the square between. A bishop you promote or buy back later is a normal bishop. Cannot be drafted with Holy Knight, The Small Council or Forgive Me.',
   },
 ];

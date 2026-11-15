@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 45 built, 55 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 46 built, 54 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -1079,13 +1079,20 @@ Your knights may repeat the same L-jump in a straight line, as long as each land
 - Ruling: known in fairy chess as the Nightrider.
 
 ### MOD-E020 · Elephant In The Room
-*Ref: Xiangqi elephants* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+*Ref: Xiangqi elephants* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
 
 Your bishops become Elephants. An Elephant moves exactly two squares diagonally, jumping over the square between.
 
 *Nobody is talking about the elephants. The elephants are fine with this.*
 
 - Pricing: a weaker piece, so the card pays back a point, like a curse.
+- Built: Elephants have their own piece art (an elephant head) and write E in the move list. Unlike a xiangqi elephant, nothing on the square between can block the jump.
+- Ruling: only your starting bishops become Elephants. A bishop you promote or buy back later is a normal bishop.
+- Ruling: an Elephant is not a bishop for other cards. Twin Telepathy does not move it and it does not clear infection. Infection does not slow it.
+- Interaction: This Is My Swamp. An Elephant is treated like a knight: entering the Swamp traps it for 2 turns, then it jumps out normally.
+- Ruling: Ghost bishops (I'm Literally Right Here) become Ghost Elephants, so they still look like the rest of your army.
+- Conflict: Holy Knight, The Small Council and Forgive Me, For I Have Moved. Each needs a bishop, so one side cannot draft them with this card.
+- Note: an Elephant stays on its colour and reaches only 8 squares in all, so it can never give mate alone.
 
 ## Balance summary
 
@@ -1192,7 +1199,7 @@ Values the game uses today. "Built" cards match the build.
 | E017 | The Bodyguard | E | A | 3 | 0 | Owner | Design |
 | E018 | Zerg Rush | E | A | 3 | 0 | Owner | Design |
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Design |
-| E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Design |
+| E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
 45 of 100 built. The other 55 are designs (v0.4).
 
