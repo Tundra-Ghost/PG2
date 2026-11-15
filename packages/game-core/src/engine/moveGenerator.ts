@@ -244,6 +244,9 @@ function pieceMoves(state: GameState, piece: Piece): Square[] {
     case 'elephant':
       // MOD-E020: exactly two squares diagonally, jumping the square between
       return leaperMoves(state, piece, ELEPHANT_VECTORS);
+    case 'nightrider':
+      // MOD-E019: repeats one knight jump in a line while each landing square is empty
+      return slidingMoves(state, piece, KNIGHT_VECTORS);
     case 'camel':
       // MOD-E011: a (3,1) leaper
       return leaperMoves(state, piece, CAMEL_VECTORS);

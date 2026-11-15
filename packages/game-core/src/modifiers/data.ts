@@ -141,7 +141,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'The four central squares (d4, d5, e4, e5) are the Swamp. Any piece in the Swamp moves at 1 square per turn. Knights and other leapers are trapped for 2 turns upon entering.',
     flavor: '"Viktor entered the Swamp to seize the centre. The Swamp seized Viktor. They are negotiating terms."',
     prototypeRules:
-      'A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant, Camel) that lands in the Swamp is stuck for 2 turns, then leaps out normally. Swamp pieces still give check at full range.',
+      'A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant, Camel, Nightrider) that lands in the Swamp is stuck for 2 turns, then leaps out normally. Swamp pieces still give check at full range.',
   },
   {
     id: 'MOD-A007',
@@ -688,7 +688,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'This turn, your Knight moves like a Rook — any distance horizontally or vertically. It can capture on this move. The Knight is fully aware this is illegal. It moves anyway.',
     flavor: '"The knight moved in a straight line. It looked around. Nobody stopped it. Viktor pretended this was planned."',
     prototypeRules:
-      'Select a knight (or Pigeon or Camel) and press the ability button. It moves like a rook this turn and can capture. Then that knight waits 6 of your turns. Cannot start from the Swamp.',
+      'Select a knight (or Pigeon, Camel or Nightrider) and press the ability button. It moves like a rook this turn and can capture. Then that knight waits 6 of your turns. Cannot start from the Swamp.',
   },
   {
     id: 'MOD-C004',
@@ -1519,6 +1519,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your knights may repeat the same L-jump in a straight line, as long as each landing square is empty, stopping on or capturing at the last.',
     flavor: '"The knight has a talking car. The knight will not stop talking about the talking car."',
+    prototypeRules:
+      'Your starting knights become Nightriders. A Nightrider repeats one knight jump in a straight line while each landing square is empty, and stops on or captures at the last. One jump is a normal knight move. Cannot be drafted with Hatoful Gambit, The Small Council or Lawrence Of Arabia.',
   },
   {
     id: 'MOD-E020',
