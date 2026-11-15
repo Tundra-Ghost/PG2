@@ -742,7 +742,7 @@ export default function App() {
           profile={profile}
           editable={false}
           heading="The Roost"
-          subtitle="Local records, titles, achievements, and offline history for the current serverless prototype. Online sections remain placeholder scaffolding."
+          subtitle="Your records, titles, achievements and match history on this device. Online games are not recorded here yet."
           onBack={() => setScreen('menu')}
         />
         {settingsOverlay}
@@ -916,8 +916,7 @@ export default function App() {
                   profile: botProfile,
                   editable: false,
                   heading: `${opponentName} Dossier`,
-                  subtitle:
-                    'Prototype opponent profile view. Online profile exchange is reserved for future server-backed play.',
+                  subtitle: `${opponentName}'s record, titles and style of play.`,
                 });
               }}
             />
