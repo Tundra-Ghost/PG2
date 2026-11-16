@@ -22,6 +22,16 @@ export interface OngoingRow {
   abandonIsLoss: boolean;
 }
 
+/**
+ * The Abandon button's label. It names the status, picks and last played time
+ * so a screen reader can tell two games against the same bot apart.
+ */
+export function abandonLabel(row: OngoingRow): string {
+  const parts = [`Abandon game against ${row.opponent}`, row.status, row.modifiers];
+  if (row.lastPlayed) parts.push(`Last played ${row.lastPlayed}`);
+  return parts.filter(Boolean).join('. ') + '.';
+}
+
 function modifierName(id: string): string {
   return ALL_MODIFIERS.find(mod => mod.id === id)?.name ?? id;
 }

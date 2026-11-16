@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { playClick } from '../../sound';
-import { describeSave, type OngoingRow } from '../../ongoingGames';
+import { abandonLabel, describeSave, type OngoingRow } from '../../ongoingGames';
 import type { SavedBotGame } from '../../savedBotGames';
 import LeaveMatchDialog from '../LeaveMatchDialog/LeaveMatchDialog';
 import styles from './OngoingGames.module.css';
@@ -118,7 +118,7 @@ export default function OngoingGames({
                   {game && (
                   <button
                     className={styles.abandon}
-                    aria-label={`Abandon game against ${row.opponent}`}
+                    aria-label={abandonLabel(row)}
                     onClick={event => {
                       playClick();
                       opener.current = event.currentTarget;

@@ -57,6 +57,7 @@ import { useOnlineGameList } from './online/useOnlineGameList';
 import {
   SAVE_VERSION,
   applyAction,
+  findSavedDraft,
   newSaveId,
   readSavedGames,
   rebuildMatch,
@@ -139,6 +140,8 @@ export default function App() {
   }, []);
   /** The saved game this match or draft is stored under. Also the match's state id. */
   const [saveId, setSaveId] = useState<string | null>(null);
+  const saveIdRef = useRef(saveId);
+  saveIdRef.current = saveId;
   /** Bot games in progress, for the menu and the Ongoing games list. */
   const [ongoingGames, setOngoingGames] = useState<SavedBotGame[]>(() => readSavedGames());
   /** Why a game just left the Ongoing list, shown there until the next tap. */
@@ -225,8 +228,6 @@ export default function App() {
   screenRef.current = screen;
   const prevScreenRef = useRef(prevScreen);
   prevScreenRef.current = prevScreen;
-  const openDraftRef = useRef(openDraft);
-  openDraftRef.current = openDraft;
   const abandonRef = useRef(commitAbandonmentIfNeeded);
   abandonRef.current = () => {
     if (matchIsSaved()) return;
@@ -272,15 +273,21 @@ export default function App() {
       // Leaving a match by Back counts the same as the Menu button.
       if (current === 'game' && next !== 'game') abandonRef.current();
       // A finished or left match, or a draft with no opponent, can't be reopened.
-      if ((next === 'game' && current !== 'game') || (next === 'draft' && !selectedBotRef.current)) {
+      // Back or Forward into a draft that was left reopens its save. With no
+      // save to reopen it goes to the menu, so it never starts a second draft.
+      const reopen = next === 'draft' && current !== 'draft' ? findSavedDraft(saveIdRef.current) : null;
+      if (
+        (next === 'game' && current !== 'game') ||
+        (next === 'draft' && current !== 'draft' && !reopen) ||
+        (next === 'draft' && !selectedBotRef.current)
+      ) {
         next = 'menu';
         window.history.replaceState(null, '', pathFor(next, BASE));
       }
       if (next === 'settings') setPrevScreen(current);
       settingsPushed.current = false;
       lastScreen.current = next;
-      // Forward into a draft that was left starts a fresh, saved one.
-      if (next === 'draft' && current !== 'draft') openDraftRef.current();
+      if (next === 'draft' && reopen) resumeRef.current(reopen);
       else setScreen(next);
     };
     window.addEventListener('popstate', onPop);

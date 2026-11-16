@@ -4,6 +4,7 @@ import {
   MAX_SAVED_GAMES,
   SAVE_VERSION,
   applyAction,
+  findSavedDraft,
   findSavedGame,
   readSavedGames,
   rebuildMatch,
@@ -160,5 +161,18 @@ describe('saved bot games', () => {
     expect(readSavedGames(store).map(game => game.id)).toEqual(['good']);
     store.setItem('pigeon-chess-bot-games', '{not json');
     expect(readSavedGames(store)).toEqual([]);
+  });
+});
+
+describe('reopening a left draft (#141)', () => {
+  it('finds the saved draft under the id, and nothing once it is a match or gone', () => {
+    const store = memoryStore();
+    saveGame(draftSave('d1', '2026-01-01T00:00:00.000Z'), store);
+    expect(findSavedDraft('d1', store)?.draft?.playerIds).toEqual(['MOD-B002']);
+    expect(findSavedDraft(null, store)).toBeNull();
+    expect(findSavedDraft('missing', store)).toBeNull();
+    const started = { ...draftSave('d1', '2026-01-01T00:00:01.000Z'), match: { playerModifierIds: [], botModifierIds: [], actions: [] } } as unknown as SavedBotGame;
+    saveGame(started, store);
+    expect(findSavedDraft('d1', store)).toBeNull();
   });
 });
