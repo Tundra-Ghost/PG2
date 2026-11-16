@@ -18,6 +18,8 @@ function needsDarkFirst(cardId: string, ownIds: string[], otherIds: string[]): b
  * Stonks and The Small Council both rebuild the pawns.
  * The Small Council fills the third rank, so Hatchery has no nest.
  * Run, Forrest, Run would let a Heavy Is The Crown King skip its order.
+ * Peer Pressure and Main Character Syndrome demand different pieces on the
+ * same move. Yeah, There Are Three Of Them (Three Kings) has no Queen, so Main Character Syndrome would be free.
  */
 const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.slayQueen, MODIFIER_IDS.threeKings],
@@ -33,6 +35,8 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.stonks, MODIFIER_IDS.smallCouncil],
   [MODIFIER_IDS.hatchery, MODIFIER_IDS.smallCouncil],
   [MODIFIER_IDS.runForrestRun, MODIFIER_IDS.heavyIsTheCrown],
+  [MODIFIER_IDS.peerPressure, MODIFIER_IDS.mainCharacterSyndrome],
+  [MODIFIER_IDS.mainCharacterSyndrome, MODIFIER_IDS.threeKings],
 ];
 
 /** The card in your draft that rules this one out, if any. */

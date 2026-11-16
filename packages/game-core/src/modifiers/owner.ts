@@ -15,3 +15,11 @@ export function affectsColor(state: GameState, id: ModifierID, color: Color): bo
     mod => mod.id === id && (mod.sourceColor == null || mod.sourceColor === color),
   );
 }
+
+/**
+ * The every-N-moves counter: 1 on a side's first move, 2 on its second, and
+ * so on. Shared by the scheduled curses so they count the same way.
+ */
+export function ownMoveNumber(state: GameState): number {
+  return Math.ceil(state.turnNumber / 2);
+}

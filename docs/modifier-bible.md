@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 55 built, 45 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 56 built, 44 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -291,6 +291,16 @@ The c-file runs north only and the f-file runs south only. A piece moving along 
 
 Negative effects that grant extra point budget. Curses fill the Madness Meter. All curses are Scope: Owner.
 
+### Move rules
+
+Some curses limit which move you may make this turn: Peer Pressure, Main Character Syndrome, Roll For Initiative, Case Of The Mondays and Lunch Break. They share one set of rulings:
+
+- In check, none of them apply. Any legal move is allowed.
+- A move rule only applies when at least one legal move keeps it. It never takes away your last move.
+- When two apply to one side, they are checked in this order: Lunch Break, Case Of The Mondays, Peer Pressure, Main Character Syndrome, Roll For Initiative. A later rule only applies if some legal move keeps every earlier one too.
+- Rules that demand a move ("you must move X") also forbid shooing Gerald. Rules that only forbid some moves do not.
+- Two rules that demand different pieces on the same move cannot be drafted by one side (see each card's conflicts).
+
 ### Curse pricing
 
 A curse should give back about as much as it takes away (Rule 08). Price each curse by how many moves it costs its owner in a normal 40-round game:
@@ -398,14 +408,22 @@ You have 15 seconds for each move. If the timer runs out, a random legal move is
 - Pricing: a fast player loses almost nothing, a slow one a lot. Skill matters.
 
 ### MOD-B010 · Main Character Syndrome
-*Ref: Social media* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+*Ref: Social media* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
 
 Your Queen must move at least once every 4 of your moves. If you skip her too long, your next move must be a Queen move if she has one.
 
 *The queen would like to remind everyone that this is her story.*
 
+- Built: after 3 of your moves in a row without a Queen move, your 4th must be one. The feed warns you after the 3rd. Selecting another piece says why it cannot move.
+- Built: her ability (such as Quiet Quitting) counts as a Queen move. Shooing Gerald does not, and is not allowed while she is owed.
 - Ruling: in check, you may make any legal move. The demand waits.
-- Ruling: once your Queen is captured, the curse ends.
+- Ruling: if she has no legal move, any move is allowed and she stays owed until she can move.
+- Ruling: once your Queen is captured (or defects), the curse ends for good. A Queen from a later promotion is not bound.
+- Ruling: never a softlock. The demand only binds when she has a legal move.
+- Several queens: any of your queens moving counts.
+- Conflict: Peer Pressure. Both demand a piece on the same move, so one side cannot draft both.
+- Conflict: Yeah, There Are Three Of Them. No Queen, so the curse would be free points.
+- Interaction: Lunch Break wins. At lunch she cannot move, so the demand waits (see Move rules below).
 
 ### MOD-B011 · Case Of The Mondays
 *Ref: Office Space / Garfield* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
@@ -507,6 +525,7 @@ If one of your pawns can capture, you must make a pawn capture. Your opponent ca
 - Ruling: pawn abilities do not count as the capture. Retaliatory Swipe and I've Been Waiting For This are blocked while a normal pawn capture is forced.
 - Ruling: under fog, only captures onto squares you can see force you, so the card never gives away a hidden piece.
 - Synergy: Conscientious Objector. The pacifist pawn is exempt and very smug about it.
+- Conflict: Main Character Syndrome. Both demand a piece on the same move, so one side cannot draft both.
 
 ### MOD-B020 · Roll For Initiative
 *Ref: Dungeons & Dragons* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
@@ -955,6 +974,7 @@ The owner's queen becomes a Royal Guard and a second Guard stands on their third
 
 - Changed from v0.2: Guards are captured normally instead of being "checkmated".
 - Conflict: Slay Queen. One side cannot draft both.
+- Conflict: Main Character Syndrome. There is no Queen to demand, so one side cannot draft both.
 
 ### MOD-E004 · Equivalent Exchange (The Chancellor)
 *Ref: Fullmetal Alchemist* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**
@@ -1231,7 +1251,7 @@ Values the game uses today. "Built" cards match the build.
 | A019 | Crop Circles | A | B | 2 | 0 | Shared | Design |
 | A020 | One Way Street | A | B | 2 | 1 | Shared | Design |
 | B009 | Speedrun Any% | B | A | -2 | 2 | Owner | Design |
-| B010 | Main Character Syndrome | B | B | -1 | 1 | Owner | Design |
+| B010 | Main Character Syndrome | B | B | -1 | 1 | Owner | Built |
 | B011 | Case Of The Mondays | B | B | -1 | 1 | Owner | Design |
 | B012 | Bless You | B | B | -1 | 1 | Owner | Design |
 | B013 | Death And Taxes | B | S | -3 | 3 | Owner | Design |
