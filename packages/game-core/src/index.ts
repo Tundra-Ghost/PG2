@@ -43,6 +43,7 @@ export { getTouchedPiece, hasTouchMove, touchPiece, touchedReason } from './modi
 export { isQueenDemanded, mustMoveQueen } from './modifiers/definitions/main-character-syndrome';
 export { getBindingMoveRules } from './modifiers/move-rules';
 export { getInitiativeRoll, mustMoveRolledType } from './modifiers/definitions/roll-for-initiative';
+export { isMonday, isMondayLimited } from './modifiers/definitions/case-of-the-mondays';
 export { getCrownOrders } from './modifiers/definitions/heavy-is-the-crown';
 export { getFakeMoveHints } from './modifiers/definitions/recalculating';
 export { getPigeonHops } from './modifiers/definitions/hatoful-gambit';
