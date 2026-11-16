@@ -41,8 +41,9 @@ function readRot(state: GameState): Record<string, number> {
 /**
  * How far the piece on `square` may move, or null when infection does not
  * slow it. Sliders lose 1 square of reach per round stood still (minimum 1).
- * Pawns lose their double step. Knights and kings only take one step, so
- * they are not slowed.
+ * Pawns lose their double step. Knights, kings and other leapers only take
+ * one step, so they are not slowed. Nightriders (MOD-E019) are left out on
+ * purpose: a ride is at most 3 jumps, and the bible records the ruling.
  */
 export function getInfectedReach(state: GameState, square: Square): number | null {
   const piece = state.pieces.get(square);

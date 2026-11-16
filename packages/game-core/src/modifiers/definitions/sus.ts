@@ -9,7 +9,7 @@ import { armyType } from '../army';
 const ID = MODIFIER_IDS.sus;
 /** Types a disguise can show. Special pieces from other cards are never shown. */
 const DISGUISES: PieceType[] = ['pawn', 'knight', 'bishop', 'rook', 'queen'];
-const LETTERS: Partial<Record<PieceType, string>> = { knight: 'N', bishop: 'B', elephant: 'E', camel: 'L', rook: 'R', queen: 'Q' };
+const LETTERS: Partial<Record<PieceType, string>> = { knight: 'N', bishop: 'B', elephant: 'E', camel: 'L', nightrider: 'NN', rook: 'R', queen: 'Q' };
 
 /** Called when a card swaps a whole piece type for `color`, so the disguise keeps blending in. */
 export function remapDisguise(state: GameState, color: Color, from: PieceType, to: PieceType): GameState {

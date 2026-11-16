@@ -41,7 +41,7 @@ function toSquare(f: number, r: number): Square {
 
 /** Position-key letters where the first letter of the type would collide. */
 const POSITION_SYM: Partial<Record<PieceType, string>> = {
-  knight: 'N', pigeon: 'H', royal_guard: 'G', elephant: 'El', camel: 'Cm',
+  knight: 'N', pigeon: 'H', royal_guard: 'G', elephant: 'El', camel: 'Cm', nightrider: 'Nr',
 };
 
 /**
@@ -391,7 +391,7 @@ export function isStalemate(state: GameState, color: Color): boolean {
 
 /** Standard piece letter. Pawn = ''. Knight = 'N' (NOT 'K'). */
 const PIECE_SYM: Partial<Record<PieceType, string>> = {
-  king: 'K', queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: '', chancellor: 'C', archbishop: 'A', elephant: 'E', camel: 'L', royal_guard: 'G', pigeon: 'H',
+  king: 'K', queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: '', chancellor: 'C', archbishop: 'A', elephant: 'E', camel: 'L', nightrider: 'NN', royal_guard: 'G', pigeon: 'H',
 };
 
 /** Promotion suffix letter. */

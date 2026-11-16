@@ -14,7 +14,7 @@ function needsDarkFirst(cardId: string, ownIds: string[], otherIds: string[]): b
  * other upgrades: Three Of Them turns the Queen into a Royal Guard, and
  * The Small Council has no bishops. Elephant In The Room turns every bishop
  * into an Elephant, so Holy Knight and Forgive Me would have no bishop.
- * Lawrence Of Arabia and Hatoful Gambit both replace the knights.
+ * Lawrence Of Arabia, Knight Rider and Hatoful Gambit all replace the knights.
  */
 const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.slayQueen, MODIFIER_IDS.threeKings],
@@ -24,6 +24,9 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.elephantInTheRoom, MODIFIER_IDS.forgiveMe],
   [MODIFIER_IDS.lawrenceOfArabia, MODIFIER_IDS.hatofulGambit],
   [MODIFIER_IDS.lawrenceOfArabia, MODIFIER_IDS.smallCouncil],
+  [MODIFIER_IDS.knightRider, MODIFIER_IDS.hatofulGambit],
+  [MODIFIER_IDS.knightRider, MODIFIER_IDS.smallCouncil],
+  [MODIFIER_IDS.knightRider, MODIFIER_IDS.lawrenceOfArabia],
 ];
 
 /** The card in your draft that rules this one out, if any. */

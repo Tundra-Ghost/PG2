@@ -11,6 +11,8 @@ const KNIGHT_TRAP_TICKS = 3;
 
 /** Leapers cannot make a 1-square move, so the Swamp traps them instead (MOD-E020 Elephant, MOD-E011 Camel too). */
 const LEAPERS = new Set(['knight', 'pigeon', 'elephant', 'camel']);
+/** MOD-E019 Nightriders are trapped like knights, and leave the Swamp with a single jump. */
+const KNIGHT_JUMP_DISTANCE = 2;
 
 function distance(from: string, to: string): number {
   const df = Math.abs(from.charCodeAt(0) - to.charCodeAt(0));
@@ -46,7 +48,10 @@ export const thisIsMySwampDef: ModifierDefinition = {
 
     // Knights cannot make a 1-square move, so once free they leap out normally.
     // Ability moves (a knight moving like a rook) get no such pass.
-    const exempt = LEAPERS.has(piece.type) && !move.ability;
+    const exempt = !move.ability && (
+      LEAPERS.has(piece.type)
+      || (piece.type === 'nightrider' && distance(move.from, move.to) <= KNIGHT_JUMP_DISTANCE)
+    );
     if (!exempt && isSwampSquare(move.from) && distance(move.from, move.to) > 1) {
       return { blocked: true, reason: 'In the Swamp a piece moves only 1 square.' };
     }
@@ -56,7 +61,7 @@ export const thisIsMySwampDef: ModifierDefinition = {
 
   onPostMove(state, move) {
     const piece = state.pieces.get(move.to);
-    if (!piece || !LEAPERS.has(piece.type)) return state;
+    if (!piece || (!LEAPERS.has(piece.type) && piece.type !== 'nightrider')) return state;
     if (!isSwampSquare(move.to) || isSwampSquare(move.from)) return state;
 
     const next = cloneState(state);
