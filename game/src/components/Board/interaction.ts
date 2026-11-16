@@ -49,7 +49,7 @@ const MARKER_LEGEND: LegendRow[] = [
     showIf: ctx => ctx.eggOnBoard !== false,
   },
   { modifierId: MODIFIER_IDS.commitmentIssues, mark: 'T', label: 'Touched: this piece must move' },
-  { modifierId: MODIFIER_IDS.slayQueen, mark: 'A', label: 'Amazon badge (Queen + knight)' },
+  { modifierId: MODIFIER_IDS.slayQueen, mark: '♞', label: 'Amazon: this Queen also moves like a knight' },
   { modifierId: MODIFIER_IDS.threeKings, mark: '⛨', label: 'Royal Guard' },
   { modifierId: MODIFIER_IDS.ventTiles, mark: '●', label: 'Vent shaft' },
   { modifierId: MODIFIER_IDS.heavyIsTheCrown, mark: '♔', label: 'King order' },

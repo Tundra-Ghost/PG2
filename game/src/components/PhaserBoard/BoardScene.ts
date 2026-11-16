@@ -9,6 +9,7 @@ import { PIECE_GLYPHS, PIECE_TYPES, pieceTextureKey, renderPieceCanvas } from '.
 export const CELL = 80;
 const PIECE_PX = 64;
 const MONO = '"JetBrains Mono", ui-monospace, monospace';
+const CHESS_GLYPH = /[\u2654-\u265F]/;
 
 // Draw order, bottom to top.
 const DEPTH = { squares: 0, tiles: 1, pulse: 2, tileIcons: 2.5, fog: 2.8, pieces: 3, badges: 4, marks: 5, bursts: 6 };
@@ -282,8 +283,9 @@ export class BoardScene extends Phaser.Scene {
         badges.lineStyle(1, 0x18120a, 0.5).strokeRect(bx, by, bw, 18);
         this.labels.push(
           this.add.text(bx + bw / 2, by + 9, mark, {
-            fontFamily: MONO,
-            fontSize: '12px',
+            // Chess glyphs (the Amazon's ♞) draw small in the mono font, so they get a size up.
+            fontFamily: CHESS_GLYPH.test(mark) ? 'serif' : MONO,
+            fontSize: CHESS_GLYPH.test(mark) ? '20px' : '12px',
             color: hot === 0xf5e8c0 ? '#18120a' : '#fff2de',
           }).setOrigin(0.5).setDepth(DEPTH.marks),
         );
