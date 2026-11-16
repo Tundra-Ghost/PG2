@@ -101,7 +101,7 @@ export const susDef: ModifierDefinition = {
     for (const color of owners) {
       const candidates = [...next.pieces.values()]
         .filter(piece => piece.color === color && piece.type !== 'king' && piece.type !== 'egg' && !piece.isRealKing && !piece.isGhost)
-        .sort((a, b) => a.id.localeCompare(b.id));
+        .sort((a, b) => a.square.localeCompare(b.square)); // Squares, not ids: ids differ each time the start position is built.
       if (candidates.length === 0) continue;
       const [pieceIdx, prngA] = prngPickIndex(next.prngState, candidates.length);
       const piece = candidates[pieceIdx];
