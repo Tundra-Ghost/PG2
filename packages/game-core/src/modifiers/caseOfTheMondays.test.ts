@@ -76,6 +76,15 @@ describe('MOD-B011 Case Of The Mondays', () => {
     expect(state.eventHistory[state.eventHistory.length - 1]?.message).toMatch(/coffee/);
   });
 
+  it('abilities are not limited: a rook may fire down the board', () => {
+    const state = chessEngine.activateDraftModifiers(
+      makeEmptyState([makePiece('king', 'white', 'e1'), makePiece('king', 'black', 'e8'), makePiece('rook', 'white', 'a1'), makePiece('knight', 'black', 'a7')]),
+      [{ id: MONDAYS, sourceColor: 'white' }, { id: MODIFIER_IDS.forTheEmperor, sourceColor: 'white' }],
+    );
+    expect(chessEngine.validateMove(state, move('a1', 'a7', 'white')).valid).toBe(false);
+    expect(chessEngine.validateMove(state, move('a1', 'a7', 'white', { ability: MODIFIER_IDS.forTheEmperor })).valid).toBe(true);
+  });
+
   it('castling is allowed', () => {
     const state = withMondays([makePiece('rook', 'white', 'h1'), makePiece('rook', 'white', 'a1')]);
     state.flags.castlingRights.white = { kingSide: true, queenSide: true };

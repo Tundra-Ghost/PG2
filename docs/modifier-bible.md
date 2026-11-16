@@ -449,6 +449,7 @@ For your first 6 moves, none of your pieces may move more than 2 squares.
 - Built: the feed says when Monday is over, at the start of your 7th move. Your moves include passes and skipped turns.
 - Ruling: in check, any legal move is allowed.
 - Ruling: never a softlock. If no short move exists, any legal move is allowed.
+- Interaction: Forgive Me. A confession is made by tapping a normal move, so on Monday it can only declare a square up to 2 away.
 - Interaction: Main Character Syndrome and Peer Pressure. Mondays is checked first, so a Queen demand asks for a short Queen move. Pawn captures are always 1 square.
 
 ### MOD-B012 · Bless You
