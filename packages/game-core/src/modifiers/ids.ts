@@ -56,6 +56,7 @@ export const MODIFIER_IDS = {
   mainCharacterSyndrome: 'MOD-B010',
   rollForInitiative: 'MOD-B020',
   caseOfTheMondays: 'MOD-B011',
+  lunchBreak: 'MOD-B016',
   zergRush: 'MOD-E018',
   stonks: 'MOD-E015',
 } as const;

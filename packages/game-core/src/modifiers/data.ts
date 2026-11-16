@@ -589,6 +589,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Every 10 of your moves, your rooks and Queen go on lunch. On your next move they cannot move. A sign shows the round before.',
     flavor: '"The rooks have gone to lunch. They took the queen. They did not invite Viktor."',
+    prototypeRules:
+      'On your 11th, 21st, 31st move and so on, your rooks, Queen and Chancellor cannot move or use abilities, and you cannot castle. The feed puts up a sign at the start of the move before. In check, lunch is cancelled. If only rooks and Queen could move, lunch is waived.',
   },
   {
     id: 'MOD-B017',
