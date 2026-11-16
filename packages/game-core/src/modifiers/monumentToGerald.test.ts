@@ -117,4 +117,19 @@ describe('MOD-A016 Monument To Gerald', () => {
     expect(next.pieces.get('e3')).toMatchObject({ type: 'rook' });
     expect(getStatueSquare(next)).toBe('e4');
   });
+
+  it('a heavy King that pushes the statue uses up its order', () => {
+    let state = withStatue(
+      [makePiece('king', 'white', 'e3'), makePiece('pawn', 'white', 'h2'), makePiece('pawn', 'black', 'h7'), makePiece('king', 'black', 'a8')],
+      [{ id: MODIFIER_IDS.heavyIsTheCrown, sourceColor: 'white' }],
+    );
+    state = chessEngine.applyMove(state, move('e3', 'e4', 'white', { ability: MODIFIER_IDS.heavyIsTheCrown }));
+    state = chessEngine.applyMove(state, move('a8', 'b8', 'black'));
+    state = chessEngine.applyMove(state, move('e3', 'e4', 'white'));
+    expect(getStatueSquare(state)).toBe('e5');
+    state = chessEngine.applyMove(state, move('b8', 'a8', 'black'));
+    expect(state.status).toBe('active');
+    // The order was spent on the push: stepping to e4 needs a new order.
+    expect(chessEngine.validateMove(state, move('e3', 'e4', 'white')).valid).toBe(false);
+  });
 });

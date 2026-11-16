@@ -246,6 +246,7 @@ A statue of Gerald stands on e4. Nothing can land on it or pass through it. A pi
 
 - Ruling: the statue cannot be captured. Like any piece, it blocks lines, including lines of check.
 - Ruling: a piece pushes only along a line it moves on: King, Queen and Royal Guard any way, Rook and Chancellor straight, Bishop and Archbishop diagonally, a pawn only straight ahead. Knights and other leapers cannot push it.
+- Ruling: if e4 is taken at the start, the statue stands on d4, e5 or d5 instead.
 - Ruling: the pushing piece stays where it is. The statue cannot be pushed onto a piece, Lava, the storm or off the board.
 - Ruling: a push may not leave your King in check. A piece Gerald (Distracted Piece) is holding, or a frozen or stuck piece, cannot push.
 - Ruling: castling cannot pass through the statue. Gravity cannot move it; a piece that slides into it stops. The storm swallows it if it is caught on a storm square.
