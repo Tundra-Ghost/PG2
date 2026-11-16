@@ -1134,6 +1134,7 @@ Your pawns can also step one square sideways onto an empty square. They still ca
 - Ruling: a sideways step never promotes, even next to the Storm or a closed square.
 - Ruling: a pawn that steps sideways along its start rank may still make its two-square first move.
 - Ruling: a sideways step can be undone, so it does not reset the 50-move count. Back-and-forth steps end in a repetition draw (Rule 06).
+- Interaction: Peer Pressure. A sideways step is not a capture, so it never forces you and never counts as the forced capture.
 
 ### MOD-E015 · Stonks
 *Ref: Stonks meme* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Built**

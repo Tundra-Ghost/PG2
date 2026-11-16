@@ -224,6 +224,18 @@ describe('MOD-B019 Peer Pressure', () => {
       expect(chessEngine.validateMove(state, move('d4', 'e5', 'white')).valid).toBe(true);
     });
 
+    it('en passant still forces, and a sideways step onto the en passant square does not count', () => {
+      const state = withPeerAndCrab([
+        makePiece('pawn', 'white', 'd5'),
+        makePiece('pawn', 'white', 'f6'),
+        makePiece('pawn', 'black', 'e5'),
+      ]);
+      state.flags.enPassantSquare = 'e6';
+      expect(getForcedPawnCaptures(state, 'white')).toEqual([{ from: 'd5', to: 'e6' }]);
+      expect(chessEngine.validateMove(state, move('f6', 'e6', 'white')).valid).toBe(false);
+      expect(chessEngine.validateMove(state, move('d5', 'e6', 'white', { isEnPassant: true })).valid).toBe(true);
+    });
+
     it('bots move other pieces when no capture exists', () => {
       const state = withPeerAndCrab([
         makePiece('pawn', 'white', 'd4'),
