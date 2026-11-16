@@ -285,8 +285,10 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     tier: 'B',
     scope: 'shared',
     description:
-      'A statue of Gerald stands on e4. Nothing can land on it or pass through it. A piece moving into it from an adjacent square pushes it one square the same way, if that square is empty. The push is the whole move.',
+      'A statue of Gerald stands on e4 (d4, e5 or d5 if e4 is taken at the start). Nothing can land on it or pass through it. A piece moving into it from an adjacent square pushes it one square the same way, if that square is empty. The push is the whole move.',
     flavor: '"They built him a statue. Gerald has been sitting on it since the ribbon was cut."',
+    prototypeRules:
+      'A statue of Gerald stands on e4 (d4, e5 or d5 if e4 is taken at the start). Nothing can land on it or pass through it, and it blocks lines of check. A piece that could step onto it from a neighbouring square (King, Queen, Rook, Bishop and their cousins along their lines; a pawn only straight ahead) pushes it one square the same way instead, if that square is empty and not Lava or storm. The piece stays where it is; the push is the whole move. Knights and other leapers cannot push it. It cannot be captured. The storm swallows it, and Gravity cannot move it.',
   },
   {
     id: 'MOD-A017',

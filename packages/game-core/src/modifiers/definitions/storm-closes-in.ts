@@ -73,7 +73,8 @@ export const stormClosesInDef: ModifierDefinition = {
         if (piece?.type === 'king') continue;
         const after = cloneState(next);
         after.pieces.delete(sq);
-        after.tiles.set(sq, { ...tile, storm: 'active', isVoid: true });
+        // The storm swallows Gerald's statue (MOD-A016) too.
+        after.tiles.set(sq, { ...tile, storm: 'active', isVoid: true, statue: undefined });
         // Storm squares block lines, so this should never fire. Kept as a
         // guard: never strand the side that just moved in check.
         if (isInCheck(after, mover)) continue;

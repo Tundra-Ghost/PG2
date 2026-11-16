@@ -94,6 +94,8 @@ export class BoardScene extends Phaser.Scene {
   private labels: Phaser.GameObjects.GameObject[] = [];
   private pieceSprites = new Map<string, Phaser.GameObjects.Image>();
   private geraldSprites = new Map<string, Phaser.GameObjects.Image>();
+  /** MOD-A016: Gerald's statue, a grey Gerald on a stone plinth. */
+  private statueSprite: Phaser.GameObjects.Image | null = null;
   /** Burst keys already played, so a redraw never replays a flash. */
   private playedBursts = new Set<string>();
   private calm = false;
@@ -167,6 +169,7 @@ export class BoardScene extends Phaser.Scene {
     this.labels = [];
     const seenPieces = new Set<string>();
     const seenGerald = new Set<string>();
+    let seenStatue = false;
 
     this.views.forEach((view, index) => {
       const x = (index % 8) * CELL;
@@ -193,6 +196,10 @@ export class BoardScene extends Phaser.Scene {
       }
 
       this.drawTile(view, x, y, tiles, pulse);
+      if (view.statue) {
+        seenStatue = true;
+        this.drawStatue(tiles, x, y);
+      }
       // Fog of war: dark, with a faint grain so the board still reads.
       if (view.isHidden) {
         fog.fillStyle(0x07060a, 0.86).fillRect(x, y, CELL, CELL);
@@ -211,7 +218,7 @@ export class BoardScene extends Phaser.Scene {
       if (view.isLegalTarget) {
         marks.fillStyle(theme.legal[0], theme.legal[1]);
         marks.lineStyle(4, theme.legal[0], theme.legal[1]);
-        if (view.piece) marks.strokeCircle(cx, cy, CELL / 2 - 4);
+        if (view.piece || view.statue) marks.strokeCircle(cx, cy, CELL / 2 - 4);
         else marks.fillCircle(cx, cy, CELL * 0.15);
       }
 
@@ -295,6 +302,23 @@ export class BoardScene extends Phaser.Scene {
         this.geraldSprites.delete(id);
       }
     }
+    if (!seenStatue && this.statueSprite) {
+      this.statueSprite.destroy();
+      this.statueSprite = null;
+    }
+  }
+
+  /** MOD-A016: a stone plinth with a grey Gerald on top. */
+  private drawStatue(tiles: Phaser.GameObjects.Graphics, x: number, y: number) {
+    const cx = x + CELL / 2;
+    tiles.fillStyle(0x6e6a64, 1).fillRect(x + CELL * 0.18, y + CELL * 0.66, CELL * 0.64, CELL * 0.2);
+    tiles.fillStyle(0x8e8a82, 1).fillRect(x + CELL * 0.24, y + CELL * 0.58, CELL * 0.52, CELL * 0.1);
+    tiles.lineStyle(2, 0x2a2622, 0.8).strokeRect(x + CELL * 0.18, y + CELL * 0.66, CELL * 0.64, CELL * 0.2);
+    if (!this.statueSprite) {
+      this.statueSprite = this.add.image(0, 0, 'gerald').setDepth(DEPTH.pieces);
+      this.statueSprite.setScale((CELL * 0.6) / this.statueSprite.width).setTint(0xb4b0a8);
+    }
+    this.statueSprite.setPosition(cx, y + CELL * 0.36);
   }
 
   private drawTile(
