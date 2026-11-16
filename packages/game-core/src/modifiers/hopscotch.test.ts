@@ -1,0 +1,130 @@
+import { describe, expect, it } from 'vitest';
+import { chessEngine } from '../engine/ChessEngine';
+import { getChickBotMove, getPigeonBotMove } from '../engine/bot';
+import { isInCheck } from '../engine/moveGenerator';
+import { getValidOptions, pickBlocker } from '../draft/rules';
+import { ALL_MODIFIERS } from './data';
+import { modifierRegistry } from './registry';
+import './index';
+import { MODIFIER_IDS } from './ids';
+import { makeEmptyState, makePiece, move } from './testHelpers';
+
+const HOP = MODIFIER_IDS.hopscotch;
+
+describe('MOD-E012 Hopscotch (The Grasshopper)', () => {
+  it('turns one seeded rook into a Grasshopper and drops castling on that side', () => {
+    const pick = (seed: number) => {
+      const start = chessEngine.getInitialState();
+      start.prngSeed = seed;
+      start.prngState = seed;
+      return chessEngine.activateDraftModifiers(start, [{ id: HOP, sourceColor: 'white' }]);
+    };
+    const state = pick(5);
+    const hoppers = Array.from(state.pieces.values()).filter(p => p.type === 'grasshopper');
+    expect(hoppers).toHaveLength(1);
+    expect(hoppers[0].color).toBe('white');
+    const rights = state.flags.castlingRights.white;
+    expect(hoppers[0].square === 'h1' ? rights.kingSide : rights.queenSide).toBe(false);
+    const square = (seed: number) => Array.from(pick(seed).pieces.values()).find(p => p.type === 'grasshopper')!.square;
+    expect(square(5)).toBe(square(5));
+    expect(new Set(Array.from({ length: 20 }, (_, i) => square(i + 1)))).toEqual(new Set(['a1', 'h1']));
+  });
+
+  it('hops the first piece on each queen line and lands right behind it', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'h1'),
+      makePiece('grasshopper', 'white', 'd4'),
+      makePiece('pawn', 'white', 'd6'), // land d7
+      makePiece('pawn', 'black', 'f6'), // land g7
+      makePiece('knight', 'black', 'b4'), // land a4
+      makePiece('rook', 'black', 'a4'), // ... which holds an enemy: capture
+      makePiece('pawn', 'white', 'd2'), // land d1
+      makePiece('bishop', 'white', 'g4'), // land h4
+      makePiece('pawn', 'white', 'h4'), // own piece there: no move
+      makePiece('king', 'black', 'a8'),
+    ]);
+    const moves = [...chessEngine.getLegalMoves(state, 'd4')].sort();
+    expect(moves).toEqual(['a4', 'd1', 'd7', 'g7']);
+    const next = chessEngine.applyMove(state, move('d4', 'a4', 'white'));
+    expect(next.pieces.get('a4')?.type).toBe('grasshopper');
+    expect(next.pieces.get('b4')?.type).toBe('knight');
+    expect(next.moveHistory[0].notation).toBe('Ghxa4');
+  });
+
+  it('cannot move with nothing to hop, and never hops over a void square', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'h1'),
+      makePiece('grasshopper', 'white', 'a1'),
+      makePiece('pawn', 'black', 'a5'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+    expect(chessEngine.getLegalMoves(state, 'a1')).toEqual(['a6']);
+    state.tiles.set('a3', { square: 'a3', effects: [], statue: true, isVoid: true });
+    expect(chessEngine.getLegalMoves(state, 'a1')).toEqual([]);
+  });
+
+  it('gives check by hopping, and only then', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'a1'),
+      makePiece('grasshopper', 'white', 'e2'),
+      makePiece('king', 'black', 'e8'),
+    ]);
+    expect(isInCheck(state, 'black')).toBe(false); // nothing to hop
+    state.pieces.set('e6', makePiece('pawn', 'black', 'e6'));
+    expect(isInCheck(state, 'black')).toBe(false); // lands on e7, not e8
+    state.pieces.delete('e6');
+    state.pieces.set('e7', makePiece('pawn', 'black', 'e7'));
+    expect(isInCheck(state, 'black')).toBe(true); // hops e7 onto the King
+  });
+
+  it('a hop may not leave its own King in check', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'a4'),
+      makePiece('grasshopper', 'white', 'd4'),
+      makePiece('rook', 'black', 'h4'),
+      makePiece('pawn', 'black', 'd5'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+    expect(chessEngine.validateMove(state, move('d4', 'd6', 'white')).valid).toBe(false);
+  });
+
+  it('goes to lunch with Lunch Break, like the rook it replaced', () => {
+    const state = chessEngine.activateDraftModifiers(
+      makeEmptyState([
+        makePiece('king', 'white', 'e1'),
+        makePiece('grasshopper', 'white', 'a1'),
+        makePiece('pawn', 'white', 'a2'),
+        makePiece('knight', 'white', 'b1'),
+        makePiece('king', 'black', 'e8'),
+      ]),
+      [{ id: MODIFIER_IDS.lunchBreak, sourceColor: 'white' }],
+    );
+    state.turnNumber = 2 * 11 - 1;
+    expect(chessEngine.validateMove(state, move('a1', 'a3', 'white')).valid).toBe(false);
+    expect(chessEngine.validateMove(state, move('b1', 'c3', 'white')).valid).toBe(true);
+    state.turnNumber = 2 * 10 - 1;
+    expect(chessEngine.validateMove(state, move('a1', 'a3', 'white')).valid).toBe(true);
+  });
+
+  it('bots play legal Grasshopper moves and take a free piece', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'h1'),
+      makePiece('grasshopper', 'white', 'd1'),
+      makePiece('pawn', 'black', 'd6'),
+      makePiece('queen', 'black', 'd7'),
+      makePiece('king', 'black', 'a8'),
+    ]);
+    expect(getPigeonBotMove(state, 'white', { depth: 2 })).toMatchObject({ from: 'd1', to: 'd7' });
+    expect(chessEngine.validateMove(state, getChickBotMove(state, 'white', () => 0)!).valid).toBe(true);
+  });
+
+  it('cannot be drafted with The Chancellor or Overseas Hire on the same side', () => {
+    const built = new Set(modifierRegistry.getAll().map(def => def.id));
+    const card = ALL_MODIFIERS.find(c => c.id === HOP)!;
+    for (const other of [MODIFIER_IDS.chancellor, MODIFIER_IDS.overseasHire]) {
+      expect(pickBlocker(card, [other], [], built)).toMatch(/Does not work with/);
+      expect(getValidOptions([other], [], built).map(c => c.id)).not.toContain(HOP);
+      expect(getValidOptions([], [other], built).map(c => c.id)).toContain(HOP);
+    }
+  });
+});

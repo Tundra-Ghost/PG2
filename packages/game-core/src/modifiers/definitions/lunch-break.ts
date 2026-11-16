@@ -8,8 +8,8 @@ import { getBindingMoveRule, moveRuleHooks, registerMoveRule } from '../move-rul
 const ID = MODIFIER_IDS.lunchBreak;
 /** Lunch comes after every this many of your moves. */
 export const LUNCH_EVERY = 10;
-/** The Chancellor (Equivalent Exchange) and the Cannon (Overseas Hire) replaced a rook, so they go to lunch too. */
-const LUNCH_TYPES = new Set<PieceType>(['rook', 'queen', 'chancellor', 'cannon']);
+/** The Chancellor, the Cannon and the Grasshopper each replaced a rook, so they go to lunch too. */
+const LUNCH_TYPES = new Set<PieceType>(['rook', 'queen', 'chancellor', 'cannon', 'grasshopper']);
 const REASON = 'Lunch Break: your rooks and Queen are at lunch. They cannot move this move.';
 
 /** True when `color`'s current move is a lunch move (its 11th, 21st, ...). */

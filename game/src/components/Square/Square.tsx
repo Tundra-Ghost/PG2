@@ -73,6 +73,9 @@ function getPieceTooltipLines(
   if (piece.type === 'cannon') {
     lines.push('Cannon: Slides like a rook. Captures only by jumping exactly one piece to take the next one.');
   }
+  if (piece.type === 'grasshopper') {
+    lines.push('Grasshopper: Hops the first piece on any queen line and lands right behind it. Cannot move without something to hop.');
+  }
   if (piece.type === 'nightrider') {
     lines.push('Nightrider: Repeats one knight jump in a straight line over empty landing squares.');
   }

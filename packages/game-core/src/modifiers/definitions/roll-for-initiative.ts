@@ -14,7 +14,7 @@ export const ROLL_EVERY = 3;
 const FACES: PieceType[] = [
   'king', 'queen', 'rook', 'bishop', 'knight', 'pawn',
   'chancellor', 'archbishop', 'elephant', 'camel', 'nightrider', 'royal_guard', 'pigeon',
-  'cannon',
+  'cannon', 'grasshopper',
 ];
 
 const NAMES: Partial<Record<PieceType, string>> = { royal_guard: 'Royal Guard', king: 'King', queen: 'Queen' };

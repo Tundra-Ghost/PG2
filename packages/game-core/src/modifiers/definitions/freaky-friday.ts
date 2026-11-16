@@ -13,7 +13,7 @@ export const SWAP_COOLDOWN = 7;
 /** Every piece that moves, except the King. Eggs (MOD-E016) never move. */
 const SWAPPERS: PieceType[] = [
   'queen', 'rook', 'bishop', 'knight', 'pawn', 'chancellor', 'archbishop',
-  'elephant', 'camel', 'nightrider', 'royal_guard', 'pigeon', 'cannon',
+  'elephant', 'camel', 'nightrider', 'royal_guard', 'pigeon', 'cannon', 'grasshopper',
 ];
 
 function neighbours(sq: Square): Square[] {

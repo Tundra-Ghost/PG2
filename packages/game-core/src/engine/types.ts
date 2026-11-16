@@ -17,6 +17,7 @@ export type PieceType =
   | 'nightrider'   // MOD-E019 Knight Rider
   | 'egg'          // MOD-E016 Hatchery: cannot move, hatches into a pigeon
   | 'cannon'       // MOD-E013 Overseas Hire: rook moves, captures over one screen
+  | 'grasshopper'  // MOD-E012 Hopscotch: hops one piece along queen lines
   | 'royal_guard'; // future: MOD-E003 Royal Guard
 
 export type Color = 'white' | 'black';
