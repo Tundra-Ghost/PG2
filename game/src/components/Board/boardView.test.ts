@@ -99,5 +99,9 @@ describe('buildSquareViews', () => {
     ]);
     gambit.pieces.set('d3', pigeon);
     expect(at(gambit).pigeonsHop).toBe(true);
+
+    // White's Hatoful Gambit does not move Black's (hatched) Pigeon.
+    gambit.pieces.set('d3', { ...pigeon, color: 'black' });
+    expect(at(gambit).pigeonsHop).toBeUndefined();
   });
 });
