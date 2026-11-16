@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 50 built, 50 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 51 built, 49 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -342,6 +342,7 @@ For the owner's first 5 moves, every piece moves in the opposite direction to th
 The owner's King moves at half speed. Moving the King takes two moves: choose on the first, confirm on the second. During the wait the King glows and the opponent can see the destination. Castling takes 3 moves.
 
 - Conflict: Winter Is Coming. A frozen slow King is near softlock.
+- Conflict: Run, Forrest, Run. A run would skip the order step, so one side cannot draft both.
 - Built: select the King and press Order move to pick a square. That costs the turn. Make the move on any later turn. The ordered square shows a dashed gold frame.
 - Ruling: in check, the King moves freely and the order is dropped.
 - Changed: castling takes two turns like any King move, not three.
@@ -645,14 +646,18 @@ A pawn guards an adjacent friendly piece. That piece cannot be captured during y
 - Ruling: cannot shield your King. Check is check.
 
 ### MOD-C014 · Run, Forrest, Run
-*Ref: Forrest Gump* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Forrest Gump* · **Tier B** · Cost 2 · Curse 0 · King · Cooldown 10 · Scope: Owner · Modes: All · **Built**
 
-Your King runs two squares in a straight line, if both squares are empty and safe. Uses your move.
+Select your King and press Run. It runs two squares in a straight line, if both squares are empty and safe. Uses your move. Then your King waits 10 of your moves.
 
 *Viktor's king just felt like running.*
 
 - Ruling: allowed in check, as long as it ends out of check. It may not run through an attacked square.
+- Ruling: any straight line: rank, file or diagonal. No capture. It cannot enter or cross storm squares.
+- Ruling: running ends castling rights, like any King move.
+- Conflict: Heavy Is The Crown. A run would skip the order step, so one side cannot draft both.
 - King review: the King only gains movement. Core rule 1 holds.
+- Changed from design: the design gave no cooldown; the build uses 10 of your moves.
 
 ### MOD-C015 · Ctrl+Z
 *Ref: Every computer ever* · **Tier S** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1218,7 +1223,7 @@ Values the game uses today. "Built" cards match the build.
 | C011 | GET OVER HERE! | C | S | 4 | 0 | Owner | Design |
 | C012 | Freaky Friday | C | B | 2 | 0 | Owner | Design |
 | C013 | Hold My Bread | C | B | 2 | 0 | Owner | Design |
-| C014 | Run, Forrest, Run | C | B | 2 | 0 | Owner | Design |
+| C014 | Run, Forrest, Run | C | B | 2 | 0 | Owner | Built |
 | C015 | Ctrl+Z | C | S | 4 | 0 | Owner | Design |
 | C016 | Bullet Time | C | A | 4 | 0 | Owner | Design |
 | C017 | Get Off My Lawn | C | B | 3 | 0 | Owner | Design |
@@ -1250,7 +1255,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
-50 of 100 built. The other 50 are designs (v0.4).
+51 of 100 built. The other 49 are designs (v0.4).
 
 ### Balance test plan
 
