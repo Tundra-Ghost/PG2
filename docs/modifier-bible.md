@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 59 built, 41 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 60 built, 40 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -500,7 +500,7 @@ Touch-move rules apply to you. Once you select a piece that has a legal move, yo
 - Balance: bots never touch, so for a bot the curse costs nothing. The balance harness cannot measure this card; leave it out of the 40% to 60% flags.
 
 ### MOD-B016 · Lunch Break
-*Ref: Union rules* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
+*Ref: Union rules* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Built**
 
 Every 10 of your moves, your rooks and Queen go on lunch. On your next move they cannot move. A sign shows the round before.
 
@@ -508,6 +508,10 @@ Every 10 of your moves, your rooks and Queen go on lunch. On your next move they
 
 - Ruling: in check, lunch is cancelled. Everyone works.
 - Not Quiet Quitting: this is a curse on a schedule, not a choice.
+- Built: lunch is your 11th, 21st, 31st move and so on. The sign goes up in the feed at the start of the move before (your 10th, 20th, ...). Your moves include passes and skipped turns.
+- Built: at lunch, rooks and Queen cannot move or use their abilities, and you cannot castle, because the rook would move. Shooing Gerald is still allowed.
+- Ruling: never a softlock. If only rooks and Queen could move, lunch is waived.
+- Interaction: Main Character Syndrome and Roll For Initiative. Lunch is checked first, so a Queen demand or a rook or Queen roll waits and you choose freely.
 
 ### MOD-B017 · MINE!
 *Ref: Finding Nemo* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
@@ -1285,7 +1289,7 @@ Values the game uses today. "Built" cards match the build.
 | B013 | Death And Taxes | B | S | -3 | 3 | Owner | Design |
 | B014 | Imposter Syndrome | B | B | -1 | 1 | Owner | Design |
 | B015 | Commitment Issues | B | B | -1 | 1 | Owner | Built |
-| B016 | Lunch Break | B | A | -2 | 2 | Owner | Design |
+| B016 | Lunch Break | B | A | -2 | 2 | Owner | Built |
 | B017 | MINE! | B | A | -2 | 2 | Owner | Design |
 | B018 | Rubber Banding | B | A | -2 | 2 | Owner | Design |
 | B019 | Peer Pressure | B | A | -2 | 2 | Owner | Built |
