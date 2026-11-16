@@ -18,6 +18,10 @@ interface MainMenuProps {
   onOnline: () => void;
   onFriends: () => void;
   onLinkAccount: () => void;
+  /** Opens the list of bot games in progress. */
+  onOngoing: () => void;
+  /** How many bot games are in progress. */
+  ongoingCount: number;
   /** Starts the guided first match against Chick. */
   onTutorial: () => void;
   /** Signed in (or still checking). False shows the guest prompt. */
@@ -108,6 +112,8 @@ export default function MainMenu({
   onFriends,
   onLinkAccount,
   onTutorial,
+  onOngoing,
+  ongoingCount,
   linked,
   friendsBadge,
   profile,
@@ -278,6 +284,21 @@ export default function MainMenu({
                 <span className={styles.linkHint}>Save progress and play online</span>
               </button>
             )}
+
+            <button
+              type="button"
+              className={styles.friendsButton}
+              data-menu-card="ongoing"
+              onClick={() => {
+                playClick();
+                onOngoing();
+              }}
+            >
+              <span>Ongoing games</span>
+              <span className={styles.linkHint}>
+                {ongoingCount === 0 ? 'None in progress' : `${ongoingCount} in progress`}
+              </span>
+            </button>
 
             <button
               type="button"

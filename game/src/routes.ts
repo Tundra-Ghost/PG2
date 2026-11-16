@@ -10,7 +10,8 @@ export type Screen =
   | 'collection'
   | 'online'
   | 'friends'
-  | 'puzzles';
+  | 'puzzles'
+  | 'ongoing';
 
 const PATHS: Record<Screen, string> = {
   menu: '',
@@ -24,6 +25,7 @@ const PATHS: Record<Screen, string> = {
   online: 'online',
   friends: 'friends',
   puzzles: 'puzzles',
+  ongoing: 'games',
 };
 
 /** The game's folder: "/play/" on the site, "/" on the dev server. */

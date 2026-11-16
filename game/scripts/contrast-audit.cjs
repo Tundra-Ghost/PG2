@@ -157,6 +157,10 @@ async function audit(page, label) {
     if (await sq.count()) {
       if (n === 'd') { await sq.hover(); await audit(p, `${n} tooltip`); }
     }
+    // The match above is saved, so it shows in Ongoing games.
+    await go('games'); await audit(p, `${n} ongoing`);
+    const abandon = p.getByRole('button', { name: /^Abandon game/ }).first();
+    if (await abandon.count()) { await click(abandon); await audit(p, `${n} ongoing/confirm`); }
     await ctx.close();
   }
   await b.close();
