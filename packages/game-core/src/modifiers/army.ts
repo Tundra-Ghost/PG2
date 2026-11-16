@@ -9,6 +9,7 @@ import { affectsColor } from './owner';
 const ARMY_SWAPS: ReadonlyArray<{ card: string; from: PieceType; to: PieceType }> = [
   { card: MODIFIER_IDS.elephantInTheRoom, from: 'bishop', to: 'elephant' },
   { card: MODIFIER_IDS.lawrenceOfArabia, from: 'knight', to: 'camel' },
+  { card: MODIFIER_IDS.knightRider, from: 'knight', to: 'nightrider' },
 ];
 
 /** The type `color`'s army uses in place of `type`. */

@@ -66,7 +66,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'Every 5 turns, one random empty tile becomes Infected. Pieces standing still on Infected tiles lose 1 square of movement per turn. A Bishop or Queen passing through clears infection. 25% chance to spread to an adjacent tile each turn.',
     flavor: '"There is something growing on the board. Viktor has chosen not to investigate what it is."',
     prototypeRules:
-      'A new Infected tile appears every 5 rounds. Each round, every Infected tile has a 25% chance to spread to a neighbour. Rooks, bishops and queens standing still on infection lose 1 square of reach per round. Pawns lose their double step. Knights and kings are not slowed. A bishop or queen clears every square it crosses. Lava burns infection away.',
+      'A new Infected tile appears every 5 rounds. Each round, every Infected tile has a 25% chance to spread to a neighbour. Rooks, bishops and queens standing still on infection lose 1 square of reach per round. Pawns lose their double step. Knights, kings, leapers (Pigeons, Elephants, Camels) and Nightriders are not slowed. A bishop or queen clears every square it crosses. Lava burns infection away.',
   },
   {
     id: 'MOD-A002',
@@ -141,7 +141,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'The four central squares (d4, d5, e4, e5) are the Swamp. Any piece in the Swamp moves at 1 square per turn. Knights and other leapers are trapped for 2 turns upon entering.',
     flavor: '"Viktor entered the Swamp to seize the centre. The Swamp seized Viktor. They are negotiating terms."',
     prototypeRules:
-      'A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant, Camel) that lands in the Swamp is stuck for 2 turns, then leaps out normally. Swamp pieces still give check at full range.',
+      'A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant, Camel, Nightrider) that lands in the Swamp is stuck for 2 turns, then leaps out normally (a Nightrider with a single jump). Swamp pieces still give check at full range.',
   },
   {
     id: 'MOD-A007',
@@ -688,7 +688,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'This turn, your Knight moves like a Rook — any distance horizontally or vertically. It can capture on this move. The Knight is fully aware this is illegal. It moves anyway.',
     flavor: '"The knight moved in a straight line. It looked around. Nobody stopped it. Viktor pretended this was planned."',
     prototypeRules:
-      'Select a knight (or Pigeon or Camel) and press the ability button. It moves like a rook this turn and can capture. Then that knight waits 6 of your turns. Cannot start from the Swamp.',
+      'Select a knight (or Pigeon, Camel or Nightrider) and press the ability button. It moves like a rook this turn and can capture. Then that knight waits 6 of your turns. Cannot start from the Swamp.',
   },
   {
     id: 'MOD-C004',
@@ -1404,7 +1404,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'Your knights become Camels. A Camel leaps three squares one way and one square the other, jumping over pieces.',
     flavor: '"The camel has crossed the desert. The desert was the queenside. Nobody was ready."',
     prototypeRules:
-      'Your starting knights become Camels. A Camel leaps 3 squares one way and 1 the other, over pieces. It stays on one square colour. A knight you promote to later is a normal knight. Cannot be drafted with Hatoful Gambit or The Small Council.',
+      'Your starting knights become Camels. A Camel leaps 3 squares one way and 1 the other, over pieces. It stays on one square colour. A knight you promote to later is a normal knight. Cannot be drafted with Hatoful Gambit, The Small Council or Knight Rider.',
   },
   {
     id: 'MOD-E012',
@@ -1519,6 +1519,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your knights may repeat the same L-jump in a straight line, as long as each landing square is empty, stopping on or capturing at the last.',
     flavor: '"The knight has a talking car. The knight will not stop talking about the talking car."',
+    prototypeRules:
+      'Your starting knights become Nightriders. A Nightrider repeats one knight jump in a straight line while each landing square is empty, and stops on or captures at the last. One jump is a normal knight move. Cannot be drafted with Hatoful Gambit, The Small Council or Lawrence Of Arabia.',
   },
   {
     id: 'MOD-E020',

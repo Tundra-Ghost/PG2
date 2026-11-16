@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { PieceType } from '@pigeon-chess/game-core';
 import { hasPieceArt } from './PieceArt';
 
-const TYPES: PieceType[] = ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn', 'pigeon', 'chancellor', 'archbishop', 'elephant', 'camel', 'royal_guard'];
+const TYPES: PieceType[] = ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn', 'pigeon', 'chancellor', 'archbishop', 'elephant', 'camel', 'nightrider', 'royal_guard'];
 
 describe('piece art', () => {
   it('has an SVG for every piece type', () => {

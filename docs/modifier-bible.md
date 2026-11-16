@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 48 built, 52 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 49 built, 51 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -77,7 +77,7 @@ Every 5 rounds, one random empty tile becomes Infected. A piece standing on an I
 
 - Synergy: It's Dark And I'm Scared. Hidden infected tiles are catastrophic.
 - Conflict: The Floor Is Lava. Infection cannot spread onto Lava.
-- Ruling: rooks, bishops, queens and chancellors lose reach. Pawns lose their double step. Knights, kings and other leapers (Pigeons, Elephants, Camels) are not slowed. Moving the piece resets its count. The slowed piece shows its reach on its square.
+- Ruling: rooks, bishops, queens and chancellors lose reach. Pawns lose their double step. Knights, kings, leapers (Pigeons, Elephants, Camels) and Nightriders are not slowed. Moving the piece resets its count. The slowed piece shows its reach on its square.
 - Ruling: lava burns infection away.
 
 ### MOD-A002 · The Floor Is Lava
@@ -130,7 +130,7 @@ Promotion: once the square ahead of a pawn is storm, that pawn promotes on the l
 ### MOD-A006 · This Is My Swamp
 *Ref: Shrek* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
 
-The four centre squares (d4, d5, e4, e5) are the Swamp. A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant, Camel) that lands in the Swamp is stuck for 2 of its owner's moves, then leaps out normally. Swamp pieces still give check at full range (Core rule 3).
+The four centre squares (d4, d5, e4, e5) are the Swamp. A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant, Camel, Nightrider) that lands in the Swamp is stuck for 2 of its owner's moves, then leaps out normally (a Nightrider with a single jump). Swamp pieces still give check at full range (Core rule 3).
 
 *The Swamp is contested. The Swamp is disgusting. The Swamp is strategically essential.*
 
@@ -549,7 +549,7 @@ The knight moves like a rook this move and can capture. It cannot start from the
 *The Knight has no regrets.*
 
 - Synergy: The Storm Closes In. Escape the edge in one move.
-- Built: Pigeons (Hatoful Gambit) and Camels (Lawrence Of Arabia) can use it too.
+- Built: Pigeons (Hatoful Gambit), Camels (Lawrence Of Arabia) and Nightriders (Knight Rider) can use it too.
 
 ### MOD-C004 · Retaliatory Swipe (Look What You Made Me Do)
 *Ref: Taylor Swift, Reputation* · **Tier B** · Cost 2 · Curse 0 · Pawn · Cooldown 4 · Modes: All · **Built**
@@ -911,6 +911,7 @@ Both of the owner's knights become Pigeons. Pigeons move like knights. Every 5 r
 - Gerald will not sit on Pigeons.
 - Synergy: Did I Do That? Pigeons can use the rook move.
 - Conflict: Lawrence Of Arabia. It turns every knight into a Camel, so one side cannot draft both.
+- Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
 
 ### MOD-E002 · The Small Council (Do You Hear The Pawns Sing)
 *Ref: Les Misérables* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -922,6 +923,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 - Conflict: Holy Knight. One side cannot draft both.
 - Conflict: Elephant In The Room. It turns every bishop into an Elephant, so one side cannot draft both.
 - Conflict: Lawrence Of Arabia. It turns every knight into a Camel, so one side cannot draft both.
+- Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
 *Ref: John Wick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1015,6 +1017,7 @@ Your knights become Camels. A Camel leaps three squares one way and one square t
 - Interaction: Did I Do That? A Camel can use the rook move, like a knight.
 - Interaction: This Is My Swamp. A Camel is trapped for 2 turns like a knight, then leaps out.
 - Conflict: Hatoful Gambit and The Small Council. Each one replaces or removes the knights, so one side cannot draft them with this card.
+- Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
 
 ### MOD-E012 · Hopscotch
 *Ref: Fairy chess Grasshopper* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1090,13 +1093,22 @@ Your pawns may move two squares forward from any rank, if both squares are empty
 - Not Gotta Go Fast: that is one pawn on a cooldown; this is all of them, always.
 
 ### MOD-E019 · Knight Rider
-*Ref: Knight Rider (KITT)* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Knight Rider (KITT)* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Your knights may repeat the same L-jump in a straight line, as long as each landing square is empty, stopping on or capturing at the last.
 
 *The knight has a talking car. The knight will not stop talking about the talking car.*
 
 - Ruling: known in fairy chess as the Nightrider.
+- Built: your starting knights become Nightriders. They have their own piece art (a knight with speed lines) and write NN in the move list. One jump is a normal knight move. A piece on any landing square ends the line; pieces between landing squares do not matter.
+- Ruling: a void square (Storm, used vent) on a landing square ends the line, like a piece.
+- Ruling: it gives check down its whole line, so a piece on a landing square in between blocks the check.
+- Ruling: a knight you promote to later is a normal knight. A captured Nightrider bought back with Moneyball is still a Nightrider.
+- Ruling: Ghost knights become Ghost Nightriders, and a Sus disguise shows a Nightrider instead of a knight.
+- Interaction: This Is My Swamp. Landing in the Swamp traps it for 2 turns like a knight. Then it leaves with a single jump, since a piece in the Swamp moves only one step.
+- Interaction: The Cordyceptic Spread. Infection does not shorten its ride. A ride is at most 3 jumps on an 8x8 board, so this was kept simple.
+- Interaction: Did I Do That? A Nightrider can use the rook move, like a knight.
+- Conflict: Hatoful Gambit, The Small Council and Lawrence Of Arabia. Each one replaces or removes the knights, so one side cannot draft them with this card.
 
 ### MOD-E020 · Elephant In The Room
 *Ref: Xiangqi elephants* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -1219,10 +1231,10 @@ Values the game uses today. "Built" cards match the build.
 | E016 | Hatchery | E | A | 3 | 0 | Owner | Design |
 | E017 | The Bodyguard | E | A | 3 | 0 | Owner | Design |
 | E018 | Zerg Rush | E | A | 3 | 0 | Owner | Design |
-| E019 | Knight Rider | E | A | 4 | 0 | Owner | Design |
+| E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
-48 of 100 built. The other 52 are designs (v0.4).
+49 of 100 built. The other 51 are designs (v0.4).
 
 ### Balance test plan
 
