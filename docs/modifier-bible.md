@@ -553,6 +553,7 @@ On every 3rd move you make, a die picks a piece type. You must move a piece of t
 - Built: a piece of that type may move or use its ability. Sacrificing it with The Snap does not count.
 - Ruling: if no piece of that type has a legal move, any move is allowed. While the die binds you, you cannot shoo Gerald.
 - Ruling: never a softlock. The die only binds when a piece of that type has a legal move.
+- Note: the die rolls at the start of the turn. If every move is blocked and the turn is skipped (Core rule 4), the roll is used up and the feed still shows it.
 - Conflict: Peer Pressure and Main Character Syndrome. Each demands a piece on the same move, so one side cannot draft the die with either.
 - Interaction: Commitment Issues. While the die binds you, only a piece of that type can be touched.
 - Interaction: Lunch Break wins. A rook or Queen roll at lunch leaves you free.

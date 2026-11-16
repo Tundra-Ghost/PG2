@@ -10,6 +10,7 @@ import { touchPiece } from './definitions/commitment-issues';
 import { pickBlocker } from '../draft/rules';
 import { ALL_MODIFIERS } from './data';
 import { makeEmptyState, makePiece, move } from './testHelpers';
+import { ownMoveNumber } from './owner';
 
 const RFI = MODIFIER_IDS.rollForInitiative;
 
@@ -160,5 +161,34 @@ describe('MOD-B020 Roll For Initiative', () => {
     expect(pickBlocker(card, [MODIFIER_IDS.peerPressure], [], all)).toMatch(/Peer Pressure/);
     expect(pickBlocker(card, [MODIFIER_IDS.mainCharacterSyndrome], [], all)).toMatch(/Main Character/);
     expect(pickBlocker(card, [], [MODIFIER_IDS.peerPressure], all)).toBeNull();
+  });
+  it('a pass counts as one of your moves, so it shifts the roll', () => {
+    let state = startWith(5);
+    state = play(state, [['e2', 'e4'], ['e7', 'e5']]);
+    state = chessEngine.passTurn(state);
+    expect(state.turn).toBe('black');
+    expect(ownMoveNumber(state, 'white')).toBe(3);
+    state = play(state, [['b8', 'c6']]);
+    expect(ownMoveNumber(state, 'white')).toBe(3);
+    expect(getInitiativeRoll(state, 'white')).not.toBeNull();
+  });
+
+  it('a save without the counter rebuilds it, extra turns included', () => {
+    let state = startWith(5);
+    state.tempoTokens = { white: 1, black: 0 };
+    state = play(state, [['a2', 'a3']]);
+    state = chessEngine.applyMove(state, move('e7', 'e5', 'black'));
+    state = chessEngine.applyMove(state, move('b2', 'b3', 'white', { extraTurn: true }));
+    state = chessEngine.applyMove(state, move('c2', 'c3', 'white'));
+    const old = { ...state, ownMoves: undefined };
+    expect(ownMoveNumber(old, 'black')).toBe(ownMoveNumber(state, 'black'));
+    expect(ownMoveNumber(old, 'white')).toBe(4);
+  });
+
+  it('names read right on phones: "an" and capital King', () => {
+    const state = rolled([makePiece('archbishop', 'white', 'c1'), makePiece('rook', 'white', 'a1')], 'archbishop');
+    expect(chessEngine.validateMove(state, move('a1', 'a5', 'white')).reason).toMatch(/Move an archbishop\./);
+    const king = rolled([makePiece('rook', 'white', 'a1')], 'king');
+    expect(chessEngine.validateMove(king, move('a1', 'a5', 'white')).reason).toMatch(/the die says King\. Move a King\./);
   });
 });

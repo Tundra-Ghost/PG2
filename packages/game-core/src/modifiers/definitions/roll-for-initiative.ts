@@ -16,7 +16,7 @@ const FACES: PieceType[] = [
   'chancellor', 'archbishop', 'elephant', 'camel', 'nightrider', 'royal_guard', 'pigeon',
 ];
 
-const NAMES: Partial<Record<PieceType, string>> = { royal_guard: 'Royal Guard' };
+const NAMES: Partial<Record<PieceType, string>> = { royal_guard: 'Royal Guard', king: 'King', queen: 'Queen' };
 
 function pieceName(type: PieceType): string {
   return NAMES[type] ?? type;
@@ -45,8 +45,14 @@ export function mustMoveRolledType(state: GameState, color: Color): boolean {
   return getBindingMoveRule(state, color, ID) !== null;
 }
 
+/** "a knight", "an archbishop". */
+function aPiece(type: PieceType): string {
+  const name = pieceName(type);
+  return `${/^[aeiou]/i.test(name) ? 'an' : 'a'} ${name}`;
+}
+
 function reasonFor(type: PieceType): string {
-  return `Roll For Initiative: the die says ${pieceName(type)}. Move a ${pieceName(type)}.`;
+  return `Roll For Initiative: the die says ${pieceName(type)}. Move ${aPiece(type)}.`;
 }
 
 registerMoveRule(ID, (state, color) => {
@@ -106,7 +112,7 @@ export const rollForInitiativeDef: ModifierDefinition = {
       type: 'modifier',
       modifierId: ID,
       title: 'ROLL FOR INITIATIVE',
-      message: `The die says ${pieceName(type)}. ${color === 'white' ? 'White' : 'Black'} must move a ${pieceName(type)} if one can move.`,
+      message: `The die says ${pieceName(type)}. ${color === 'white' ? 'White' : 'Black'} must move ${aPiece(type)} if one can move.`,
       squares,
     });
   },
