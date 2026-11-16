@@ -1388,7 +1388,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'One of your bishops becomes an Archbishop. Each move, it moves like a bishop or like a knight.',
     flavor: '"The bishop prayed for more options. The prayer was answered. The answer had a horse in it."',
     prototypeRules:
-      'One of your bishops, picked at random, becomes an Archbishop. It moves like a bishop or a knight. With Hatoful Gambit, Lawrence Of Arabia or Knight Rider the new knight changes too. Cannot be drafted with The Small Council.',
+      'One of your bishops, picked at random, becomes an Archbishop. It moves like a bishop or a knight. Cannot be drafted with The Small Council.',
   },
   {
     id: 'MOD-E011',

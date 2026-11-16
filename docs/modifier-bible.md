@@ -912,6 +912,7 @@ Both of the owner's knights become Pigeons. Pigeons move like knights. Every 5 r
 - Synergy: Did I Do That? Pigeons can use the rook move.
 - Conflict: Lawrence Of Arabia. It turns every knight into a Camel, so one side cannot draft both.
 - Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
+- Synergy: Stonks. The extra knight changes too.
 
 ### MOD-E002 · The Small Council (Do You Hear The Pawns Sing)
 *Ref: Les Misérables* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -924,6 +925,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 - Conflict: Elephant In The Room. It turns every bishop into an Elephant, so one side cannot draft both.
 - Conflict: Lawrence Of Arabia. It turns every knight into a Camel, so one side cannot draft both.
 - Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
+- Conflict: Stonks. Both rebuild your army, so one side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
 *Ref: John Wick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1018,6 +1020,7 @@ Your knights become Camels. A Camel leaps three squares one way and one square t
 - Interaction: This Is My Swamp. A Camel is trapped for 2 turns like a knight, then leaps out.
 - Conflict: Hatoful Gambit and The Small Council. Each one replaces or removes the knights, so one side cannot draft them with this card.
 - Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
+- Synergy: Stonks. The extra knight changes too.
 
 ### MOD-E012 · Hopscotch
 *Ref: Fairy chess Grasshopper* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1115,6 +1118,7 @@ Your knights may repeat the same L-jump in a straight line, as long as each land
 - Interaction: The Cordyceptic Spread. Infection does not shorten its ride. A ride is at most 3 jumps on an 8x8 board, so this was kept simple.
 - Interaction: Did I Do That? A Nightrider can use the rook move, like a knight.
 - Conflict: Hatoful Gambit, The Small Council and Lawrence Of Arabia. Each one replaces or removes the knights, so one side cannot draft them with this card.
+- Synergy: Stonks. The extra knight changes too.
 
 ### MOD-E020 · Elephant In The Room
 *Ref: Xiangqi elephants* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
