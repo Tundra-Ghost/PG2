@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 57 built, 43 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 58 built, 42 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -430,6 +430,7 @@ Your Queen must move at least once every 4 of your moves. If you skip her too lo
 - Ruling: never a softlock. The demand only binds when she has a legal move.
 - Several queens: any of your queens moving counts.
 - Conflict: Peer Pressure. Both demand a piece on the same move, so one side cannot draft both.
+- Conflict: Roll For Initiative. Same reason.
 - Conflict: Yeah, There Are Three Of Them. No Queen, so the curse would be free points.
 - Interaction: Commitment Issues. While she is owed and has a move, only a Queen can be touched.
 - Interaction: Lunch Break wins. At lunch she cannot move, so the demand waits (see Move rules below).
@@ -536,9 +537,10 @@ If one of your pawns can capture, you must make a pawn capture. Your opponent ca
 - Ruling: under fog, only captures onto squares you can see force you, so the card never gives away a hidden piece.
 - Synergy: Conscientious Objector. The pacifist pawn is exempt and very smug about it.
 - Conflict: Main Character Syndrome. Both demand a piece on the same move, so one side cannot draft both.
+- Conflict: Roll For Initiative. Same reason.
 
 ### MOD-B020 · Roll For Initiative
-*Ref: Dungeons & Dragons* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
+*Ref: Dungeons & Dragons* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Built**
 
 On every 3rd move you make, a die picks a piece type. You must move a piece of that type if you can. If you cannot, you choose freely.
 
@@ -546,6 +548,14 @@ On every 3rd move you make, a die picks a piece type. You must move a piece of t
 
 - Ruling: in check, any legal move is allowed.
 - Ruling: the die only rolls types you still have, so it is never a dead roll.
+- Built: the die rolls at the start of your 3rd, 6th, 9th move and so on, using the seeded generator. The feed says what it rolled. Selecting another piece says why it cannot move.
+- Built: the faces are every type you still have, the King included (eggs cannot move, so they are not a face). Each type has the same chance.
+- Built: a piece of that type may move or use its ability. Sacrificing it with The Snap does not count.
+- Ruling: if no piece of that type has a legal move, any move is allowed. While the die binds you, you cannot shoo Gerald.
+- Ruling: never a softlock. The die only binds when a piece of that type has a legal move.
+- Conflict: Peer Pressure and Main Character Syndrome. Each demands a piece on the same move, so one side cannot draft the die with either.
+- Interaction: Commitment Issues. While the die binds you, only a piece of that type can be touched.
+- Interaction: Lunch Break wins. A rook or Queen roll at lunch leaves you free.
 
 ## Category C: Active Abilities
 
@@ -1271,7 +1281,7 @@ Values the game uses today. "Built" cards match the build.
 | B017 | MINE! | B | A | -2 | 2 | Owner | Design |
 | B018 | Rubber Banding | B | A | -2 | 2 | Owner | Design |
 | B019 | Peer Pressure | B | A | -2 | 2 | Owner | Built |
-| B020 | Roll For Initiative | B | A | -2 | 2 | Owner | Design |
+| B020 | Roll For Initiative | B | A | -2 | 2 | Owner | Built |
 | C009 | YEET | C | A | 3 | 0 | Owner | Design |
 | C010 | Leap Of Faith | C | A | 3 | 0 | Owner | Design |
 | C011 | GET OVER HERE! | C | S | 4 | 0 | Owner | Design |

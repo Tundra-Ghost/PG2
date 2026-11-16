@@ -17,6 +17,7 @@ import type { ModifierDefinition } from '../modifiers/types';
 import { getDraftScope } from '../modifiers/scope';
 import { MODIFIER_IDS } from '../modifiers/ids';
 import { validateMove } from './moveValidator';
+import { ownMovesMade } from './ownMoves';
 import { buildAbilityNotation, getAbilityOptions, performAbility, startAbilityCooldown, tickAbilityCooldowns } from './abilities';
 
 const GERALD_ID = MODIFIER_IDS.gerald;
@@ -161,6 +162,11 @@ export function cloneState(state: GameState): GameState {
     prngSeed: state.prngSeed,
     prngState: state.prngState,
   };
+}
+
+function countOwnMove(state: GameState, next: GameState): void {
+  const made = ownMovesMade(state);
+  next.ownMoves = { ...made, [state.turn]: made[state.turn] + 1 };
 }
 
 export function appendGameEvent(
@@ -555,6 +561,7 @@ function applyMoveOnce(state: GameState, move: Move): GameState {
   }
   next.turn = nextColor;
   next.turnNumber = preparedState.turnNumber + 1;
+  countOwnMove(preparedState, next);
   if (preparedState.turn === 'black' && !preparedMove.extraTurn) {
     next.flags.fullMoveNumber = preparedState.flags.fullMoveNumber + 1;
   }
@@ -659,6 +666,7 @@ function passTurnWithSkips(state: GameState, skipsInARow: number): GameState {
   next.turn = nextColor;
   next.turnNumber = state.turnNumber + 1;
   next.flags.enPassantSquare = null;
+  countOwnMove(state, next);
   next.flags.halfMoveClock = state.flags.halfMoveClock + 1;
 
   if (state.turn === 'black') {
