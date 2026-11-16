@@ -7,6 +7,7 @@ import { ALL_MODIFIERS } from './data';
 import { modifierRegistry } from './registry';
 import './index';
 import { MODIFIER_IDS } from './ids';
+import { getSusPiece } from './definitions/sus';
 import { move } from './testHelpers';
 
 const STONKS = MODIFIER_IDS.stonks;
@@ -91,6 +92,37 @@ describe('MOD-E015 Stonks', () => {
     expect(getValidOptions([STONKS], [], built).map(c => c.id)).not.toContain(MODIFIER_IDS.smallCouncil);
     // The opponent may still hold the other card.
     expect(getValidOptions([], [MODIFIER_IDS.smallCouncil], built).map(c => c.id)).toContain(STONKS);
+  });
+
+  it('never places the knight on a closed square', () => {
+    const base = chessEngine.getInitialState();
+    base.tiles.set('b3', { square: 'b3', effects: [], isVoid: true });
+    const state = chessEngine.activateDraftModifiers(base, [{ id: STONKS, sourceColor: 'white' }]);
+    expect(state.pieces.has('b3')).toBe(false);
+    expect(state.pieces.get('c3')).toMatchObject({ type: 'knight', color: 'white' });
+  });
+
+  it('moves a Sus disguise from a sold pawn to the new knight', () => {
+    const base = chessEngine.activateDraftModifiers(chessEngine.getInitialState(), [{ id: MODIFIER_IDS.sus, sourceColor: 'white' }]);
+    const a2 = base.pieces.get('a2')!;
+    base.modifierState[MODIFIER_IDS.sus] = { white: { pieceId: a2.id, shownAs: 'knight' } };
+    const state = chessEngine.activateDraftModifiers(base, [{ id: STONKS, sourceColor: 'white' }]);
+    expect(getSusPiece(state, 'white')).toEqual({ pieceId: 'white-stonks-knight', shownAs: 'pawn' });
+  });
+
+  it('keeps Sus working in either draft order, over many seeds', () => {
+    for (let seed = 1; seed <= 50; seed++) {
+      const base = chessEngine.getInitialState();
+      base.prngState = seed;
+      const state = chessEngine.activateDraftModifiers(base, [
+        { id: MODIFIER_IDS.sus, sourceColor: 'white' },
+        { id: STONKS, sourceColor: 'white' },
+      ]);
+      const disguise = getSusPiece(state, 'white')!;
+      const piece = [...state.pieces.values()].find(p => p.id === disguise.pieceId);
+      expect(piece, `seed ${seed}`).toBeDefined();
+      expect(disguise.shownAs).not.toBe(piece!.type);
+    }
   });
 
   it('finds the next free square when b3 is taken', () => {

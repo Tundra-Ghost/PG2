@@ -1066,6 +1066,9 @@ Start the match with two fewer pawns (the a- and h-pawns) and an extra knight on
 - Balance: two pawns are worth about one knight. The trade buys tempo, not material.
 - Ruling: if b3 is taken by another card's piece, the knight takes the next free square on that rank (c3, a3, d3 and so on).
 - Synergy: Hatoful Gambit, Lawrence Of Arabia and Knight Rider. The new knight changes with the others.
+- Ruling: if Sus disguised a sold pawn, the disguise moves to the new knight.
+- Ruling: the knight never lands on a closed or off-board square.
+- Interaction: I'm Literally Right Here. The knight on b3 is public, so a piece there is always real. The Ghosts still bluff on the other squares.
 - Conflict: The Small Council. Both rebuild your army, so one side cannot draft both.
 
 ### MOD-E016 · Hatchery
