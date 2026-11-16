@@ -132,6 +132,11 @@ export interface GameState {
   prngState: number;
   madnessMeter: number;               // 0–100, reserved for modifier system
   tempoTokens: Record<Color, number>; // reserved: MOD-C007
+  /**
+   * Moves each side has made: piece moves, abilities, passes and skipped
+   * turns, extra turns included. Unset until the first move; see ownMovesMade.
+   */
+  ownMoves?: Record<Color, number>;
   mercTokens: Record<Color, number>;  // reserved: MOD-E008
 }
 

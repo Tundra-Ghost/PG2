@@ -1,4 +1,5 @@
 import type { Color, GameState, ModifierID } from '../engine/types';
+import { ownMovesMade } from '../engine/ownMoves';
 
 /**
  * The side that drafted the most recently activated instance of a modifier.
@@ -18,17 +19,10 @@ export function affectsColor(state: GameState, id: ModifierID, color: Color): bo
 
 /**
  * The every-N-moves counter: 1 on a side's first move, 2 on its second, and
- * so on, counting the move being made now. Shared by the scheduled curses
- * so they count the same way. Extra turns from a tempo token (MOD-C007)
- * count for the side that took them.
+ * so on, counting the move being made now (or about to be made, at turn
+ * start). Shared by the scheduled curses so they count the same way. Extra
+ * turns, passes and skipped turns all count.
  */
 export function ownMoveNumber(state: GameState, color: Color = state.turn): number {
-  const plies = state.turnNumber - 1;
-  const extra: Record<Color, number> = { white: 0, black: 0 };
-  for (const record of state.moveHistory) {
-    if (record.move.extraTurn) extra[record.move.playerColor] += 1;
-  }
-  const alternating = plies - extra.white - extra.black;
-  const made = color === 'white' ? Math.ceil(alternating / 2) + extra.white : Math.floor(alternating / 2) + extra.black;
-  return made + 1;
+  return ownMovesMade(state)[color] + 1;
 }

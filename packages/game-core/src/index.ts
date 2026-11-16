@@ -42,6 +42,7 @@ export { getForcedPawnCaptures, isUnderPeerPressure } from './modifiers/definiti
 export { getTouchedPiece, hasTouchMove, touchPiece, touchedReason } from './modifiers/definitions/commitment-issues';
 export { isQueenDemanded, mustMoveQueen } from './modifiers/definitions/main-character-syndrome';
 export { getBindingMoveRules } from './modifiers/move-rules';
+export { getInitiativeRoll, mustMoveRolledType } from './modifiers/definitions/roll-for-initiative';
 export { getCrownOrders } from './modifiers/definitions/heavy-is-the-crown';
 export { getFakeMoveHints } from './modifiers/definitions/recalculating';
 export { getPigeonHops } from './modifiers/definitions/hatoful-gambit';
