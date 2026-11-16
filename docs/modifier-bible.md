@@ -552,6 +552,7 @@ If one of your pawns can capture, you must make a pawn capture. Your opponent ca
 - Ruling: pawn abilities do not count as the capture. Retaliatory Swipe and I've Been Waiting For This are blocked while a normal pawn capture is forced.
 - Ruling: under fog, only captures onto squares you can see force you, so the card never gives away a hidden piece.
 - Synergy: Conscientious Objector. The pacifist pawn is exempt and very smug about it.
+- Interaction: Crab Rave. A sideways step onto an empty square is not a capture, so it never forces you and never counts as the forced capture.
 - Conflict: Main Character Syndrome. Both demand a piece on the same move, so one side cannot draft both.
 - Conflict: Roll For Initiative. Same reason.
 
@@ -1133,6 +1134,7 @@ Your pawns can also step one square sideways onto an empty square. They still ca
 - Ruling: a sideways step never promotes, even next to the Storm or a closed square.
 - Ruling: a pawn that steps sideways along its start rank may still make its two-square first move.
 - Ruling: a sideways step can be undone, so it does not reset the 50-move count. Back-and-forth steps end in a repetition draw (Rule 06).
+- Interaction: Peer Pressure. A sideways step is not a capture, so it never forces you and never counts as the forced capture.
 
 ### MOD-E015 · Stonks
 *Ref: Stonks meme* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Built**
