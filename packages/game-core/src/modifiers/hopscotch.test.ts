@@ -26,7 +26,6 @@ describe('MOD-E012 Hopscotch (The Grasshopper)', () => {
     const rights = state.flags.castlingRights.white;
     expect(hoppers[0].square === 'h1' ? rights.kingSide : rights.queenSide).toBe(false);
     const square = (seed: number) => Array.from(pick(seed).pieces.values()).find(p => p.type === 'grasshopper')!.square;
-    expect(square(5)).toBe(square(5));
     expect(new Set(Array.from({ length: 20 }, (_, i) => square(i + 1)))).toEqual(new Set(['a1', 'h1']));
   });
 
@@ -126,6 +125,31 @@ describe('MOD-E012 Hopscotch (The Grasshopper)', () => {
     }
     state = chessEngine.applyMove(state, move('a8', 'b8', 'black'));
     expect(chessEngine.validateMove(state, move('d4', 'd6', 'white')).valid).toBe(true);
+  });
+
+  it('castling: refused through a square it hops onto, and when the castled King would be hopped', () => {
+    const guarded = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('rook', 'white', 'h1'),
+      makePiece('grasshopper', 'black', 'f3'),
+      makePiece('pawn', 'black', 'f2'),
+      makePiece('king', 'black', 'a8'),
+    ]);
+    guarded.flags.castlingRights.white = { kingSide: true, queenSide: false };
+    expect(chessEngine.validateMove(guarded, move('e1', 'g1', 'white', { isCastle: 'kingside' })).valid).toBe(false);
+    // On the back rank, after O-O the rook on f1 is a hurdle onto the King on g1.
+    const rank = makeEmptyState([
+      makePiece('king', 'white', 'e1'),
+      makePiece('rook', 'white', 'h1'),
+      makePiece('grasshopper', 'black', 'c1'),
+      makePiece('king', 'black', 'a8'),
+    ]);
+    rank.flags.castlingRights.white = { kingSide: true, queenSide: false };
+    expect(chessEngine.getLegalMoves(rank, 'e1')).not.toContain('g1');
+    // With the Grasshopper off the back rank, castling is fine.
+    rank.pieces.delete('c1');
+    rank.pieces.set('c3', makePiece('grasshopper', 'black', 'c3'));
+    expect(chessEngine.getLegalMoves(rank, 'e1')).toContain('g1');
   });
 
   it('bots play legal Grasshopper moves and take a free piece', () => {

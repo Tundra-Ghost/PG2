@@ -1113,6 +1113,7 @@ One of your rooks becomes a Grasshopper. It moves along any queen line but must 
 - Built: one random rook becomes the Grasshopper (seeded). That side loses castling on the Grasshopper side. Ghost rooks are never picked.
 - Built: it hops the first piece of either colour on the line, however far away, and lands on the very next square. It captures an enemy there and cannot land on its own piece. It never hops a void square (the Statue, vents, the Storm) and cannot push the Statue.
 - Built: a hop that leaves your King in check is illegal (Core rule 2).
+- Ruling: under fog, hops use the real board, so a move dot can show that a hidden piece stands right before it. The same is true of a Cannon's captures. Open question for the fog cards: hide such dots instead.
 - Conflict: Equivalent Exchange (The Chancellor) and Overseas Hire (The Cannon). Each changes a random rook, so one side cannot draft two of them.
 
 ### MOD-E013 · Overseas Hire (The Cannon)
