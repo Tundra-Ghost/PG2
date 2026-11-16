@@ -1,8 +1,9 @@
 import type { ModifierDefinition } from '../types';
-import type { GameState, Piece, PieceType, Square } from '../../engine/types';
+import type { GameState, Move, Piece, PieceType, Square } from '../../engine/types';
 import { appendGameEvent, cloneState, getActiveDefinitions } from '../../engine/gameLoop';
 import { modifierRegistry } from '../registry';
 import { getConfession } from './forgive-me';
+import { isMoveRuleCard } from '../move-rules';
 import { MODIFIER_IDS } from '../ids';
 
 const ID = MODIFIER_IDS.freakyFriday;
@@ -13,7 +14,7 @@ export const SWAP_COOLDOWN = 7;
 /** Every piece that moves, except the King. Eggs (MOD-E016) never move. */
 const SWAPPERS: PieceType[] = [
   'queen', 'rook', 'bishop', 'knight', 'pawn', 'chancellor', 'archbishop',
-  'elephant', 'camel', 'nightrider', 'royal_guard', 'pigeon', 'cannon', 'grasshopper',
+  'elephant', 'camel', 'nightrider', 'royal_guard', 'pigeon', 'cannon', 'grasshopper', 'bodyguard',
 ];
 
 function neighbours(sq: Square): Square[] {
@@ -54,6 +55,68 @@ export function getSwapTargets(state: GameState, piece: Piece): Square[] {
   });
 }
 
+/**
+ * Two pieces trade squares. Shared with The Bodyguard (MOD-E017). Counts as
+ * a move for both: en passant ends, and a rook leaving its corner or a King
+ * leaving its square ends castling on that side.
+ */
+export function swapPieces(state: GameState, from: Square, to: Square): GameState {
+  const a = state.pieces.get(from)!;
+  const b = state.pieces.get(to)!;
+  const next = cloneState(state);
+  next.pieces.set(to, { ...a, square: to });
+  next.pieces.set(from, { ...b, square: from });
+  next.flags.enPassantSquare = null;
+  next.flags.halfMoveClock++;
+  const homeRank = a.color === 'white' ? '1' : '8';
+  for (const [piece, start] of [[a, from], [b, to]] as const) {
+    if (piece.type === 'king') {
+      next.flags.castlingRights[piece.color] = { kingSide: false, queenSide: false };
+    }
+    if (piece.type !== 'rook') continue;
+    if (start === `h${homeRank}`) next.flags.castlingRights[piece.color].kingSide = false;
+    if (start === `a${homeRank}`) next.flags.castlingRights[piece.color].queenSide = false;
+  }
+  return next;
+}
+
+/**
+ * The partner of a swap moves too, so it must be free to move: a piece held
+ * by Gerald, stuck in the Swamp or frozen by Winter cannot be swapped, and a
+ * confessing piece (MOD-C002) must go where it declared. `ownId` is the card
+ * asking, so its own hook is skipped.
+ */
+export function checkSwapPartner(state: GameState, move: Move, ownId: string): { blocked: boolean; reason?: string } {
+  const reverse = { ...move, from: move.to, to: move.from };
+  const partner = state.pieces.get(reverse.from);
+  if (!partner) return { blocked: false };
+  const confessing = getConfession(state)?.pieceId;
+  if (confessing && (confessing === partner.id || confessing === state.pieces.get(move.from)?.id)) {
+    return { blocked: true, reason: 'That piece has confessed. It must make its declared move.' };
+  }
+  for (const def of getActiveDefinitions(state)) {
+    if (def.id === ownId || !def.onPreMoveValidate) continue;
+    // Touch-move and the move-rule curses are about the piece you chose; the
+    // forward move already answered them, so the partner is not asked again.
+    if (def.id === MODIFIER_IDS.commitmentIssues || isMoveRuleCard(def.id)) continue;
+    const result = def.onPreMoveValidate(state, reverse);
+    if (result.blocked) return result;
+  }
+  return { blocked: false };
+}
+
+/** The partner entered move.from. Winter and the Swamp only look at move.to, so run their entry rules for it too. */
+export function afterSwap(state: GameState, move: Move): GameState {
+  const reverse = { ...move, from: move.to, to: move.from };
+  let next = state;
+  for (const id of [MODIFIER_IDS.winterIsComing, MODIFIER_IDS.thisIsMySwamp]) {
+    if (!state.activeModifiers.some(mod => mod.id === id)) continue;
+    const hook = modifierRegistry.get(id)?.onPostMove;
+    if (hook) next = hook(next, reverse);
+  }
+  return next;
+}
+
 /** MOD-C012: two adjacent friendly non-King pieces swap places. */
 export const freakyFridayDef: ModifierDefinition = {
   id: ID,
@@ -73,24 +136,13 @@ export const freakyFridayDef: ModifierDefinition = {
     apply(state, move) {
       const a = state.pieces.get(move.from)!;
       const b = state.pieces.get(move.to)!;
-      const next = cloneState(state);
-      next.pieces.set(move.to, { ...a, square: move.to });
+      const next = swapPieces(state, move.from, move.to);
       // The partner waits as long as the piece that asked. Cooldowns tick
       // once at the end of this turn, so it starts one higher.
       next.pieces.set(move.from, {
-        ...b,
-        square: move.from,
+        ...next.pieces.get(move.from)!,
         abilityCooldowns: { ...b.abilityCooldowns, [ID]: SWAP_COOLDOWN + 1 },
       });
-      next.flags.enPassantSquare = null;
-      next.flags.halfMoveClock++;
-      // A rook that leaves its corner has moved: castling on that side ends.
-      const homeRank = a.color === 'white' ? '1' : '8';
-      for (const [piece, from] of [[a, move.from], [b, move.to]] as const) {
-        if (piece.type !== 'rook') continue;
-        if (from === `h${homeRank}`) next.flags.castlingRights[a.color].kingSide = false;
-        if (from === `a${homeRank}`) next.flags.castlingRights[a.color].queenSide = false;
-      }
       return {
         state: appendGameEvent(next, {
           ply: state.moveHistory.length + 1,
@@ -114,20 +166,7 @@ export const freakyFridayDef: ModifierDefinition = {
    */
   onPreMoveValidate(state, move) {
     if (move.ability !== ID) return { blocked: false };
-    const reverse = { ...move, from: move.to, to: move.from };
-    const partner = state.pieces.get(reverse.from);
-    if (!partner) return { blocked: false };
-    // A confessing piece (MOD-C002) must go where it declared.
-    const confessing = getConfession(state)?.pieceId;
-    if (confessing && (confessing === partner.id || confessing === state.pieces.get(move.from)?.id)) {
-      return { blocked: true, reason: 'That piece has confessed. It must make its declared move.' };
-    }
-    for (const def of getActiveDefinitions(state)) {
-      if (def.id === ID || !def.onPreMoveValidate) continue;
-      const result = def.onPreMoveValidate(state, reverse);
-      if (result.blocked) return result;
-    }
-    return { blocked: false };
+    return checkSwapPartner(state, move, ID);
   },
 
   /**
@@ -136,13 +175,6 @@ export const freakyFridayDef: ModifierDefinition = {
    */
   onPostMove(state, move) {
     if (move.ability !== ID) return state;
-    const reverse = { ...move, from: move.to, to: move.from };
-    let next = state;
-    for (const id of [MODIFIER_IDS.winterIsComing, MODIFIER_IDS.thisIsMySwamp]) {
-      if (!state.activeModifiers.some(mod => mod.id === id)) continue;
-      const hook = modifierRegistry.get(id)?.onPostMove;
-      if (hook) next = hook(next, reverse);
-    }
-    return next;
+    return afterSwap(state, move);
   },
 };

@@ -45,6 +45,11 @@ const RULE_ORDER: ModifierID[] = [
   'MOD-B020', // Roll For Initiative
 ];
 
+/** True for the cards whose rule limits which move you may make (see RULE_ORDER). */
+export function isMoveRuleCard(id: ModifierID): boolean {
+  return RULE_ORDER.includes(id);
+}
+
 const sources = new Map<ModifierID, MoveRuleSource>();
 
 export function registerMoveRule(id: ModifierID, source: MoveRuleSource): void {

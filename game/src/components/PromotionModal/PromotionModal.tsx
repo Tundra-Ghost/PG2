@@ -29,6 +29,7 @@ const CHOICES: { type: PieceType; label: string }[] = [
   { type: 'pigeon', label: 'Pigeon' },
   { type: 'cannon', label: 'Cannon' },
   { type: 'grasshopper', label: 'Grasshopper' },
+  { type: 'bodyguard', label: 'Bodyguard' },
   { type: 'pawn', label: 'Pawn' },
 ];
 

@@ -15,7 +15,7 @@ const DIAGONAL = ALL.slice(4);
 /** Directions a piece may step into the statue. Leapers never push. */
 function pushDirections(piece: Piece): ReadonlyArray<readonly [number, number]> {
   const kinds: Partial<Record<PieceType, ReadonlyArray<readonly [number, number]>>> = {
-    king: ALL, queen: ALL, royal_guard: ALL,
+    king: ALL, queen: ALL, royal_guard: ALL, bodyguard: ALL,
     rook: ORTHOGONAL, chancellor: ORTHOGONAL, cannon: ORTHOGONAL,
     bishop: DIAGONAL, archbishop: DIAGONAL,
     pawn: [[0, piece.color === 'white' ? 1 : -1]],

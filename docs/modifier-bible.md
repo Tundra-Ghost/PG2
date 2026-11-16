@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 63 built, 37 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 64 built, 36 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -361,6 +361,7 @@ The owner's King moves at half speed. Moving the King takes two moves: choose on
 
 - Conflict: Winter Is Coming. A frozen slow King is near softlock.
 - Conflict: Run, Forrest, Run. A run would skip the order step, so one side cannot draft both.
+- Conflict: The Bodyguard. A swap would skip the order step too, so one side cannot draft both.
 - Built: select the King and press Order move to pick a square. That costs the turn. Make the move on any later turn. The ordered square shows a dashed gold frame.
 - Ruling: in check, the King moves freely and the order is dropped.
 - Changed: castling takes two turns like any King move, not three.
@@ -1016,6 +1017,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 - Conflict: Stonks. Both rebuild your army, so one side cannot draft both.
 - Conflict: Hatchery. Its pawns fill the third rank, leaving no nest, so one side cannot draft both.
 - Conflict: Leap Of Faith. There are no bishops to leap, so one side cannot draft both.
+- Conflict: The Bodyguard. This card rebuilds the pawns, so whether the Bodyguard survives would depend on which card goes first. One side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
 *Ref: John Wick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1197,7 +1199,7 @@ A pigeon Egg sits on your d3 square. It cannot move. If it survives 10 rounds, i
 - Conflict: The Small Council. Its pawns fill your third rank, so one side cannot draft both.
 
 ### MOD-E017 · The Bodyguard
-*Ref: The Bodyguard (1992)* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: The Bodyguard (1992)* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 A Bodyguard replaces your g-pawn. It moves like a King. As its move, it may swap places with your King if they are next to each other.
 
@@ -1205,6 +1207,11 @@ A Bodyguard replaces your g-pawn. It moves like a King. As its move, it may swap
 
 - Ruling: a swap may not leave your King in check, and a swap out of check is allowed if it ends the check.
 - King review: the King only gains a way out. Core rule 1 holds.
+- Built: the g-pawn on g2 (g7 for Black) starts as the Bodyguard. It steps one square any way, can be captured (losing it does not lose the game) and never castles. It writes Bg in the move list.
+- Built: the swap uses Freaky Friday's swap. It counts as a King move, so castling is lost for good. No cooldown.
+- Ruling: the King must be free to move. A King frozen by Winter or under a Confession cannot be swapped. Touch-move (Commitment Issues) and the move-rule curses judge the Bodyguard, the piece you chose. Winter and the Swamp apply to the King's new square as if it had moved there.
+- Conflict: The Small Council. It rebuilds the pawns, so whether the Bodyguard survives would depend on which card goes first. One side cannot draft both.
+- Conflict: Heavy Is The Crown. A swap would let the King skip its order step, so one side cannot draft both.
 
 ### MOD-E018 · Zerg Rush
 *Ref: StarCraft* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1357,12 +1364,12 @@ Values the game uses today. "Built" cards match the build.
 | E014 | Crab Rave | E | A | 3 | 0 | Owner | Built |
 | E015 | Stonks | E | B | 2 | 0 | Owner | Built |
 | E016 | Hatchery | E | A | 3 | 0 | Owner | Built |
-| E017 | The Bodyguard | E | A | 3 | 0 | Owner | Design |
+| E017 | The Bodyguard | E | A | 3 | 0 | Owner | Built |
 | E018 | Zerg Rush | E | A | 3 | 0 | Owner | Built |
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
-63 of 100 built. The other 37 are designs (v0.4).
+64 of 100 built. The other 36 are designs (v0.4).
 
 ### Balance test plan
 

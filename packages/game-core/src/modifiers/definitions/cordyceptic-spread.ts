@@ -14,6 +14,8 @@ export const INFECTION_SPREAD_CHANCE = 0.25;
 
 const SLIDERS = new Set(['rook', 'bishop', 'queen', 'chancellor', 'archbishop', 'cannon']);
 const CLEANSERS = new Set(['bishop', 'queen']);
+/** Abilities that swap two pieces, so the partner also moved (Freaky Friday, The Bodyguard). */
+const SWAP_ABILITIES = new Set<string>([MODIFIER_IDS.freakyFriday, MODIFIER_IDS.theBodyguard]);
 
 interface SpreadState {
   /** Piece id → rounds it has stood still on an Infected tile. */
@@ -199,8 +201,8 @@ export const cordycepticSpreadDef: ModifierDefinition = {
       const before = oldRot[piece.id] ?? 0;
       if (piece.color !== mover) {
         if (before > 0) rot[piece.id] = before;
-      } else if (sq !== move.to && !(move.ability === MODIFIER_IDS.freakyFriday && sq === move.from)) {
-        // A swap (MOD-C012) moves the partner onto move.from too.
+      } else if (sq !== move.to && !(SWAP_ABILITIES.has(move.ability ?? '') && sq === move.from)) {
+        // A swap (MOD-C012, MOD-E017) moves the partner onto move.from too.
         rot[piece.id] = before + 1;
       }
     }

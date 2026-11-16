@@ -53,6 +53,7 @@ const MARKER_LEGEND: LegendRow[] = [
   { modifierId: MODIFIER_IDS.knightRider, mark: 'NN', label: 'Nightrider in the move list (knight jumps in a line)' },
   { modifierId: MODIFIER_IDS.overseasHire, mark: 'Cn', label: 'Cannon in the move list (hops one piece to capture)' },
   { modifierId: MODIFIER_IDS.hopscotch, mark: 'Gh', label: 'Grasshopper in the move list (hops one piece, lands behind it)' },
+  { modifierId: MODIFIER_IDS.theBodyguard, mark: 'Bg', label: 'Bodyguard in the move list (steps like a King, swaps with it)' },
   {
     modifierId: MODIFIER_IDS.hatchery,
     mark: '10',
