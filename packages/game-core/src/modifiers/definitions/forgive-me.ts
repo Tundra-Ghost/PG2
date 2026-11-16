@@ -67,7 +67,7 @@ export const forgiveMeDef: ModifierDefinition = {
     getTargets(state, bishop) {
       return slidingMoves(state, bishop, DIAGONALS).filter(sq => {
         const target = state.pieces.get(sq);
-        return target && target.color !== bishop.color && target.type !== 'king';
+        return target && target.color !== bishop.color && target.type !== 'king' && target.type !== 'egg';
       });
     },
     apply(state, move) {

@@ -2,7 +2,7 @@ import type { ModifierDefinition } from '../types';
 import type { Color, GameState, Piece, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { MODIFIER_IDS } from '../ids';
-import { affectsColor, getModifierOwner } from '../owner';
+import { getModifierOwner } from '../owner';
 
 const ID = MODIFIER_IDS.hatchery;
 /** The Egg hatches after this many of its owner's moves (10 rounds). */
@@ -14,7 +14,9 @@ function nestSquare(state: GameState, color: Color): Square | null {
   const rank = color === 'white' ? '3' : '6';
   for (const file of FILE_ORDER) {
     const sq = `${file}${rank}` as Square;
-    if (!state.pieces.has(sq) && !state.tiles.get(sq)?.isVoid) return sq;
+    const tile = state.tiles.get(sq);
+    // Never nest on lava or any other tile effect: the Egg cannot step off.
+    if (!state.pieces.has(sq) && !tile?.isVoid && !(tile?.effects.length)) return sq;
   }
   return null;
 }
@@ -66,9 +68,9 @@ export const hatcheryDef: ModifierDefinition = {
     return next;
   },
 
-  onPostMove(state) {
+  onPostMove(state, move) {
+    // Every Egg of the mover counts down, even one that changed sides.
     const mover = state.turn;
-    if (!affectsColor(state, ID, mover)) return state;
     const eggs = [...state.pieces.values()].filter(p => p.type === 'egg' && p.color === mover);
     if (eggs.length === 0) return state;
 
@@ -76,7 +78,10 @@ export const hatcheryDef: ModifierDefinition = {
     const hatched: Square[] = [];
     for (const egg of eggs) {
       // An Egg bought back with Moneyball starts a fresh count.
-      const left = (egg.cooldowns[ID] ?? EGG_ROUNDS + 1) - 1;
+      let left = (egg.cooldowns[ID] ?? EGG_ROUNDS + 1) - 1;
+      // Never hatch on a This Is Necessary extra move: the same side would move
+      // again with the new Pigeon giving check.
+      if (left <= 0 && move.extraTurn) left = 1;
       const cooldowns = { ...egg.cooldowns };
       if (left > 0) {
         cooldowns[ID] = left;

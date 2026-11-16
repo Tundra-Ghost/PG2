@@ -47,6 +47,14 @@ describe('MOD-E016 Hatchery', () => {
     expect(state.pieces.get('c3')?.type).toBe('egg');
   });
 
+  it('never nests on lava', () => {
+    const start = makeEmptyState([makePiece('king', 'white', 'a1'), makePiece('king', 'black', 'h8')]);
+    start.tiles.set('d3', { square: 'd3', effects: [{ type: 'lava', turnsRemaining: 3 }] });
+    const state = chessEngine.activateDraftModifiers(start, [{ id: HATCH, sourceColor: 'white' }]);
+    expect(state.pieces.has('d3')).toBe(false);
+    expect(state.pieces.get('e3')?.type).toBe('egg');
+  });
+
   it('cannot move, gives no check, but blocks and can be captured', () => {
     const state = withHatchery();
     expect(chessEngine.getLegalMoves(state, 'd3')).toEqual([]);
@@ -71,6 +79,7 @@ describe('MOD-E016 Hatchery', () => {
   it('counts down on the owner\'s moves and hatches into a Pigeon after 10 of them', () => {
     let state = withHatchery();
     state = shuffleRounds(state, EGG_ROUNDS - 1);
+    expect(state.status).toBe('active');
     expect(state.pieces.get('d3')?.type).toBe('egg');
     expect(getEggRoundsLeft(state.pieces.get('d3')!)).toBe(1);
     state = shuffleRounds(state, 1);
@@ -79,6 +88,32 @@ describe('MOD-E016 Hatchery', () => {
     expect(pigeon.cooldowns[HATCH]).toBeUndefined();
     expect(state.eventHistory.some(e => e.modifierId === HATCH && /hatches/.test(e.message))).toBe(true);
     expect(chessEngine.getLegalMoves(state, 'd3').sort()).toEqual(['b2', 'b4', 'c1', 'c5', 'e1', 'e5', 'f2', 'f4']);
+  });
+
+  it('never hatches on a This Is Necessary extra move, so it cannot check before the same side moves again', () => {
+    let state = withHatchery();
+    state.pieces.get('d3')!.cooldowns[HATCH] = 1;
+    state.pieces.delete('h8');
+    state.pieces.set('e5', makePiece('king', 'black', 'e5'));
+    state = hatcheryDef.onPostMove!(state, move('a1', 'b1', 'white', { extraTurn: true }));
+    expect(state.pieces.get('d3')?.type).toBe('egg');
+    expect(getEggRoundsLeft(state.pieces.get('d3')!)).toBe(1);
+    state = hatcheryDef.onPostMove!(state, move('b1', 'a1', 'white'));
+    expect(state.pieces.get('d3')?.type).toBe('pigeon');
+  });
+
+  it('waiting for the Egg is not a threefold repetition', () => {
+    const state = shuffleRounds(withHatchery(), 4);
+    expect(state.status).toBe('active');
+  });
+
+  it('an Egg that changed sides still counts down and hatches', () => {
+    const state = withHatchery([], 'black');
+    const egg = state.pieces.get('d6')!;
+    state.pieces.delete('d6');
+    state.pieces.set('d3', { ...egg, color: 'white', square: 'd3', cooldowns: { [HATCH]: 1 } });
+    const next = hatcheryDef.onPostMove!(state, move('a1', 'b1', 'white'));
+    expect(next.pieces.get('d3')).toMatchObject({ type: 'pigeon', color: 'white' });
   });
 
   it('ignores the opponent\'s moves for the count', () => {

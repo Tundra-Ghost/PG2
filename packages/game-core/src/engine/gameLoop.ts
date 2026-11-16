@@ -52,7 +52,9 @@ export function positionKey(state: GameState): string {
   // 1. Piece placement — sorted so Map iteration order doesn't matter
   const pieceTokens: string[] = [];
   for (const [sq, p] of state.pieces) {
-    const sym = POSITION_SYM[p.type] ?? p.type[0].toUpperCase();
+    let sym = POSITION_SYM[p.type] ?? p.type[0].toUpperCase();
+    // MOD-E016: an Egg's count is part of the position, so waiting for it is not repetition.
+    if (p.type === 'egg') sym += p.cooldowns[MODIFIER_IDS.hatchery] ?? '';
     pieceTokens.push(`${sq}:${p.color[0]}${sym}`);
   }
   pieceTokens.sort();

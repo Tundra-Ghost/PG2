@@ -1074,7 +1074,12 @@ A pigeon Egg sits on your d3 square. It cannot move. If it survives 10 rounds, i
 - Ruling: the Egg can be captured like a pawn, and it blocks like any piece.
 - Synergy: Hatoful Gambit. Your flock grows to three.
 - Built: Black's Egg sits on d6. If the square is taken, the Egg goes to the nearest empty square on the same rank. The Egg shows how many of your moves are left, and it hatches right after your 10th move, so a new Pigeon can only check the side about to move. The Egg gives no check.
-- Ruling: Gerald, the Berserker and Sus never pick the Egg, since it cannot move. It cannot be sacrificed with This Is Necessary.
+- Changed from design: the count is 10 of your moves, not 10 rounds. A turn spent on a This Is Necessary tempo token counts twice, and a skipped turn does not count.
+- Ruling: the Egg never hatches on a tempo-token extra move. It waits for your next normal move, so a new Pigeon never gives check while you still have a move to play.
+- Ruling: the Egg is never placed on lava or another tile effect.
+- Ruling: Gerald, the Berserker, Sus, They Were The Traitor and Forgive Me never pick the Egg, since it cannot move. It cannot be sacrificed with This Is Necessary.
+- Ruling: Gravitational Anomaly still slides the Egg, and can push it off the board like any piece.
+- Ruling: the Egg's count is part of the position, so waiting for it is not a threefold repetition. An Egg that changes sides keeps counting for its new side.
 - Ruling: an Egg bought back with Moneyball starts a fresh 10-move count.
 - Ruling: a hatched Pigeon only hops on its own if its side drafted Hatoful Gambit.
 - Ruling: King and Egg against a lone King is a draw, since the Pigeon it becomes cannot mate alone.
