@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 62 built, 38 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 63 built, 37 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -665,13 +665,18 @@ Your rook shoves an adjacent enemy piece one square straight away from it, if th
 - Synergy: The Floor Is Lava. Yes. That is what it is for.
 
 ### MOD-C010 · Leap Of Faith
-*Ref: Assassin's Creed* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Assassin's Creed* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
-Your bishop jumps over the first piece on one of its diagonals and lands on the empty square right behind it. No capture. Uses your move.
+Your bishop jumps over the first piece on one of its diagonals and lands on the empty square right behind it. No capture. Uses your move. Cooldown: 5 of your turns.
 
 *The bishop jumped. There was a haystack. There is always a haystack.*
 
 - Ruling: the landing square must be empty and the jump may not leave your King in check.
+- Built: an ability on any of your bishops (tap the bishop, then the ability button). The first piece on the diagonal can be either colour, however far away. It never jumps a void square (the Statue, vents, the Storm). Cooldown 5 of that bishop's turns, as on the card's type line.
+- Built: a leap may block a check if it lands in the line of the check.
+- Ruling: under fog, a leap is only offered when you can see both the jumped piece and the landing square, so it never gives a hidden piece away.
+- Interaction: Twin Telepathy. The twin bishop mirrors the leap as a normal slide in the same direction, stopping before any piece.
+- Conflict: The Small Council and Elephant In The Room. Your army has no bishops with either, so one side cannot draft both.
 
 ### MOD-C011 · GET OVER HERE!
 *Ref: Mortal Kombat* · **Tier S** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1004,6 +1009,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 - Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
 - Conflict: Stonks. Both rebuild your army, so one side cannot draft both.
 - Conflict: Hatchery. Its pawns fill the third rank, leaving no nest, so one side cannot draft both.
+- Conflict: Leap Of Faith. There are no bishops to leap, so one side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
 *Ref: John Wick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1238,7 +1244,7 @@ Your bishops become Elephants. An Elephant moves exactly two squares diagonally,
 - Ruling: an Elephant is not a bishop for other cards. Twin Telepathy does not move it and it does not clear infection. Infection does not slow it.
 - Interaction: This Is My Swamp. An Elephant is treated like a knight: entering the Swamp traps it for 2 turns, then it jumps out normally.
 - Ruling: Ghost bishops (I'm Literally Right Here) become Ghost Elephants, so they still look like the rest of your army.
-- Conflict: Holy Knight, The Small Council and Forgive Me, For I Have Moved. Each needs a bishop, so one side cannot draft them with this card.
+- Conflict: Holy Knight, The Small Council, Forgive Me, For I Have Moved and Leap Of Faith. Each needs a bishop, so one side cannot draft them with this card.
 - Interaction: Sus. A disguise never shows a bishop, since you have none. It shows an Elephant instead.
 - Note: an Elephant stays on its colour and can only ever reach 16 squares (a quarter of the board), so it can never give mate alone.
 
@@ -1313,7 +1319,7 @@ Values the game uses today. "Built" cards match the build.
 | B019 | Peer Pressure | B | A | -2 | 2 | Owner | Built |
 | B020 | Roll For Initiative | B | A | -2 | 2 | Owner | Built |
 | C009 | YEET | C | A | 3 | 0 | Owner | Design |
-| C010 | Leap Of Faith | C | A | 3 | 0 | Owner | Design |
+| C010 | Leap Of Faith | C | A | 3 | 0 | Owner | Built |
 | C011 | GET OVER HERE! | C | S | 4 | 0 | Owner | Design |
 | C012 | Freaky Friday | C | B | 2 | 0 | Owner | Built |
 | C013 | Hold My Bread | C | B | 2 | 0 | Owner | Design |
@@ -1349,7 +1355,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
-62 of 100 built. The other 38 are designs (v0.4).
+63 of 100 built. The other 37 are designs (v0.4).
 
 ### Balance test plan
 

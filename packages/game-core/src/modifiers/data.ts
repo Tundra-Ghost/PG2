@@ -804,6 +804,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'owned',
     description:
       'Your bishop jumps over the first piece on one of its diagonals and lands on the empty square right behind it. No capture. Uses your move.',
+    prototypeRules:
+      'Ability on a bishop, 5-turn cooldown. On any diagonal, the bishop jumps the first piece of either colour and lands on the empty square right behind it. No capture. A leap that leaves your King in check is not allowed. Under fog, the jumped piece and the landing square must both be in view.',
     flavor: '"The bishop jumped. There was a haystack. There is always a haystack."',
   },
   {

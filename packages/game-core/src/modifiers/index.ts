@@ -64,6 +64,7 @@ import { freakyFridayDef } from './definitions/freaky-friday';
 import { getOffMyLawnDef } from './definitions/get-off-my-lawn';
 import { overseasHireDef } from './definitions/overseas-hire';
 import { hopscotchDef } from './definitions/hopscotch';
+import { leapOfFaithDef } from './definitions/leap-of-faith';
 import { monumentToGeraldDef } from './definitions/monument-to-gerald';
 
 modifierRegistry.register(floorIsLavaDef);
@@ -128,3 +129,4 @@ modifierRegistry.register(getOffMyLawnDef);
 modifierRegistry.register(monumentToGeraldDef);
 modifierRegistry.register(overseasHireDef);
 modifierRegistry.register(hopscotchDef);
+modifierRegistry.register(leapOfFaithDef);
