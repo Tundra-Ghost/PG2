@@ -512,6 +512,9 @@ Every 10 of your moves, your rooks and Queen go on lunch. On your next move they
 - Built: lunch is your 11th, 21st, 31st move and so on. The sign goes up in the feed at the start of the move before (your 10th, 20th, ...). Your moves include passes and skipped turns.
 - Built: at lunch, rooks and Queen cannot move or use their abilities, and you cannot castle, because the rook would move. Shooing Gerald is still allowed.
 - Ruling: never a softlock. If only rooks and Queen could move, lunch is waived.
+- Built: the Chancellor (Equivalent Exchange) replaced a rook, so it goes to lunch too. An Amazon is still a Queen.
+- Built: the feed says so again at the start of the lunch move.
+- Interaction: Moneyball. A drop is the King's ability, so you may drop a rook or Queen at lunch. It does not move until after lunch.
 - Interaction: Commitment Issues. At lunch a rook or Queen cannot be touched.
 - Interaction: Main Character Syndrome and Roll For Initiative. Lunch is checked first, so a Queen demand or a rook or Queen roll waits and you choose freely.
 

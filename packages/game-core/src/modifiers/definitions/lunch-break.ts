@@ -1,5 +1,5 @@
 import type { ModifierDefinition } from '../types';
-import type { Color, GameState, Move } from '../../engine/types';
+import type { Color, GameState, Move, PieceType } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { MODIFIER_IDS } from '../ids';
 import { affectsColor, ownMoveNumber } from '../owner';
@@ -8,6 +8,8 @@ import { getBindingMoveRule, moveRuleHooks, registerMoveRule } from '../move-rul
 const ID = MODIFIER_IDS.lunchBreak;
 /** Lunch comes after every this many of your moves. */
 export const LUNCH_EVERY = 10;
+/** The Chancellor replaced a rook (Equivalent Exchange), so it goes to lunch too. */
+const LUNCH_TYPES = new Set<PieceType>(['rook', 'queen', 'chancellor']);
 const REASON = 'Lunch Break: your rooks and Queen are at lunch. They cannot move this move.';
 
 /** True when `color`'s current move is a lunch move (its 11th, 21st, ...). */
@@ -26,7 +28,7 @@ function isLunchPiece(state: GameState, move: Move): boolean {
   // Castling moves a rook too.
   if (move.isCastle) return true;
   const type = state.pieces.get(move.from)?.type;
-  return type === 'rook' || type === 'queen';
+  return type !== undefined && LUNCH_TYPES.has(type);
 }
 
 registerMoveRule(ID, (state, color) =>
@@ -46,18 +48,22 @@ export const lunchBreakDef: ModifierDefinition = {
   draftScope: 'owned',
   ...moveRuleHooks(ID),
 
-  // The sign goes up a round early, at the start of your 10th, 20th, ... move.
+  // The sign goes up a round early, at the start of your 10th, 20th, ... move,
+  // and the feed says so again when lunch starts.
   onTurnStart(state) {
     const color = state.turn;
     if (state.status !== 'active' || !affectsColor(state, ID, color)) return state;
-    if (ownMoveNumber(state, color) % LUNCH_EVERY !== 0) return state;
-    // beginTurn can run twice for one turn (a reload); post the sign once.
-    const signed = (state.modifierState[ID] as { signAt?: number } | undefined)?.signAt;
-    if (signed === state.turnNumber) return state;
+    const n = ownMoveNumber(state, color);
+    const sign = n % LUNCH_EVERY === 0;
+    if (!sign && !isLunchMove(state, color)) return state;
+    // beginTurn can run twice for one turn (a reload); post once.
+    const posted = (state.modifierState[ID] as { signAt?: number } | undefined)?.signAt;
+    if (posted === state.turnNumber) return state;
     const squares = Array.from(state.pieces.values())
-      .filter(p => p.color === color && (p.type === 'rook' || p.type === 'queen'))
+      .filter(p => p.color === color && LUNCH_TYPES.has(p.type))
       .map(p => p.square);
     if (squares.length === 0) return state;
+    const side = color === 'white' ? 'White' : 'Black';
     const next = cloneState(state);
     next.modifierState = { ...next.modifierState, [ID]: { signAt: state.turnNumber } };
     return appendGameEvent(next, {
@@ -65,7 +71,9 @@ export const lunchBreakDef: ModifierDefinition = {
       type: 'modifier',
       modifierId: ID,
       title: 'LUNCH BREAK',
-      message: `Lunch after this move. ${color === 'white' ? 'White' : 'Black'}'s rooks and Queen cannot move on the next one (unless in check).`,
+      message: sign
+        ? `Lunch next move: ${side}'s rooks and Queen cannot move, use abilities or castle on ${side}'s next move. Cancelled in check or if nothing else can move.`
+        : `${side}'s rooks and Queen are at lunch this move.`,
       squares,
     });
   },

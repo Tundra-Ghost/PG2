@@ -45,7 +45,7 @@ describe('MOD-B016 Lunch Break', () => {
     let state = chessEngine.beginTurn(onMove(HEAVY, 10));
     const signs = state.eventHistory.filter(e => e.modifierId === LUNCH);
     expect(signs).toHaveLength(1);
-    expect(signs[0].message).toMatch(/Lunch after this move/);
+    expect(signs[0].message).toMatch(/Lunch next move/);
     state = chessEngine.beginTurn(state);
     expect(state.eventHistory.filter(e => e.modifierId === LUNCH)).toHaveLength(1);
   });
@@ -64,6 +64,17 @@ describe('MOD-B016 Lunch Break', () => {
     expect(state.status).toBe('active');
     expect(isLunchMove(state, 'white')).toBe(true);
     expect(chessEngine.validateMove(state, move('a1', 'a3', 'white')).valid).toBe(false);
+  });
+
+  it('the feed says so again on the lunch move', () => {
+    const state = chessEngine.beginTurn(onMove(HEAVY, 11));
+    expect(state.eventHistory[state.eventHistory.length - 1]?.message).toMatch(/at lunch this move/);
+  });
+
+  it('Equivalent Exchange: the Chancellor replaced a rook, so it goes to lunch', () => {
+    const state = onMove([makePiece('chancellor', 'white', 'a1'), makePiece('knight', 'white', 'b1')], 11);
+    expect(chessEngine.validateMove(state, move('a1', 'a5', 'white')).valid).toBe(false);
+    expect(chessEngine.validateMove(state, move('b1', 'c3', 'white')).valid).toBe(true);
   });
 
   it('castling is not allowed at lunch: the rook would move', () => {
