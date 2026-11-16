@@ -30,7 +30,7 @@ function findBerserker(state: GameState): Piece | undefined {
 
 function assignReplacementBerserker(state: GameState, color: Piece['color']): GameState {
   const candidates = Array.from(state.pieces.values()).filter(
-    piece => piece.color === color && piece.type !== 'king',
+    piece => piece.color === color && piece.type !== 'king' && piece.type !== 'egg',
   );
   if (candidates.length === 0) return state;
 
@@ -108,6 +108,7 @@ export const berserkerDef: ModifierDefinition = {
       p =>
         p.type !== 'king' &&
         p.type !== 'pawn' &&
+        p.type !== 'egg' &&
         (owner === null || p.color === owner),
     );
     if (candidates.length === 0) return state;

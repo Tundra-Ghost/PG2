@@ -9,7 +9,7 @@ const ID = MODIFIER_IDS.forgiveMe;
 export const CONFESSION_PLIES = 3;
 const DIAGONALS: [number, number][] = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
 const LETTER: Partial<Record<PieceType, string>> = {
-  queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', chancellor: 'C', archbishop: 'A', elephant: 'E', camel: 'L', nightrider: 'NN', royal_guard: 'G', pigeon: 'H',
+  queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', chancellor: 'C', archbishop: 'A', elephant: 'E', camel: 'L', nightrider: 'NN', egg: 'O', royal_guard: 'G', pigeon: 'H',
 };
 
 interface Confession {
@@ -67,7 +67,7 @@ export const forgiveMeDef: ModifierDefinition = {
     getTargets(state, bishop) {
       return slidingMoves(state, bishop, DIAGONALS).filter(sq => {
         const target = state.pieces.get(sq);
-        return target && target.color !== bishop.color && target.type !== 'king';
+        return target && target.color !== bishop.color && target.type !== 'king' && target.type !== 'egg';
       });
     },
     apply(state, move) {

@@ -18,6 +18,7 @@ export function getPieceMarkers(piece: Piece): PieceMarkers {
   const gerald = (cooldowns[MODIFIER_IDS.gerald] ?? 0) > 0;
   const frozen = (cooldowns[MODIFIER_IDS.winterIsComing] ?? 0) > 0;
   const stuck = (cooldowns[MODIFIER_IDS.thisIsMySwamp] ?? 0) > 0;
+  const eggRounds = piece.type === 'egg' ? cooldowns[MODIFIER_IDS.hatchery] : undefined;
 
   const marks: string[] = [];
   if (frozen) marks.push('❄');
@@ -28,6 +29,7 @@ export function getPieceMarkers(piece: Piece): PieceMarkers {
   if (hasPromotionChain) marks.push('»');
   if (amazon) marks.push('A');
   if (piece.isTouched) marks.push('T');
+  if (eggRounds !== undefined) marks.push(String(eggRounds));
 
   const label = [
     gerald ? 'gerald blocked' : null,
@@ -39,6 +41,7 @@ export function getPieceMarkers(piece: Piece): PieceMarkers {
     hasPromotionChain ? 'chain ready' : null,
     amazon ? 'amazon, also moves like a knight' : null,
     piece.isTouched ? 'touched, must move' : null,
+    eggRounds !== undefined ? `egg, hatches in ${eggRounds} of its side's moves` : null,
   ]
     .filter(Boolean)
     .join(', ');

@@ -33,7 +33,7 @@ function label(color: Color): string {
 
 /** Highest-value non-king pieces of `color`; one is picked at random. */
 function pickTraitor(state: GameState, color: Color, prngState: number): [Piece | null, number] {
-  const candidates = Array.from(state.pieces.values()).filter(p => p.color === color && p.type !== 'king');
+  const candidates = Array.from(state.pieces.values()).filter(p => p.color === color && p.type !== 'king' && p.type !== 'egg');
   if (candidates.length === 0) return [null, prngState];
   const top = Math.max(...candidates.map(p => VALUE[p.type] ?? 0));
   const best = candidates.filter(p => (VALUE[p.type] ?? 0) === top);

@@ -3,7 +3,7 @@ import type { Color, GameState, Piece, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { getLegalMovesForPiece, isInCheck } from '../../engine/moveGenerator';
 import { prngPickIndex } from '../../engine/prng';
-import { getModifierOwner } from '../owner';
+import { affectsColor, getModifierOwner } from '../owner';
 import { MODIFIER_IDS } from '../ids';
 
 const ID = MODIFIER_IDS.hatofulGambit;
@@ -89,7 +89,8 @@ export const hatofulGambitDef: ModifierDefinition = {
       const planned: Record<string, Square> = {};
       const squares: Square[] = [];
       for (const piece of next.pieces.values()) {
-        if (piece.type !== 'pigeon') continue;
+        // Only a flock whose side drafted this card hops (Hatchery Pigeons stay put otherwise).
+        if (piece.type !== 'pigeon' || !affectsColor(next, ID, piece.color)) continue;
         const options = safeHops(next, piece, mover);
         if (options.length === 0) continue;
         const [idx, prng] = prngPickIndex(next.prngState, options.length);

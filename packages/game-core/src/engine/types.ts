@@ -15,6 +15,7 @@ export type PieceType =
   | 'elephant'     // MOD-E020 Elephant In The Room
   | 'camel'        // MOD-E011 Lawrence Of Arabia
   | 'nightrider'   // MOD-E019 Knight Rider
+  | 'egg'          // MOD-E016 Hatchery: cannot move, hatches into a pigeon
   | 'royal_guard'; // future: MOD-E003 Royal Guard
 
 export type Color = 'white' | 'black';
