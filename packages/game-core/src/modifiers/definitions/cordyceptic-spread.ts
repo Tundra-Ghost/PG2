@@ -38,6 +38,13 @@ function readRot(state: GameState): Record<string, number> {
   return (state.modifierState[ID] as SpreadState | undefined)?.rot ?? {};
 }
 
+/** True when the piece on `square` has stood on infection for at least a round. */
+export function isRotting(state: GameState, square: Square): boolean {
+  const piece = state.pieces.get(square);
+  if (!piece || !isInfectedSquare(state, square)) return false;
+  return (readRot(state)[piece.id] ?? 0) > 0;
+}
+
 /**
  * How far the piece on `square` may move, or null when infection does not
  * slow it. Sliders lose 1 square of reach per round stood still (minimum 1).

@@ -849,8 +849,10 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     tier: 'B',
     scope: 'owned',
     description:
-      'Your King runs two squares in a straight line, if both squares are empty and safe. Uses your move.',
+      'Select your King and press Run. It runs two squares in a straight line, if both squares are empty and safe. Uses your move. Then your King waits 10 of your turns.',
     flavor: '"Viktor\'s king just felt like running."',
+    prototypeRules:
+      'Select your King and press Run. It moves two squares in any straight line (rank, file or diagonal), if both squares are empty. No capture. It may not run through an attacked square or end in check. It may run while in check if it ends out of check. A King slowed by infection cannot run. Then your King waits 10 of your turns. One side cannot draft it with Heavy Is The Crown.',
   },
   {
     id: 'MOD-C015',

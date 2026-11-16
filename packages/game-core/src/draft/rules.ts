@@ -17,6 +17,7 @@ function needsDarkFirst(cardId: string, ownIds: string[], otherIds: string[]): b
  * Lawrence Of Arabia, Knight Rider and Hatoful Gambit all replace the knights.
  * Stonks and The Small Council both rebuild the pawns.
  * The Small Council fills the third rank, so Hatchery has no nest.
+ * Run, Forrest, Run would let a Heavy Is The Crown King skip its order.
  */
 const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.slayQueen, MODIFIER_IDS.threeKings],
@@ -31,6 +32,7 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.knightRider, MODIFIER_IDS.lawrenceOfArabia],
   [MODIFIER_IDS.stonks, MODIFIER_IDS.smallCouncil],
   [MODIFIER_IDS.hatchery, MODIFIER_IDS.smallCouncil],
+  [MODIFIER_IDS.runForrestRun, MODIFIER_IDS.heavyIsTheCrown],
 ];
 
 /** The card in your draft that rules this one out, if any. */
