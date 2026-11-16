@@ -22,7 +22,7 @@ interface OngoingGamesProps {
 
 type Entry = { row: OngoingRow; save: SavedBotGame | null };
 
-/** Every bot game in progress on this device, last played first. Tap one to pick it up. */
+/** Bot games saved on this device and online games still running, last played first. Tap one to pick it up. */
 export default function OngoingGames({
   games,
   onResume,
