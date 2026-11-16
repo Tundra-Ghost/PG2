@@ -76,7 +76,7 @@ export function startAbilityCooldown(state: GameState, pieceId: string, id: Modi
 }
 
 const LETTER: Partial<Record<PieceType, string>> = {
-  king: 'K', queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: 'P', chancellor: 'C', archbishop: 'A', elephant: 'E', camel: 'L', nightrider: 'NN', royal_guard: 'G', pigeon: 'H',
+  king: 'K', queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: 'P', chancellor: 'C', archbishop: 'A', elephant: 'E', camel: 'L', nightrider: 'NN', egg: 'O', royal_guard: 'G', pigeon: 'H',
 };
 
 export function buildAbilityNotation(

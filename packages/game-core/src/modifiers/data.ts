@@ -1477,6 +1477,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'A pigeon Egg sits on your d3 square. It cannot move. If it survives 10 rounds, it hatches into a Pigeon, which moves like a knight.',
     flavor: '"Viktor is guarding an egg. The egg is the most important piece on the board. The egg disagrees."',
+    prototypeRules:
+      'An Egg sits on your d3 (d6 for Black), or the nearest empty square on that rank. It never moves and gives no check, but it blocks and can be captured. After 10 of your moves it hatches into a Pigeon that moves like a knight. The Egg shows the moves left. Cannot be drafted with The Small Council.',
   },
   {
     id: 'MOD-E017',

@@ -247,6 +247,9 @@ function pieceMoves(state: GameState, piece: Piece): Square[] {
     case 'nightrider':
       // MOD-E019: repeats one knight jump in a line while each landing square is empty
       return slidingMoves(state, piece, KNIGHT_VECTORS);
+    case 'egg':
+      // MOD-E016: an Egg never moves (it hatches on its own)
+      return [];
     case 'camel':
       // MOD-E011: a (3,1) leaper
       return leaperMoves(state, piece, CAMEL_VECTORS);
