@@ -52,8 +52,8 @@ describe('MOD-B020 Roll For Initiative', () => {
     state = play(state, [['g1', 'f3'], ['b8', 'c6']]);
     const type = getInitiativeRoll(state, 'white');
     expect(type).not.toBeNull();
-    expect(state.eventHistory.at(-1)?.modifierId).toBe(RFI);
-    expect(state.eventHistory.at(-1)?.message).toContain(`The die says`);
+    expect(state.eventHistory[state.eventHistory.length - 1]?.modifierId).toBe(RFI);
+    expect(state.eventHistory[state.eventHistory.length - 1]?.message).toContain(`The die says`);
     // The same seed and moves roll the same face (saved games replay this way).
     const again = play(startWith(7), OPENING);
     expect(getInitiativeRoll(again, 'white')).toBe(type);
