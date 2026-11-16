@@ -37,6 +37,18 @@
   --board-size: max(300px, min(78vmin, 540px, calc(100dvh - 400px)));
 }
 
+/*
+ * The legend and ability bar wrap inside the board's width instead of
+ * widening the frame (width 0 keeps them out of the frame's size; min-width
+ * then fills it). A wide legend used to pull the coordinates off the board.
+ */
+.abilityBar,
+.legend {
+  width: 0;
+  min-width: 100%;
+  box-sizing: border-box;
+}
+
 .abilityBar {
   display: flex;
   flex-wrap: wrap;
