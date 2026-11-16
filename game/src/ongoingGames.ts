@@ -1,10 +1,14 @@
-import { ALL_MODIFIERS } from '@pigeon-chess/game-core';
+import { ALL_MODIFIERS, type GameSummary, type SeatRef } from '@pigeon-chess/game-core';
 import { getBotSpeaker } from './botChat';
 import type { SavedBotGame } from './savedBotGames';
 
 /** One row of the Ongoing games list, in words. */
 export interface OngoingRow {
+  /** A bot save id, or an online room code. */
   id: string;
+  kind: 'bot' | 'online';
+  /** Last played, for sorting the bot and online games together. */
+  updatedMs: number;
   opponent: string;
   portrait: string | null;
   /** "You play White". */
@@ -66,6 +70,8 @@ export function describeSave(save: SavedBotGame, now: number = Date.now()): Ongo
     const picks = save.draft?.playerIds ?? [];
     return {
       id: save.id,
+      kind: 'bot',
+      updatedMs: Date.parse(save.updatedAt) || 0,
       opponent,
       portrait: bot?.sprite ?? null,
       side: 'You play White',
@@ -83,6 +89,8 @@ export function describeSave(save: SavedBotGame, now: number = Date.now()): Ongo
   const turn = save.summary?.turn ?? 'white';
   return {
     id: save.id,
+    kind: 'bot',
+    updatedMs: Date.parse(save.updatedAt) || 0,
     opponent,
     portrait: bot?.sprite ?? null,
     side: 'You play White',
@@ -91,5 +99,56 @@ export function describeSave(save: SavedBotGame, now: number = Date.now()): Ongo
     modifiers: parts.length > 0 ? parts.join(' · ') : 'Standard chess',
     lastPlayed,
     abandonIsLoss: movesPlayed(save) > 0,
+  };
+}
+
+function modifierLine(yours: string[], theirs: string[], opponent: string): string {
+  const parts: string[] = [];
+  if (yours.length > 0) parts.push(`You: ${names(yours)}`);
+  if (theirs.length > 0) parts.push(`${opponent}: ${names(theirs)}`);
+  return parts.length > 0 ? parts.join(' · ') : 'Standard chess';
+}
+
+/** An online game the server told us about. */
+export function describeOnline(game: GameSummary, now: number = Date.now()): OngoingRow {
+  const opponent = game.opponentName ?? (game.opponentJoined ? 'Guest' : 'Open seat');
+  const yourMove = game.opponentJoined && !game.drafting && game.turn === game.color;
+  const status = game.drafting
+    ? 'Drafting'
+    : !game.opponentJoined
+      ? 'Waiting for opponent'
+      : yourMove
+        ? 'Your move'
+        : 'Their move';
+  return {
+    id: game.roomId,
+    kind: 'online',
+    updatedMs: game.updatedAt,
+    opponent,
+    portrait: null,
+    side: `You play ${game.color === 'white' ? 'White' : 'Black'} · Room ${game.roomId}`,
+    status,
+    yourMove,
+    // An older server does not send modifiers.
+    modifiers: game.modifiers ? modifierLine(game.modifiers.yours, game.modifiers.theirs, opponent) : '',
+    lastPlayed: lastPlayedText(new Date(game.updatedAt).toISOString(), now),
+    abandonIsLoss: false,
+  };
+}
+
+/** A saved seat while the server cannot say more about it. */
+export function describeSeat(seat: SeatRef): OngoingRow {
+  return {
+    id: seat.roomId,
+    kind: 'online',
+    updatedMs: 0,
+    opponent: `Room ${seat.roomId}`,
+    portrait: null,
+    side: 'Online game',
+    status: 'Online',
+    yourMove: false,
+    modifiers: '',
+    lastPlayed: '',
+    abandonIsLoss: false,
   };
 }

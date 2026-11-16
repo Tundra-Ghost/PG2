@@ -97,6 +97,10 @@ export interface GameSummary {
   opponentName: string | null;
   moveCount: number;
   updatedAt: number;
+  /** The modifiers each side drafted. Missing from older servers. */
+  modifiers?: { yours: string[]; theirs: string[] };
+  /** The modifier draft is still running. Missing from older servers. */
+  drafting?: boolean;
 }
 
 export interface ClientToServerEvents {

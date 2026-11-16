@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
-import { abandonCountsAsLoss, describeSave, lastPlayedText } from './ongoingGames';
+import type { GameSummary } from '@pigeon-chess/game-core';
+import { abandonCountsAsLoss, describeOnline, describeSave, describeSeat, lastPlayedText } from './ongoingGames';
 import { SAVE_VERSION, type SavedBotGame } from './savedBotGames';
 
 const NOW = Date.parse('2026-11-16T12:00:00.000Z');
@@ -71,5 +72,42 @@ describe('ongoing games rows', () => {
     expect(lastPlayedText('2026-11-16T09:00:00.000Z', NOW)).toBe('3 h ago');
     expect(lastPlayedText('2026-11-15T10:00:00.000Z', NOW)).toBe('yesterday');
     expect(lastPlayedText('2026-11-12T12:00:00.000Z', NOW)).toBe('4 days ago');
+  });
+
+  const summary = (extra: Partial<GameSummary>): GameSummary => ({
+    roomId: 'ABCDE',
+    color: 'black',
+    turn: 'black',
+    status: 'active',
+    opponentJoined: true,
+    opponentName: 'rook_lover',
+    moveCount: 4,
+    updatedAt: NOW - 3 * 3600_000,
+    ...extra,
+  });
+
+  it('describes an online game from the server', () => {
+    const row = describeOnline(summary({ modifiers: { yours: [MODIFIER_IDS.gerald], theirs: [] }, drafting: false }), NOW);
+    expect(row.kind).toBe('online');
+    expect(row.opponent).toBe('rook_lover');
+    expect(row.side).toBe('You play Black · Room ABCDE');
+    expect(row.status).toBe('Your move');
+    expect(row.modifiers).toMatch(/^You: /);
+    expect(row.lastPlayed).toBe('3 h ago');
+    expect(describeOnline(summary({ turn: 'white' }), NOW).status).toBe('Their move');
+  });
+
+  it('words an online draft, an empty seat and an older server', () => {
+    expect(describeOnline(summary({ drafting: true }), NOW).status).toBe('Drafting');
+    const waiting = describeOnline(summary({ opponentJoined: false, opponentName: null }), NOW);
+    expect(waiting.status).toBe('Waiting for opponent');
+    expect(waiting.opponent).toBe('Open seat');
+    expect(describeOnline(summary({}), NOW).modifiers).toBe('');
+  });
+
+  it('shows a saved seat as just Online when the server cannot be asked', () => {
+    const row = describeSeat({ roomId: 'ZZZZZ', token: 't' });
+    expect(row.status).toBe('Online');
+    expect(row.opponent).toBe('Room ZZZZZ');
   });
 });

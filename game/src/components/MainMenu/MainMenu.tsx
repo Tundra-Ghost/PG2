@@ -296,7 +296,7 @@ export default function MainMenu({
             >
               <span>Ongoing games</span>
               <span className={styles.linkHint}>
-                {ongoingCount === 0 ? 'None in progress' : `${ongoingCount} in progress`}
+                {ongoingCount === 0 ? 'Bot and online games' : `${ongoingCount} bot game${ongoingCount === 1 ? '' : 's'} in progress`}
               </span>
             </button>
 

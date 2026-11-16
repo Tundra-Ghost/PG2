@@ -52,7 +52,8 @@ import { appBase, pathFor, screenFromPath, type Screen } from './routes';
 import { markTutorialSeen, stepForScreen, tutorialSeen, type TutorialStep } from './tutorial';
 import TutorialCoach from './components/TutorialCoach/TutorialCoach';
 import OngoingGames from './components/OngoingGames/OngoingGames';
-import { abandonCountsAsLoss, movesPlayed } from './ongoingGames';
+import { abandonCountsAsLoss, describeOnline, describeSeat, movesPlayed } from './ongoingGames';
+import { useOnlineGameList } from './online/useOnlineGameList';
 import {
   SAVE_VERSION,
   applyAction,
@@ -197,6 +198,8 @@ export default function App() {
   const [profile, setProfile] = useState<LocalProfile>(() => ensureProfile());
   const account = useAccount(profile, setProfile);
   const social = useSocial(account.account?.username ?? null);
+  /** Online games for the Ongoing list. Online play needs an account, so guests skip it. */
+  const onlineList = useOnlineGameList(screen === 'ongoing' && Boolean(account.account), account.account?.username ?? null);
   /** A room the Online screen should sit down in when it opens. */
   const [pendingRoomId, setPendingRoomId] = useState<string | null>(null);
   const clearPendingRoom = useCallback(() => setPendingRoomId(null), []);
@@ -972,6 +975,26 @@ export default function App() {
         <OngoingGames
           games={ongoingGames}
           notice={ongoingNotice}
+          online={
+            !account.account
+              ? []
+              : onlineList.status === 'ready'
+                ? onlineList.games.map(game => describeOnline(game))
+                : onlineList.seats.map(describeSeat)
+          }
+          onlineNote={
+            !account.account
+              ? null
+              : onlineList.status === 'offline' && onlineList.seats.length > 0
+                ? "Can't reach the server right now, so online games show without details."
+                : onlineList.status === 'loading' && onlineList.seats.length > 0
+                  ? 'Checking your online games…'
+                  : null
+          }
+          onResumeOnline={roomId => {
+            setPendingRoomId(roomId);
+            setScreen('online');
+          }}
           onResume={save => {
             setOngoingNotice(null);
             if (!resumeSavedGame(save)) {
