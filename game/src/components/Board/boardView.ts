@@ -33,6 +33,8 @@ export interface SquareView {
   /** MOD-E001: the side whose Pigeon will hop to this square. */
   pigeonHop?: 'white' | 'black';
   isShaft: boolean;
+  /** MOD-A016: Gerald's statue stands here. */
+  statue?: boolean;
   /** Not part of this board's shape (puzzles). */
   isClosed: boolean;
   storm?: 'warning' | 'active';
@@ -127,7 +129,8 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         infectedReach: hidden ? undefined : getInfectedReach(state, square) ?? undefined,
         crownOrder: crownOrders.get(square),
         pigeonHop: pigeonHops.get(square),
-        isShaft: tile?.isVoid === true && !storm && !tile.isClosed,
+        isShaft: tile?.isVoid === true && !storm && !tile.isClosed && !tile.statue,
+        ...(tile?.statue ? { statue: true } : {}),
         isClosed: tile?.isClosed === true,
         storm,
         quietZone: quietZones.get(square),

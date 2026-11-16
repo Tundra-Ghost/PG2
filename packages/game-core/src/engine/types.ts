@@ -56,6 +56,7 @@ export interface TileState {
   storm?: 'warning' | 'active'; // MOD-A005: warning before a wave, active once consumed (also isVoid)
   isSurveilled?: boolean; // future: MOD-D008
   noFlyZone?: Color;      // future: MOD-C001
+  statue?: boolean;       // MOD-A016: Gerald's statue (also isVoid)
 }
 
 export interface CastlingRights {

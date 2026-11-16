@@ -102,7 +102,8 @@ export const heavyIsTheCrownDef: ModifierDefinition = {
 
   onPostMove(state, move) {
     if (move.ability) return state;
-    const king = state.pieces.get(move.to);
+    // A King that pushed Gerald's statue (MOD-A016) stayed on move.from.
+    const king = state.pieces.get(move.to) ?? state.pieces.get(move.from);
     if (king?.type !== 'king' || !orders(state)[king.color]) return state;
     return withOrder(state, king.color, null);
   },

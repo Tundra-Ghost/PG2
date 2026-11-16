@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { getStatueSquare, moveStatue, statuePushTarget } from './statue';
 import type {
   Color,
   DraftModifierPick,
@@ -76,7 +77,11 @@ export function positionKey(state: GameState): string {
     ? state.flags.enPassantSquare[0]
     : '-';
 
-  return `${pieceTokens.join(',')}|${sideToken}|${castleToken}|${epToken}`;
+  // 5. MOD-A016: where Gerald's statue stands is part of the position.
+  const statue = getStatueSquare(state);
+  const statueToken = statue ? `|g${statue}` : '';
+
+  return `${pieceTokens.join(',')}|${sideToken}|${castleToken}|${epToken}${statueToken}`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -272,6 +277,14 @@ export function applyMoveInternal(state: GameState, move: Move): GameState {
 
   next.flags.enPassantSquare = null;
 
+  // MOD-A016: stepping into Gerald's statue pushes it. The piece stays put.
+  const statueTo = statuePushTarget(next, move.from, move.to);
+  if (statueTo) {
+    moveStatue(next, move.to, statueTo);
+    next.flags.halfMoveClock++;
+    return next;
+  }
+
   const isCapture = next.pieces.has(move.to) || move.isEnPassant === true;
   // A sideways pawn step (MOD-E014) can be undone, so it does not reset the clock.
   const pawnAdvance = piece.type === 'pawn' && move.from[1] !== move.to[1];
@@ -413,6 +426,14 @@ function buildNotation(
 ): string {
   if (move.ability) return buildAbilityNotation(stateBefore, move, isCapture, stateAfter);
   if (move.isCastle === 'kingside')  return 'O-O';
+  const pushedTo = statuePushTarget(stateBefore, move.from, move.to);
+  if (pushedTo) {
+    const pusher = stateBefore.pieces.get(move.from);
+    const base = `${PIECE_SYM[pusher?.type ?? 'pawn'] ?? ''}${move.from} pushes ${move.to}-${pushedTo}`;
+    const opponent: Color = move.playerColor === 'white' ? 'black' : 'white';
+    if (stateAfter.status === 'checkmate') return `${base}#`;
+    return isInCheck(stateAfter, opponent) ? `${base}+` : base;
+  }
   if (move.isCastle === 'queenside') return 'O-O-O';
 
   const piece = stateBefore.pieces.get(move.from);

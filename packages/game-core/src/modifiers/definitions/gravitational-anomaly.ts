@@ -68,6 +68,8 @@ export function slideAll(
     const f = FILES.indexOf(piece.square[0]);
     const r = Number(piece.square[1]) - 1;
     const to = square(f + df, r + dr);
+    // MOD-A016: Gerald's statue is solid. It stops a slide, it is no hole.
+    if (to !== null && next.tiles.get(to)?.statue) continue;
     const off = to === null || next.tiles.get(to)?.isVoid === true;
     if (off) {
       if (piece.type === 'king') continue;
