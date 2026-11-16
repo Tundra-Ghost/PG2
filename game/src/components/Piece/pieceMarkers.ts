@@ -27,7 +27,8 @@ export function getPieceMarkers(piece: Piece): PieceMarkers {
   if (isBerserker) marks.push('B');
   if (isTraitor) marks.push('!');
   if (hasPromotionChain) marks.push('»');
-  if (amazon) marks.push('A');
+  // ♞, not A: the Archbishop already uses A in the move list.
+  if (amazon) marks.push('♞');
   if (piece.isTouched) marks.push('T');
   if (eggRounds !== undefined) marks.push(String(eggRounds));
 

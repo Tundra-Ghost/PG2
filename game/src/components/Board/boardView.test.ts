@@ -66,15 +66,25 @@ describe('buildSquareViews', () => {
     const fake = views.find(v => v.square === 'g1')!.piece!;
     const real = views.find(v => v.square === 'd1')!.piece!;
     expect(getPieceMarkers(fake).marks).toEqual(getPieceMarkers(real).marks);
-    expect(getPieceMarkers(real).marks).toContain('A');
+    expect(getPieceMarkers(real).marks).toContain('♞');
   });
 
-  it('marks only an Amazon queen with A', () => {
+  it('marks only an Amazon queen, with a knight so it never clashes with the Archbishop A', () => {
     const queen = { id: 'q', type: 'queen' as const, color: 'white' as const, square: 'd1' as const, cooldowns: {}, isAmazon: true };
-    expect(getPieceMarkers(queen).marks).toContain('A');
+    expect(getPieceMarkers(queen).marks).toContain('♞');
     expect(getPieceMarkers(queen).label).toContain('amazon');
-    expect(getPieceMarkers({ ...queen, type: 'royal_guard' }).marks).not.toContain('A');
-    expect(getMarkerLegend([MODIFIER_IDS.slayQueen])).toEqual([{ mark: 'A', label: 'Amazon badge (Queen + knight)' }]);
+    expect(getPieceMarkers({ ...queen, type: 'royal_guard' }).marks).not.toContain('♞');
+    expect(getMarkerLegend([MODIFIER_IDS.slayQueen])).toEqual([
+      { mark: '♞', label: 'Amazon: this Queen also moves like a knight' },
+    ]);
+  });
+
+  it('gives every legend row in play its own mark', () => {
+    const all = Object.values(MODIFIER_IDS);
+    const marks = getMarkerLegend(all, { eggOnBoard: true }).map(row => row.mark);
+    const dupes = marks.filter((mark, i) => marks.indexOf(mark) !== i);
+    // Lava and Lava next share a modifier but use ▲ and △, so every mark is unique.
+    expect(dupes).toEqual([]);
   });
 
   it('fades a Ghost for its owner only', () => {

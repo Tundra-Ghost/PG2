@@ -78,7 +78,7 @@ export interface BoardViewInput {
 }
 
 /** The 64 squares in screen order: top-left first, row by row. */
-/** MOD-E009: a Sus piece shown as a queen wears the A badge when its side has an Amazon, so the badge never gives the disguise away. */
+/** MOD-E009: a Sus piece shown as a queen wears the Amazon badge (♞) when its side has an Amazon, so the badge never gives the disguise away. */
 function hasAmazon(state: GameState, color: Color): boolean {
   for (const piece of state.pieces.values()) {
     if (piece.color === color && piece.type === 'queen' && piece.isAmazon) return true;

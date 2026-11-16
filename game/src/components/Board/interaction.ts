@@ -21,9 +21,18 @@ export interface MarkerLegendEntry {
 export interface MarkerLegendContext {
   /** An Egg (MOD-E016) is still waiting to hatch. */
   eggOnBoard?: boolean;
+  /** No, I Don't Think I Will (MOD-B003): flipped moves the viewer has left. */
+  flippedMovesLeft?: number;
+  /** A touch screen, so the legend says "tap" instead of "click". */
+  touchScreen?: boolean;
 }
 
-type LegendRow = { modifierId: string; showIf?: (ctx: MarkerLegendContext) => boolean } & MarkerLegendEntry;
+type LegendRow = {
+  modifierId: string;
+  showIf?: (ctx: MarkerLegendContext) => boolean;
+  /** A label that depends on the match, in place of `label`. */
+  labelFor?: (ctx: MarkerLegendContext) => string;
+} & MarkerLegendEntry;
 
 /** Piece and tile markers, in the order they appear in the legend. */
 const MARKER_LEGEND: LegendRow[] = [
@@ -50,7 +59,7 @@ const MARKER_LEGEND: LegendRow[] = [
     showIf: ctx => ctx.eggOnBoard !== false,
   },
   { modifierId: MODIFIER_IDS.commitmentIssues, mark: 'T', label: 'Touched: this piece must move' },
-  { modifierId: MODIFIER_IDS.slayQueen, mark: 'A', label: 'Amazon badge (Queen + knight)' },
+  { modifierId: MODIFIER_IDS.slayQueen, mark: '♞', label: 'Amazon: this Queen also moves like a knight' },
   { modifierId: MODIFIER_IDS.threeKings, mark: '⛨', label: 'Royal Guard' },
   { modifierId: MODIFIER_IDS.ventTiles, mark: '●', label: 'Vent shaft' },
   { modifierId: MODIFIER_IDS.heavyIsTheCrown, mark: '♔', label: 'King order' },
@@ -60,7 +69,19 @@ const MARKER_LEGEND: LegendRow[] = [
   { modifierId: MODIFIER_IDS.smokeCloud, mark: '☁', label: 'Smoke' },
   { modifierId: MODIFIER_IDS.sus, mark: '?', label: 'Your Sus piece' },
   { modifierId: MODIFIER_IDS.bandersnatch, mark: '┃', label: 'Mirror line (twins copy moves)' },
-  { modifierId: MODIFIER_IDS.noIDontThinkIWill, mark: '⇅', label: 'Your first 5 moves: click across the board' },
+  {
+    modifierId: MODIFIER_IDS.noIDontThinkIWill,
+    mark: '⇅',
+    label: 'Your first 5 moves: click across the board',
+    // Gone once the viewer's flipped moves are used up, or when the curse is the opponent's.
+    showIf: ctx => ctx.flippedMovesLeft !== 0,
+    labelFor: ctx => {
+      const verb = ctx.touchScreen ? 'tap' : 'click';
+      const left = ctx.flippedMovesLeft;
+      if (left === undefined) return `Your first 5 moves: ${verb} across the board`;
+      return `${left} flipped move${left === 1 ? '' : 's'} left: ${verb} across the board`;
+    },
+  },
   { modifierId: MODIFIER_IDS.forgiveMe, mark: '✝', label: 'Confession and declared square' },
   { modifierId: MODIFIER_IDS.ghosts, mark: '◌', label: 'Your Ghost (faded)' },
 ];
@@ -73,5 +94,5 @@ export function getMarkerLegend(
   return MARKER_LEGEND
     .filter(entry => activeModifierIds.includes(entry.modifierId))
     .filter(entry => !entry.showIf || entry.showIf(ctx))
-    .map(({ mark, label }) => ({ mark, label }));
+    .map(({ mark, label, labelFor }) => ({ mark, label: labelFor ? labelFor(ctx) : label }));
 }
