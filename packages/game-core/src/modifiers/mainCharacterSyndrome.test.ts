@@ -11,6 +11,7 @@ import { getBindingMoveRules } from './move-rules';
 import { pickBlocker } from '../draft/rules';
 import { ALL_MODIFIERS } from './data';
 import { makeEmptyState, makePiece, move } from './testHelpers';
+import { ownMoveNumber } from './owner';
 
 const MCS = MODIFIER_IDS.mainCharacterSyndrome;
 
@@ -188,5 +189,35 @@ describe('MOD-B010 Main Character Syndrome', () => {
     expect(pickBlocker(card, [MODIFIER_IDS.peerPressure], [], all)).toMatch(/Peer Pressure/);
     expect(pickBlocker(card, [MODIFIER_IDS.threeKings], [], all)).toMatch(/Three Of Them/);
     expect(pickBlocker(card, [], [MODIFIER_IDS.peerPressure], all)).toBeNull();
+  });
+  it('counts your own moves even when the other side takes extra turns', () => {
+    let state = startWith([{ id: MCS, sourceColor: 'white' }]);
+    state.tempoTokens = { white: 0, black: 2 };
+    state = play(state, [['e2', 'e4']]);
+    state = chessEngine.applyMove(state, move('e7', 'e5', 'black', { extraTurn: true }));
+    state = chessEngine.applyMove(state, move('d7', 'd6', 'black', { extraTurn: true }));
+    state = play(state, [['c7', 'c6'], ['g1', 'f3']]);
+    expect(ownMoveNumber(state, 'black')).toBe(4);
+    state = play(state, [['b8', 'd7']]);
+    expect(ownMoveNumber(state, 'white')).toBe(3);
+    expect(isQueenDemanded(state, 'white')).toBe(false);
+    state = play(state, [['b1', 'c3'], ['g8', 'f6']]);
+    expect(ownMoveNumber(state, 'white')).toBe(4);
+    expect(isQueenDemanded(state, 'white')).toBe(true);
+  });
+
+  it('her ability counts as a Queen move', () => {
+    let state = chessEngine.activateDraftModifiers(
+      makeEmptyState([makePiece('king', 'white', 'e1'), makePiece('king', 'black', 'e8'), makePiece('queen', 'white', 'd4')]),
+      [{ id: MCS, sourceColor: 'white' }, { id: MODIFIER_IDS.quietQuitting, sourceColor: 'white' }],
+    );
+    state.turnNumber = 9;
+    state = chessEngine.beginTurn(state);
+    expect(mustMoveQueen(state, 'white')).toBe(true);
+    const zone = move('d4', 'd4', 'white', { ability: MODIFIER_IDS.quietQuitting });
+    expect(chessEngine.validateMove(state, zone).valid).toBe(true);
+    state = chessEngine.applyMove(state, zone);
+    state = play(state, [['e8', 'f8']]);
+    expect(isQueenDemanded(state, 'white')).toBe(false);
   });
 });

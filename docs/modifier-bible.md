@@ -415,14 +415,15 @@ Your Queen must move at least once every 4 of your moves. If you skip her too lo
 *The queen would like to remind everyone that this is her story.*
 
 - Built: after 3 of your moves in a row without a Queen move, your 4th must be one. The feed warns you after the 3rd. Selecting another piece says why it cannot move.
-- Built: her ability (such as Quiet Quitting) counts as a Queen move. Shooing Gerald does not, and is not allowed while she is owed.
+- Built: her ability (such as Quiet Quitting) counts as a Queen move. Shooing Gerald does not, and is not allowed while she is owed and has a move.
 - Ruling: in check, you may make any legal move. The demand waits.
 - Ruling: if she has no legal move, any move is allowed and she stays owed until she can move.
-- Ruling: once your Queen is captured (or defects), the curse ends for good. A Queen from a later promotion is not bound.
+- Ruling: once you have no Queen (captured or defected), the curse ends for good. A Queen from a later promotion is not bound.
 - Ruling: never a softlock. The demand only binds when she has a legal move.
 - Several queens: any of your queens moving counts.
 - Conflict: Peer Pressure. Both demand a piece on the same move, so one side cannot draft both.
 - Conflict: Yeah, There Are Three Of Them. No Queen, so the curse would be free points.
+- Interaction: Commitment Issues. While she is owed and has a move, only a Queen can be touched.
 - Interaction: Lunch Break wins. At lunch she cannot move, so the demand waits (see Move rules below).
 
 ### MOD-B011 · Case Of The Mondays
@@ -478,6 +479,7 @@ Touch-move rules apply to you. Once you select a piece that has a legal move, yo
 - Ruling: never a softlock. Only a piece with a legal move can be touched, so you always have a move.
 - Phones: hold-to-read never counts as touching. Only a tap selects. This holds on every square, even one with nothing to read.
 - Bots do not touch. A bot that owns the card picks one piece and moves it, which already keeps the rule.
+- Interaction: Main Character Syndrome. While the Queen is owed and has a move, only a Queen can be touched.
 - Interaction: Recalculating. A piece whose dots are all fake cannot be touched, so no T appears on it. A careful player can use this to spot fakes.
 - Balance: bots never touch, so for a bot the curse costs nothing. The balance harness cannot measure this card; leave it out of the 40% to 60% flags.
 

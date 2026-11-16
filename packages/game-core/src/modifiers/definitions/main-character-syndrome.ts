@@ -40,7 +40,7 @@ function queenSquares(state: GameState, color: Color): Square[] {
 
 /** Your own moves in a row without a Queen move, counting this one. */
 function waitingMoves(state: GameState, color: Color): number {
-  return ownMoveNumber(state) - (read(state).last[color] ?? 0);
+  return ownMoveNumber(state, color) - (read(state).last[color] ?? 0);
 }
 
 /** True when `color`'s Queen is owed a move now, before check and "if she can". */
@@ -107,7 +107,7 @@ export const mainCharacterSyndromeDef: ModifierDefinition = {
       ? start.squares.includes(move.from)
       : !move.ability && !move.promotion && state.pieces.get(move.to)?.type === 'queen';
     if (queenActed) {
-      return write(state, { ...current, last: { ...current.last, [color]: ownMoveNumber(state) } });
+      return write(state, { ...current, last: { ...current.last, [color]: ownMoveNumber(state, color) } });
     }
     if (waitingMoves(state, color) !== QUEEN_EVERY - 1 || queenSquares(state, color).length === 0) return state;
     return appendGameEvent(state, {
