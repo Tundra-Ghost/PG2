@@ -221,7 +221,9 @@ export default function Board({
     [onMove, onStateChange, state],
   );
 
-  const markerLegend = getMarkerLegend(state.activeModifiers.map(mod => mod.id));
+  const markerLegend = getMarkerLegend(state.activeModifiers.map(mod => mod.id), {
+    eggOnBoard: [...state.pieces.values()].some(piece => piece.type === 'egg'),
+  });
 
   // MOD-B005: during a blackout the cursed side does not see the last move either.
   const forgetsLastMove = isHistoryBlackout(state, controlColor ?? state.turn);
