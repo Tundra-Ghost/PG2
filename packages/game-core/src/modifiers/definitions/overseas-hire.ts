@@ -16,7 +16,10 @@ export function replaceOneRook(state: GameState, id: string, type: PieceType): G
   const colors: Color[] = owner ? [owner] : ['white', 'black'];
   const next = cloneState(state);
   for (const color of colors) {
-    const rooks = Array.from(next.pieces.values()).filter(p => p.color === color && p.type === 'rook' && !p.isGhost);
+    // Sorted by square, so the pick never depends on the order pieces were added.
+    const rooks = Array.from(next.pieces.values())
+      .filter(p => p.color === color && p.type === 'rook' && !p.isGhost)
+      .sort((a, b) => a.square.localeCompare(b.square));
     if (rooks.length === 0) continue;
     const [idx, prng] = prngPickIndex(next.prngState, rooks.length);
     next.prngState = prng;

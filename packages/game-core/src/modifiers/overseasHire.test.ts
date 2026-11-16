@@ -26,15 +26,17 @@ describe('MOD-E013 Overseas Hire (The Cannon)', () => {
     expect(state.flags.castlingRights.black).toEqual({ kingSide: true, queenSide: true });
   });
 
-  it('picks the same rook for the same seed', () => {
-    const pick = () => {
+  it('picks the rook with the seed: same seed, same rook, and seeds reach both corners', () => {
+    const pick = (seed: number) => {
       const start = chessEngine.getInitialState();
-      start.prngSeed = 11;
-      start.prngState = 11;
+      start.prngSeed = seed;
+      start.prngState = seed;
       const state = chessEngine.activateDraftModifiers(start, [{ id: CANNON, sourceColor: 'black' }]);
       return Array.from(state.pieces.values()).find(p => p.type === 'cannon')!.square;
     };
-    expect(pick()).toBe(pick());
+    expect(pick(11)).toBe(pick(11));
+    const corners = new Set(Array.from({ length: 20 }, (_, i) => pick(i + 1)));
+    expect(corners).toEqual(new Set(['a8', 'h8']));
   });
 
   it('slides like a rook but never captures the first piece it meets', () => {
