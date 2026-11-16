@@ -110,7 +110,8 @@ export const forgiveMeDef: ModifierDefinition = {
   },
 
   onPreMoveValidate(state, move) {
-    if (move.ability) return { blocked: false };
+    // A leap (MOD-C010) moves the piece, so it must keep the confession too.
+    if (move.ability && move.ability !== MODIFIER_IDS.leapOfFaith) return { blocked: false };
     const c = getConfession(state);
     if (!c?.declared || c.square !== move.from) return { blocked: false };
     if (isInCheck(state, c.color) || move.to === c.declared) return { blocked: false };
@@ -125,7 +126,7 @@ export const forgiveMeDef: ModifierDefinition = {
   },
 
   onPostMove(state, move) {
-    if (move.ability) return state;
+    if (move.ability && move.ability !== MODIFIER_IDS.leapOfFaith) return state;
     const c = getConfession(state);
     const piece = state.pieces.get(move.to);
     if (!c || !piece || piece.id !== c.pieceId) return state;
