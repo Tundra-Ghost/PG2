@@ -1,6 +1,8 @@
 import type { ModifierDefinition } from '../types';
 import type { GameState, Piece, PieceType, Square } from '../../engine/types';
 import { appendGameEvent, cloneState, getActiveDefinitions } from '../../engine/gameLoop';
+import { modifierRegistry } from '../registry';
+import { getConfession } from './forgive-me';
 import { MODIFIER_IDS } from '../ids';
 
 const ID = MODIFIER_IDS.freakyFriday;
@@ -30,9 +32,15 @@ function neighbours(sq: Square): Square[] {
   return result;
 }
 
-/** A pawn may not be swapped onto rank 1 or 8. */
+/**
+ * A pawn may not be swapped onto rank 1 or 8, nor back onto its start rank
+ * (it would win its double step again).
+ */
 function canStand(piece: Piece, sq: Square): boolean {
-  return piece.type !== 'pawn' || (sq[1] !== '1' && sq[1] !== '8');
+  if (piece.type !== 'pawn') return true;
+  if (sq[1] === '1' || sq[1] === '8') return false;
+  const start = piece.color === 'white' ? '2' : '7';
+  return sq[1] !== start || piece.square[1] === start;
 }
 
 /** Adjacent friendly pieces this piece may trade places with. */
@@ -89,7 +97,8 @@ export const freakyFridayDef: ModifierDefinition = {
           type: 'modifier',
           modifierId: ID,
           title: 'FREAKY FRIDAY',
-          message: `The ${a.color} ${a.type} and ${b.type} swap places (${move.from} and ${move.to}).`,
+          // Squares only: naming the types would give away a Sus disguise.
+          message: `The ${a.color} pieces on ${move.from} and ${move.to} swap places.`,
           squares: [move.from, move.to],
         }),
       };
@@ -106,12 +115,34 @@ export const freakyFridayDef: ModifierDefinition = {
   onPreMoveValidate(state, move) {
     if (move.ability !== ID) return { blocked: false };
     const reverse = { ...move, from: move.to, to: move.from };
-    if (!state.pieces.get(reverse.from)) return { blocked: false };
+    const partner = state.pieces.get(reverse.from);
+    if (!partner) return { blocked: false };
+    // A confessing piece (MOD-C002) must go where it declared.
+    const confessing = getConfession(state)?.pieceId;
+    if (confessing && (confessing === partner.id || confessing === state.pieces.get(move.from)?.id)) {
+      return { blocked: true, reason: 'That piece has confessed. It must make its declared move.' };
+    }
     for (const def of getActiveDefinitions(state)) {
       if (def.id === ID || !def.onPreMoveValidate) continue;
       const result = def.onPreMoveValidate(state, reverse);
       if (result.blocked) return result;
     }
     return { blocked: false };
+  },
+
+  /**
+   * The partner entered move.from. Winter and the Swamp only look at
+   * move.to, so run their entry rules for the partner too.
+   */
+  onPostMove(state, move) {
+    if (move.ability !== ID) return state;
+    const reverse = { ...move, from: move.to, to: move.from };
+    let next = state;
+    for (const id of [MODIFIER_IDS.winterIsComing, MODIFIER_IDS.thisIsMySwamp]) {
+      if (!state.activeModifiers.some(mod => mod.id === id)) continue;
+      const hook = modifierRegistry.get(id)?.onPostMove;
+      if (hook) next = hook(next, reverse);
+    }
+    return next;
   },
 };

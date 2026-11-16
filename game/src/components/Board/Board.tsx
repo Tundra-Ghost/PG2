@@ -29,6 +29,7 @@ const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
 const GERALD_ID = MODIFIER_IDS.gerald;
 const WINTER_ID = MODIFIER_IDS.winterIsComing;
+const FREAKY_FRIDAY_ID = MODIFIER_IDS.freakyFriday;
 const BURST_KINDS: Partial<Record<string, SquareBurst['kind']>> = {
   [MODIFIER_IDS.floorIsLava]: 'lava',
   [MODIFIER_IDS.berserker]: 'berserker',
@@ -362,8 +363,7 @@ export default function Board({
         const validation = chessEngine.validateMove(state, move);
         if (validation.valid) {
           // A swap (MOD-C012) targets an own piece and captures nothing.
-          const target = state.pieces.get(to);
-          if (target && target.color !== state.turn) playCapture();
+          if (state.pieces.has(to) && abilityMode !== FREAKY_FRIDAY_ID) playCapture();
           else playMove();
           commitMove(move);
         } else if (validation.reason) {

@@ -823,7 +823,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Select a piece and press Swap, then pick a neighbouring piece of yours. The two swap places. Neither may be your King. Uses your move. Both pieces wait 7 of your turns.',
     prototypeRules:
-      'Select one of your pieces (not the King) and press Swap, then pick one of your pieces on a neighbouring square, diagonals included. The two trade squares. Neither may be your King. A pawn may not land on rank 1 or 8. The swap may not leave your King in check, and a piece that cannot move (held by Gerald, stuck, frozen) cannot be swapped. Then both pieces wait 7 of your turns.',
+      'Select one of your pieces (not the King) and press Swap, then pick one of your pieces on a neighbouring square, diagonals included. The two trade squares. Neither may be your King. A pawn may not land on rank 1 or 8, or back on its start rank. The swap may not leave your King in check, and a piece that cannot move (held by Gerald, stuck, frozen, confessing) cannot be swapped. Both pieces count as moved for Winter, the Swamp and infection. Then both pieces wait 7 of your turns.',
     flavor: '"The knight is the bishop now. The bishop is the knight. They are learning a lot about each other."',
   },
   {

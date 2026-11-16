@@ -638,6 +638,10 @@ Select a piece and press Swap, then pick one of your pieces next to it. The two 
 - Ruling: neighbours include diagonals. A swap keeps the same squares filled, so it never answers a check: in check it is not offered.
 - Ruling: a piece that cannot move (held by Gerald, stuck in the Swamp, frozen by Winter) cannot be swapped either way. Eggs cannot be swapped.
 - Ruling: a rook swapped out of its corner has moved, so castling on that side ends.
+- Ruling: a pawn may not be swapped back onto its start rank, so it never wins its double step again.
+- Ruling: a piece that has confessed (Forgive Me, For I Have Moved) cannot be swapped.
+- Ruling: both pieces count as moved. A piece swapped into the Winter zone freezes, a knight swapped into the Swamp is stuck, and infection rot resets on both.
+- Ruling: the feed names the squares, not the pieces, so a Sus disguise stays hidden.
 - Changed from design: the design gave no cooldown; the build uses 7 of your moves, on both pieces.
 
 ### MOD-C013 · Hold My Bread

@@ -137,6 +137,77 @@ describe('MOD-C012 Freaky Friday', () => {
     expect(next.flags.castlingRights.white).toEqual({ kingSide: false, queenSide: true });
   });
 
+  it('never swaps a pawn back onto its start rank', () => {
+    const state = withSwap([
+      makePiece('king', 'white', 'h1'),
+      makePiece('pawn', 'white', 'c3'),
+      makePiece('knight', 'white', 'b2'),
+      makePiece('pawn', 'white', 'e2'),
+      makePiece('bishop', 'white', 'd2'),
+      makePiece('rook', 'white', 'd4'),
+      makePiece('king', 'black', 'a8'),
+    ]);
+    // b2 and d2 are the pawn's start rank; d4 is fine.
+    expect(swapTargets(state, 'c3')).toEqual(['d4']);
+    expect(swapTargets(state, 'b2')).toEqual([]);
+    // A pawn already on its start rank may stay on it.
+    expect(swapTargets(state, 'e2')).toEqual(['d2']);
+  });
+
+  it('names only squares, so a Sus disguise stays hidden', () => {
+    let state = withSwap([
+      makePiece('king', 'white', 'h1'),
+      makePiece('knight', 'white', 'c3'),
+      makePiece('bishop', 'white', 'd4'),
+      makePiece('king', 'black', 'a8'),
+    ]);
+    state = chessEngine.applyMove(state, move('c3', 'd4', 'white', { ability: SWAP }));
+    const message = state.eventHistory[state.eventHistory.length - 1].message;
+    expect(message).not.toMatch(/knight|bishop/);
+  });
+
+  it('cannot swap a confessing piece', () => {
+    const state = withSwap([
+      makePiece('king', 'white', 'h1'),
+      makePiece('knight', 'white', 'c3', 'confessor'),
+      makePiece('bishop', 'white', 'd4'),
+      makePiece('king', 'black', 'a8'),
+    ], [{ id: MODIFIER_IDS.forgiveMe, sourceColor: 'black' }]);
+    expect(swapTargets(state, 'd4')).toEqual(['c3']);
+    state.modifierState[MODIFIER_IDS.forgiveMe] = { pieceId: 'confessor', color: 'white', until: 99 };
+    expect(swapTargets(state, 'd4')).toEqual([]);
+    expect(swapTargets(state, 'c3')).toEqual([]);
+  });
+
+  it('freezes a partner that enters the Winter zone', () => {
+    let state = withSwap([
+      makePiece('king', 'white', 'h1'),
+      makePiece('knight', 'white', 'c3'),
+      makePiece('bishop', 'white', 'd4'),
+      makePiece('king', 'black', 'a8'),
+    ], [{ id: MODIFIER_IDS.winterIsComing, sourceColor: 'white' }]);
+    // The knight asks and leaves the zone; the bishop partner enters it from d4.
+    state = chessEngine.applyMove(state, move('c3', 'd4', 'white', { ability: SWAP }));
+    expect(state.pieces.get('c3')?.type).toBe('bishop');
+    expect(state.pieces.get('c3')?.cooldowns[MODIFIER_IDS.winterIsComing] ?? 0).toBeGreaterThan(0);
+    expect(state.pieces.get('d4')?.cooldowns[MODIFIER_IDS.winterIsComing] ?? 0).toBe(0);
+  });
+
+  it('resets infection rot on both swapped pieces', () => {
+    let state = withSwap([
+      makePiece('king', 'white', 'h1'),
+      makePiece('rook', 'white', 'c3', 'r1'),
+      makePiece('rook', 'white', 'd4', 'r2'),
+      makePiece('king', 'black', 'a8'),
+    ], [{ id: MODIFIER_IDS.cordycepticSpread, sourceColor: 'white' }]);
+    for (const sq of ['c3', 'd4'] as Square[]) state.tiles.set(sq, { square: sq, effects: [{ type: 'infected', turnsRemaining: -1 }] });
+    state.modifierState[MODIFIER_IDS.cordycepticSpread] = { ...(state.modifierState[MODIFIER_IDS.cordycepticSpread] as object), rot: { r1: 3, r2: 3 } };
+    state = chessEngine.applyMove(state, move('c3', 'd4', 'white', { ability: SWAP }));
+    const rot = (state.modifierState[MODIFIER_IDS.cordycepticSpread] as { rot: Record<string, number> }).rot;
+    expect(rot.r1 ?? 0).toBe(0);
+    expect(rot.r2 ?? 0).toBe(0);
+  });
+
   it('is only offered to the owner', () => {
     const state = withSwap([
       makePiece('king', 'white', 'h1'),
