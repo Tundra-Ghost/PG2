@@ -698,6 +698,7 @@ Select your King, press Get off my lawn, then tap the King. Every enemy pawn nex
 - Ruling: "next to" means the 8 squares around the King. Pawns move straight back. A pawn whose square behind is taken, Lava, storm or its own back rank stays put. Only offered when at least one pawn would move.
 - Ruling: a pawn pushed back onto its start rank may double-step again. They will be back.
 - Ruling: under Sus, the King pushes what its owner sees as pawns, so a disguise is never given away.
+- Ruling: pawns the owner cannot see (fog, blind spots) are never pushed, so the button reveals nothing.
 - Changed from design: the design gave no cooldown; the build uses 8 of your moves.
 
 ### MOD-C018 · Dirt Hut

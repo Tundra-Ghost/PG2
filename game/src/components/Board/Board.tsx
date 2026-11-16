@@ -363,7 +363,8 @@ export default function Board({
         const validation = chessEngine.validateMove(state, move);
         if (validation.valid) {
           // A swap (MOD-C012) targets an own piece and captures nothing.
-          if (state.pieces.has(to) && abilityMode !== FREAKY_FRIDAY_ID) playCapture();
+          // An ability on the piece's own square (MOD-C017) captures nothing either.
+          if (state.pieces.has(to) && to !== selected && abilityMode !== FREAKY_FRIDAY_ID) playCapture();
           else playMove();
           commitMove(move);
         } else if (validation.reason) {

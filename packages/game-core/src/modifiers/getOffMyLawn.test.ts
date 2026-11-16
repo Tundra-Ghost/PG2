@@ -5,6 +5,7 @@ import type { GameState, Piece, Square } from '../engine/types';
 import './index';
 import { MODIFIER_IDS } from './ids';
 import { LAWN_COOLDOWN } from './definitions/get-off-my-lawn';
+import { getBlindSpot } from './definitions/known-unknowns';
 import { makeEmptyState, makePiece, move } from './testHelpers';
 
 const LAWN = MODIFIER_IDS.getOffMyLawn;
@@ -104,6 +105,20 @@ describe('MOD-C017 Get Off My Lawn', () => {
     );
     state.turn = 'black';
     expect(lawnTargets(state, 'e3')).toEqual([]);
+  });
+
+  it('leaves pawns hidden by fog alone, so the button gives nothing away', () => {
+    let state = withLawn([makePiece('king', 'black', 'a8'), makePiece('king', 'white', 'h1')], [
+      { id: MODIFIER_IDS.knownUnknowns, sourceColor: 'white' },
+    ]);
+    const hidden = getBlindSpot(state, 'white').find(sq => Number(sq[1]) <= 6)!;
+    const kingSq = `${hidden[0]}${Number(hidden[1]) - 1}` as Square;
+    state.pieces.delete('h1');
+    state.pieces.set(kingSq, makePiece('king', 'white', kingSq));
+    state.pieces.set(hidden, makePiece('pawn', 'black', hidden));
+    expect(lawnTargets(state, kingSq)).toEqual([]);
+    state = { ...state, activeModifiers: state.activeModifiers.filter(m => m.id !== MODIFIER_IDS.knownUnknowns) };
+    expect(lawnTargets(state, kingSq)).toEqual([kingSq]);
   });
 
   it('waits 8 own turns', () => {

@@ -897,7 +897,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Select your King, press Get off my lawn, then tap the King. Every enemy pawn next to it is pushed one square back toward its own side, if that square is empty. Uses your move. Then your King waits 8 of your turns.',
     prototypeRules:
-      'Select your King, press Get off my lawn, then tap the King. Every enemy pawn on the 8 squares around it moves one square straight back toward its own side, if that square is empty (not Lava or storm) and not the pawn\'s own back rank. Pawns that cannot move stay. Only offered when at least one pawn would move. Allowed in check only if the push ends the check. Then your King waits 8 of your turns.',
+      'Select your King, press Get off my lawn, then tap the King. Every enemy pawn on the 8 squares around it moves one square straight back toward its own side, if that square is empty (not Lava or storm) and not the pawn\'s own back rank. Pawns that cannot move, or that you cannot see, stay. Only offered when at least one pawn would move. Allowed in check only if the push ends the check. Then your King waits 8 of your turns.',
     flavor: '"Viktor\'s king has asked the pawns to leave. The pawns have left. They will be back."',
   },
   {

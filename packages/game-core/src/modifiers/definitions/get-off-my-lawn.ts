@@ -2,6 +2,7 @@ import type { ModifierDefinition } from '../types';
 import type { GameState, Piece, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { isVoidSquare } from '../../engine/moveGenerator';
+import { getVisibleSquares } from '../../engine/visibility';
 import { MODIFIER_IDS } from '../ids';
 import { getShownType } from './sus';
 
@@ -30,16 +31,19 @@ function canLand(state: GameState, pawn: Piece, sq: Square | null): sq is Square
 /**
  * Enemy pawns next to the King that can be pushed, each with the square
  * behind it (toward its own side). "Pawn" means what the King's owner sees,
- * so a Sus disguise is never given away.
+ * so a Sus disguise is never given away, and pawns hidden by fog are left
+ * alone so the button never reveals them.
  */
 export function getLawnPushes(state: GameState, king: Piece): { from: Square; to: Square }[] {
   const pushes: { from: Square; to: Square }[] = [];
+  const visible = getVisibleSquares(state, king.color);
   for (let df = -1; df <= 1; df++) {
     for (let dr = -1; dr <= 1; dr++) {
       if (df === 0 && dr === 0) continue;
       const sq = offset(king.square, df, dr);
       const piece = sq ? state.pieces.get(sq) : undefined;
       if (!sq || !piece || piece.color === king.color) continue;
+      if (visible && !visible.has(sq)) continue;
       if (getShownType(state, piece, king.color) !== 'pawn') continue;
       const back = offset(sq, 0, piece.color === 'white' ? -1 : 1);
       if (canLand(state, piece, back)) pushes.push({ from: sq, to: back });
