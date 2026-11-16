@@ -97,6 +97,15 @@ describe('MOD-C017 Get Off My Lawn', () => {
     expect(lawnTargets(state, 'e4')).toEqual([]);
   });
 
+  it('never pushes a pawn onto its own back rank', () => {
+    const state = chessEngine.activateDraftModifiers(
+      makeEmptyState([makePiece('king', 'black', 'e3'), makePiece('pawn', 'white', 'd2'), makePiece('king', 'white', 'h8')]),
+      [{ id: LAWN, sourceColor: 'black' }],
+    );
+    state.turn = 'black';
+    expect(lawnTargets(state, 'e3')).toEqual([]);
+  });
+
   it('waits 8 own turns', () => {
     let state = withLawn([
       makePiece('king', 'white', 'e4'),
