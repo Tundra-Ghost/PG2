@@ -15,6 +15,7 @@ function needsDarkFirst(cardId: string, ownIds: string[], otherIds: string[]): b
  * The Small Council has no bishops. Elephant In The Room turns every bishop
  * into an Elephant, so Holy Knight and Forgive Me would have no bishop.
  * Lawrence Of Arabia, Knight Rider and Hatoful Gambit all replace the knights.
+ * Stonks and The Small Council both rebuild the pawns.
  * The Small Council fills the third rank, so Hatchery has no nest.
  */
 const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
@@ -28,6 +29,7 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.knightRider, MODIFIER_IDS.hatofulGambit],
   [MODIFIER_IDS.knightRider, MODIFIER_IDS.smallCouncil],
   [MODIFIER_IDS.knightRider, MODIFIER_IDS.lawrenceOfArabia],
+  [MODIFIER_IDS.stonks, MODIFIER_IDS.smallCouncil],
   [MODIFIER_IDS.hatchery, MODIFIER_IDS.smallCouncil],
 ];
 
