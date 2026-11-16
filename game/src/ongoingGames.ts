@@ -46,6 +46,18 @@ export function movesPlayed(save: SavedBotGame): number {
   return save.summary?.moves ?? save.match?.actions.length ?? 0;
 }
 
+/**
+ * Giving up this save records a loss: a started match with a move played, for a
+ * player with a profile, not already counted. Drafts and untouched boards are free.
+ */
+export function abandonCountsAsLoss(
+  save: SavedBotGame,
+  hasProfile: boolean,
+  recordedIds: ReadonlySet<string>,
+): boolean {
+  return hasProfile && !!save.match && movesPlayed(save) > 0 && !recordedIds.has(save.id);
+}
+
 export function describeSave(save: SavedBotGame, now: number = Date.now()): OngoingRow {
   const bot = getBotSpeaker(save.bot);
   const opponent = bot?.name ?? 'Bot';

@@ -50,6 +50,27 @@
   color: #3d5470;
 }
 
+.title:focus {
+  outline: none;
+}
+
+.title:focus-visible {
+  outline: 3px solid var(--ui-gold-light);
+  outline-offset: 2px;
+}
+
+.notice {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: #a12a20;
+}
+
+.notice:empty {
+  display: none;
+}
+
 .empty {
   display: flex;
   flex-direction: column;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
-import { describeSave, lastPlayedText } from './ongoingGames';
+import { abandonCountsAsLoss, describeSave, lastPlayedText } from './ongoingGames';
 import { SAVE_VERSION, type SavedBotGame } from './savedBotGames';
 
 const NOW = Date.parse('2026-11-16T12:00:00.000Z');
@@ -53,6 +53,17 @@ describe('ongoing games rows', () => {
     );
     expect(row.status).toBe('Drafting');
     expect(row.abandonIsLoss).toBe(false);
+  });
+
+  it('counts abandoning as a loss only for a started match not yet recorded', () => {
+    const started = save({ match: { prngSeed: 1, playerModifierIds: [], botModifierIds: [], actions: [] }, summary: { turn: 'white', moves: 2 } });
+    const untouched = save({ match: { prngSeed: 1, playerModifierIds: [], botModifierIds: [], actions: [] }, summary: { turn: 'white', moves: 0 } });
+    const draft = save({ draft: { playerIds: [], botIds: [], turn: 'player', randomLocked: false, seed: 1, draws: 0 } });
+    expect(abandonCountsAsLoss(started, true, new Set())).toBe(true);
+    expect(abandonCountsAsLoss(started, false, new Set())).toBe(false);
+    expect(abandonCountsAsLoss(started, true, new Set(['g']))).toBe(false);
+    expect(abandonCountsAsLoss(untouched, true, new Set())).toBe(false);
+    expect(abandonCountsAsLoss(draft, true, new Set())).toBe(false);
   });
 
   it('words the last played time', () => {

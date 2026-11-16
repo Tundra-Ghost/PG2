@@ -7,6 +7,7 @@ interface LeaveMatchDialogProps {
   heading?: string;
   text?: string;
   leaveLabel?: string;
+  stayLabel?: string;
 }
 
 /** Asks before leaving a match that would count as a loss. Also asks before abandoning a saved game. */
@@ -16,6 +17,7 @@ export default function LeaveMatchDialog({
   heading = 'Leave this match?',
   text = 'It will count as a loss.',
   leaveLabel = 'Leave',
+  stayLabel = 'Keep playing',
 }: LeaveMatchDialogProps) {
   const stayRef = useRef<HTMLButtonElement>(null);
 
@@ -42,7 +44,7 @@ export default function LeaveMatchDialog({
         <h2 id="leave-match-title" className={styles.heading}>{heading}</h2>
         <p id="leave-match-text" className={styles.text}>{text}</p>
         <div className={styles.actions}>
-          <button ref={stayRef} className={styles.stay} onClick={onStay}>Keep playing</button>
+          <button ref={stayRef} className={styles.stay} onClick={onStay}>{stayLabel}</button>
           <button className={styles.leave} onClick={onLeave}>{leaveLabel}</button>
         </div>
       </div>

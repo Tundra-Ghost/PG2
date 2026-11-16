@@ -130,9 +130,11 @@ describe('saved bot games', () => {
 
   it('keeps the newest saves first and at most twenty', () => {
     const store = memoryStore();
+    const evicted: string[] = [];
     for (let i = 0; i < MAX_SAVED_GAMES + 5; i++) {
-      saveGame(draftSave(`g${i}`, new Date(Date.UTC(2026, 0, 1, 0, i)).toISOString()), store);
+      evicted.push(...saveGame(draftSave(`g${i}`, new Date(Date.UTC(2026, 0, 1, 0, i)).toISOString()), store).map(g => g.id));
     }
+    expect(evicted).toEqual(['g0', 'g1', 'g2', 'g3', 'g4']);
     const games = readSavedGames(store);
     expect(games).toHaveLength(MAX_SAVED_GAMES);
     expect(games[0].id).toBe(`g${MAX_SAVED_GAMES + 4}`);

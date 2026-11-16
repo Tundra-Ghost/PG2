@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { playClick } from '../../sound';
 import { describeSave } from '../../ongoingGames';
 import type { SavedBotGame } from '../../savedBotGames';
@@ -11,11 +11,16 @@ interface OngoingGamesProps {
   onAbandon: (game: SavedBotGame) => void;
   onBack: () => void;
   onPlay: () => void;
+  /** Why a game just left the list, if one did. */
+  notice?: string | null;
 }
 
 /** Every bot game in progress on this device, last played first. Tap one to pick it up. */
-export default function OngoingGames({ games, onResume, onAbandon, onBack, onPlay }: OngoingGamesProps) {
+export default function OngoingGames({ games, onResume, onAbandon, onBack, onPlay, notice }: OngoingGamesProps) {
   const [confirming, setConfirming] = useState<SavedBotGame | null>(null);
+  /** The Abandon button that opened the confirm, so Cancel can hand focus back. */
+  const opener = useRef<HTMLButtonElement | null>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
   const confirmRow = confirming ? describeSave(confirming) : null;
 
   return (
@@ -30,8 +35,13 @@ export default function OngoingGames({ games, onResume, onAbandon, onBack, onPla
         >
           {'<-'} Back
         </button>
-        <h1 className={styles.title}>Ongoing games</h1>
+        <h1 ref={heading} tabIndex={-1} className={styles.title}>
+          Ongoing games
+        </h1>
         <p className={styles.lede}>Games against bots save after every move. Pick one up where you left it.</p>
+        <p className={styles.notice} role="status">
+          {notice ?? ''}
+        </p>
 
         {games.length === 0 ? (
           <div className={styles.empty}>
@@ -81,8 +91,9 @@ export default function OngoingGames({ games, onResume, onAbandon, onBack, onPla
                   <button
                     className={styles.abandon}
                     aria-label={`Abandon game against ${row.opponent}`}
-                    onClick={() => {
+                    onClick={event => {
                       playClick();
+                      opener.current = event.currentTarget;
                       setConfirming(game);
                     }}
                   >
@@ -100,11 +111,17 @@ export default function OngoingGames({ games, onResume, onAbandon, onBack, onPla
           heading="Abandon this game?"
           text={confirmRow.abandonIsLoss ? 'It will count as a loss.' : 'It will be removed from the list.'}
           leaveLabel="Abandon"
-          onStay={() => setConfirming(null)}
+          stayLabel="Cancel"
+          onStay={() => {
+            setConfirming(null);
+            opener.current?.focus();
+          }}
           onLeave={() => {
             playClick();
             onAbandon(confirming);
             setConfirming(null);
+            // The row is gone; start again from the heading.
+            heading.current?.focus();
           }}
         />
       )}
