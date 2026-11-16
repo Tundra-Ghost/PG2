@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 53 built, 47 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 54 built, 46 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -627,14 +627,17 @@ Your Queen pulls the first enemy piece on one of her lines to the square next to
 - Balance: the pulled piece may defend itself next move. The pull sets up, it does not win.
 
 ### MOD-C012 · Freaky Friday
-*Ref: Freaky Friday* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Freaky Friday* · **Tier B** · Cost 2 · Curse 0 · Any non-king piece · Cooldown 7 · Scope: Owner · Modes: All · **Built**
 
-Two of your adjacent pieces swap places. Neither may be your King. Uses your move.
+Select a piece and press Swap, then pick one of your pieces next to it. The two swap places. Neither may be your King. Uses your move. Then both pieces wait 7 of your moves.
 
 *The knight is the bishop now. The bishop is the knight. They are learning a lot about each other.*
 
 - Ruling: a pawn may not be swapped onto rank 1 or 8.
 - Ruling: the swap may not leave your King in check.
+- Ruling: neighbours include diagonals. A swap keeps the same squares filled, so it never answers a check: in check it is not offered.
+- Ruling: a piece that cannot move (held by Gerald, stuck in the Swamp, frozen by Winter) cannot be swapped either way. Eggs cannot be swapped.
+- Changed from design: the design gave no cooldown; the build uses 7 of your moves, on both pieces.
 
 ### MOD-C013 · Hold My Bread
 *Ref: "Hold my beer" meme* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1232,7 +1235,7 @@ Values the game uses today. "Built" cards match the build.
 | C009 | YEET | C | A | 3 | 0 | Owner | Design |
 | C010 | Leap Of Faith | C | A | 3 | 0 | Owner | Design |
 | C011 | GET OVER HERE! | C | S | 4 | 0 | Owner | Design |
-| C012 | Freaky Friday | C | B | 2 | 0 | Owner | Design |
+| C012 | Freaky Friday | C | B | 2 | 0 | Owner | Built |
 | C013 | Hold My Bread | C | B | 2 | 0 | Owner | Design |
 | C014 | Run, Forrest, Run | C | B | 2 | 0 | Owner | Built |
 | C015 | Ctrl+Z | C | S | 4 | 0 | Owner | Design |
@@ -1266,7 +1269,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
-53 of 100 built. The other 47 are designs (v0.4).
+54 of 100 built. The other 46 are designs (v0.4).
 
 ### Balance test plan
 

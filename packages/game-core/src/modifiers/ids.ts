@@ -22,6 +22,7 @@ export const MODIFIER_IDS = {
   bankedEnPassant: 'MOD-C008',
   gottaGoFast: 'MOD-C020',
   runForrestRun: 'MOD-C014',
+  freakyFriday: 'MOD-C012',
   smallCouncil: 'MOD-E002',
   threeKings: 'MOD-E003',
   berserker: 'MOD-E006',

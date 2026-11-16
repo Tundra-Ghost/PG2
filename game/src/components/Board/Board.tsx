@@ -361,7 +361,9 @@ export default function Board({
         if (choices?.length === 1) move.dropType = choices[0];
         const validation = chessEngine.validateMove(state, move);
         if (validation.valid) {
-          if (state.pieces.has(to)) playCapture();
+          // A swap (MOD-C012) targets an own piece and captures nothing.
+          const target = state.pieces.get(to);
+          if (target && target.color !== state.turn) playCapture();
           else playMove();
           commitMove(move);
         } else if (validation.reason) {
