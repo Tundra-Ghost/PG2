@@ -221,9 +221,6 @@ export default function Board({
     [onMove, onStateChange, state],
   );
 
-  const markerLegend = getMarkerLegend(state.activeModifiers.map(mod => mod.id), {
-    eggOnBoard: [...state.pieces.values()].some(piece => piece.type === 'egg'),
-  });
 
   // MOD-B005: during a blackout the cursed side does not see the last move either.
   const forgetsLastMove = isHistoryBlackout(state, controlColor ?? state.turn);
@@ -463,6 +460,10 @@ export default function Board({
     lastTo,
     bursts,
     viewer: controlColor ?? state.turn,
+  });
+  // Only what this player can see, so fog never gives away a hidden Egg.
+  const markerLegend = getMarkerLegend(state.activeModifiers.map(mod => mod.id), {
+    eggOnBoard: squareViews.some(view => view.piece?.type === 'egg'),
   });
 
   return (
