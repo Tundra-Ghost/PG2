@@ -552,6 +552,7 @@ If one of your pawns can capture, you must make a pawn capture. Your opponent ca
 - Ruling: pawn abilities do not count as the capture. Retaliatory Swipe and I've Been Waiting For This are blocked while a normal pawn capture is forced.
 - Ruling: under fog, only captures onto squares you can see force you, so the card never gives away a hidden piece.
 - Synergy: Conscientious Objector. The pacifist pawn is exempt and very smug about it.
+- Interaction: Crab Rave. A sideways step onto an empty square is not a capture, so it never forces you and never counts as the forced capture.
 - Conflict: Main Character Syndrome. Both demand a piece on the same move, so one side cannot draft both.
 - Conflict: Roll For Initiative. Same reason.
 

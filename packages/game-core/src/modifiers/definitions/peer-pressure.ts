@@ -11,11 +11,22 @@ import { getVisibleSquares } from '../../engine/visibility';
 const ID = MODIFIER_IDS.peerPressure;
 const REASON = 'Peer Pressure: a pawn can capture, so you must capture with a pawn.';
 
-/** A normal (not ability) pawn move to another file: a capture or en passant. */
+/**
+ * True when a pawn on `from` moving to `to` takes something: an enemy piece
+ * stands on `to`, or it is en passant. A sideways step (MOD-E014 Crab Rave)
+ * changes file onto an empty square and is not a capture.
+ */
+function isPawnCaptureTarget(state: GameState, from: Square, to: Square): boolean {
+  const piece = state.pieces.get(from);
+  if (piece?.type !== 'pawn' || from[0] === to[0]) return false;
+  const target = state.pieces.get(to);
+  if (target) return target.color !== piece.color;
+  return to === state.flags.enPassantSquare && from[1] !== to[1];
+}
+
+/** A normal (not ability) pawn capture, en passant included. */
 function isPawnCapture(state: GameState, move: Move): boolean {
-  if (move.ability) return false;
-  const piece = state.pieces.get(move.from);
-  return piece?.type === 'pawn' && move.from[0] !== move.to[0];
+  return !move.ability && isPawnCaptureTarget(state, move.from, move.to);
 }
 
 registerMoveRule(ID, (state, color) =>
@@ -33,7 +44,7 @@ export function getForcedPawnCaptures(state: GameState, color: Color): Array<{ f
   for (const piece of state.pieces.values()) {
     if (piece.color !== color || piece.type !== 'pawn') continue;
     for (const to of getLegalMovesForPiece(state, piece)) {
-      if (to[0] === piece.square[0]) continue;
+      if (!isPawnCaptureTarget(state, piece.square, to)) continue;
       if (visible && !visible.has(to)) continue;
       const legal = isPromotionMove(state, piece.square, to)
         ? getValidPromotionTypes(state, piece.square, to).length > 0

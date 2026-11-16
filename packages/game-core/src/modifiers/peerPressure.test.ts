@@ -186,4 +186,54 @@ describe('MOD-B019 Peer Pressure', () => {
     // The capture itself is still allowed.
     expect(chessEngine.validateMove(state, move(pawnSq, target, 'white')).valid).toBe(true);
   });
+
+  describe('with Crab Rave on the same side (#140)', () => {
+    function withPeerAndCrab(pieces: Piece[]): GameState {
+      return chessEngine.activateDraftModifiers(
+        makeEmptyState([makePiece('king', 'white', 'e1'), makePiece('king', 'black', 'e8'), ...pieces]),
+        [
+          { id: PEER, sourceColor: 'white' },
+          { id: MODIFIER_IDS.crabRave, sourceColor: 'white' },
+        ],
+      );
+    }
+
+    it('a sideways step is not a capture, so nothing is forced', () => {
+      const state = withPeerAndCrab([
+        makePiece('pawn', 'white', 'd4'),
+        makePiece('rook', 'white', 'a1'),
+        makePiece('knight', 'white', 'g1'),
+      ]);
+      expect(isUnderPeerPressure(state, 'white')).toBe(false);
+      expect(getForcedPawnCaptures(state, 'white')).toEqual([]);
+      expect(chessEngine.validateMove(state, move('a1', 'a5', 'white')).valid).toBe(true);
+      expect(chessEngine.validateMove(state, move('g1', 'f3', 'white')).valid).toBe(true);
+      expect(chessEngine.validateMove(state, move('d4', 'c4', 'white')).valid).toBe(true);
+    });
+
+    it('a real capture still forces, and a sideways step does not satisfy it', () => {
+      const state = withPeerAndCrab([
+        makePiece('pawn', 'white', 'd4'),
+        makePiece('knight', 'black', 'e5'),
+        makePiece('rook', 'white', 'a1'),
+      ]);
+      expect(isUnderPeerPressure(state, 'white')).toBe(true);
+      expect(getForcedPawnCaptures(state, 'white')).toEqual([{ from: 'd4', to: 'e5' }]);
+      expect(chessEngine.validateMove(state, move('d4', 'c4', 'white')).valid).toBe(false);
+      expect(chessEngine.validateMove(state, move('a1', 'a5', 'white')).valid).toBe(false);
+      expect(chessEngine.validateMove(state, move('d4', 'e5', 'white')).valid).toBe(true);
+    });
+
+    it('bots move other pieces when no capture exists', () => {
+      const state = withPeerAndCrab([
+        makePiece('pawn', 'white', 'd4'),
+        makePiece('rook', 'white', 'a1'),
+      ]);
+      const moves = listBotMoves(state, 'white');
+      expect(moves.some(m => m.from === 'a1')).toBe(true);
+      expect(moves.some(m => m.from === 'e1')).toBe(true);
+      expect(chessEngine.validateMove(state, getChickBotMove(state, 'white', () => 0)!).valid).toBe(true);
+      expect(chessEngine.validateMove(state, getPigeonBotMove(state, 'white', { depth: 2 })!).valid).toBe(true);
+    });
+  });
 });
