@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import {
   ALL_MODIFIERS,
   CATEGORY_COLORS,
@@ -9,6 +9,7 @@ import {
 import { modifierRegistry, seededRandom } from '@pigeon-chess/game-core';
 import { getModifierSummary, isSharedDraftModifier } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
+import type { DraftSnapshot } from '../../savedBotGames';
 import styles from './DraftScreen.module.css';
 import PrototypeRules from '../PrototypeRules/PrototypeRules';
 import { ModifierIcon } from '../ModifierIcon/ModifierIcon';
@@ -46,6 +47,22 @@ interface DraftScreenProps {
   online?: OnlineDraftControls;
   /** VS Bots practice (GDD): no limits, and you pick for both sides. */
   practice?: boolean;
+  /** A saved bot draft to pick up where it was left. Read once, when the screen opens. */
+  saved?: DraftSnapshot;
+  /** Bot drafts: called after every change so the draft can be saved. */
+  onDraftChange?: (snapshot: DraftSnapshot) => void;
+}
+
+/** A seeded source that counts its draws, so a saved draft resumes the same sequence. */
+function countedRandom(seed: number, draws: number) {
+  const next = seededRandom(seed);
+  for (let i = 0; i < draws; i++) next();
+  const source = { seed, draws, random: () => 0 };
+  source.random = () => {
+    source.draws += 1;
+    return next();
+  };
+  return source;
 }
 
 type CategoryFilter = 'ALL' | ModifierCategory;
@@ -85,15 +102,18 @@ export default function DraftScreen({
   opponentModifierIds = [],
   online,
   practice = false,
+  saved,
+  onDraftChange,
 }: DraftScreenProps) {
-  const [localPlayerIds, setPlayerSelectedIds] = useState<string[]>([]);
-  const [localBotIds, setBotSelectedIds] = useState<string[]>(opponentModifierIds);
+  const [localPlayerIds, setPlayerSelectedIds] = useState<string[]>(() => saved?.playerIds ?? []);
+  const [localBotIds, setBotSelectedIds] = useState<string[]>(() => saved?.botIds ?? opponentModifierIds);
   // One seeded source per draft, so bot picks and the random draft are replayable.
-  const [draftRandom] = useState(() => seededRandom(Date.now() | 0));
+  const [randomSource] = useState(() => countedRandom(saved?.seed ?? Date.now() | 0, saved?.draws ?? 0));
+  const draftRandom = randomSource.random;
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('ALL');
   const [hideUnavailable, setHideUnavailable] = useState(true);
-  const [localTurn, setDraftTurn] = useState<DraftTurn>('player');
+  const [localTurn, setDraftTurn] = useState<DraftTurn>(() => saved?.turn ?? 'player');
   const playerSelectedIds = online ? online.myPicks : localPlayerIds;
   const botSelectedIds = online ? online.theirPicks : localBotIds;
   const draftTurn = online ? online.turn : practice ? 'player' : localTurn;
@@ -108,8 +128,23 @@ export default function DraftScreen({
   const blockerFor = (card: ModifierCard) =>
     pickBlocker(card, sideIds, otherSideIds, implementedIds, forBot ? 'You' : opponentName, ruleOptions);
   /** Set by the random draft. The picks cannot be changed afterwards. */
-  const [randomLocked, setRandomLocked] = useState(false);
+  const [randomLocked, setRandomLocked] = useState(() => saved?.randomLocked ?? false);
   const implementedIds = useMemo(() => new Set(modifierRegistry.getAll().map(mod => mod.id)), []);
+
+  // Report each change of a bot draft so a reload does not lose it.
+  const onDraftChangeRef = useRef(onDraftChange);
+  onDraftChangeRef.current = onDraftChange;
+  useEffect(() => {
+    if (online) return;
+    onDraftChangeRef.current?.({
+      playerIds: localPlayerIds,
+      botIds: localBotIds,
+      turn: localTurn,
+      randomLocked,
+      seed: randomSource.seed,
+      draws: randomSource.draws,
+    });
+  }, [online, localPlayerIds, localBotIds, localTurn, randomLocked, randomSource]);
 
   const playerSelected = useMemo(() => getSelectedCards(playerSelectedIds), [playerSelectedIds]);
   const botSelected = useMemo(() => getSelectedCards(botSelectedIds), [botSelectedIds]);

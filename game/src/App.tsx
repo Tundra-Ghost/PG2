@@ -51,15 +51,36 @@ import styles from './App.module.css';
 import { appBase, pathFor, screenFromPath, type Screen } from './routes';
 import { markTutorialSeen, stepForScreen, tutorialSeen, type TutorialStep } from './tutorial';
 import TutorialCoach from './components/TutorialCoach/TutorialCoach';
+import {
+  SAVE_VERSION,
+  applyAction,
+  newSaveId,
+  readSavedGames,
+  rebuildMatch,
+  removeSavedGame,
+  saveGame,
+  startMatchState,
+  type DraftSnapshot,
+  type SavedAction,
+  type SavedBotGame,
+} from './savedBotGames';
 
 
 /** Where the game lives, read once: "/play/" on the site. */
 const BASE = appBase(window.location.pathname);
 
-/** The screen the address opens. A match or draft can't be resumed from a link, so those open the menu. */
+/** The address the page opened on. */
+const OPENED_ON = screenFromPath(window.location.pathname, BASE);
+
+/** The screen the address opens. A match or draft opens the menu, then the last saved bot game resumes. */
 function initialScreen(): Screen {
-  const screen = screenFromPath(window.location.pathname, BASE);
-  return screen === 'game' || screen === 'draft' ? 'menu' : screen;
+  return OPENED_ON === 'game' || OPENED_ON === 'draft' ? 'menu' : OPENED_ON;
+}
+
+/** The match on the board and every action that led to it, which is what gets saved. */
+interface MatchLog {
+  state: GameState;
+  actions: SavedAction[];
 }
 type BotSelectMode = 'run' | 'quick' | 'practice' | null;
 
@@ -78,7 +99,25 @@ export default function App() {
   );
   const [prevScreen, setPrevScreen] = useState<Screen>('menu');
   const [accountStart, setAccountStart] = useState<'signin' | 'register' | undefined>(undefined);
-  const [gameState, setGameState] = useState<GameState>(() => chessEngine.getInitialState());
+  const [match, setMatch] = useState<MatchLog>(() => ({ state: chessEngine.getInitialState(), actions: [] }));
+  const gameState = match.state;
+  /** Puts a new match on the board with an empty action log. */
+  const setGameState = (state: GameState) => setMatch({ state, actions: [] });
+  /**
+   * Plays one action and logs it. With `expected`, does nothing if the board has
+   * moved on since (the bot thought about a position that is gone).
+   */
+  const act = useCallback((action: SavedAction, expected?: GameState) => {
+    setMatch(prev => {
+      if (expected && prev.state !== expected) return prev;
+      const next = applyAction(prev.state, action);
+      return next ? { state: next, actions: [...prev.actions, action] } : prev;
+    });
+  }, []);
+  /** The saved game this match or draft is stored under. Also the match's state id. */
+  const [saveId, setSaveId] = useState<string | null>(null);
+  /** A saved draft to reopen, read once by the draft screen. */
+  const [draftResume, setDraftResume] = useState<DraftSnapshot | null>(null);
   const [vsBot, setVsBot] = useState(false);
   const [selectedBot, setSelectedBot] = useState<BotId | null>(null);
   /** The bot is working out its move. */
@@ -156,7 +195,10 @@ export default function App() {
   const prevScreenRef = useRef(prevScreen);
   prevScreenRef.current = prevScreen;
   const abandonRef = useRef(commitAbandonmentIfNeeded);
-  abandonRef.current = commitAbandonmentIfNeeded;
+  abandonRef.current = () => {
+    commitAbandonmentIfNeeded();
+    forgetCurrentSave();
+  };
   /** Which way out of a match is waiting on "Leave this match?". */
   const [leaveAsk, setLeaveAsk] = useState<'menu' | 'new' | 'back' | null>(null);
   /** Set while a confirmed Back is stepping through history, so it is not asked twice. */
@@ -241,10 +283,10 @@ export default function App() {
         if (cancelled) return;
         setBotThinking(false);
         if (move) {
-          setGameState(prev => (prev === gameState ? chessEngine.applyMove(prev, move) : prev));
+          act({ t: 'move', move }, gameState);
         } else if (chessEngine.canShooGerald(gameState)) {
           // Gerald pinned the only movable piece. The bot spends its turn shooing him.
-          setGameState(prev => (prev === gameState ? chessEngine.shooGerald(prev) : prev));
+          act({ t: 'shoo' }, gameState);
         }
       });
     }, 350);
@@ -254,7 +296,123 @@ export default function App() {
       clearTimeout(timer);
       setBotThinking(false);
     };
-  }, [vsBot, selectedBot, gameState]);
+  }, [vsBot, selectedBot, gameState, act]);
+
+  // Save the bot match after every action, so a reload or a closed tab can pick it up.
+  // A finished match is removed from the saves.
+  useEffect(() => {
+    if (screen !== 'game' || !vsBot || !selectedBot || !saveId) return;
+    if (match.state.id !== saveId) return;
+    if (match.state.status !== 'active') {
+      removeSavedGame(saveId);
+      return;
+    }
+    saveGame({
+      v: SAVE_VERSION,
+      id: saveId,
+      bot: selectedBot,
+      mode: botSelectMode ?? 'quick',
+      matchMode: currentMatchMode,
+      startedAt: currentMatchStartedAt,
+      updatedAt: new Date().toISOString(),
+      match: {
+        prngSeed: match.state.prngSeed,
+        playerModifierIds: activePlayerModifierIds,
+        botModifierIds: pendingBotModifierIds,
+        actions: match.actions,
+      },
+    });
+  }, [
+    match,
+    screen,
+    vsBot,
+    selectedBot,
+    saveId,
+    botSelectMode,
+    currentMatchMode,
+    currentMatchStartedAt,
+    activePlayerModifierIds,
+    pendingBotModifierIds,
+  ]);
+
+  /** Saves the bot draft as it changes. */
+  function handleDraftChange(draft: DraftSnapshot) {
+    if (!saveId || !selectedBot) return;
+    saveGame({
+      v: SAVE_VERSION,
+      id: saveId,
+      bot: selectedBot,
+      mode: botSelectMode ?? 'run',
+      matchMode: currentMatchMode,
+      startedAt: currentMatchStartedAt,
+      updatedAt: new Date().toISOString(),
+      draft,
+    });
+  }
+
+  /** Opens a saved bot game where it was left. Returns false if it could not be rebuilt. */
+  function resumeSavedGame(save: SavedBotGame): boolean {
+    let state: GameState | null = null;
+    if (save.match) {
+      state = rebuildMatch(save.id, save.match);
+      if (!state || state.status !== 'active') {
+        removeSavedGame(save.id);
+        return false;
+      }
+    }
+    setSaveId(save.id);
+    setSelectedBot(save.bot);
+    setVsBot(true);
+    setBotSelectMode(save.mode);
+    setCurrentMatchMode(save.matchMode);
+    setCurrentMatchStartedAt(save.startedAt);
+    setChatEntries([]);
+    setDialogueQueue([]);
+    setPendingDialogue(null);
+    if (save.match && state) {
+      setActivePlayerModifierIds(save.match.playerModifierIds);
+      setPendingBotModifierIds(save.match.botModifierIds);
+      setDraftResume(null);
+      // The match already started and its moves were already announced.
+      recordedStartIds.current.add(state.id);
+      lastReactedMoveId.current = `${state.id}:${state.moveHistory.length}`;
+      lastAnnouncedEventId.current = state.eventHistory[state.eventHistory.length - 1]?.id ?? null;
+      setMatch({ state, actions: save.match.actions });
+      setScreen('game');
+    } else {
+      setActivePlayerModifierIds([]);
+      setPendingBotModifierIds([]);
+      setDraftResume(save.draft ?? null);
+      setScreen('draft');
+    }
+    return true;
+  }
+  const resumeRef = useRef(resumeSavedGame);
+  resumeRef.current = resumeSavedGame;
+
+  // A reload on a match or draft address picks up the last saved bot game.
+  useEffect(() => {
+    if (OPENED_ON !== 'game' && OPENED_ON !== 'draft') return;
+    for (const save of readSavedGames()) {
+      if (resumeRef.current(save)) return;
+    }
+  }, []);
+
+  /** Opens a fresh draft against the selected bot, saved under a new id. */
+  function openDraft() {
+    setSaveId(newSaveId());
+    setDraftResume(null);
+    setPendingBotModifierIds([]);
+    setActivePlayerModifierIds([]);
+    setCurrentMatchStartedAt(new Date().toISOString());
+    setScreen('draft');
+  }
+
+  /** Drops the save of the match or draft being left. */
+  function forgetCurrentSave() {
+    if (saveId) removeSavedGame(saveId);
+    setSaveId(null);
+  }
 
   useEffect(() => {
     if (!infoMessage) return;
@@ -497,7 +655,7 @@ export default function App() {
       handleMenuPlay('run');
       setSelectedBot('chick');
       setVsBot(true);
-      setScreen('draft');
+      openDraft();
     } else if (step.action === 'finish') {
       markTutorialSeen('done');
       setTutorialStep(null);
@@ -527,13 +685,15 @@ export default function App() {
     setVsBot(true);
 
     if (botSelectMode === 'run' || botSelectMode === 'practice') {
-      setPendingBotModifierIds([]);
-      setScreen('draft');
+      openDraft();
       return;
     }
 
-    const state = chessEngine.beginTurn(chessEngine.getInitialState());
+    const id = newSaveId();
+    const state = startMatchState(id, Date.now() | 0, [], []);
+    setSaveId(id);
     setActivePlayerModifierIds([]);
+    setPendingBotModifierIds([]);
     setChatEntries([]);
     setDialogueQueue([]);
     setPendingDialogue(null);
@@ -545,12 +705,10 @@ export default function App() {
   }
 
   function handleStartMatch(playerModifierIds: string[], opponentModifierIds: string[]) {
-    let state = chessEngine.getInitialState();
-    state = chessEngine.activateDraftModifiers(state, [
-      ...playerModifierIds.map(id => ({ id, sourceColor: 'white' as const })),
-      ...opponentModifierIds.map(id => ({ id, sourceColor: 'black' as const })),
-    ]);
-    state = chessEngine.beginTurn(state);
+    const id = saveId ?? newSaveId();
+    const state = startMatchState(id, Date.now() | 0, playerModifierIds, opponentModifierIds);
+    setSaveId(id);
+    setDraftResume(null);
     setPendingBotModifierIds(opponentModifierIds);
     setActivePlayerModifierIds(playerModifierIds);
     setCurrentMatchMode(botSelectMode === 'practice' ? 'quick' : 'story');
@@ -571,15 +729,16 @@ export default function App() {
 
   function startNewGame() {
     commitAbandonmentIfNeeded();
+    forgetCurrentSave();
     // A modifier match starts over at the draft against the same bot, so the
     // next game has modifiers too. Standard chess just resets the board.
     if (vsBot && selectedBot && (botSelectMode === 'run' || botSelectMode === 'practice')) {
-      setPendingBotModifierIds([]);
-      setActivePlayerModifierIds([]);
-      setScreen('draft');
+      openDraft();
       return;
     }
-    const state = chessEngine.beginTurn(chessEngine.getInitialState());
+    const id = newSaveId();
+    const state = startMatchState(id, Date.now() | 0, [], []);
+    setSaveId(id);
     setActivePlayerModifierIds([]);
     setPendingBotModifierIds([]);
     setCurrentMatchStartedAt(new Date().toISOString());
@@ -619,7 +778,10 @@ export default function App() {
   }
 
   function leaveToMenu() {
-    if (screen === 'game') commitAbandonmentIfNeeded();
+    if (screen === 'game') {
+      commitAbandonmentIfNeeded();
+      forgetCurrentSave();
+    }
     setScreen('menu');
   }
 
@@ -852,8 +1014,14 @@ export default function App() {
     return (
       <div onClick={handleUnlock}>
         <DraftScreen
+          key={saveId ?? 'draft'}
           onStartMatch={handleStartMatch}
-          onBack={() => setScreen('botselect')}
+          onBack={() => {
+            forgetCurrentSave();
+            setScreen('botselect');
+          }}
+          saved={draftResume ?? undefined}
+          onDraftChange={handleDraftChange}
           opponentName={opponentName}
           opponentModifierIds={pendingBotModifierIds}
           practice={botSelectMode === 'practice'}
@@ -943,7 +1111,9 @@ export default function App() {
               <div className={styles.boardShell}>
                 <Board
                   state={gameState}
-                  onStateChange={setGameState}
+                  onMove={move => act({ t: 'move', move })}
+                  onShooGerald={() => act({ t: 'shoo' })}
+                  onTouchPiece={square => act({ t: 'touch', square })}
                   controlColor={vsBot ? 'white' : undefined}
                   onInfo={setInfoMessage}
                   notice={infoMessage}
