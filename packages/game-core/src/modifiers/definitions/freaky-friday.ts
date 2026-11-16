@@ -76,6 +76,13 @@ export const freakyFridayDef: ModifierDefinition = {
       });
       next.flags.enPassantSquare = null;
       next.flags.halfMoveClock++;
+      // A rook that leaves its corner has moved: castling on that side ends.
+      const homeRank = a.color === 'white' ? '1' : '8';
+      for (const [piece, from] of [[a, move.from], [b, move.to]] as const) {
+        if (piece.type !== 'rook') continue;
+        if (from === `h${homeRank}`) next.flags.castlingRights[a.color].kingSide = false;
+        if (from === `a${homeRank}`) next.flags.castlingRights[a.color].queenSide = false;
+      }
       return {
         state: appendGameEvent(next, {
           ply: state.moveHistory.length + 1,

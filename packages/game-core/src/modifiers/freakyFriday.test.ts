@@ -123,6 +123,20 @@ describe('MOD-C012 Freaky Friday', () => {
     expect(swapTargets(state, 'e4')).toEqual(['d4']);
   });
 
+  it('ends castling on the side a rook was swapped away from', () => {
+    const state = withSwap([
+      makePiece('king', 'white', 'e1'),
+      makePiece('rook', 'white', 'h1'),
+      makePiece('knight', 'white', 'g1'),
+      makePiece('rook', 'white', 'a1'),
+      makePiece('king', 'black', 'a8'),
+    ]);
+    state.flags.castlingRights.white = { kingSide: true, queenSide: true };
+    // The knight asks; the rook is the partner.
+    const next = chessEngine.applyMove(state, move('g1', 'h1', 'white', { ability: SWAP }));
+    expect(next.flags.castlingRights.white).toEqual({ kingSide: false, queenSide: true });
+  });
+
   it('is only offered to the owner', () => {
     const state = withSwap([
       makePiece('king', 'white', 'h1'),
