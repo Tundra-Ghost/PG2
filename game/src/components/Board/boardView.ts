@@ -32,6 +32,8 @@ export interface SquareView {
   crownOrder?: 'white' | 'black';
   /** MOD-E001: the side whose Pigeon will hop to this square. */
   pigeonHop?: 'white' | 'black';
+  /** MOD-E001 is in play for this Pigeon's side, so it hops on its own every few rounds. */
+  pigeonsHop?: boolean;
   isShaft: boolean;
   /** MOD-A016: Gerald's statue stands here. */
   statue?: boolean;
@@ -92,6 +94,11 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const noFlySquares = getNoFlySquares(state);
   const crownOrders = getCrownOrders(state);
   const pigeonHops = getPigeonHops(state);
+  // Hatoful Gambit only moves the Pigeons of the side it belongs to (or both, if shared).
+  const pigeonsHopFor = (color: Color) =>
+    state.activeModifiers.some(
+      mod => mod.id === MODIFIER_IDS.hatofulGambit && (mod.sourceColor == null || mod.sourceColor === color),
+    );
   const blindSpot = new Set(viewer ? getBlindSpot(state, viewer) : []);
   const eye = getSurveillanceSquare(state);
   const smoke = getSmokeSquares(state);
@@ -129,6 +136,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         infectedReach: hidden ? undefined : getInfectedReach(state, square) ?? undefined,
         crownOrder: crownOrders.get(square),
         pigeonHop: pigeonHops.get(square),
+        ...(piece?.type === 'pigeon' && pigeonsHopFor(piece.color) ? { pigeonsHop: true } : {}),
         isShaft: tile?.isVoid === true && !storm && !tile.isClosed && !tile.statue,
         ...(tile?.statue ? { statue: true } : {}),
         isClosed: tile?.isClosed === true,
