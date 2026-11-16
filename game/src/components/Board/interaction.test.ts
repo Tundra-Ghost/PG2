@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Piece } from '@pigeon-chess/game-core';
+import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
 
 function makePiece(
@@ -37,5 +38,13 @@ describe('board marker legend', () => {
       { mark: '❄', label: 'Frozen' },
       { mark: 'G', label: 'Gerald' },
     ]);
+  });
+
+  it("says the Egg counts its own side's moves, and drops the row once no Egg is left", () => {
+    const hatchery = [MODIFIER_IDS.hatchery];
+    expect(getMarkerLegend(hatchery, { eggOnBoard: true })).toEqual([
+      { mark: '10', label: "Egg: its side's moves until it hatches" },
+    ]);
+    expect(getMarkerLegend(hatchery, { eggOnBoard: false })).toEqual([]);
   });
 });

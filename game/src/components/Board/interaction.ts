@@ -17,8 +17,16 @@ export interface MarkerLegendEntry {
   label: string;
 }
 
+/** What is on the board right now, for legend rows that only matter while a piece exists. */
+export interface MarkerLegendContext {
+  /** An Egg (MOD-E016) is still waiting to hatch. */
+  eggOnBoard?: boolean;
+}
+
+type LegendRow = { modifierId: string; showIf?: (ctx: MarkerLegendContext) => boolean } & MarkerLegendEntry;
+
 /** Piece and tile markers, in the order they appear in the legend. */
-const MARKER_LEGEND: Array<{ modifierId: string } & MarkerLegendEntry> = [
+const MARKER_LEGEND: LegendRow[] = [
   { modifierId: MODIFIER_IDS.floorIsLava, mark: '▲', label: 'Lava' },
   { modifierId: MODIFIER_IDS.floorIsLava, mark: '△', label: 'Lava next' },
   { modifierId: MODIFIER_IDS.cordycepticSpread, mark: '✱', label: 'Infected' },
@@ -34,7 +42,12 @@ const MARKER_LEGEND: Array<{ modifierId: string } & MarkerLegendEntry> = [
   { modifierId: MODIFIER_IDS.elephantInTheRoom, mark: 'E', label: 'Elephant in the move list (jumps 2 diagonally)' },
   { modifierId: MODIFIER_IDS.lawrenceOfArabia, mark: 'L', label: 'Camel in the move list (leaps 3 and 1)' },
   { modifierId: MODIFIER_IDS.knightRider, mark: 'NN', label: 'Nightrider in the move list (knight jumps in a line)' },
-  { modifierId: MODIFIER_IDS.hatchery, mark: '10', label: 'Egg: your moves until it hatches' },
+  {
+    modifierId: MODIFIER_IDS.hatchery,
+    mark: '10',
+    label: "Egg: its side's moves until it hatches",
+    showIf: ctx => ctx.eggOnBoard !== false,
+  },
   { modifierId: MODIFIER_IDS.commitmentIssues, mark: 'T', label: 'Touched: this piece must move' },
   { modifierId: MODIFIER_IDS.slayQueen, mark: 'A', label: 'Amazon badge (Queen + knight)' },
   { modifierId: MODIFIER_IDS.threeKings, mark: '⛨', label: 'Royal Guard' },
@@ -52,8 +65,12 @@ const MARKER_LEGEND: Array<{ modifierId: string } & MarkerLegendEntry> = [
 ];
 
 /** Legend rows for the markers that can appear in this match. */
-export function getMarkerLegend(activeModifierIds: readonly string[]): MarkerLegendEntry[] {
+export function getMarkerLegend(
+  activeModifierIds: readonly string[],
+  ctx: MarkerLegendContext = {},
+): MarkerLegendEntry[] {
   return MARKER_LEGEND
     .filter(entry => activeModifierIds.includes(entry.modifierId))
+    .filter(entry => !entry.showIf || entry.showIf(ctx))
     .map(({ mark, label }) => ({ mark, label }));
 }
