@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 49 built, 51 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 50 built, 50 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -1083,13 +1083,16 @@ A Bodyguard replaces your g-pawn. It moves like a King. As its move, it may swap
 - King review: the King only gains a way out. Core rule 1 holds.
 
 ### MOD-E018 · Zerg Rush
-*Ref: StarCraft* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: StarCraft* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Your pawns may move two squares forward from any rank, if both squares are empty. They capture normally.
 
 *The pawns are coming. All of them. Right now.*
 
 - Ruling: en passant works against every two-square move, from any rank.
+- Ruling: a two-square move may reach the last rank and promote. The promoted piece cannot be taken en passant.
+- Ruling: a two-square move may not leave your King in check. It may block a check.
+- Ruling: a pawn slowed by The Cordyceptic Spread still loses its two-square move.
 - Not Gotta Go Fast: that is one pawn on a cooldown; this is all of them, always.
 
 ### MOD-E019 · Knight Rider
@@ -1230,11 +1233,11 @@ Values the game uses today. "Built" cards match the build.
 | E015 | Stonks | E | B | 2 | 0 | Owner | Design |
 | E016 | Hatchery | E | A | 3 | 0 | Owner | Design |
 | E017 | The Bodyguard | E | A | 3 | 0 | Owner | Design |
-| E018 | Zerg Rush | E | A | 3 | 0 | Owner | Design |
+| E018 | Zerg Rush | E | A | 3 | 0 | Owner | Built |
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
-49 of 100 built. The other 51 are designs (v0.4).
+50 of 100 built. The other 50 are designs (v0.4).
 
 ### Balance test plan
 
