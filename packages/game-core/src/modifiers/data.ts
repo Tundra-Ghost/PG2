@@ -646,7 +646,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'On every 3rd move you make, a die picks a piece type. You must move a piece of that type if you can. If you cannot, you choose freely.',
     flavor: '"The die says knight. Viktor wanted the queen. The die does not care what Viktor wanted."',
     prototypeRules:
-      'On your 3rd, 6th, 9th move and so on, a seeded die picks one piece type you still have (the King counts). That move must be made by a piece of that type, or its ability. If none can move, or you are in check, any legal move is allowed. While the die binds you, you cannot shoo Gerald.',
+      'On your 3rd, 6th, 9th move and so on, a seeded die picks one piece type you still have (the King counts). That move must be made by a piece of that type, or its ability (sacrificing it with The Snap does not count). If none can move, or you are in check, any legal move is allowed. While the die binds you, you cannot shoo Gerald.',
   },
 
   // ── CATEGORY C — ACTIVE ABILITIES ──────────────────────────────────────────

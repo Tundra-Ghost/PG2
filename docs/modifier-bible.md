@@ -547,7 +547,7 @@ On every 3rd move you make, a die picks a piece type. You must move a piece of t
 *The die says knight. Viktor wanted the queen. The die does not care what Viktor wanted.*
 
 - Ruling: in check, any legal move is allowed.
-- Ruling: the die only rolls types you still have, so it is never a dead roll.
+- Ruling: the die only rolls types you still have. If none of that type can move, you choose freely.
 - Built: the die rolls at the start of your 3rd, 6th, 9th move and so on, using the seeded generator. The feed says what it rolled. Selecting another piece says why it cannot move.
 - Built: the faces are every type you still have, the King included (eggs cannot move, so they are not a face). Each type has the same chance.
 - Built: a piece of that type may move or use its ability. Sacrificing it with The Snap does not count.
