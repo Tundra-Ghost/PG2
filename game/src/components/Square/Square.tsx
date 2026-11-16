@@ -18,7 +18,11 @@ const GERALD_ID = MODIFIER_IDS.gerald;
 const WINTER_ID = MODIFIER_IDS.winterIsComing;
 const SWAMP_ID = MODIFIER_IDS.thisIsMySwamp;
 
-function getPieceTooltipLines(piece: PieceType | undefined, infectedReach: number | undefined): string[] {
+function getPieceTooltipLines(
+  piece: PieceType | undefined,
+  infectedReach: number | undefined,
+  pigeonsHop = false,
+): string[] {
   if (!piece) return [];
 
   const lines: string[] = [];
@@ -40,7 +44,10 @@ function getPieceTooltipLines(piece: PieceType | undefined, infectedReach: numbe
     lines.push('Conscientious Objector: This piece refuses to capture.');
   }
   if (piece.type === 'pigeon') {
-    lines.push('Pigeon: Moves like a knight. With Hatoful Gambit, every 5 rounds it picks a square and hops there on its own.');
+    // Only Hatoful Gambit makes Pigeons hop on their own; a hatched Pigeon (Hatchery) does not.
+    lines.push(pigeonsHop
+      ? 'Pigeon: Moves like a knight. With Hatoful Gambit, every 5 rounds it picks a square and hops there on its own.'
+      : 'Pigeon: Moves like a knight.');
   }
   if (piece.type === 'chancellor') {
     lines.push('Chancellor: Moves like a rook or a knight.');
@@ -138,6 +145,7 @@ export default function Square({
   infectedReach,
   crownOrder,
   pigeonHop,
+  pigeonsHop,
   isHidden,
   blindSpot,
   surveillance,
@@ -159,7 +167,7 @@ export default function Square({
   const touchTimerRef = useRef<number | null>(null);
   const longPressTriggeredRef = useRef(false);
 
-  const pieceTooltipLines = getPieceTooltipLines(piece, infectedReach);
+  const pieceTooltipLines = getPieceTooltipLines(piece, infectedReach, pigeonsHop);
   const tileTooltipLines = getTileTooltipLines(tileEffects, isFrozenZone, isSwamp, isShaft, storm, quietZone, noFlyZone);
   const tooltipLines = [
     ...pieceTooltipLines,

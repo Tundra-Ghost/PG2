@@ -32,6 +32,8 @@ export interface SquareView {
   crownOrder?: 'white' | 'black';
   /** MOD-E001: the side whose Pigeon will hop to this square. */
   pigeonHop?: 'white' | 'black';
+  /** MOD-E001 is in play, so Pigeons hop on their own every few rounds. */
+  pigeonsHop?: boolean;
   isShaft: boolean;
   /** MOD-A016: Gerald's statue stands here. */
   statue?: boolean;
@@ -92,6 +94,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const noFlySquares = getNoFlySquares(state);
   const crownOrders = getCrownOrders(state);
   const pigeonHops = getPigeonHops(state);
+  const hatofulActive = state.activeModifiers.some(mod => mod.id === MODIFIER_IDS.hatofulGambit);
   const blindSpot = new Set(viewer ? getBlindSpot(state, viewer) : []);
   const eye = getSurveillanceSquare(state);
   const smoke = getSmokeSquares(state);
@@ -129,6 +132,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         infectedReach: hidden ? undefined : getInfectedReach(state, square) ?? undefined,
         crownOrder: crownOrders.get(square),
         pigeonHop: pigeonHops.get(square),
+        ...(hatofulActive && piece?.type === 'pigeon' ? { pigeonsHop: true } : {}),
         isShaft: tile?.isVoid === true && !storm && !tile.isClosed && !tile.statue,
         ...(tile?.statue ? { statue: true } : {}),
         isClosed: tile?.isClosed === true,

@@ -85,4 +85,19 @@ describe('buildSquareViews', () => {
     expect(at('black').ghost).toBeUndefined();
     expect(at('black').piece?.type).toBe('bishop');
   });
+
+  it('says a Pigeon hops on its own only when Hatoful Gambit is in play', () => {
+    const pigeon = { id: 'p', type: 'pigeon' as const, color: 'white' as const, square: 'd3' as const, cooldowns: {} };
+    const hatched = chessEngine.getInitialState();
+    hatched.pieces.set('d3', pigeon);
+    const at = (state: typeof hatched) =>
+      buildSquareViews({ ...base, state, orientation: 'white' }).find(v => v.square === 'd3')!;
+    expect(at(hatched).pigeonsHop).toBeUndefined();
+
+    const gambit = chessEngine.activateDraftModifiers(chessEngine.getInitialState(), [
+      { id: MODIFIER_IDS.hatofulGambit, sourceColor: 'white' },
+    ]);
+    gambit.pieces.set('d3', pigeon);
+    expect(at(gambit).pigeonsHop).toBe(true);
+  });
 });
