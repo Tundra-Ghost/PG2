@@ -22,6 +22,23 @@ export interface OngoingRow {
   abandonIsLoss: boolean;
 }
 
+/** Status, picks and last played: enough to tell two games against one bot apart. */
+function rowDetails(row: OngoingRow): string {
+  const parts = [row.status, row.modifiers];
+  if (row.lastPlayed) parts.push(`Last played ${row.lastPlayed}`);
+  return parts.filter(Boolean).map(part => `${part}.`).join(' ');
+}
+
+/** The Resume button's label, for screen readers. */
+export function resumeLabel(row: OngoingRow): string {
+  return `Resume ${row.kind === 'online' ? 'online ' : ''}game against ${row.opponent}. ${rowDetails(row)}`;
+}
+
+/** The Abandon button's label, for screen readers. */
+export function abandonLabel(row: OngoingRow): string {
+  return `Abandon game against ${row.opponent}. ${rowDetails(row)}`;
+}
+
 function modifierName(id: string): string {
   return ALL_MODIFIERS.find(mod => mod.id === id)?.name ?? id;
 }

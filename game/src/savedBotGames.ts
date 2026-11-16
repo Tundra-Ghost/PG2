@@ -171,6 +171,16 @@ export function findSavedGame(id: string, store: KeyValueStore | null = storage(
   return readSavedGames(store).find(saved => saved.id === id) ?? null;
 }
 
+/**
+ * The saved draft under `id`, if it is still a draft (not yet a match).
+ * Browser Back into a left draft reopens this instead of starting a second one.
+ */
+export function findSavedDraft(id: string | null, store: KeyValueStore | null = storage()): SavedBotGame | null {
+  if (!id) return null;
+  const save = findSavedGame(id, store);
+  return save?.draft && !save.match ? save : null;
+}
+
 /** The position the match starts from: the drafted modifiers on, first turn begun. */
 export function startMatchState(
   id: string,
