@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 58 built, 42 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 59 built, 41 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -436,7 +436,7 @@ Your Queen must move at least once every 4 of your moves. If you skip her too lo
 - Interaction: Lunch Break wins. At lunch she cannot move, so the demand waits (see Move rules below).
 
 ### MOD-B011 · Case Of The Mondays
-*Ref: Office Space / Garfield* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+*Ref: Office Space / Garfield* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
 
 For your first 6 moves, none of your pieces may move more than 2 squares.
 
@@ -444,6 +444,12 @@ For your first 6 moves, none of your pieces may move more than 2 squares.
 
 - Ruling: knights are unaffected; a knight jump counts as 2 squares.
 - Ruling: castling is allowed. The King moves 2 squares, which is fine.
+- Built: a move's length is counted like a King walks: the larger of files and ranks crossed. A camel or elephant leap is 3 or more, so it waits until Tuesday.
+- Built: abilities are not limited. They are not ordinary moves.
+- Built: the feed says when Monday is over, after your 6th move. Your moves include passes and skipped turns.
+- Ruling: in check, any legal move is allowed.
+- Ruling: never a softlock. If no short move exists, any legal move is allowed.
+- Interaction: Main Character Syndrome and Peer Pressure. Mondays is checked first, so a Queen demand asks for a short Queen move. Pawn captures are always 1 square.
 
 ### MOD-B012 · Bless You
 *Ref: Sneezing, universally* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
@@ -1273,7 +1279,7 @@ Values the game uses today. "Built" cards match the build.
 | A020 | One Way Street | A | B | 2 | 1 | Shared | Design |
 | B009 | Speedrun Any% | B | A | -2 | 2 | Owner | Design |
 | B010 | Main Character Syndrome | B | B | -1 | 1 | Owner | Built |
-| B011 | Case Of The Mondays | B | B | -1 | 1 | Owner | Design |
+| B011 | Case Of The Mondays | B | B | -1 | 1 | Owner | Built |
 | B012 | Bless You | B | B | -1 | 1 | Owner | Design |
 | B013 | Death And Taxes | B | S | -3 | 3 | Owner | Design |
 | B014 | Imposter Syndrome | B | B | -1 | 1 | Owner | Design |
