@@ -16,6 +16,7 @@ export type PieceType =
   | 'camel'        // MOD-E011 Lawrence Of Arabia
   | 'nightrider'   // MOD-E019 Knight Rider
   | 'egg'          // MOD-E016 Hatchery: cannot move, hatches into a pigeon
+  | 'cannon'       // MOD-E013 Overseas Hire: rook moves, captures over one screen
   | 'royal_guard'; // future: MOD-E003 Royal Guard
 
 export type Color = 'white' | 'black';

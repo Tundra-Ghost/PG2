@@ -59,6 +59,7 @@ export const MODIFIER_IDS = {
   lunchBreak: 'MOD-B016',
   zergRush: 'MOD-E018',
   stonks: 'MOD-E015',
+  overseasHire: 'MOD-E013',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];

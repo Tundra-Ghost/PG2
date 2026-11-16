@@ -77,6 +77,12 @@ describe('MOD-B016 Lunch Break', () => {
     expect(chessEngine.validateMove(state, move('b1', 'c3', 'white')).valid).toBe(true);
   });
 
+  it('Overseas Hire: the Cannon replaced a rook, so it goes to lunch', () => {
+    const state = onMove([makePiece('cannon', 'white', 'a1'), makePiece('knight', 'white', 'b1')], 11);
+    expect(chessEngine.validateMove(state, move('a1', 'a5', 'white')).valid).toBe(false);
+    expect(chessEngine.validateMove(state, move('b1', 'c3', 'white')).valid).toBe(true);
+  });
+
   it('castling is not allowed at lunch: the rook would move', () => {
     const state = onMove([makePiece('rook', 'white', 'h1'), makePiece('knight', 'white', 'b1')], 11);
     state.flags.castlingRights.white = { kingSide: true, queenSide: false };

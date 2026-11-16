@@ -20,7 +20,7 @@ export const theSnapDef: ModifierDefinition = {
   ability: {
     label: 'Sacrifice',
     hint: 'Remove this piece for a tempo token. Spend a token to move twice in a row. Max 2.',
-    pieceTypes: ['queen', 'rook', 'bishop', 'knight', 'pawn', 'chancellor', 'archbishop', 'elephant', 'camel', 'nightrider', 'royal_guard', 'pigeon'],
+    pieceTypes: ['queen', 'rook', 'bishop', 'knight', 'pawn', 'chancellor', 'archbishop', 'elephant', 'camel', 'nightrider', 'royal_guard', 'pigeon', 'cannon'],
     cooldown: 1,
     getTargets: (state, piece) =>
       (state.tempoTokens[piece.color] ?? 0) < MAX_TEMPO_TOKENS ? [piece.square] : [],

@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 60 built, 40 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 61 built, 39 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -77,7 +77,7 @@ Every 5 rounds, one random empty tile becomes Infected. A piece standing on an I
 
 - Synergy: It's Dark And I'm Scared. Hidden infected tiles are catastrophic.
 - Conflict: The Floor Is Lava. Infection cannot spread onto Lava.
-- Ruling: rooks, bishops, queens and chancellors lose reach. Pawns lose their double step. Knights, kings, leapers (Pigeons, Elephants, Camels) and Nightriders are not slowed. Moving the piece resets its count. The slowed piece shows its reach on its square.
+- Ruling: rooks, bishops, queens, chancellors and cannons lose reach. Pawns lose their double step. Knights, kings, leapers (Pigeons, Elephants, Camels) and Nightriders are not slowed. Moving the piece resets its count. The slowed piece shows its reach on its square.
 - Ruling: lava burns infection away.
 
 ### MOD-A002 · The Floor Is Lava
@@ -245,7 +245,7 @@ A statue of Gerald stands on e4. Nothing can land on it or pass through it. A pi
 *They built him a statue. Gerald has been sitting on it since the ribbon was cut.*
 
 - Ruling: the statue cannot be captured. Like any piece, it blocks lines, including lines of check.
-- Ruling: a piece pushes only along a line it moves on: King, Queen and Royal Guard any way, Rook and Chancellor straight, Bishop and Archbishop diagonally, a pawn only straight ahead. Knights and other leapers cannot push it.
+- Ruling: a piece pushes only along a line it moves on: King, Queen and Royal Guard any way, Rook, Chancellor and Cannon straight, Bishop and Archbishop diagonally, a pawn only straight ahead. Knights and other leapers cannot push it.
 - Ruling: if e4 is taken at the start, the statue stands on d4, e5 or d5 instead.
 - Ruling: the pushing piece stays where it is. The statue cannot be pushed onto a piece, Lava, the storm or off the board.
 - Ruling: a push may not leave your King in check. A piece Gerald (Distracted Piece) is holding, or a frozen or stuck piece, cannot push.
@@ -512,7 +512,7 @@ Every 10 of your moves, your rooks and Queen go on lunch. On your next move they
 - Built: lunch is your 11th, 21st, 31st move and so on. The sign goes up in the feed at the start of the move before (your 10th, 20th, ...). Your moves include passes and skipped turns.
 - Built: at lunch, rooks and Queen cannot move or use their abilities, and you cannot castle, because the rook would move. Shooing Gerald is still allowed.
 - Ruling: never a softlock. If only rooks and Queen could move, lunch is waived.
-- Built: the Chancellor (Equivalent Exchange) replaced a rook, so it goes to lunch too. An Amazon is still a Queen.
+- Built: the Chancellor (Equivalent Exchange) and the Cannon (Overseas Hire) replaced a rook, so they go to lunch too. An Amazon is still a Queen.
 - Built: the feed says so again at the start of the lunch move.
 - Interaction: Moneyball. A drop is the King's ability, so you may drop a rook or Queen at lunch. It does not move until after lunch.
 - Interaction: Commitment Issues. At lunch a rook or Queen cannot be touched.
@@ -1020,6 +1020,7 @@ The owner's queen becomes a Royal Guard and a second Guard stands on their third
 One random rook becomes The Chancellor. Each move it moves like a rook or like a knight. That side loses castling on the Chancellor side.
 
 - Changed from v0.2: the rook is picked at random. Castling on that side is lost.
+- Conflict: Overseas Hire (The Cannon). Both change a random rook, so one side cannot draft both.
 
 ### MOD-E005 · Twin Telepathy (We Share One Brain)
 *Ref: twin telepathy trend* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
@@ -1111,13 +1112,18 @@ One of your rooks becomes a Grasshopper. It moves along any queen line but must 
 - Ruling: with nothing to hop over, a Grasshopper cannot move. It still gives check by hopping.
 
 ### MOD-E013 · Overseas Hire (The Cannon)
-*Ref: Xiangqi, Chinese chess* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Xiangqi, Chinese chess* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
-One of your rooks becomes a Cannon. It moves like a rook, but captures only by jumping over exactly one piece on its line to take the next one.
+One of your rooks becomes a Cannon. It moves like a rook, but captures only by jumping over exactly one piece on its line to take the next one. That side loses castling on the Cannon side.
 
 *The cannon arrived from abroad. It brought its own rules. It is very proud of them.*
 
 - Ruling: the Cannon gives check only through a screen piece, like in xiangqi.
+- Built: one random rook becomes the Cannon (seeded). That side loses castling on the Cannon side. Ghost rooks are never picked.
+- Built: the screen can be any piece of either colour. Only the next piece behind it can be taken, and only if it is an enemy. It never hops two screens and never hops a void square (the Statue, vents, the Storm).
+- Built: the Cannon threatens the squares past a screen, not the squares it can only slide to. A King may not step onto a threatened square or castle through one, and moving a piece onto the line between an enemy Cannon and your King is illegal when it makes a screen.
+- Built: a capture or slide that leaves your King in check is illegal (Core rule 2).
+- Conflict: Equivalent Exchange (The Chancellor). Both change a random rook, so one side cannot draft both.
 
 ### MOD-E014 · Crab Rave
 *Ref: Crab Rave* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1329,7 +1335,7 @@ Values the game uses today. "Built" cards match the build.
 | E010 | Holy Knight (The Archbishop) | E | A | 4 | 0 | Owner | Built |
 | E011 | Lawrence Of Arabia | E | B | 1 | 0 | Owner | Built |
 | E012 | Hopscotch | E | B | 2 | 0 | Owner | Design |
-| E013 | Overseas Hire (The Cannon) | E | A | 3 | 0 | Owner | Design |
+| E013 | Overseas Hire (The Cannon) | E | A | 3 | 0 | Owner | Built |
 | E014 | Crab Rave | E | A | 3 | 0 | Owner | Built |
 | E015 | Stonks | E | B | 2 | 0 | Owner | Built |
 | E016 | Hatchery | E | A | 3 | 0 | Owner | Built |
@@ -1338,7 +1344,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
-56 of 100 built. The other 44 are designs (v0.4).
+61 of 100 built. The other 39 are designs (v0.4).
 
 ### Balance test plan
 

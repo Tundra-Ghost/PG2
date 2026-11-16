@@ -1,6 +1,7 @@
 import type { Color, GameState, Piece, Square } from './types';
 import { MODIFIER_IDS } from '../modifiers/ids';
 import { statuePushMoves } from './statue';
+import { cannonAttacks, cannonMoves } from './hops';
 import { affectsColor } from '../modifiers/owner';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
@@ -274,6 +275,9 @@ function pieceMoves(state: GameState, piece: Piece): Square[] {
         ...slidingMoves(state, piece, [[1, 1], [1, -1], [-1, 1], [-1, -1]]),
         ...knightMoves(state, piece),
       ];
+    case 'cannon':
+      // MOD-E013: slides like a rook, captures only over exactly one screen
+      return cannonMoves(state, piece);
     case 'royal_guard':
       // MOD-E003: steps like a king, never castles, can be captured
       return stepMoves(state, piece);
@@ -301,6 +305,9 @@ export function getAttackSquares(state: GameState, color: Color): Set<Square> {
         const sq = toSquare(f + df, r + dir);
         if (sq) attacked.add(sq);
       }
+    } else if (piece.type === 'cannon') {
+      // MOD-E013: a Cannon's quiet slides threaten nothing; only squares past a screen do.
+      for (const sq of cannonAttacks(state, piece)) attacked.add(sq);
     } else {
       // For king/queen/rook/bishop/knight — use their move squares as attacks
       // (excluding castling moves from attack coverage)

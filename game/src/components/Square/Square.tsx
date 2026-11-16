@@ -70,6 +70,9 @@ function getPieceTooltipLines(
       ? 'Egg: Cannot move. Blocks like a piece and can be captured.'
       : `Egg: Cannot move. Hatches into a Pigeon after ${left} more of its side's moves.`);
   }
+  if (piece.type === 'cannon') {
+    lines.push('Cannon: Slides like a rook. Captures only by jumping exactly one piece to take the next one.');
+  }
   if (piece.type === 'nightrider') {
     lines.push('Nightrider: Repeats one knight jump in a straight line over empty landing squares.');
   }

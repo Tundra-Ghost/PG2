@@ -20,6 +20,7 @@ function needsDarkFirst(cardId: string, ownIds: string[], otherIds: string[]): b
  * Run, Forrest, Run would let a Heavy Is The Crown King skip its order.
  * Peer Pressure and Main Character Syndrome demand different pieces on the
  * same move, and so does Roll For Initiative with either. Yeah, There Are Three Of Them (Three Kings) has no Queen, so Main Character Syndrome would be free.
+ * Overseas Hire and The Chancellor could both pick the same rook.
  */
 const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.slayQueen, MODIFIER_IDS.threeKings],
@@ -39,6 +40,7 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.mainCharacterSyndrome, MODIFIER_IDS.threeKings],
   [MODIFIER_IDS.rollForInitiative, MODIFIER_IDS.peerPressure],
   [MODIFIER_IDS.rollForInitiative, MODIFIER_IDS.mainCharacterSyndrome],
+  [MODIFIER_IDS.overseasHire, MODIFIER_IDS.chancellor],
 ];
 
 /** The card in your draft that rules this one out, if any. */

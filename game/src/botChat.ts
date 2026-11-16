@@ -167,7 +167,7 @@ function classifyCapture(pieceType: PieceType): ReactionEventKey {
   if (pieceType === 'queen') return 'lost_queen';
   if (pieceType === 'rook' || pieceType === 'chancellor' || pieceType === 'archbishop') return 'lost_major';
   if (pieceType === 'bishop' || pieceType === 'knight' || pieceType === 'elephant' || pieceType === 'camel') return 'lost_minor';
-  if (pieceType === 'nightrider') return 'lost_major';
+  if (pieceType === 'nightrider' || pieceType === 'cannon') return 'lost_major';
   return 'lost_pawn';
 }
 
