@@ -53,6 +53,7 @@ export const MODIFIER_IDS = {
   hatchery: 'MOD-E016',
   peerPressure: 'MOD-B019',
   commitmentIssues: 'MOD-B015',
+  mainCharacterSyndrome: 'MOD-B010',
   zergRush: 'MOD-E018',
   stonks: 'MOD-E015',
 } as const;
