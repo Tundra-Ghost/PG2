@@ -55,11 +55,25 @@ describe('MOD-B011 Case Of The Mondays', () => {
       ['d2', 'd3'], ['d7', 'd6'], ['a2', 'a3'], ['a7', 'a6'],
     ]);
     expect(isMonday(state, 'white')).toBe(true);
-    state = play(state, [['h2', 'h3']]);
+    state = play(state, [['h2', 'h3'], ['h7', 'h6']]);
+    expect(isMonday(state, 'white')).toBe(false);
     expect(state.eventHistory[state.eventHistory.length - 1]?.modifierId).toBe(MONDAYS);
+    // Announced once, even if the turn is begun again.
+    const count = state.eventHistory.filter(e => e.modifierId === MONDAYS).length;
+    expect(chessEngine.beginTurn(state).eventHistory.filter(e => e.modifierId === MONDAYS).length).toBe(count);
+    expect(chessEngine.validateMove(state, move('c1', 'h6', 'white')).valid).toBe(true);
+  });
+
+  it('a pass on your 6th move still ends Monday with a message', () => {
+    let state = startWith();
+    state = play(state, [
+      ['e2', 'e4'], ['e7', 'e5'], ['g1', 'f3'], ['b8', 'c6'], ['b1', 'c3'], ['g8', 'f6'],
+      ['d2', 'd3'], ['d7', 'd6'], ['a2', 'a3'], ['a7', 'a6'],
+    ]);
+    state = chessEngine.passTurn(state);
     state = play(state, [['h7', 'h6']]);
     expect(isMonday(state, 'white')).toBe(false);
-    expect(chessEngine.validateMove(state, move('c1', 'h6', 'white')).valid).toBe(true);
+    expect(state.eventHistory[state.eventHistory.length - 1]?.message).toMatch(/coffee/);
   });
 
   it('castling is allowed', () => {

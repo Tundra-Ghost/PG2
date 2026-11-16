@@ -444,9 +444,9 @@ For your first 6 moves, none of your pieces may move more than 2 squares.
 
 - Ruling: knights are unaffected; a knight jump counts as 2 squares.
 - Ruling: castling is allowed. The King moves 2 squares, which is fine.
-- Built: a move's length is counted like a King walks: the larger of files and ranks crossed. A camel or elephant leap is 3 or more, so it waits until Tuesday.
+- Built: a move's length is counted like a King walks: the larger of files and ranks crossed. A camel leap is 3, so it waits until Tuesday. An elephant jump is 2, so it is fine.
 - Built: abilities are not limited. They are not ordinary moves.
-- Built: the feed says when Monday is over, after your 6th move. Your moves include passes and skipped turns.
+- Built: the feed says when Monday is over, at the start of your 7th move. Your moves include passes and skipped turns.
 - Ruling: in check, any legal move is allowed.
 - Ruling: never a softlock. If no short move exists, any legal move is allowed.
 - Interaction: Main Character Syndrome and Peer Pressure. Mondays is checked first, so a Queen demand asks for a short Queen move. Pawn captures are always 1 square.

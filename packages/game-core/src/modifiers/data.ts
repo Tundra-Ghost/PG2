@@ -516,7 +516,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'For your first 6 moves, none of your pieces may move more than 2 squares.',
     flavor: '"It is round one. Viktor\'s bishop has not had its coffee."',
     prototypeRules:
-      'For your first 6 moves, no piece may move more than 2 squares in any direction. A knight jump and castling count as 2, so both are fine. Abilities are not limited. In check, or if no short move exists, any legal move is allowed. The feed says when Monday is over.',
+      'For your first 6 moves, no piece may move more than 2 squares in any direction. A knight jump and castling count as 2, so both are fine. Abilities are not limited. In check, or if no short move exists, any legal move is allowed. The feed says when Monday is over, at the start of your 7th move.',
   },
   {
     id: 'MOD-B012',

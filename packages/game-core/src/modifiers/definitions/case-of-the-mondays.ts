@@ -1,6 +1,6 @@
 import type { ModifierDefinition } from '../types';
 import type { Color, GameState, Move } from '../../engine/types';
-import { appendGameEvent } from '../../engine/gameLoop';
+import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { MODIFIER_IDS } from '../ids';
 import { affectsColor, ownMoveNumber } from '../owner';
 import { getBindingMoveRule, moveRuleHooks, registerMoveRule } from '../move-rules';
@@ -50,10 +50,17 @@ export const caseOfTheMondaysDef: ModifierDefinition = {
   draftScope: 'owned',
   ...moveRuleHooks(ID),
 
-  onPostMove(state, move) {
-    const color = move.playerColor;
-    if (!affectsColor(state, ID, color) || ownMoveNumber(state, color) !== MONDAY_MOVES) return state;
-    return appendGameEvent(state, {
+  // Announced at the start of your 7th move, so a pass on the 6th still gets it.
+  onTurnStart(state) {
+    const color = state.turn;
+    if (state.status !== 'active' || !affectsColor(state, ID, color)) return state;
+    if (ownMoveNumber(state, color) !== MONDAY_MOVES + 1) return state;
+    // beginTurn can run twice for one turn (a reload); announce once.
+    const done = (state.modifierState[ID] as { overAt?: Partial<Record<Color, true>> } | undefined)?.overAt ?? {};
+    if (done[color]) return state;
+    const next = cloneState(state);
+    next.modifierState = { ...next.modifierState, [ID]: { overAt: { ...done, [color]: true } } };
+    return appendGameEvent(next, {
       ply: state.moveHistory.length + 1,
       type: 'modifier',
       modifierId: ID,
