@@ -1,8 +1,9 @@
 import type { ModifierDefinition } from '../types';
 import type { GameState, Piece, Square } from '../../engine/types';
 import { appendGameEvent, applyMoveInternal, cloneState } from '../../engine/gameLoop';
-import { isInCheck, isVoidSquare } from '../../engine/moveGenerator';
+import { isSquareAttacked, isVoidSquare } from '../../engine/moveGenerator';
 import { MODIFIER_IDS } from '../ids';
+import { isRotting } from './cordyceptic-spread';
 
 const ID = MODIFIER_IDS.runForrestRun;
 
@@ -24,26 +25,23 @@ function open(state: GameState, sq: Square): boolean {
   return !state.pieces.has(sq) && !isVoidSquare(state, sq);
 }
 
-/** True when the King standing on `sq` would be in check. */
-function attackedFor(state: GameState, king: Piece, sq: Square): boolean {
-  const probe = cloneState(state);
-  probe.pieces.delete(king.square);
-  probe.pieces.set(sq, { ...king, square: sq });
-  return isInCheck(probe, king.color);
-}
-
 /**
  * Squares two steps away in a straight line, where both squares are empty
  * and the middle one is not attacked. The engine rejects an end square that
- * leaves the King in check.
+ * leaves the King in check. A King slowed by infection cannot run.
  */
 export function getRunTargets(state: GameState, king: Piece): Square[] {
+  if (isRotting(state, king.square)) return [];
+  // Attacks are judged with the King gone, so it cannot shield its own path.
+  const probe = cloneState(state);
+  probe.pieces.delete(king.square);
+  const opponent = king.color === 'white' ? 'black' : 'white';
   const targets: Square[] = [];
   for (const [df, dr] of DIRECTIONS) {
     const mid = offset(king.square, df, dr);
     const end = offset(king.square, 2 * df, 2 * dr);
     if (!mid || !end || !open(state, mid) || !open(state, end)) continue;
-    if (attackedFor(state, king, mid)) continue;
+    if (isSquareAttacked(probe, mid, opponent)) continue;
     targets.push(end);
   }
   return targets;

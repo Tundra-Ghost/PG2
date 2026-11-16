@@ -110,6 +110,20 @@ describe('MOD-C014 Run, Forrest, Run', () => {
     state = { ...state, tiles: new Map(state.tiles).set('a1', { ...tile, isVoid: true }) };
     expect(runTargets(state, 'c3')).not.toContain('a1');
     expect(runTargets(state, 'c3')).toContain('a3');
+    const tileB = state.tiles.get('b3') ?? { square: 'b3' as Square, effects: [] };
+    state = { ...state, tiles: new Map(state.tiles).set('b3', { ...tileB, isVoid: true }) };
+    expect(runTargets(state, 'c3')).not.toContain('a3');
+    expect(runTargets(state, 'c3')).toContain('c1');
+  });
+
+  it('cannot run while slowed by infection', () => {
+    const state = withRun([makePiece('king', 'white', 'd4', 'runner'), makePiece('king', 'black', 'h8')]);
+    state.activeModifiers.push({ id: MODIFIER_IDS.cordycepticSpread, name: 'The Cordyceptic Spread', activeFor: 'both', sourceColor: null });
+    state.tiles.set('d4', { square: 'd4', effects: [{ type: 'infected', turnsRemaining: -1 }] });
+    expect(runTargets(state, 'd4')).toContain('d6');
+    state.modifierState[MODIFIER_IDS.cordycepticSpread] = { rot: { runner: 1 } };
+    expect(runTargets(state, 'd4')).toEqual([]);
+    expect(chessEngine.validateMove(state, move('d4', 'd6', 'white', { ability: RUN })).valid).toBe(false);
   });
 
   it('cannot be drafted by the same side as Heavy Is The Crown', () => {

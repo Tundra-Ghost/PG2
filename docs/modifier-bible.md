@@ -655,6 +655,7 @@ Select your King and press Run. It runs two squares in a straight line, if both 
 - Ruling: allowed in check, as long as it ends out of check. It may not run through an attacked square.
 - Ruling: any straight line: rank, file or diagonal. No capture. It cannot enter or cross storm squares.
 - Ruling: running ends castling rights, like any King move.
+- Ruling: a King slowed by The Cordyceptic Spread cannot run.
 - Conflict: Heavy Is The Crown. A run would skip the order step, so one side cannot draft both.
 - King review: the King only gains movement. Core rule 1 holds.
 - Changed from design: the design gave no cooldown; the build uses 10 of your moves.
