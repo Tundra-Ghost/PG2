@@ -4,10 +4,19 @@ import styles from './LeaveMatchDialog.module.css';
 interface LeaveMatchDialogProps {
   onLeave: () => void;
   onStay: () => void;
+  heading?: string;
+  text?: string;
+  leaveLabel?: string;
 }
 
-/** Asks before leaving a match that would count as a loss. */
-export default function LeaveMatchDialog({ onLeave, onStay }: LeaveMatchDialogProps) {
+/** Asks before leaving a match that would count as a loss. Also asks before abandoning a saved game. */
+export default function LeaveMatchDialog({
+  onLeave,
+  onStay,
+  heading = 'Leave this match?',
+  text = 'It will count as a loss.',
+  leaveLabel = 'Leave',
+}: LeaveMatchDialogProps) {
   const stayRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -30,11 +39,11 @@ export default function LeaveMatchDialog({ onLeave, onStay }: LeaveMatchDialogPr
         aria-describedby="leave-match-text"
         onClick={event => event.stopPropagation()}
       >
-        <h2 id="leave-match-title" className={styles.heading}>Leave this match?</h2>
-        <p id="leave-match-text" className={styles.text}>It will count as a loss.</p>
+        <h2 id="leave-match-title" className={styles.heading}>{heading}</h2>
+        <p id="leave-match-text" className={styles.text}>{text}</p>
         <div className={styles.actions}>
           <button ref={stayRef} className={styles.stay} onClick={onStay}>Keep playing</button>
-          <button className={styles.leave} onClick={onLeave}>Leave</button>
+          <button className={styles.leave} onClick={onLeave}>{leaveLabel}</button>
         </div>
       </div>
     </div>

@@ -56,6 +56,14 @@ export interface SavedBotGame {
   draft?: DraftSnapshot;
   /** Set once the match has started. */
   match?: SavedMatch;
+  /** For the Ongoing games list only. The replay never reads it. */
+  summary?: SavedSummary;
+}
+
+export interface SavedSummary {
+  turn: 'white' | 'black';
+  /** Moves played so far (plies). */
+  moves: number;
 }
 
 type KeyValueStore = Pick<Storage, 'getItem' | 'setItem'>;

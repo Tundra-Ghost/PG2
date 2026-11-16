@@ -1,0 +1,198 @@
+/* Ongoing games: the same light card as Friends and the Online lobby. */
+.root {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background-color: #e5edf7;
+  background-image: radial-gradient(ellipse 90% 80% at 50% 45%, rgb(var(--gold-rgb) / 0.08), transparent 70%);
+}
+
+.card {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.75rem;
+  background: #ffffff;
+  border: 1px solid rgb(var(--gold-rgb) / 0.25);
+  box-shadow: 0 24px 52px rgba(16, 37, 66, 0.12);
+}
+
+.back {
+  align-self: flex-start;
+  min-height: 44px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: rgb(var(--gold-rgb));
+  cursor: pointer;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--ui-gold);
+}
+
+.lede {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: #3d5470;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.primary {
+  min-height: 44px;
+  padding: 0 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: var(--ui-gold);
+  border: 1px solid var(--ui-gold);
+  cursor: pointer;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.row {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid rgb(var(--gold-rgb) / 0.25);
+  background: #f6f9fd;
+}
+
+.resume {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.8rem;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+
+.resume:hover {
+  background: rgb(var(--gold-rgb) / 0.06);
+}
+
+.resume:focus-visible,
+.abandon:focus-visible,
+.back:focus-visible,
+.primary:focus-visible {
+  outline: 3px solid var(--ui-gold-light);
+  outline-offset: -3px;
+}
+
+.portrait {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #dfe8f3;
+  font-family: var(--font-display);
+  font-weight: 900;
+  color: var(--ui-gold);
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
+.info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.topLine {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.6rem;
+}
+
+.opponent {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #102542;
+}
+
+.status,
+.yourMove {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.status {
+  color: #3d5470;
+}
+
+.yourMove {
+  font-weight: 700;
+  color: #1d5c00;
+}
+
+.meta,
+.mods {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: #3d5470;
+  overflow-wrap: anywhere;
+}
+
+.mods {
+  color: #102542;
+}
+
+.abandon {
+  flex-shrink: 0;
+  min-width: 44px;
+  padding: 0 0.8rem;
+  background: transparent;
+  border: none;
+  border-left: 1px solid rgb(var(--gold-rgb) / 0.2);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a12a20;
+  cursor: pointer;
+}
+
+.abandon:hover {
+  background: rgb(184 50 40 / 0.08);
+}
