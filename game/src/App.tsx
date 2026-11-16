@@ -77,6 +77,26 @@ function initialScreen(): Screen {
   return OPENED_ON === 'game' || OPENED_ON === 'draft' ? 'menu' : OPENED_ON;
 }
 
+/** Which saved game this tab is showing, so a reload resumes that one and not another tab's. */
+const TAB_SAVE_KEY = 'pigeon-chess-tab-save';
+
+function readTabSave(): string | null {
+  try {
+    return sessionStorage.getItem(TAB_SAVE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function writeTabSave(id: string | null): void {
+  try {
+    if (id) sessionStorage.setItem(TAB_SAVE_KEY, id);
+    else sessionStorage.removeItem(TAB_SAVE_KEY);
+  } catch {
+    // Storage blocked: a reload opens the menu.
+  }
+}
+
 /** The match on the board and every action that led to it, which is what gets saved. */
 interface MatchLog {
   state: GameState;
@@ -194,6 +214,10 @@ export default function App() {
   screenRef.current = screen;
   const prevScreenRef = useRef(prevScreen);
   prevScreenRef.current = prevScreen;
+  const forgetSaveRef = useRef(forgetCurrentSave);
+  forgetSaveRef.current = forgetCurrentSave;
+  const openDraftRef = useRef(openDraft);
+  openDraftRef.current = openDraft;
   const abandonRef = useRef(commitAbandonmentIfNeeded);
   abandonRef.current = () => {
     commitAbandonmentIfNeeded();
@@ -237,6 +261,8 @@ export default function App() {
       leaveConfirmed.current = false;
       // Leaving a match by Back counts the same as the Menu button.
       if (current === 'game' && next !== 'game') abandonRef.current();
+      // Leaving a draft by Back drops it, the same as its own Back button.
+      if (current === 'draft' && next !== 'draft' && next !== 'game') forgetSaveRef.current();
       // A finished or left match, or a draft with no opponent, can't be reopened.
       if ((next === 'game' && current !== 'game') || (next === 'draft' && !selectedBotRef.current)) {
         next = 'menu';
@@ -245,7 +271,9 @@ export default function App() {
       if (next === 'settings') setPrevScreen(current);
       settingsPushed.current = false;
       lastScreen.current = next;
-      setScreen(next);
+      // Forward into a draft that was left starts a fresh, saved one.
+      if (next === 'draft' && current !== 'draft') openDraftRef.current();
+      else setScreen(next);
     };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
@@ -390,13 +418,15 @@ export default function App() {
   const resumeRef = useRef(resumeSavedGame);
   resumeRef.current = resumeSavedGame;
 
-  // A reload on a match or draft address picks up the last saved bot game.
+  // A reload on a match or draft address picks up the game this tab was showing.
   useEffect(() => {
     if (OPENED_ON !== 'game' && OPENED_ON !== 'draft') return;
-    for (const save of readSavedGames()) {
-      if (resumeRef.current(save)) return;
-    }
+    const id = readTabSave();
+    const save = id ? readSavedGames().find(saved => saved.id === id) : undefined;
+    if (save) resumeRef.current(save);
   }, []);
+  // Declared after the resume, so the resume reads the old value first.
+  useEffect(() => writeTabSave(saveId), [saveId]);
 
   /** Opens a fresh draft against the selected bot, saved under a new id. */
   function openDraft() {

@@ -52,7 +52,20 @@ function playLogged(start: GameState, plies: number): { state: GameState; action
 }
 
 function snapshot(state: GameState) {
+  // Piece ids are fresh each build, so name pieces by where they stand instead.
+  const names = new Map([...state.pieces.values()].map(p => [p.id, `${p.color}-${p.type}@${p.square}`]));
+  // Captured pieces are gone from the board: number those by first appearance.
+  let gone = 0;
+  const hidden = JSON.stringify(state.modifierState).replace(
+    /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g,
+    id => {
+      if (!names.has(id)) names.set(id, `gone-${gone++}`);
+      return names.get(id)!;
+    },
+  );
   return {
+    hidden,
+    events: state.eventHistory.map(event => JSON.stringify({ ...event, id: undefined })),
     id: state.id,
     turn: state.turn,
     status: state.status,
@@ -80,6 +93,16 @@ describe('saved bot games', () => {
     });
     expect(rebuilt).not.toBeNull();
     expect(snapshot(rebuilt!)).toEqual(snapshot(state));
+  });
+
+  it('rebuilds a Sus match with the same disguised piece', () => {
+    const mods = [MODIFIER_IDS.sus, MODIFIER_IDS.bigBeak];
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const start = startMatchState('sus', seed, mods, [MODIFIER_IDS.sus]);
+      const { state, actions } = playLogged(start, 20);
+      const rebuilt = rebuildMatch('sus', { prngSeed: seed, playerModifierIds: mods, botModifierIds: [MODIFIER_IDS.sus], actions });
+      expect(snapshot(rebuilt!)).toEqual(snapshot(state));
+    }
   });
 
   it('survives a trip through JSON', () => {
