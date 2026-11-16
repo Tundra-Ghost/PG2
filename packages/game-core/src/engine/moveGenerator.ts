@@ -1,7 +1,7 @@
 import type { Color, GameState, Piece, Square } from './types';
 import { MODIFIER_IDS } from '../modifiers/ids';
 import { statuePushMoves } from './statue';
-import { cannonAttacks, cannonMoves } from './hops';
+import { cannonAttacks, cannonMoves, grasshopperMoves } from './hops';
 import { affectsColor } from '../modifiers/owner';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
@@ -278,6 +278,9 @@ function pieceMoves(state: GameState, piece: Piece): Square[] {
     case 'cannon':
       // MOD-E013: slides like a rook, captures only over exactly one screen
       return cannonMoves(state, piece);
+    case 'grasshopper':
+      // MOD-E012: hops exactly one piece on a queen line, landing right behind it
+      return grasshopperMoves(state, piece);
     case 'royal_guard':
       // MOD-E003: steps like a king, never castles, can be captured
       return stepMoves(state, piece);

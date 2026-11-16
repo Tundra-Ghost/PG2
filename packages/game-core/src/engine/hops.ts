@@ -84,3 +84,19 @@ export function cannonMoves(state: GameState, piece: Piece): Square[] {
   }
   return [...result, ...cannonAttacks(state, piece, true)];
 }
+
+/**
+ * Grasshopper moves: along any queen line, hop the first piece and land on
+ * the square right behind it, capturing an enemy there. With nothing to hop,
+ * it cannot move that way. Its moves are also the squares it threatens.
+ */
+export function grasshopperMoves(state: GameState, piece: Piece): Square[] {
+  const result: Square[] = [];
+  for (const [df, dr] of QUEEN_DIRS) {
+    const landing = hopLanding(state, piece.square, df, dr);
+    if (!landing) continue;
+    const occupant = state.pieces.get(landing);
+    if (!occupant || occupant.color !== piece.color) result.push(landing);
+  }
+  return result;
+}

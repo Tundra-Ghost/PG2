@@ -63,6 +63,7 @@ import { runForrestRunDef } from './definitions/run-forrest-run';
 import { freakyFridayDef } from './definitions/freaky-friday';
 import { getOffMyLawnDef } from './definitions/get-off-my-lawn';
 import { overseasHireDef } from './definitions/overseas-hire';
+import { hopscotchDef } from './definitions/hopscotch';
 import { monumentToGeraldDef } from './definitions/monument-to-gerald';
 
 modifierRegistry.register(floorIsLavaDef);
@@ -126,3 +127,4 @@ modifierRegistry.register(freakyFridayDef);
 modifierRegistry.register(getOffMyLawnDef);
 modifierRegistry.register(monumentToGeraldDef);
 modifierRegistry.register(overseasHireDef);
+modifierRegistry.register(hopscotchDef);
