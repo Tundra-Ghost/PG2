@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 55 built, 45 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 56 built, 44 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -238,13 +238,18 @@ A robot vacuum travels clockwise around the outer ring of the board, one square 
 - Synergy: The Storm Closes In. Once the storm takes the edge, the Roomba parks itself.
 
 ### MOD-A016 · Monument To Gerald
-*Ref: Pigeons and statues, forever* · **Tier B** · Cost 1 · Curse 0 · Scope: Shared · Modes: All · **Design**
+*Ref: Pigeons and statues, forever* · **Tier B** · Cost 1 · Curse 0 · Scope: Shared · Modes: All · **Built**
 
 A statue of Gerald stands on e4. Nothing can land on it or pass through it. A piece moving into it from an adjacent square pushes it one square the same way, if that square is empty. The push is the whole move.
 
 *They built him a statue. Gerald has been sitting on it since the ribbon was cut.*
 
 - Ruling: the statue cannot be captured. Like any piece, it blocks lines, including lines of check.
+- Ruling: a piece pushes only along a line it moves on: King, Queen and Royal Guard any way, Rook and Chancellor straight, Bishop and Archbishop diagonally, a pawn only straight ahead. Knights and other leapers cannot push it.
+- Ruling: the pushing piece stays where it is. The statue cannot be pushed onto a piece, Lava, the storm or off the board.
+- Ruling: a push may not leave your King in check. A piece Gerald (Distracted Piece) is holding, or a frozen or stuck piece, cannot push.
+- Ruling: castling cannot pass through the statue. Gravity cannot move it; a piece that slides into it stops. The storm swallows it if it is caught on a storm square.
+- Ruling: where the statue stands is part of the position for repetition.
 - Synergy: Distracted Piece. Gerald is now in two places. Nobody can explain this.
 
 ### MOD-A017 · Tide Goes In, Tide Goes Out
@@ -1225,7 +1230,7 @@ Values the game uses today. "Built" cards match the build.
 | A013 | The Magic Roundabout | A | B | 2 | 0 | Shared | Design |
 | A014 | Minesweeper | A | A | 3 | 1 | Shared | Design |
 | A015 | The Roomba | A | B | 2 | 0 | Shared | Design |
-| A016 | Monument To Gerald | A | B | 1 | 0 | Shared | Design |
+| A016 | Monument To Gerald | A | B | 1 | 0 | Shared | Built |
 | A017 | Tide Goes In, Tide Goes Out | A | A | 3 | 1 | Shared | Design |
 | A018 | Shake It Off | A | S | 4 | 2 | Shared | Design |
 | A019 | Crop Circles | A | B | 2 | 0 | Shared | Design |
@@ -1279,7 +1284,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
-55 of 100 built. The other 45 are designs (v0.4).
+56 of 100 built. The other 44 are designs (v0.4).
 
 ### Balance test plan
 

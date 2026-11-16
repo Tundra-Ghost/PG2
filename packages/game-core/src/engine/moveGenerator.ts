@@ -1,5 +1,6 @@
 import type { Color, GameState, Piece, Square } from './types';
 import { MODIFIER_IDS } from '../modifiers/ids';
+import { statuePushMoves } from './statue';
 import { affectsColor } from '../modifiers/owner';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
@@ -83,7 +84,9 @@ function kingMoves(state: GameState, piece: Piece): Square[] {
         rookPresent.type === 'rook' &&
         rookPresent.color === piece.color &&
         !state.pieces.has(f1) &&
-        !state.pieces.has(g1)
+        !state.pieces.has(g1) &&
+        !isVoidSquare(state, f1) &&
+        !isVoidSquare(state, g1)
       ) {
         result.push(g1);
       }
@@ -101,7 +104,10 @@ function kingMoves(state: GameState, piece: Piece): Square[] {
         rookPresent.color === piece.color &&
         !state.pieces.has(d1) &&
         !state.pieces.has(c1) &&
-        !state.pieces.has(b1)
+        !state.pieces.has(b1) &&
+        !isVoidSquare(state, d1) &&
+        !isVoidSquare(state, c1) &&
+        !isVoidSquare(state, b1)
       ) {
         result.push(c1);
       }
@@ -220,7 +226,8 @@ function pawnMoves(state: GameState, piece: Piece): Square[] {
  * Used by moveValidator Stage 4 and checkmate/stalemate detection.
  */
 export function getLegalMovesForPiece(state: GameState, piece: Piece): Square[] {
-  return pieceMoves(state, piece).filter(sq => !isVoidSquare(state, sq));
+  // MOD-A016: stepping into the statue pushes it (the piece stays put).
+  return [...pieceMoves(state, piece).filter(sq => !isVoidSquare(state, sq)), ...statuePushMoves(state, piece)];
 }
 
 function pieceMoves(state: GameState, piece: Piece): Square[] {
