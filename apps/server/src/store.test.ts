@@ -88,6 +88,22 @@ describe('saved rooms', () => {
     expect(new RoomManager(new FileStore(dir)).snapshot(roomId)).not.toBeNull();
   });
 
+  it('lists each side its own and its opponent\'s modifiers, and whether the draft runs', () => {
+    const rooms = new RoomManager(new FileStore(dir));
+    const created = rooms.create(undefined, { draft: true });
+    if (!created.ok) throw new Error(created.reason);
+    const joined = rooms.join(created.roomId);
+    if (!joined.ok) throw new Error(joined.reason);
+    expect(rooms.draftPick(created.roomId, 'white', 'MOD-B002')).toEqual({ ok: true });
+    expect(rooms.summaries([{ roomId: created.roomId, token: joined.token }])).toMatchObject([
+      { color: 'black', drafting: true, modifiers: { yours: [], theirs: ['MOD-B002'] } },
+    ]);
+    const plain = startedRoom(rooms);
+    expect(rooms.summaries([{ roomId: plain.roomId, token: plain.whiteToken }])).toMatchObject([
+      { drafting: false, modifiers: { yours: [], theirs: [] } },
+    ]);
+  });
+
   it('lists saved games only for seats with the right token', () => {
     const rooms = new RoomManager(new FileStore(dir));
     const { roomId, whiteToken } = startedRoom(rooms);

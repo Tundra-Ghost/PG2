@@ -51,6 +51,9 @@ import styles from './App.module.css';
 import { appBase, pathFor, screenFromPath, type Screen } from './routes';
 import { markTutorialSeen, stepForScreen, tutorialSeen, type TutorialStep } from './tutorial';
 import TutorialCoach from './components/TutorialCoach/TutorialCoach';
+import OngoingGames from './components/OngoingGames/OngoingGames';
+import { abandonCountsAsLoss, describeOnline, describeSeat, movesPlayed } from './ongoingGames';
+import { useOnlineGameList } from './online/useOnlineGameList';
 import {
   SAVE_VERSION,
   applyAction,
@@ -136,6 +139,10 @@ export default function App() {
   }, []);
   /** The saved game this match or draft is stored under. Also the match's state id. */
   const [saveId, setSaveId] = useState<string | null>(null);
+  /** Bot games in progress, for the menu and the Ongoing games list. */
+  const [ongoingGames, setOngoingGames] = useState<SavedBotGame[]>(() => readSavedGames());
+  /** Why a game just left the Ongoing list, shown there until the next tap. */
+  const [ongoingNotice, setOngoingNotice] = useState<string | null>(null);
   /** A saved draft to reopen, read once by the draft screen. */
   const [draftResume, setDraftResume] = useState<DraftSnapshot | null>(null);
   const [vsBot, setVsBot] = useState(false);
@@ -191,9 +198,13 @@ export default function App() {
   const [profile, setProfile] = useState<LocalProfile>(() => ensureProfile());
   const account = useAccount(profile, setProfile);
   const social = useSocial(account.account?.username ?? null);
+  /** Online games for the Ongoing list. Online play needs an account, so guests skip it. */
+  const onlineList = useOnlineGameList(screen === 'ongoing' && Boolean(account.account), account.account?.username ?? null);
   /** A room the Online screen should sit down in when it opens. */
   const [pendingRoomId, setPendingRoomId] = useState<string | null>(null);
   const clearPendingRoom = useCallback(() => setPendingRoomId(null), []);
+  /** Where the Online screen's Back goes: the Ongoing list when a game was opened from it. */
+  const [onlineBackTo, setOnlineBackTo] = useState<'menu' | 'ongoing'>('menu');
   /** The finished game the debrief is about, while it is open. */
   const [surveyFor, setSurveyFor] = useState<GameSurveyContext | null>(null);
   /** The finished game the result card offers a debrief for, until it is taken. */
@@ -214,12 +225,11 @@ export default function App() {
   screenRef.current = screen;
   const prevScreenRef = useRef(prevScreen);
   prevScreenRef.current = prevScreen;
-  const forgetSaveRef = useRef(forgetCurrentSave);
-  forgetSaveRef.current = forgetCurrentSave;
   const openDraftRef = useRef(openDraft);
   openDraftRef.current = openDraft;
   const abandonRef = useRef(commitAbandonmentIfNeeded);
   abandonRef.current = () => {
+    if (matchIsSaved()) return;
     commitAbandonmentIfNeeded();
     forgetCurrentSave();
   };
@@ -261,8 +271,6 @@ export default function App() {
       leaveConfirmed.current = false;
       // Leaving a match by Back counts the same as the Menu button.
       if (current === 'game' && next !== 'game') abandonRef.current();
-      // Leaving a draft by Back drops it, the same as its own Back button.
-      if (current === 'draft' && next !== 'draft' && next !== 'game') forgetSaveRef.current();
       // A finished or left match, or a draft with no opponent, can't be reopened.
       if ((next === 'game' && current !== 'game') || (next === 'draft' && !selectedBotRef.current)) {
         next = 'menu';
@@ -289,6 +297,11 @@ export default function App() {
     }
   }
 
+  // The menu's count follows saves made or removed elsewhere (a finished match, another tab).
+  useEffect(() => {
+    if (screen === 'menu' || screen === 'ongoing') setOngoingGames(readSavedGames());
+  }, [screen]);
+
   useEffect(() => {
     if (screen === 'game') {
       playGameBgm();
@@ -298,6 +311,8 @@ export default function App() {
   }, [screen]);
 
   useEffect(() => {
+    // Off the match screen the bot waits: a kept match must not move on unseen and unsaved.
+    if (screen !== 'game') return;
     if (!vsBot) return;
     if (!selectedBot) return;
     if (gameState.status !== 'active') return;
@@ -324,7 +339,7 @@ export default function App() {
       clearTimeout(timer);
       setBotThinking(false);
     };
-  }, [vsBot, selectedBot, gameState, act]);
+  }, [screen, vsBot, selectedBot, gameState, act]);
 
   // Save the bot match after every action, so a reload or a closed tab can pick it up.
   // A finished match is removed from the saves.
@@ -335,7 +350,7 @@ export default function App() {
       removeSavedGame(saveId);
       return;
     }
-    saveGame({
+    recordEvicted(saveGame({
       v: SAVE_VERSION,
       id: saveId,
       bot: selectedBot,
@@ -349,7 +364,8 @@ export default function App() {
         botModifierIds: pendingBotModifierIds,
         actions: match.actions,
       },
-    });
+      summary: { turn: match.state.turn, moves: match.state.moveHistory.length },
+    }));
   }, [
     match,
     screen,
@@ -366,7 +382,7 @@ export default function App() {
   /** Saves the bot draft as it changes. */
   function handleDraftChange(draft: DraftSnapshot) {
     if (!saveId || !selectedBot) return;
-    saveGame({
+    recordEvicted(saveGame({
       v: SAVE_VERSION,
       id: saveId,
       bot: selectedBot,
@@ -375,7 +391,7 @@ export default function App() {
       startedAt: currentMatchStartedAt,
       updatedAt: new Date().toISOString(),
       draft,
-    });
+    }));
   }
 
   /** Opens a saved bot game where it was left. Returns false if it could not be rebuilt. */
@@ -592,6 +608,8 @@ export default function App() {
    * player wants a confirm step. Returns true when it is asking.
    */
   function askLeave(way: 'menu' | 'new' | 'back'): boolean {
+    // A saved bot match is kept, not lost, when you leave it. Only New Game gives it up.
+    if (way !== 'new' && matchIsSaved()) return false;
     const ask = shouldAskBeforeLeaving({
       confirmResign: settings.confirmResign,
       hasProfile: Boolean(profile),
@@ -808,11 +826,54 @@ export default function App() {
   }
 
   function leaveToMenu() {
-    if (screen === 'game') {
+    if (screen === 'game' && !matchIsSaved()) {
       commitAbandonmentIfNeeded();
       forgetCurrentSave();
     }
     setScreen('menu');
+  }
+
+  /** The bot match on the board is saved, so leaving it keeps it in Ongoing games. */
+  function matchIsSaved(): boolean {
+    if (!vsBot || !saveId || gameState.id !== saveId || gameState.status !== 'active') return false;
+    return readSavedGames().some(saved => saved.id === saveId);
+  }
+
+  /** Gives up a saved game from the Ongoing list. A started match counts as a loss, as leaving one always has. */
+  function abandonSavedGame(save: SavedBotGame) {
+    recordAbandonLoss(save);
+    if (saveId === save.id) setSaveId(null);
+    setOngoingGames(removeSavedGame(save.id));
+  }
+
+  /** Started matches pushed out by the save limit count as abandoned, as leaving one used to. */
+  function recordEvicted(evicted: SavedBotGame[]) {
+    evicted.forEach(recordAbandonLoss);
+  }
+
+  function recordAbandonLoss(save: SavedBotGame) {
+    if (save.match && abandonCountsAsLoss(save, Boolean(profile), recordedCompletionIds.current)) {
+      const nextProfile = recordProfileMatchCompletion(profile, {
+        matchId: save.id,
+        playedAt: save.startedAt,
+        mode: save.matchMode,
+        opponentName: getBotSpeaker(save.bot)?.name ?? 'Opponent',
+        opponentType: 'bot',
+        result: 'loss',
+        outcome: 'abandoned',
+        moveCount: movesPlayed(save),
+        draftedModifierIds: save.match.playerModifierIds,
+      });
+      recordedCompletionIds.current.add(save.id);
+      setProfile(nextProfile);
+    }
+  }
+
+  function openOngoing() {
+    playClick();
+    setOngoingNotice(null);
+    setOngoingGames(readSavedGames());
+    setScreen('ongoing');
   }
 
   /** Attached to feedback so a report can be reproduced. */
@@ -894,14 +955,62 @@ export default function App() {
           onPuzzles={() => setScreen('puzzles')}
           onOnline={() => {
             playClick();
+            setOnlineBackTo('menu');
             setScreen('online');
           }}
           onFriends={() => setScreen('friends')}
           onLinkAccount={goToLinkAccount}
           onTutorial={() => setTutorialStep(0)}
+          onOngoing={openOngoing}
+          ongoingCount={ongoingGames.length}
           friendsBadge={social.unread + social.list.incoming.length}
           profile={profile}
           linked={Boolean(account.account) || !account.ready}
+        />
+        {settingsOverlay}
+      </div>
+    );
+  }
+
+  if (baseScreen === 'ongoing') {
+    return (
+      <div onClick={handleUnlock}>
+        <OngoingGames
+          games={ongoingGames}
+          notice={ongoingNotice}
+          online={
+            !account.account
+              ? []
+              : onlineList.status === 'ready'
+                ? onlineList.games.map(game => describeOnline(game))
+                : onlineList.status === 'offline'
+                  ? onlineList.seats.map(describeSeat)
+                  : []
+          }
+          onlineNote={
+            !account.account
+              ? null
+              : onlineList.status === 'offline' && onlineList.seats.length > 0
+                ? "Can't reach the server right now, so online games show without details."
+                : onlineList.status === 'loading'
+                  ? 'Checking your online games…'
+                  : null
+          }
+          onResumeOnline={roomId => {
+            setPendingRoomId(roomId);
+            setOnlineBackTo('ongoing');
+            setScreen('online');
+          }}
+          onResume={save => {
+            setOngoingNotice(null);
+            if (!resumeSavedGame(save)) {
+              setOngoingGames(readSavedGames());
+              setOngoingNotice(`The game against ${getBotSpeaker(save.bot)?.name ?? 'the bot'} was saved by an older version and could not be loaded, so it was removed.`);
+            }
+          }}
+          onAbandon={abandonSavedGame}
+          onBack={() => setScreen('menu')}
+          onPlay={() => handleMenuPlay('run')}
         />
         {settingsOverlay}
       </div>
@@ -952,6 +1061,7 @@ export default function App() {
           onSignIn={goToSettings}
           onPlay={roomId => {
             setPendingRoomId(roomId);
+            setOnlineBackTo('menu');
             setScreen('online');
           }}
         />
@@ -989,7 +1099,10 @@ export default function App() {
             setSettings(next);
           }}
           settings={settings}
-          onBack={() => setScreen('menu')}
+          onBack={() => {
+            setScreen(onlineBackTo);
+            setOnlineBackTo('menu');
+          }}
           onSettings={goToSettings}
         />
         {settingsOverlay}
@@ -1046,10 +1159,7 @@ export default function App() {
         <DraftScreen
           key={saveId ?? 'draft'}
           onStartMatch={handleStartMatch}
-          onBack={() => {
-            forgetCurrentSave();
-            setScreen('botselect');
-          }}
+          onBack={() => setScreen('botselect')}
           saved={draftResume ?? undefined}
           onDraftChange={handleDraftChange}
           opponentName={opponentName}

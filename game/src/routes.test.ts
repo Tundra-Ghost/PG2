@@ -9,7 +9,7 @@ describe('routes', () => {
   });
 
   it('round-trips every screen', () => {
-    for (const screen of ['menu', 'online', 'roost', 'botselect', 'game'] as const) {
+    for (const screen of ['menu', 'online', 'roost', 'botselect', 'game', 'ongoing'] as const) {
       expect(screenFromPath(pathFor(screen, '/play/'), '/play/')).toBe(screen);
     }
   });

@@ -56,6 +56,14 @@ export interface SavedBotGame {
   draft?: DraftSnapshot;
   /** Set once the match has started. */
   match?: SavedMatch;
+  /** For the Ongoing games list only. The replay never reads it. */
+  summary?: SavedSummary;
+}
+
+export interface SavedSummary {
+  turn: 'white' | 'black';
+  /** Moves played so far (plies). */
+  moves: number;
 }
 
 type KeyValueStore = Pick<Storage, 'getItem' | 'setItem'>;
@@ -142,12 +150,15 @@ function write(games: SavedBotGame[], store: KeyValueStore | null): void {
   }
 }
 
-/** Adds or replaces a save. Keeps the newest MAX_SAVED_GAMES. */
+/**
+ * Adds or replaces a save. Keeps the newest MAX_SAVED_GAMES and returns the
+ * ones pushed out, so a started match that is dropped can still count as abandoned.
+ */
 export function saveGame(game: SavedBotGame, store: KeyValueStore | null = storage()): SavedBotGame[] {
   const rest = readSavedGames(store).filter(saved => saved.id !== game.id);
-  const next = [game, ...rest].slice(0, MAX_SAVED_GAMES);
-  write(next, store);
-  return next;
+  const all = [game, ...rest];
+  write(all.slice(0, MAX_SAVED_GAMES), store);
+  return all.slice(MAX_SAVED_GAMES);
 }
 
 export function removeSavedGame(id: string, store: KeyValueStore | null = storage()): SavedBotGame[] {
