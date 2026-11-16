@@ -41,7 +41,7 @@ function toSquare(f: number, r: number): Square {
 
 /** Position-key letters where the first letter of the type would collide. */
 const POSITION_SYM: Partial<Record<PieceType, string>> = {
-  knight: 'N', pigeon: 'H', royal_guard: 'G', elephant: 'El', camel: 'Cm', nightrider: 'Nr',
+  knight: 'N', pigeon: 'H', royal_guard: 'G', elephant: 'El', camel: 'Cm', nightrider: 'Nr', egg: 'Eg',
 };
 
 /**
@@ -52,7 +52,9 @@ export function positionKey(state: GameState): string {
   // 1. Piece placement — sorted so Map iteration order doesn't matter
   const pieceTokens: string[] = [];
   for (const [sq, p] of state.pieces) {
-    const sym = POSITION_SYM[p.type] ?? p.type[0].toUpperCase();
+    let sym = POSITION_SYM[p.type] ?? p.type[0].toUpperCase();
+    // MOD-E016: an Egg's count is part of the position, so waiting for it is not repetition.
+    if (p.type === 'egg') sym += p.cooldowns[MODIFIER_IDS.hatchery] ?? '';
     pieceTokens.push(`${sq}:${p.color[0]}${sym}`);
   }
   pieceTokens.sort();
@@ -93,7 +95,7 @@ function isInsufficientMaterial(state: GameState): boolean {
 
   // K+B vs K  or  K+N vs K
   if (pieces.length === 3) {
-    const minor = pieces.find(p => p.type === 'bishop' || p.type === 'knight' || p.type === 'pigeon' || p.type === 'elephant' || p.type === 'camel');
+    const minor = pieces.find(p => p.type === 'bishop' || p.type === 'knight' || p.type === 'pigeon' || p.type === 'elephant' || p.type === 'camel' || p.type === 'egg');
     if (minor) return true;
   }
 
@@ -391,7 +393,7 @@ export function isStalemate(state: GameState, color: Color): boolean {
 
 /** Standard piece letter. Pawn = ''. Knight = 'N' (NOT 'K'). */
 const PIECE_SYM: Partial<Record<PieceType, string>> = {
-  king: 'K', queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: '', chancellor: 'C', archbishop: 'A', elephant: 'E', camel: 'L', nightrider: 'NN', royal_guard: 'G', pigeon: 'H',
+  king: 'K', queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: '', chancellor: 'C', archbishop: 'A', elephant: 'E', camel: 'L', nightrider: 'NN', egg: 'O', royal_guard: 'G', pigeon: 'H',
 };
 
 /** Promotion suffix letter. */

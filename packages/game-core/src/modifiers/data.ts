@@ -1248,7 +1248,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'Replace both Knights with Pigeon pieces. Pigeons move like Knights but every 5 turns each Pigeon announces (1 turn in advance) where it will autonomously hop — and then hops there regardless of your wishes.',
     flavor: '"The pigeons have opinions about their positioning. Viktor is negotiating. The pigeons are not."',
     prototypeRules:
-      'Your knights become Pigeons. They move like knights. Every 5 rounds each Pigeon picks a square and both players see it. One move later it hops there on its own and captures anything there. A hop never takes a king or leaves a king in check; if the square is no longer safe, the Pigeon stays put. Gerald will not sit on Pigeons.',
+      'Your knights become Pigeons. They move like knights. Every 5 rounds each of your Pigeons picks a square and both players see it. One move later it hops there on its own and captures anything there. A hop never takes a king or leaves a king in check; if the square is no longer safe, the Pigeon stays put. Gerald will not sit on Pigeons. A Pigeon from Hatchery, or one that changed sides, hops only if its side has this card.',
   },
   {
     id: 'MOD-E002',
@@ -1479,6 +1479,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'A pigeon Egg sits on your d3 square. It cannot move. If it survives 10 rounds, it hatches into a Pigeon, which moves like a knight.',
     flavor: '"Viktor is guarding an egg. The egg is the most important piece on the board. The egg disagrees."',
+    prototypeRules:
+      'An Egg sits on your d3 (d6 for Black), or the nearest empty square on that rank. It never moves and gives no check, but it blocks and can be captured. After 10 of your moves it hatches into a Pigeon that moves like a knight. The Egg shows the moves left. Cannot be drafted with The Small Council.',
   },
   {
     id: 'MOD-E017',

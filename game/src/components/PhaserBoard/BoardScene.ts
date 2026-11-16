@@ -266,13 +266,15 @@ export class BoardScene extends Phaser.Scene {
       // Sus: a ? badge so the owner knows which piece is disguised.
       const badgeMarks = view.susAs ? [...worn.marks, '?'] : worn.marks;
       badgeMarks.forEach((mark, i) => {
-        const bx = x + CELL - 21;
+        // Two-character marks (an Egg's count) get a wider badge.
+        const bw = mark.length > 1 ? 26 : 18;
+        const bx = x + CELL - 3 - bw;
         const by = y + 3 + i * 20;
         const hot = mark === 'B' ? 0x8a2410 : mark === '!' ? 0xc41e1e : 0xf5e8c0;
-        badges.fillStyle(hot, 0.97).fillRect(bx, by, 18, 18);
-        badges.lineStyle(1, 0x18120a, 0.5).strokeRect(bx, by, 18, 18);
+        badges.fillStyle(hot, 0.97).fillRect(bx, by, bw, 18);
+        badges.lineStyle(1, 0x18120a, 0.5).strokeRect(bx, by, bw, 18);
         this.labels.push(
-          this.add.text(bx + 9, by + 9, mark, {
+          this.add.text(bx + bw / 2, by + 9, mark, {
             fontFamily: MONO,
             fontSize: '12px',
             color: hot === 0xf5e8c0 ? '#18120a' : '#fff2de',

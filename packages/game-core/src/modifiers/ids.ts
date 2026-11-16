@@ -46,6 +46,7 @@ export const MODIFIER_IDS = {
   elephantInTheRoom: 'MOD-E020',
   lawrenceOfArabia: 'MOD-E011',
   knightRider: 'MOD-E019',
+  hatchery: 'MOD-E016',
   peerPressure: 'MOD-B019',
   commitmentIssues: 'MOD-B015',
   zergRush: 'MOD-E018',

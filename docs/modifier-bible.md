@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 51 built, 49 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 52 built, 48 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -908,6 +908,7 @@ Non-standard piece setups. Both players see both armies before the match.
 Both of the owner's knights become Pigeons. Pigeons move like knights. Every 5 rounds each Pigeon announces, one move ahead, a square it will hop to on its own, and then hops there. Hops can capture. Both players see the destination.
 
 - Built: the hop square shows as a dashed teal ring. A hop never takes a King or leaves a King in check. If the square is no longer safe, the Pigeon stays put.
+- Ruling: only Pigeons on a side that drafted this card hop. A Pigeon from Hatchery hops only with this card, and a Pigeon that defects (They Were The Traitor) stops hopping.
 - Gerald will not sit on Pigeons.
 - Synergy: Did I Do That? Pigeons can use the rook move.
 - Conflict: Lawrence Of Arabia. It turns every knight into a Camel, so one side cannot draft both.
@@ -926,6 +927,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 - Conflict: Lawrence Of Arabia. It turns every knight into a Camel, so one side cannot draft both.
 - Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
 - Conflict: Stonks. Both rebuild your army, so one side cannot draft both.
+- Conflict: Hatchery. Its pawns fill the third rank, leaving no nest, so one side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
 *Ref: John Wick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1072,7 +1074,7 @@ Start the match with two fewer pawns (the a- and h-pawns) and an extra knight on
 - Conflict: The Small Council. Both rebuild your army, so one side cannot draft both.
 
 ### MOD-E016 · Hatchery
-*Ref: Pigeons, and their eggs* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Pigeons, and their eggs* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 A pigeon Egg sits on your d3 square. It cannot move. If it survives 10 rounds, it hatches into a Pigeon, which moves like a knight.
 
@@ -1080,6 +1082,17 @@ A pigeon Egg sits on your d3 square. It cannot move. If it survives 10 rounds, i
 
 - Ruling: the Egg can be captured like a pawn, and it blocks like any piece.
 - Synergy: Hatoful Gambit. Your flock grows to three.
+- Built: Black's Egg sits on d6. If the square is taken, the Egg goes to the nearest empty square on the same rank. The Egg shows how many of your moves are left, and it hatches right after your 10th move, so a new Pigeon can only check the side about to move. The Egg gives no check.
+- Changed from design: the count is 10 of your moves, not 10 rounds. A turn spent on a This Is Necessary tempo token counts twice, and a skipped turn does not count.
+- Ruling: the Egg never hatches on a tempo-token extra move. It waits for your next normal move, so a new Pigeon never gives check while you still have a move to play.
+- Ruling: the Egg is never placed on lava or another tile effect.
+- Ruling: Gerald, the Berserker, Sus, They Were The Traitor and Forgive Me never pick the Egg, since it cannot move. It cannot be sacrificed with This Is Necessary.
+- Ruling: Gravitational Anomaly still slides the Egg, and can push it off the board like any piece.
+- Ruling: the Egg's count is part of the position, so waiting for it is not a threefold repetition. An Egg that changes sides keeps counting for its new side.
+- Ruling: an Egg bought back with Moneyball starts a fresh 10-move count.
+- Ruling: a hatched Pigeon only hops on its own if its side drafted Hatoful Gambit.
+- Ruling: King and Egg against a lone King is a draw, since the Pigeon it becomes cannot mate alone.
+- Conflict: The Small Council. Its pawns fill your third rank, so one side cannot draft both.
 
 ### MOD-E017 · The Bodyguard
 *Ref: The Bodyguard (1992)* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1241,13 +1254,13 @@ Values the game uses today. "Built" cards match the build.
 | E013 | Overseas Hire (The Cannon) | E | A | 3 | 0 | Owner | Design |
 | E014 | Crab Rave | E | A | 3 | 0 | Owner | Built |
 | E015 | Stonks | E | B | 2 | 0 | Owner | Built |
-| E016 | Hatchery | E | A | 3 | 0 | Owner | Design |
+| E016 | Hatchery | E | A | 3 | 0 | Owner | Built |
 | E017 | The Bodyguard | E | A | 3 | 0 | Owner | Design |
 | E018 | Zerg Rush | E | A | 3 | 0 | Owner | Built |
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
-51 of 100 built. The other 49 are designs (v0.4).
+52 of 100 built. The other 48 are designs (v0.4).
 
 ### Balance test plan
 

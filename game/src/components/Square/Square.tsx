@@ -40,7 +40,7 @@ function getPieceTooltipLines(piece: PieceType | undefined, infectedReach: numbe
     lines.push('Conscientious Objector: This piece refuses to capture.');
   }
   if (piece.type === 'pigeon') {
-    lines.push('Pigeon: Moves like a knight. Every 5 rounds it picks a square and hops there on its own.');
+    lines.push('Pigeon: Moves like a knight. With Hatoful Gambit, every 5 rounds it picks a square and hops there on its own.');
   }
   if (piece.type === 'chancellor') {
     lines.push('Chancellor: Moves like a rook or a knight.');
@@ -56,6 +56,12 @@ function getPieceTooltipLines(piece: PieceType | undefined, infectedReach: numbe
   }
   if (piece.type === 'camel') {
     lines.push('Camel: Leaps 3 squares one way and 1 the other.');
+  }
+  if (piece.type === 'egg') {
+    const left = piece.cooldowns[MODIFIER_IDS.hatchery];
+    lines.push(left === undefined
+      ? 'Egg: Cannot move. Blocks like a piece and can be captured.'
+      : `Egg: Cannot move. Hatches into a Pigeon after ${left} more of its side's moves.`);
   }
   if (piece.type === 'nightrider') {
     lines.push('Nightrider: Repeats one knight jump in a straight line over empty landing squares.');
