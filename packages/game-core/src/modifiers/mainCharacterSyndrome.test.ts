@@ -220,4 +220,14 @@ describe('MOD-B010 Main Character Syndrome', () => {
     state = play(state, [['e8', 'f8']]);
     expect(isQueenDemanded(state, 'white')).toBe(false);
   });
+  it('sacrificing her with The Snap does not pay the debt', () => {
+    const state = chessEngine.activateDraftModifiers(
+      makeEmptyState([makePiece('king', 'white', 'e1'), makePiece('king', 'black', 'e8'), makePiece('queen', 'white', 'd4')]),
+      [{ id: MCS, sourceColor: 'white' }, { id: MODIFIER_IDS.theSnap, sourceColor: 'white' }],
+    );
+    state.turnNumber = 9;
+    const snap = chessEngine.validateMove(state, move('d4', 'd4', 'white', { ability: MODIFIER_IDS.theSnap }));
+    expect(snap.valid).toBe(false);
+    expect(snap.reason).toMatch(/Main Character Syndrome/);
+  });
 });

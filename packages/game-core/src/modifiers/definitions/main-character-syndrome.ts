@@ -59,6 +59,8 @@ registerMoveRule(ID, (state, color) => {
   if (!isQueenDemanded(state, color)) return null;
   return {
     allows: (s, move) => {
+      // Sacrificing her (The Snap) does not pay the debt.
+      if (move.ability === MODIFIER_IDS.theSnap) return false;
       const piece = s.pieces.get(move.from);
       return piece?.type === 'queen' && piece.color === move.playerColor;
     },

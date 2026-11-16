@@ -498,7 +498,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'Your Queen must move at least once every 4 of your moves. If you skip her too long, your next move must be a Queen move if she has one.',
     flavor: '"The queen would like to remind everyone that this is her story."',
     prototypeRules:
-      'After 3 of your moves in a row without a Queen move, your 4th move must be a Queen move (her ability counts). The feed warns you a move ahead. If she has no legal move, or you are in check, any legal move is allowed and she stays owed. While she is owed and has a move, you cannot shoo Gerald. Once you have no Queen, the curse is over for good.',
+      'After 3 of your moves in a row without a Queen move, your 4th move must be a Queen move (her ability counts, but not The Snap). The feed warns you a move ahead. If she has no legal move, or you are in check, any legal move is allowed and she stays owed. While she is owed and has a move, you cannot shoo Gerald. Once you have no Queen, the curse is over for good.',
   },
   {
     id: 'MOD-B011',

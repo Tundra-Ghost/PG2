@@ -415,7 +415,7 @@ Your Queen must move at least once every 4 of your moves. If you skip her too lo
 *The queen would like to remind everyone that this is her story.*
 
 - Built: after 3 of your moves in a row without a Queen move, your 4th must be one. The feed warns you after the 3rd. Selecting another piece says why it cannot move.
-- Built: her ability (such as Quiet Quitting) counts as a Queen move. Shooing Gerald does not, and is not allowed while she is owed and has a move.
+- Built: her ability (such as Quiet Quitting) counts as a Queen move. Shooing Gerald does not, and is not allowed while she is owed and has a move. Sacrificing her with The Snap does not count either.
 - Ruling: in check, you may make any legal move. The demand waits.
 - Ruling: if she has no legal move, any move is allowed and she stays owed until she can move.
 - Ruling: once you have no Queen (captured or defected), the curse ends for good. A Queen from a later promotion is not bound.

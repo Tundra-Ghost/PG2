@@ -3,7 +3,8 @@ import type { ModifierDefinition, PreMoveResult } from './types';
 import { buildMove, getValidPromotionTypes, isPromotionMove } from '../engine/gameLoop';
 import { getLegalMovesForPiece, isInCheck } from '../engine/moveGenerator';
 import { validateMove } from '../engine/moveValidator';
-import { getAbilityOptions } from '../engine/abilities';
+import { abilityCooldownLeft, getActiveAbility } from '../engine/abilities';
+import { affectsColor } from './owner';
 import { getVisibleSquares } from '../engine/visibility';
 
 /**
@@ -53,33 +54,39 @@ export function registerMoveRule(id: ModifierID, source: MoveRuleSource): void {
 /** True while the rules are checking which moves exist. Rules stay out of it, so this cannot loop. */
 let measuring = false;
 
-/** Every action `color` may take now under every other card and the self-check rule. */
-function allActions(state: GameState, color: Color): Move[] {
+/**
+ * Every action `color` could try now, before validation: normal moves and
+ * ability targets. Under fog, only moves onto squares you can see count, so
+ * a rule never gives away a hidden piece.
+ */
+function candidateActions(state: GameState, color: Color): Move[] {
   const visible = getVisibleSquares(state, color);
   const actions: Move[] = [];
   for (const piece of state.pieces.values()) {
     if (piece.color !== color) continue;
     for (const to of getLegalMovesForPiece(state, piece)) {
-      // Under fog, only moves onto squares you can see count, so a rule never gives away a hidden piece.
       if (visible && !visible.has(to)) continue;
-      const move: Move = { ...buildMove(state, piece.square, to), playerColor: color };
-      if (isPromotionMove(state, piece.square, to)) {
-        const [best] = getValidPromotionTypes(state, piece.square, to);
-        if (!best) continue;
-        move.promotion = best;
-      } else if (!validateMove(state, move).valid) {
-        continue;
-      }
-      actions.push(move);
+      actions.push({ ...buildMove(state, piece.square, to), playerColor: color });
     }
-    for (const option of getAbilityOptions(state, piece.square)) {
-      for (const to of option.targets) {
+    for (const inst of state.activeModifiers) {
+      const ability = getActiveAbility(state, inst.id);
+      if (!ability || !ability.pieceTypes.includes(piece.type)) continue;
+      if (!affectsColor(state, inst.id, color) || abilityCooldownLeft(piece, inst.id) > 0) continue;
+      for (const to of ability.getTargets(state, piece)) {
         if (visible && !visible.has(to)) continue;
-        actions.push({ from: piece.square, to, playerColor: color, ability: option.modifierId });
+        actions.push({ from: piece.square, to, playerColor: color, ability: inst.id });
       }
     }
   }
   return actions;
+}
+
+/** True if the action passes every other card and the self-check rule. */
+function isPlayable(state: GameState, move: Move): boolean {
+  if (!move.ability && isPromotionMove(state, move.from, move.to)) {
+    return getValidPromotionTypes(state, move.from, move.to).length > 0;
+  }
+  return validateMove(state, move).valid;
 }
 
 interface Binding {
@@ -99,19 +106,27 @@ export function getBindingMoveRules(state: GameState, color: Color): Binding[] {
   }
   if (candidates.length === 0 || isInCheck(state, color)) return [];
 
+  // Cheap rule tests first; full validation only until one playable action is found.
+  const actions = candidateActions(state, color);
+  const playable = new Map<Move, boolean>();
+  const binding: Binding[] = [];
   measuring = true;
-  let pool: Move[];
   try {
-    pool = allActions(state, color);
+    for (const candidate of candidates) {
+      const rules = [...binding, candidate].map(b => b.rule);
+      const found = actions.some(move => {
+        if (!rules.every(rule => rule.allows(state, move))) return false;
+        let ok = playable.get(move);
+        if (ok === undefined) {
+          ok = isPlayable(state, move);
+          playable.set(move, ok);
+        }
+        return ok;
+      });
+      if (found) binding.push(candidate);
+    }
   } finally {
     measuring = false;
-  }
-  const binding: Binding[] = [];
-  for (const candidate of candidates) {
-    const kept = pool.filter(move => candidate.rule.allows(state, move));
-    if (kept.length === 0) continue;
-    binding.push(candidate);
-    pool = kept;
   }
   return binding;
 }
