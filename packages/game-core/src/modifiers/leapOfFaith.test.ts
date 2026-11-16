@@ -39,7 +39,7 @@ describe('MOD-C010 Leap Of Faith', () => {
     expect(next.pieces.get('b6')).toMatchObject({ type: 'knight', color: 'black' });
     expect(next.pieces.has('d4')).toBe(false);
     expect(next.turn).toBe('black');
-    expect(next.moveHistory[0].notation).toMatch(/^Bd4↷a7/);
+    expect(next.moveHistory[0].notation).toMatch(/^d4↷a7/);
     expect(next.pieces.get('a7')!.abilityCooldowns?.[LEAP]).toBe(LEAP_COOLDOWN);
   });
 
@@ -94,18 +94,59 @@ describe('MOD-C010 Leap Of Faith', () => {
     expect(leapTargets(state, 'c1')).toEqual(['e3']);
   });
 
-  it('waits out its cooldown before leaping again', () => {
+  it('waits out its cooldown: 5 of your moves, ready on the 6th', () => {
     let state = withLeap([
       makePiece('king', 'white', 'h1'),
       makePiece('bishop', 'white', 'c1'),
       makePiece('pawn', 'white', 'd2'),
       makePiece('pawn', 'white', 'f4'),
-      makePiece('king', 'black', 'a8'),
+      makePiece('rook', 'white', 'a1'),
+      makePiece('king', 'black', 'h8'),
     ]);
     state = chessEngine.applyMove(state, move('c1', 'e3', 'white', { ability: LEAP }));
-    state = chessEngine.applyMove(state, move('a8', 'b8', 'black'));
-    expect(leapTargets(state, 'e3')).toEqual([]);
-    expect(chessEngine.validateMove(state, move('e3', 'g5', 'white', { ability: LEAP })).valid).toBe(false);
+    // The rook climbs the a-file so no position repeats. Your 6th move after the leap may leap again.
+    const files = ['a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7'] as Square[];
+    for (let i = 1; i <= 6; i++) {
+      state = chessEngine.applyMove(state, move(i % 2 ? 'h8' : 'g8', i % 2 ? 'g8' : 'h8', 'black'));
+      expect(leapTargets(state, 'e3').length > 0).toBe(i === 6);
+      state = chessEngine.applyMove(state, move(files[i - 1], files[i], 'white'));
+    }
+  });
+
+  it('a confessed bishop (Forgive Me) cannot leap away from its declared square', () => {
+    let state = chessEngine.activateDraftModifiers(
+      makeEmptyState([
+        makePiece('king', 'white', 'h1'),
+        makePiece('bishop', 'white', 'a3'),
+        makePiece('king', 'black', 'h8'),
+        makePiece('bishop', 'black', 'c5'),
+        makePiece('pawn', 'black', 'd6'),
+      ]),
+      [
+        { id: MODIFIER_IDS.forgiveMe, sourceColor: 'white' },
+        { id: LEAP, sourceColor: 'black' },
+      ],
+    );
+    state = chessEngine.applyMove(state, move('a3', 'c5', 'white', { ability: MODIFIER_IDS.forgiveMe }));
+    // Black's first move with the bishop declares it.
+    state = chessEngine.applyMove(state, move('c5', 'b6', 'black'));
+    state = chessEngine.applyMove(state, move('h1', 'g1', 'white'));
+    expect(chessEngine.validateMove(state, move('c5', 'e7', 'black', { ability: LEAP })).valid).toBe(false);
+    expect(chessEngine.validateMove(state, move('c5', 'b6', 'black')).valid).toBe(true);
+  });
+
+  it('cannot leap while slowed by The Cordyceptic Spread', () => {
+    const state = withLeap([
+      makePiece('king', 'white', 'h1'),
+      makePiece('bishop', 'white', 'c1', 'leaper'),
+      makePiece('pawn', 'white', 'd2'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+    state.activeModifiers.push({ id: MODIFIER_IDS.cordycepticSpread, name: 'The Cordyceptic Spread', activeFor: 'both', sourceColor: null });
+    state.tiles.set('c1', { square: 'c1', effects: [{ type: 'infected', turnsRemaining: -1 }] });
+    expect(leapTargets(state, 'c1')).toEqual(['e3']);
+    state.modifierState[MODIFIER_IDS.cordycepticSpread] = { rot: { leaper: 1 } };
+    expect(leapTargets(state, 'c1')).toEqual([]);
   });
 
   it('under fog, never offers a leap over a piece the owner cannot see', () => {
@@ -119,6 +160,19 @@ describe('MOD-C010 Leap Of Faith', () => {
       [{ id: MODIFIER_IDS.darkAndScared, sourceColor: 'white' }],
     );
     expect(leapTargets(state, 'a1')).toEqual([]);
+  });
+
+  it('under fog, offers a leap whose whole path is in view', () => {
+    const state = withLeap(
+      [
+        makePiece('king', 'white', 'h1'),
+        makePiece('bishop', 'white', 'c1'),
+        makePiece('pawn', 'white', 'd2'),
+        makePiece('king', 'black', 'a8'),
+      ],
+      [{ id: MODIFIER_IDS.darkAndScared, sourceColor: 'white' }],
+    );
+    expect(leapTargets(state, 'c1')).toEqual(['e3']);
   });
 
   it('Twin Telepathy: the twin bishop mirrors the leap as a normal slide', () => {

@@ -598,6 +598,7 @@ Target one enemy piece. For 2 of the opponent's moves, that piece must show its 
 - Synergy: fog cards. The confession reveals the target through fog and shows if it is a decoy or Sus.
 - Built: the target is an enemy piece (not the King) on one of the bishop's diagonals. The bishop does not move. For the target side's next 2 turns, the target's first move only declares the square: the turn is spent, an event names the square, and a dashed violet ring marks it. It can then only move to that square. In check it moves freely. Both squares are revealed through fog.
 - Conflict: Elephant In The Room. It turns every bishop into an Elephant, so one side cannot draft both.
+- Interaction: Leap Of Faith. A confessed bishop cannot leap away from its declared square.
 
 ### MOD-C003 · Did I Do That? (Oops)
 *Ref: Urkel* · **Tier A** · Cost 3 · Curse 0 · Knight · Cooldown 6 · Modes: All · **Built**
@@ -665,16 +666,21 @@ Your rook shoves an adjacent enemy piece one square straight away from it, if th
 - Synergy: The Floor Is Lava. Yes. That is what it is for.
 
 ### MOD-C010 · Leap Of Faith
-*Ref: Assassin's Creed* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
+*Ref: Assassin's Creed* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Bishop · Cooldown 5 · Modes: All · **Built**
 
-Your bishop jumps over the first piece on one of its diagonals and lands on the empty square right behind it. No capture. Uses your move. Cooldown: 5 of your turns.
+Your bishop jumps over the first piece on one of its diagonals and lands on the empty square right behind it. No capture. Uses your move. Then it waits 5 of your moves.
 
 *The bishop jumped. There was a haystack. There is always a haystack.*
 
 - Ruling: the landing square must be empty and the jump may not leave your King in check.
-- Built: an ability on any of your bishops (tap the bishop, then the ability button). The first piece on the diagonal can be either colour, however far away. It never jumps a void square (the Statue, vents, the Storm). Cooldown 5 of that bishop's turns, as on the card's type line.
+- Built: an ability on any of your bishops (tap the bishop, then the ability button). The first piece on the diagonal can be either colour, however far away. It never jumps a void square (the Statue, vents, the Storm). It waits 5 of your moves before it can leap again.
+- Changed from design: the design gave no cooldown; the build uses 5 of your moves.
 - Built: a leap may block a check if it lands in the line of the check.
-- Ruling: under fog, a leap is only offered when you can see both the jumped piece and the landing square, so it never gives a hidden piece away.
+- Ruling: under fog, a leap is only offered when you can see its whole path: the squares before the jumped piece, the piece and the landing square.
+- Ruling: a confessed bishop (Forgive Me) cannot leap away from its declared square.
+- Ruling: infection. A bishop slowed by The Cordyceptic Spread cannot leap, and a leap clears no infection.
+- Ruling: a bishop that starts in the Swamp cannot leap; a leap is always at least 2 squares.
+- Ruling: the move list names only squares (c1↷e3), so a Sus disguise is not given away by the letter.
 - Interaction: Twin Telepathy. The twin bishop mirrors the leap as a normal slide in the same direction, stopping before any piece.
 - Conflict: The Small Council and Elephant In The Room. Your army has no bishops with either, so one side cannot draft both.
 
@@ -1034,6 +1040,7 @@ One random rook becomes The Chancellor. Each move it moves like a rook or like a
 When a bishop moves, its twin of the same colour slides the same way up to the same distance. It stops before any piece, never captures, and stays put if blocked by a modifier or if the slide would expose its King.
 
 - Changed from v0.2: same distance, never captures.
+- Interaction: Leap Of Faith. The twin mirrors a leap as a normal slide in the same direction, stopping before any piece.
 
 ### MOD-E006 · BOY. (The Berserker)
 *Ref: God of War* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1082,7 +1089,7 @@ One of your bishops becomes an Archbishop. Each move, it moves like a bishop or 
 *The bishop prayed for more options. The prayer was answered. The answer had a horse in it.*
 
 - Built: the bishop is picked at random with the seeded generator. The Archbishop has its own piece art (a knight head on a bishop, with a cross) and writes A in the move list.
-- Ruling: the Archbishop is not a bishop for other cards. Twin Telepathy does not move it, it cannot Confess (Forgive Me), and it does not clear infection.
+- Ruling: the Archbishop is not a bishop for other cards. Twin Telepathy does not move it, it cannot Confess (Forgive Me), it cannot Leap (Leap Of Faith), and it does not clear infection.
 - Ruling: it never picks a Ghost bishop (I'm Literally Right Here).
 - Interaction: The Cordyceptic Spread. Infection slows it like a bishop. A knight jump counts as 2 squares, so at 1 square of reach it cannot jump.
 - Interaction: This Is My Swamp. In the Swamp it moves one square, with no knight jump. It is not stuck the way a knight is.
