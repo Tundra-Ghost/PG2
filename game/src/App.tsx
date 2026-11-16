@@ -48,7 +48,7 @@ import {
   type MatchMode,
 } from './profile';
 import styles from './App.module.css';
-import { appBase, pathFor, screenFromPath, type Screen } from './routes';
+import { appBase, historySaveId, pathFor, popTarget, screenFromPath, type Screen } from './routes';
 import { markTutorialSeen, stepForScreen, tutorialSeen, type TutorialStep } from './tutorial';
 import TutorialCoach from './components/TutorialCoach/TutorialCoach';
 import OngoingGames from './components/OngoingGames/OngoingGames';
@@ -252,42 +252,35 @@ export default function App() {
     // Replace rather than add an entry for: the first load, closing Settings,
     // and the draft turning into the match (Back from a match goes to the opponent list).
     const replace = from === null || from === 'settings' || (from === 'draft' && screen === 'game');
-    if (replace) window.history.replaceState(null, '', path);
-    else window.history.pushState(null, '', path);
+    // A draft or match entry remembers its save, so Back reopens that one.
+    const entry = (screen === 'draft' || screen === 'game') && saveId ? { saveId } : null;
+    if (replace) window.history.replaceState(entry, '', path);
+    else window.history.pushState(entry, '', path);
     settingsPushed.current = screen === 'settings' && !replace;
   }, [screen]);
 
   useEffect(() => {
-    const onPop = () => {
+    const onPop = (event: PopStateEvent) => {
       const shown = screenRef.current;
       // Settings is an overlay: what matters is the screen under it.
       const current = shown === 'settings' ? prevScreenRef.current : shown;
-      let next = screenFromPath(window.location.pathname, BASE);
+      const named = screenFromPath(window.location.pathname, BASE);
       // Back out of a match that would count as a loss asks first. The match
       // address goes back on the stack so the board stays put while it asks.
-      if (current === 'game' && next !== 'game' && !leaveConfirmed.current && askLeaveRef.current('back')) {
-        window.history.pushState(null, '', pathFor('game', BASE));
+      if (current === 'game' && named !== 'game' && !leaveConfirmed.current && askLeaveRef.current('back')) {
+        window.history.pushState({ saveId: saveIdRef.current }, '', pathFor('game', BASE));
         return;
       }
       leaveConfirmed.current = false;
       // Leaving a match by Back counts the same as the Menu button.
-      if (current === 'game' && next !== 'game') abandonRef.current();
-      // A finished or left match, or a draft with no opponent, can't be reopened.
-      // Back or Forward into a draft that was left reopens its save. With no
-      // save to reopen it goes to the menu, so it never starts a second draft.
-      const reopen = next === 'draft' && current !== 'draft' ? findSavedDraft(saveIdRef.current) : null;
-      if (
-        (next === 'game' && current !== 'game') ||
-        (next === 'draft' && current !== 'draft' && !reopen) ||
-        (next === 'draft' && !selectedBotRef.current)
-      ) {
-        next = 'menu';
-        window.history.replaceState(null, '', pathFor(next, BASE));
-      }
+      if (current === 'game' && named !== 'game') abandonRef.current();
+      const saved = named === 'draft' && current !== 'draft' ? findSavedDraft(historySaveId(event.state)) : null;
+      const { screen: next, reopen } = popTarget(current, named, saved !== null, selectedBotRef.current !== null);
+      if (next !== named) window.history.replaceState(null, '', pathFor(next, BASE));
       if (next === 'settings') setPrevScreen(current);
       settingsPushed.current = false;
       lastScreen.current = next;
-      if (next === 'draft' && reopen) resumeRef.current(reopen);
+      if (reopen && saved) resumeRef.current(saved);
       else setScreen(next);
     };
     window.addEventListener('popstate', onPop);
@@ -740,6 +733,9 @@ export default function App() {
     setVsBot(true);
 
     if (botSelectMode === 'run' || botSelectMode === 'practice') {
+      // Picking the bot of a draft you just left reopens it, never a second one.
+      const left = findSavedDraft(saveId);
+      if (left && left.bot === botId && left.mode === botSelectMode && resumeSavedGame(left)) return;
       openDraft();
       return;
     }

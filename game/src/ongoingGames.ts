@@ -22,14 +22,21 @@ export interface OngoingRow {
   abandonIsLoss: boolean;
 }
 
-/**
- * The Abandon button's label. It names the status, picks and last played time
- * so a screen reader can tell two games against the same bot apart.
- */
-export function abandonLabel(row: OngoingRow): string {
-  const parts = [`Abandon game against ${row.opponent}`, row.status, row.modifiers];
+/** Status, picks and last played: enough to tell two games against one bot apart. */
+function rowDetails(row: OngoingRow): string {
+  const parts = [row.status, row.modifiers];
   if (row.lastPlayed) parts.push(`Last played ${row.lastPlayed}`);
-  return parts.filter(Boolean).join('. ') + '.';
+  return parts.filter(Boolean).map(part => `${part}.`).join(' ');
+}
+
+/** The Resume button's label, for screen readers. */
+export function resumeLabel(row: OngoingRow): string {
+  return `Resume ${row.kind === 'online' ? 'online ' : ''}game against ${row.opponent}. ${rowDetails(row)}`;
+}
+
+/** The Abandon button's label, for screen readers. */
+export function abandonLabel(row: OngoingRow): string {
+  return `Abandon game against ${row.opponent}. ${rowDetails(row)}`;
 }
 
 function modifierName(id: string): string {

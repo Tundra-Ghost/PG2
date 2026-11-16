@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { playClick } from '../../sound';
-import { abandonLabel, describeSave, type OngoingRow } from '../../ongoingGames';
+import { abandonLabel, describeSave, resumeLabel, type OngoingRow } from '../../ongoingGames';
 import type { SavedBotGame } from '../../savedBotGames';
 import LeaveMatchDialog from '../LeaveMatchDialog/LeaveMatchDialog';
 import styles from './OngoingGames.module.css';
@@ -88,9 +88,7 @@ export default function OngoingGames({
                 <li key={`${row.kind}-${row.id}`} className={styles.row}>
                   <button
                     className={styles.resume}
-                    aria-label={`Resume ${row.kind === 'online' ? 'online ' : ''}game against ${row.opponent}. ${row.status}.${
-                      row.lastPlayed ? ` Last played ${row.lastPlayed}.` : ''
-                    }`}
+                    aria-label={resumeLabel(row)}
                     onClick={() => {
                       playClick();
                       if (game) onResume(game);

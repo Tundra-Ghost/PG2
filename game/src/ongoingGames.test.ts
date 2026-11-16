@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import type { GameSummary } from '@pigeon-chess/game-core';
-import { abandonCountsAsLoss, abandonLabel, describeOnline, describeSave, describeSeat, lastPlayedText } from './ongoingGames';
+import { abandonCountsAsLoss, abandonLabel, resumeLabel, describeOnline, describeSave, describeSeat, lastPlayedText } from './ongoingGames';
 import { SAVE_VERSION, type SavedBotGame } from './savedBotGames';
 
 const NOW = Date.parse('2026-11-16T12:00:00.000Z');
@@ -56,7 +56,7 @@ describe('ongoing games rows', () => {
     expect(row.abandonIsLoss).toBe(false);
   });
 
-  it('gives two drafts against the same bot different Abandon labels (#141)', () => {
+  it('gives two drafts against the same bot different Resume and Abandon labels (#141)', () => {
     const empty = describeSave(
       save({ draft: { playerIds: [], botIds: [], turn: 'player', randomLocked: false, seed: 1, draws: 0 } }),
       NOW,
@@ -68,6 +68,8 @@ describe('ongoing games rows', () => {
     expect(abandonLabel(empty)).toMatch(/^Abandon game against .+\. Drafting\. Modifier draft, nothing picked yet\./);
     expect(abandonLabel(picked)).toContain('Picked so far: ');
     expect(abandonLabel(empty)).not.toBe(abandonLabel(picked));
+    expect(resumeLabel(picked)).toMatch(/^Resume game against .+\. Drafting\. Picked so far: /);
+    expect(resumeLabel(empty)).not.toBe(resumeLabel(picked));
   });
 
   it('counts abandoning as a loss only for a started match not yet recorded', () => {
