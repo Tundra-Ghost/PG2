@@ -56,6 +56,7 @@ import { crabRaveDef } from './definitions/crab-rave';
 import { zergRushDef } from './definitions/zerg-rush';
 import { stonksDef } from './definitions/stonks';
 import { runForrestRunDef } from './definitions/run-forrest-run';
+import { freakyFridayDef } from './definitions/freaky-friday';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -110,3 +111,4 @@ modifierRegistry.register(crabRaveDef);
 modifierRegistry.register(zergRushDef);
 modifierRegistry.register(stonksDef);
 modifierRegistry.register(runForrestRunDef);
+modifierRegistry.register(freakyFridayDef);

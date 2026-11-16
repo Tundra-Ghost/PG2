@@ -199,7 +199,8 @@ export const cordycepticSpreadDef: ModifierDefinition = {
       const before = oldRot[piece.id] ?? 0;
       if (piece.color !== mover) {
         if (before > 0) rot[piece.id] = before;
-      } else if (sq !== move.to) {
+      } else if (sq !== move.to && !(move.ability === MODIFIER_IDS.freakyFriday && sq === move.from)) {
+        // A swap (MOD-C012) moves the partner onto move.from too.
         rot[piece.id] = before + 1;
       }
     }
