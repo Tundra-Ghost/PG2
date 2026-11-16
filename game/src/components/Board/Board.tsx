@@ -221,8 +221,6 @@ export default function Board({
     [onMove, onStateChange, state],
   );
 
-  const markerLegend = getMarkerLegend(state.activeModifiers.map(mod => mod.id));
-
   // MOD-B005: during a blackout the cursed side does not see the last move either.
   const forgetsLastMove = isHistoryBlackout(state, controlColor ?? state.turn);
   const lastMove = forgetsLastMove ? undefined : state.moveHistory[state.moveHistory.length - 1];
@@ -462,10 +460,18 @@ export default function Board({
     bursts,
     viewer: controlColor ?? state.turn,
   });
+  const activeIds = state.activeModifiers.map(mod => mod.id);
+  // Only what this player can see, so fog never gives away a hidden Egg.
+  const markerLegend = getMarkerLegend(activeIds, {
+    eggOnBoard: squareViews.some(view => view.piece?.type === 'egg'),
+  });
+  // The layout follows the cards in play, not the rows showing now, so the
+  // board keeps one size for the whole match.
+  const hasLegend = getMarkerLegend(activeIds).length > 0;
 
   return (
     <>
-      <div className={['pc-board', 'on-dark', styles.frame, markerLegend.length > 0 ? styles.withLegend : '', hasAbilityCards ? styles.withAbilities : ''].filter(Boolean).join(' ')}>
+      <div className={['pc-board', 'on-dark', styles.frame, hasLegend ? styles.withLegend : '', hasAbilityCards ? styles.withAbilities : ''].filter(Boolean).join(' ')}>
         {/* Top file labels */}
         {showCoordinates && (
           <div className={styles.coordRowTop}>
