@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 54 built, 46 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 55 built, 45 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -688,13 +688,17 @@ Your knight makes two jumps in one move. The first jump cannot capture. The seco
 - Ruling: neither jump may leave your King in check, and the knight cannot give check with the first jump.
 
 ### MOD-C017 · Get Off My Lawn
-*Ref: Gran Torino* · **Tier B** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Gran Torino* · **Tier B** · Cost 3 · Curse 0 · King · Cooldown 8 · Scope: Owner · Modes: All · **Built**
 
-Every enemy pawn next to your King is pushed one square back toward its own side, if that square is empty. Uses your move.
+Select your King, press Get off my lawn, then tap the King. Every enemy pawn next to it is pushed one square back toward its own side, if that square is empty. Uses your move. Then your King waits 8 of your moves.
 
 *Viktor's king has asked the pawns to leave. The pawns have left. They will be back.*
 
 - Ruling: allowed in check only if the push ends the check.
+- Ruling: "next to" means the 8 squares around the King. Pawns move straight back. A pawn whose square behind is taken, Lava or storm stays put. Only offered when at least one pawn would move.
+- Ruling: a pawn pushed back onto its start rank may double-step again. They will be back.
+- Ruling: under Sus, the King pushes what its owner sees as pawns, so a disguise is never given away.
+- Changed from design: the design gave no cooldown; the build uses 8 of your moves.
 
 ### MOD-C018 · Dirt Hut
 *Ref: Minecraft* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1245,7 +1249,7 @@ Values the game uses today. "Built" cards match the build.
 | C014 | Run, Forrest, Run | C | B | 2 | 0 | Owner | Built |
 | C015 | Ctrl+Z | C | S | 4 | 0 | Owner | Design |
 | C016 | Bullet Time | C | A | 4 | 0 | Owner | Design |
-| C017 | Get Off My Lawn | C | B | 3 | 0 | Owner | Design |
+| C017 | Get Off My Lawn | C | B | 3 | 0 | Owner | Built |
 | C018 | Dirt Hut | C | A | 3 | 0 | Owner | Design |
 | C019 | Everyone Has A Price | C | S | 5 | 0 | Owner | Design |
 | C020 | Gotta Go Fast | C | B | 2 | 0 | Owner | Built |
@@ -1274,7 +1278,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
-54 of 100 built. The other 46 are designs (v0.4).
+55 of 100 built. The other 45 are designs (v0.4).
 
 ### Balance test plan
 
