@@ -57,6 +57,7 @@ import { zergRushDef } from './definitions/zerg-rush';
 import { stonksDef } from './definitions/stonks';
 import { runForrestRunDef } from './definitions/run-forrest-run';
 import { freakyFridayDef } from './definitions/freaky-friday';
+import { getOffMyLawnDef } from './definitions/get-off-my-lawn';
 
 modifierRegistry.register(floorIsLavaDef);
 modifierRegistry.register(geraldDef);
@@ -112,3 +113,4 @@ modifierRegistry.register(zergRushDef);
 modifierRegistry.register(stonksDef);
 modifierRegistry.register(runForrestRunDef);
 modifierRegistry.register(freakyFridayDef);
+modifierRegistry.register(getOffMyLawnDef);

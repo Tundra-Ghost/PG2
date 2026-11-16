@@ -298,7 +298,7 @@ Assessment:
 - `applyMove` skips `onPreMoveApply` for abilities, uses `ability.apply` (default: move to the target), then runs the usual capture, post-move and turn-end hooks.
 - Cooldowns live in `piece.abilityCooldowns` and tick at the end of each own turn, passes included.
 - The board shows an ability bar when the side has ability cards. The bot weighs ability moves on the same material score.
-- Shipped: `MOD-C003` knight rook move (6), `MOD-C004` pawn backward capture (4), `MOD-C006` rook cannon (7, kings block the shot), `MOD-C020` pawn dash (4, two squares ahead, no en passant, no promotion), `MOD-C014` King run (10, two squares in a line, not through attacked squares), `MOD-C012` adjacent swap (7 on both pieces, the partner must pass move checks too).
+- Shipped: `MOD-C003` knight rook move (6), `MOD-C004` pawn backward capture (4), `MOD-C006` rook cannon (7, kings block the shot), `MOD-C020` pawn dash (4, two squares ahead, no en passant, no promotion), `MOD-C014` King run (10, two squares in a line, not through attacked squares), `MOD-C012` adjacent swap (7 on both pieces, the partner must pass move checks too), `MOD-C017` pawn push (8, targets the King's own square).
 
 ## Recommended Next Modifier Work
 
