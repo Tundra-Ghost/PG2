@@ -47,4 +47,26 @@ describe('board marker legend', () => {
     ]);
     expect(getMarkerLegend(hatchery, { eggOnBoard: false })).toEqual([]);
   });
+
+  describe('No, I Don\'t Think I Will row', () => {
+    const B003 = 'MOD-B003';
+    const row = (ctx: Parameters<typeof getMarkerLegend>[1]) => getMarkerLegend([B003], ctx)[0];
+
+    it('counts down the flipped moves left', () => {
+      expect(row({ flippedMovesLeft: 5 })?.label).toBe('5 flipped moves left: click across the board');
+      expect(row({ flippedMovesLeft: 1 })?.label).toBe('1 flipped move left: click across the board');
+    });
+
+    it('says tap on a touch screen', () => {
+      expect(row({ flippedMovesLeft: 3, touchScreen: true })?.label).toBe('3 flipped moves left: tap across the board');
+    });
+
+    it('goes away when no flipped moves are left', () => {
+      expect(getMarkerLegend([B003], { flippedMovesLeft: 0 })).toEqual([]);
+    });
+
+    it('keeps the general text when the count is unknown', () => {
+      expect(row({})?.label).toBe('Your first 5 moves: click across the board');
+    });
+  });
 });

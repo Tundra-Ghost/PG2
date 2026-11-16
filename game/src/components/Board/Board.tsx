@@ -464,6 +464,8 @@ export default function Board({
   // Only what this player can see, so fog never gives away a hidden Egg.
   const markerLegend = getMarkerLegend(activeIds, {
     eggOnBoard: squareViews.some(view => view.piece?.type === 'egg'),
+    flippedMovesLeft: flippedMovesLeft(state, controlColor ?? state.turn),
+    touchScreen: typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches === true,
   });
   // The layout follows the cards in play, not the rows showing now, so the
   // board keeps one size for the whole match.
