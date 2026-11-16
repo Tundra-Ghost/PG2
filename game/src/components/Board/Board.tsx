@@ -41,7 +41,7 @@ interface BoardProps {
   state: GameState;
   /** Local play: the board applies moves itself and reports the new state. */
   onStateChange?: (next: GameState) => void;
-  /** Online play: the board only sends intents. The server applies them. */
+  /** The board only sends intents: online the server applies them, in bot games App applies and saves them. */
   onMove?: (move: Move) => void;
   onShooGerald?: () => void;
   /** Online play: MOD-B015 sends the touched piece to the server. Local play applies it here. */
