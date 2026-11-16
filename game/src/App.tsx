@@ -52,7 +52,8 @@ import { appBase, pathFor, screenFromPath, type Screen } from './routes';
 import { markTutorialSeen, stepForScreen, tutorialSeen, type TutorialStep } from './tutorial';
 import TutorialCoach from './components/TutorialCoach/TutorialCoach';
 import OngoingGames from './components/OngoingGames/OngoingGames';
-import { abandonCountsAsLoss, movesPlayed } from './ongoingGames';
+import { abandonCountsAsLoss, describeOnline, describeSeat, movesPlayed } from './ongoingGames';
+import { useOnlineGameList } from './online/useOnlineGameList';
 import {
   SAVE_VERSION,
   applyAction,
@@ -197,9 +198,13 @@ export default function App() {
   const [profile, setProfile] = useState<LocalProfile>(() => ensureProfile());
   const account = useAccount(profile, setProfile);
   const social = useSocial(account.account?.username ?? null);
+  /** Online games for the Ongoing list. Online play needs an account, so guests skip it. */
+  const onlineList = useOnlineGameList(screen === 'ongoing' && Boolean(account.account), account.account?.username ?? null);
   /** A room the Online screen should sit down in when it opens. */
   const [pendingRoomId, setPendingRoomId] = useState<string | null>(null);
   const clearPendingRoom = useCallback(() => setPendingRoomId(null), []);
+  /** Where the Online screen's Back goes: the Ongoing list when a game was opened from it. */
+  const [onlineBackTo, setOnlineBackTo] = useState<'menu' | 'ongoing'>('menu');
   /** The finished game the debrief is about, while it is open. */
   const [surveyFor, setSurveyFor] = useState<GameSurveyContext | null>(null);
   /** The finished game the result card offers a debrief for, until it is taken. */
@@ -950,6 +955,7 @@ export default function App() {
           onPuzzles={() => setScreen('puzzles')}
           onOnline={() => {
             playClick();
+            setOnlineBackTo('menu');
             setScreen('online');
           }}
           onFriends={() => setScreen('friends')}
@@ -972,6 +978,29 @@ export default function App() {
         <OngoingGames
           games={ongoingGames}
           notice={ongoingNotice}
+          online={
+            !account.account
+              ? []
+              : onlineList.status === 'ready'
+                ? onlineList.games.map(game => describeOnline(game))
+                : onlineList.status === 'offline'
+                  ? onlineList.seats.map(describeSeat)
+                  : []
+          }
+          onlineNote={
+            !account.account
+              ? null
+              : onlineList.status === 'offline' && onlineList.seats.length > 0
+                ? "Can't reach the server right now, so online games show without details."
+                : onlineList.status === 'loading'
+                  ? 'Checking your online games…'
+                  : null
+          }
+          onResumeOnline={roomId => {
+            setPendingRoomId(roomId);
+            setOnlineBackTo('ongoing');
+            setScreen('online');
+          }}
           onResume={save => {
             setOngoingNotice(null);
             if (!resumeSavedGame(save)) {
@@ -1032,6 +1061,7 @@ export default function App() {
           onSignIn={goToSettings}
           onPlay={roomId => {
             setPendingRoomId(roomId);
+            setOnlineBackTo('menu');
             setScreen('online');
           }}
         />
@@ -1069,7 +1099,10 @@ export default function App() {
             setSettings(next);
           }}
           settings={settings}
-          onBack={() => setScreen('menu')}
+          onBack={() => {
+            setScreen(onlineBackTo);
+            setOnlineBackTo('menu');
+          }}
           onSettings={goToSettings}
         />
         {settingsOverlay}

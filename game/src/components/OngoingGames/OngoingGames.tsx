@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { playClick } from '../../sound';
-import { describeSave } from '../../ongoingGames';
+import { describeSave, type OngoingRow } from '../../ongoingGames';
 import type { SavedBotGame } from '../../savedBotGames';
 import LeaveMatchDialog from '../LeaveMatchDialog/LeaveMatchDialog';
 import styles from './OngoingGames.module.css';
@@ -13,15 +13,37 @@ interface OngoingGamesProps {
   onPlay: () => void;
   /** Why a game just left the list, if one did. */
   notice?: string | null;
+  /** Online games, already described. They are resigned from inside the match, not here. */
+  online?: OngoingRow[];
+  /** A line about the online games: still checking, or the server is out of reach. */
+  onlineNote?: string | null;
+  onResumeOnline?: (roomId: string) => void;
 }
 
-/** Every bot game in progress on this device, last played first. Tap one to pick it up. */
-export default function OngoingGames({ games, onResume, onAbandon, onBack, onPlay, notice }: OngoingGamesProps) {
+type Entry = { row: OngoingRow; save: SavedBotGame | null };
+
+/** Bot games saved on this device and online games still running, last played first. Tap one to pick it up. */
+export default function OngoingGames({
+  games,
+  onResume,
+  onAbandon,
+  onBack,
+  onPlay,
+  notice,
+  online = [],
+  onlineNote,
+  onResumeOnline,
+}: OngoingGamesProps) {
   const [confirming, setConfirming] = useState<SavedBotGame | null>(null);
   /** The Abandon button that opened the confirm, so Cancel can hand focus back. */
   const opener = useRef<HTMLButtonElement | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const confirmRow = confirming ? describeSave(confirming) : null;
+  // Bot and online games together, last played first.
+  const entries: Entry[] = [
+    ...games.map(save => ({ row: describeSave(save), save })),
+    ...online.map(row => ({ row, save: null })),
+  ].sort((a, b) => b.row.updatedMs - a.row.updatedMs);
 
   return (
     <div className={styles.root}>
@@ -38,12 +60,15 @@ export default function OngoingGames({ games, onResume, onAbandon, onBack, onPla
         <h1 ref={heading} tabIndex={-1} className={styles.title}>
           Ongoing games
         </h1>
-        <p className={styles.lede}>Games against bots save after every move. Pick one up where you left it.</p>
+        <p className={styles.lede}>
+          Bot games save after every move. Online games stay open on the server. Pick one up where you left it.
+        </p>
+        {onlineNote && <p className={styles.lede}>{onlineNote}</p>}
         <p className={styles.notice} role="status">
           {notice ?? ''}
         </p>
 
-        {games.length === 0 ? (
+        {entries.length === 0 ? (
           <div className={styles.empty}>
             <p className={styles.lede}>No games in progress.</p>
             <button
@@ -58,16 +83,18 @@ export default function OngoingGames({ games, onResume, onAbandon, onBack, onPla
           </div>
         ) : (
           <ul className={styles.list}>
-            {games.map(game => {
-              const row = describeSave(game);
+            {entries.map(({ row, save: game }) => {
               return (
-                <li key={game.id} className={styles.row}>
+                <li key={`${row.kind}-${row.id}`} className={styles.row}>
                   <button
                     className={styles.resume}
-                    aria-label={`Resume game against ${row.opponent}. ${row.status}. Last played ${row.lastPlayed}.`}
+                    aria-label={`Resume ${row.kind === 'online' ? 'online ' : ''}game against ${row.opponent}. ${row.status}.${
+                      row.lastPlayed ? ` Last played ${row.lastPlayed}.` : ''
+                    }`}
                     onClick={() => {
                       playClick();
-                      onResume(game);
+                      if (game) onResume(game);
+                      else onResumeOnline?.(row.id);
                     }}
                   >
                     {row.portrait ? (
@@ -83,11 +110,12 @@ export default function OngoingGames({ games, onResume, onAbandon, onBack, onPla
                         <span className={row.yourMove ? styles.yourMove : styles.status}>{row.status}</span>
                       </span>
                       <span className={styles.meta}>
-                        {row.side} · {row.lastPlayed}
+                        {row.lastPlayed ? `${row.side} · ${row.lastPlayed}` : row.side}
                       </span>
-                      <span className={styles.mods}>{row.modifiers}</span>
+                      {row.modifiers && <span className={styles.mods}>{row.modifiers}</span>}
                     </span>
                   </button>
+                  {game && (
                   <button
                     className={styles.abandon}
                     aria-label={`Abandon game against ${row.opponent}`}
@@ -99,6 +127,7 @@ export default function OngoingGames({ games, onResume, onAbandon, onBack, onPla
                   >
                     Abandon
                   </button>
+                  )}
                 </li>
               );
             })}

@@ -382,6 +382,11 @@ export class RoomManager {
       opponentName: room.seats[color === 'white' ? 'black' : 'white']?.player?.username ?? null,
       moveCount: room.state.moveHistory.length,
       updatedAt: room.updatedAt,
+      modifiers: {
+        yours: [...(room.draft?.picks[color] ?? [])],
+        theirs: [...(room.draft?.picks[color === 'white' ? 'black' : 'white'] ?? [])],
+      },
+      drafting: drafting(room),
     }));
   }
 
