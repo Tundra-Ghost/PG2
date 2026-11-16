@@ -1449,6 +1449,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'One of your rooks becomes a Cannon. It moves like a rook, but captures only by jumping over exactly one piece on its line to take the next one.',
     flavor: '"The cannon arrived from abroad. It brought its own rules. It is very proud of them."',
+    prototypeRules:
+      'One random rook becomes a Cannon. It slides like a rook onto empty squares. It captures only by jumping over exactly one piece of either colour on its line and taking the next piece behind it. It gives check the same way, only through a screen. That side loses castling on the Cannon side.',
   },
   {
     id: 'MOD-E014',

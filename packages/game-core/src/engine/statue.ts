@@ -16,7 +16,7 @@ const DIAGONAL = ALL.slice(4);
 function pushDirections(piece: Piece): ReadonlyArray<readonly [number, number]> {
   const kinds: Partial<Record<PieceType, ReadonlyArray<readonly [number, number]>>> = {
     king: ALL, queen: ALL, royal_guard: ALL,
-    rook: ORTHOGONAL, chancellor: ORTHOGONAL,
+    rook: ORTHOGONAL, chancellor: ORTHOGONAL, cannon: ORTHOGONAL,
     bishop: DIAGONAL, archbishop: DIAGONAL,
     pawn: [[0, piece.color === 'white' ? 1 : -1]],
   };
