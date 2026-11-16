@@ -496,6 +496,7 @@ Touch-move rules apply to you. Once you select a piece that has a legal move, yo
 - Phones: hold-to-read never counts as touching. Only a tap selects. This holds on every square, even one with nothing to read.
 - Bots do not touch. A bot that owns the card picks one piece and moves it, which already keeps the rule.
 - Interaction: Main Character Syndrome. While the Queen is owed and has a move, only a Queen can be touched.
+- Interaction: Lunch Break. At lunch a rook or Queen cannot be touched.
 - Interaction: Recalculating. A piece whose dots are all fake cannot be touched, so no T appears on it. A careful player can use this to spot fakes.
 - Balance: bots never touch, so for a bot the curse costs nothing. The balance harness cannot measure this card; leave it out of the 40% to 60% flags.
 
@@ -511,6 +512,7 @@ Every 10 of your moves, your rooks and Queen go on lunch. On your next move they
 - Built: lunch is your 11th, 21st, 31st move and so on. The sign goes up in the feed at the start of the move before (your 10th, 20th, ...). Your moves include passes and skipped turns.
 - Built: at lunch, rooks and Queen cannot move or use their abilities, and you cannot castle, because the rook would move. Shooing Gerald is still allowed.
 - Ruling: never a softlock. If only rooks and Queen could move, lunch is waived.
+- Interaction: Commitment Issues. At lunch a rook or Queen cannot be touched.
 - Interaction: Main Character Syndrome and Roll For Initiative. Lunch is checked first, so a Queen demand or a rook or Queen roll waits and you choose freely.
 
 ### MOD-B017 · MINE!
