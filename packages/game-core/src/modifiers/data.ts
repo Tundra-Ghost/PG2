@@ -1433,7 +1433,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     tier: 'B',
     scope: 'owned',
     description:
-      'One of your rooks becomes a Grasshopper. It moves along any queen line but must hop over exactly one piece and land on the square right behind it, capturing anything there. That side loses castling on the Grasshopper side.',
+      'One of your rooks becomes a Grasshopper. It moves along any queen line but must hop over exactly one piece and land on the square right behind it, capturing an enemy there. That side loses castling on the Grasshopper side.',
     flavor: '"It needs something to jump over. It is always looking for something to jump over. It is exhausting."',
     prototypeRules:
       'One random rook becomes a Grasshopper. Along any queen line it hops the first piece of either colour and lands on the square right behind it, capturing an enemy there. With nothing to hop, it cannot move that way. It gives check the same way. That side loses castling on the Grasshopper side.',

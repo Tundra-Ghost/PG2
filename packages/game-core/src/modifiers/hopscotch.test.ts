@@ -106,6 +106,28 @@ describe('MOD-E012 Hopscotch (The Grasshopper)', () => {
     expect(chessEngine.validateMove(state, move('a1', 'a3', 'white')).valid).toBe(true);
   });
 
+  it('This Is My Swamp: stuck for 2 moves like a leaper, then hops out', () => {
+    let state = chessEngine.activateDraftModifiers(
+      makeEmptyState([
+        makePiece('king', 'white', 'h1'),
+        makePiece('grasshopper', 'white', 'd1'),
+        makePiece('pawn', 'white', 'd3'),
+        makePiece('pawn', 'white', 'd5'),
+        makePiece('knight', 'white', 'b1'),
+        makePiece('king', 'black', 'a8'),
+      ]),
+      [{ id: MODIFIER_IDS.thisIsMySwamp, sourceColor: 'white' }],
+    );
+    state = chessEngine.applyMove(state, move('d1', 'd4', 'white'));
+    for (let i = 0; i < 2; i++) {
+      state = chessEngine.applyMove(state, move(i === 0 ? 'a8' : 'b8', i === 0 ? 'b8' : 'a8', 'black'));
+      expect(chessEngine.validateMove(state, move('d4', 'd6', 'white')).valid).toBe(false);
+      state = chessEngine.applyMove(state, move(i === 0 ? 'b1' : 'c3', i === 0 ? 'c3' : 'b1', 'white'));
+    }
+    state = chessEngine.applyMove(state, move('a8', 'b8', 'black'));
+    expect(chessEngine.validateMove(state, move('d4', 'd6', 'white')).valid).toBe(true);
+  });
+
   it('bots play legal Grasshopper moves and take a free piece', () => {
     const state = makeEmptyState([
       makePiece('king', 'white', 'h1'),

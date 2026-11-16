@@ -130,7 +130,7 @@ Promotion: once the square ahead of a pawn is storm, that pawn promotes on the l
 ### MOD-A006 · This Is My Swamp
 *Ref: Shrek* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
 
-The four centre squares (d4, d5, e4, e5) are the Swamp. A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant, Camel, Nightrider) that lands in the Swamp is stuck for 2 of its owner's moves, then leaps out normally (a Nightrider with a single jump). Swamp pieces still give check at full range (Core rule 3).
+The four centre squares (d4, d5, e4, e5) are the Swamp. A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant, Camel, Nightrider, Grasshopper) that lands in the Swamp is stuck for 2 of its owner's moves, then leaps out normally (a Nightrider with a single jump). Swamp pieces still give check at full range (Core rule 3).
 
 *The Swamp is contested. The Swamp is disgusting. The Swamp is strategically essential.*
 
@@ -1105,12 +1105,12 @@ Your knights become Camels. A Camel leaps three squares one way and one square t
 ### MOD-E012 · Hopscotch
 *Ref: Fairy chess Grasshopper* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
-One of your rooks becomes a Grasshopper. It moves along any queen line but must hop over exactly one piece and land on the square right behind it, capturing anything there. That side loses castling on the Grasshopper side.
+One of your rooks becomes a Grasshopper. It moves along any queen line but must hop over exactly one piece and land on the square right behind it, capturing an enemy there. That side loses castling on the Grasshopper side.
 
 *It needs something to jump over. It is always looking for something to jump over. It is exhausting.*
 
 - Ruling: with nothing to hop over, a Grasshopper cannot move. It still gives check by hopping.
-- Built: one random rook becomes the Grasshopper (seeded). That side loses castling on the Grasshopper side.
+- Built: one random rook becomes the Grasshopper (seeded). That side loses castling on the Grasshopper side. Ghost rooks are never picked.
 - Built: it hops the first piece of either colour on the line, however far away, and lands on the very next square. It captures an enemy there and cannot land on its own piece. It never hops a void square (the Statue, vents, the Storm) and cannot push the Statue.
 - Built: a hop that leaves your King in check is illegal (Core rule 2).
 - Conflict: Equivalent Exchange (The Chancellor) and Overseas Hire (The Cannon). Each changes a random rook, so one side cannot draft two of them.
