@@ -8,6 +8,7 @@ import { ALL_MODIFIERS } from './data';
 import { modifierRegistry } from './registry';
 import './index';
 import { MODIFIER_IDS } from './ids';
+import { touchPiece } from './definitions/commitment-issues';
 import { makeEmptyState, makePiece, move } from './testHelpers';
 
 const GUARD = MODIFIER_IDS.theBodyguard;
@@ -96,19 +97,61 @@ describe('MOD-E017 The Bodyguard', () => {
     expect(chessEngine.isInCheck(next, 'white')).toBe(false);
   });
 
-  it('the King must be free to move: a frozen or distracted King cannot be swapped', () => {
-    const state = withGuard([
-      makePiece('king', 'white', 'e1'),
-      makePiece('bodyguard', 'white', 'f2'),
-      makePiece('king', 'black', 'a8'),
-    ]);
-    state.activeModifiers.push({ id: MODIFIER_IDS.gerald, name: 'Gerald', activeFor: 'both', sourceColor: null });
-    const king = state.pieces.get('e1')!;
-    state.pieces.set('e1', { ...king, cooldowns: { [MODIFIER_IDS.gerald]: 2 } });
-    expect(swapTargets(state, 'f2')).toEqual([]);
-    const result = chessEngine.validateMove(state, move('f2', 'e1', 'white', { ability: GUARD }));
-    expect(result.valid).toBe(false);
-    expect(result.reason).toMatch(/Gerald/);
+  it('a King frozen by Winter cannot be swapped, and a King swapped into the cold freezes', () => {
+    const frozen = withGuard(
+      [makePiece('king', 'white', 'e1'), makePiece('bodyguard', 'white', 'f2'), makePiece('king', 'black', 'a8')],
+      [{ id: MODIFIER_IDS.winterIsComing, sourceColor: null as unknown as Color }],
+    );
+    const king = frozen.pieces.get('e1')!;
+    frozen.pieces.set('e1', { ...king, cooldowns: { [MODIFIER_IDS.winterIsComing]: 1 } });
+    expect(swapTargets(frozen, 'f2')).toEqual([]);
+    expect(chessEngine.validateMove(frozen, move('f2', 'e1', 'white', { ability: GUARD })).reason).toMatch(/frozen/);
+
+    // King on e4 (warm), Bodyguard on e3 (cold rank): the King lands in the cold.
+    const warm = withGuard(
+      [makePiece('king', 'white', 'e4'), makePiece('bodyguard', 'white', 'e3'), makePiece('king', 'black', 'a8')],
+      [{ id: MODIFIER_IDS.winterIsComing, sourceColor: null as unknown as Color }],
+    );
+    const next = chessEngine.applyMove(warm, move('e3', 'e4', 'white', { ability: GUARD }));
+    expect(next.pieces.get('e3')?.type).toBe('king');
+    expect(next.pieces.get('e3')?.cooldowns[MODIFIER_IDS.winterIsComing] ?? 0).toBeGreaterThan(0);
+  });
+
+  it('Commitment Issues: a touched Bodyguard may still swap, so it never softlocks', () => {
+    const state = withGuard(
+      [
+        makePiece('king', 'white', 'a1'),
+        makePiece('bodyguard', 'white', 'b1'),
+        makePiece('pawn', 'white', 'a2'),
+        makePiece('pawn', 'white', 'b2'),
+        makePiece('pawn', 'white', 'c2'),
+        makePiece('knight', 'white', 'c1'),
+        makePiece('king', 'black', 'h8'),
+      ],
+      [{ id: MODIFIER_IDS.commitmentIssues, sourceColor: 'white' }],
+    );
+    const touched = touchPiece(state, 'b1');
+    expect(touched.pieces.get('b1')?.isTouched).toBe(true);
+    expect(chessEngine.validateMove(touched, move('b1', 'a1', 'white', { ability: GUARD })).valid).toBe(true);
+    expect(swapTargets(touched, 'b1')).toEqual(['a1']);
+  });
+
+  it('Roll For Initiative: when the die says Bodyguard, the swap counts', () => {
+    const state = withGuard(
+      [
+        makePiece('king', 'white', 'a1'),
+        makePiece('bodyguard', 'white', 'b1'),
+        makePiece('pawn', 'white', 'a2'),
+        makePiece('pawn', 'white', 'b2'),
+        makePiece('pawn', 'white', 'c2'),
+        makePiece('knight', 'white', 'c1'),
+        makePiece('king', 'black', 'h8'),
+      ],
+      [{ id: MODIFIER_IDS.rollForInitiative, sourceColor: 'white' }],
+    );
+    state.modifierState[MODIFIER_IDS.rollForInitiative] = { roll: { color: 'white', turnNumber: state.turnNumber, type: 'bodyguard' } };
+    expect(chessEngine.validateMove(state, move('b1', 'a1', 'white', { ability: GUARD })).valid).toBe(true);
+    expect(chessEngine.validateMove(state, move('c1', 'd3', 'white')).valid).toBe(false);
   });
 
   it('bots may swap, and only legally', () => {

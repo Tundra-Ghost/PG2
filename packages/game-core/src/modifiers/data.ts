@@ -1517,7 +1517,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'A Bodyguard replaces your g-pawn. It moves like a King. As its move, it may swap places with your King if they are next to each other.',
     prototypeRules:
-      'Your g-pawn starts as a Bodyguard. It steps one square like a King, can be captured and never castles. As its move it may swap places with your King when they stand next to each other. The swap counts as a King move: castling is lost, and it may not leave your King in check. A swap out of check is allowed if it ends the check.',
+      'Your g-pawn starts as a Bodyguard. It steps one square like a King, can be captured and never castles. As its move it may swap places with your King when they stand next to each other. The swap counts as a King move: castling is lost, and it may not leave your King in check. A swap out of check is allowed if it ends the check. The King must be free to move: a frozen or confessed King cannot swap. Cannot be drafted with The Small Council or Heavy Is The Crown.',
     flavor: '"He will take the check for the King. He has said this many times. Nobody asked."',
   },
   {

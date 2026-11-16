@@ -3,6 +3,7 @@ import type { GameState, Move, Piece, PieceType, Square } from '../../engine/typ
 import { appendGameEvent, cloneState, getActiveDefinitions } from '../../engine/gameLoop';
 import { modifierRegistry } from '../registry';
 import { getConfession } from './forgive-me';
+import { isMoveRuleCard } from '../move-rules';
 import { MODIFIER_IDS } from '../ids';
 
 const ID = MODIFIER_IDS.freakyFriday;
@@ -95,6 +96,9 @@ export function checkSwapPartner(state: GameState, move: Move, ownId: string): {
   }
   for (const def of getActiveDefinitions(state)) {
     if (def.id === ownId || !def.onPreMoveValidate) continue;
+    // Touch-move and the move-rule curses are about the piece you chose; the
+    // forward move already answered them, so the partner is not asked again.
+    if (def.id === MODIFIER_IDS.commitmentIssues || isMoveRuleCard(def.id)) continue;
     const result = def.onPreMoveValidate(state, reverse);
     if (result.blocked) return result;
   }

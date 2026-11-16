@@ -1017,7 +1017,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 - Conflict: Stonks. Both rebuild your army, so one side cannot draft both.
 - Conflict: Hatchery. Its pawns fill the third rank, leaving no nest, so one side cannot draft both.
 - Conflict: Leap Of Faith. There are no bishops to leap, so one side cannot draft both.
-- Conflict: The Bodyguard. Its g-pawn is gone, so one side cannot draft both.
+- Conflict: The Bodyguard. This card rebuilds the pawns, so whether the Bodyguard survives would depend on which card goes first. One side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
 *Ref: John Wick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1209,8 +1209,8 @@ A Bodyguard replaces your g-pawn. It moves like a King. As its move, it may swap
 - King review: the King only gains a way out. Core rule 1 holds.
 - Built: the g-pawn on g2 (g7 for Black) starts as the Bodyguard. It steps one square any way, can be captured (losing it does not lose the game) and never castles. It writes Bg in the move list.
 - Built: the swap uses Freaky Friday's swap. It counts as a King move, so castling is lost for good. No cooldown.
-- Ruling: the King must be free to move. A King held by Gerald, frozen by Winter or under a Confession cannot be swapped. Winter and the Swamp apply to the King's new square as if it had moved there.
-- Conflict: The Small Council. It moves the g-pawn and fills the third rank, so one side cannot draft both.
+- Ruling: the King must be free to move. A King frozen by Winter or under a Confession cannot be swapped. Touch-move (Commitment Issues) and the move-rule curses judge the Bodyguard, the piece you chose. Winter and the Swamp apply to the King's new square as if it had moved there.
+- Conflict: The Small Council. It rebuilds the pawns, so whether the Bodyguard survives would depend on which card goes first. One side cannot draft both.
 - Conflict: Heavy Is The Crown. A swap would let the King skip its order step, so one side cannot draft both.
 
 ### MOD-E018 · Zerg Rush

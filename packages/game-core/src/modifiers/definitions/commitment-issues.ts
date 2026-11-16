@@ -9,7 +9,7 @@ import { affectsColor } from '../owner';
 
 const ID = MODIFIER_IDS.commitmentIssues;
 
-const NAMES: Partial<Record<Piece['type'], string>> = { royal_guard: 'Royal Guard' };
+const NAMES: Partial<Record<Piece['type'], string>> = { royal_guard: 'Royal Guard', bodyguard: 'Bodyguard' };
 
 function pieceName(piece: Piece): string {
   return NAMES[piece.type] ?? piece.type;
