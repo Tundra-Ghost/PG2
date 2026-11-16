@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 47 built, 53 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 49 built, 51 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -16,7 +16,7 @@
 ## Change log
 
 **v0.4 (2026-11-14)**
-- 60 new design cards, 12 per category (A009 to E020), for 100 in all. None are built yet. They show in the Collection and under "Show upcoming" in the draft, and the draft never offers them.
+- 60 new design cards, 12 per category (A009 to E020), for 100 in all. None were built at the time; cards built since are marked **Built**. Design cards show in the Collection and under "Show upcoming" in the draft, and the draft never offers them until they are built.
 - Each new card was checked against the design rules: legible at a glance (Rule 03), skill still decides (Pillar 2), the King is never removed or hidden (Rule 04), no softlocks (Rule 06), curses priced by moves lost (Rule 08). The rulings under each card record how.
 - Three new support cards (Footprints, Flashlight, Crystal Ball) and Tells are gated in the draft like Cat Mode, so they are never dead picks.
 - New conflicts to enforce when built: The Magic Roundabout with This Is My Swamp, and Night Shift with It's Dark And I'm Scared (one of each pair per match).
@@ -77,7 +77,7 @@ Every 5 rounds, one random empty tile becomes Infected. A piece standing on an I
 
 - Synergy: It's Dark And I'm Scared. Hidden infected tiles are catastrophic.
 - Conflict: The Floor Is Lava. Infection cannot spread onto Lava.
-- Ruling: rooks, bishops, queens and chancellors lose reach. Pawns lose their double step. Knights and kings are not slowed. Moving the piece resets its count. The slowed piece shows its reach on its square.
+- Ruling: rooks, bishops, queens and chancellors lose reach. Pawns lose their double step. Knights, kings and other leapers (Pigeons, Elephants, Camels) are not slowed. Moving the piece resets its count. The slowed piece shows its reach on its square.
 - Ruling: lava burns infection away.
 
 ### MOD-A002 · The Floor Is Lava
@@ -130,7 +130,7 @@ Promotion: once the square ahead of a pawn is storm, that pawn promotes on the l
 ### MOD-A006 · This Is My Swamp
 *Ref: Shrek* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
 
-The four centre squares (d4, d5, e4, e5) are the Swamp. A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight that lands in the Swamp is stuck for 2 of its owner's moves, then leaps out normally. Swamp pieces still give check at full range (Core rule 3).
+The four centre squares (d4, d5, e4, e5) are the Swamp. A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant, Camel) that lands in the Swamp is stuck for 2 of its owner's moves, then leaps out normally. Swamp pieces still give check at full range (Core rule 3).
 
 *The Swamp is contested. The Swamp is disgusting. The Swamp is strategically essential.*
 
@@ -539,6 +539,7 @@ Target one enemy piece. For 2 of the opponent's moves, that piece must show its 
 
 - Synergy: fog cards. The confession reveals the target through fog and shows if it is a decoy or Sus.
 - Built: the target is an enemy piece (not the King) on one of the bishop's diagonals. The bishop does not move. For the target side's next 2 turns, the target's first move only declares the square: the turn is spent, an event names the square, and a dashed violet ring marks it. It can then only move to that square. In check it moves freely. Both squares are revealed through fog.
+- Conflict: Elephant In The Room. It turns every bishop into an Elephant, so one side cannot draft both.
 
 ### MOD-C003 · Did I Do That? (Oops)
 *Ref: Urkel* · **Tier A** · Cost 3 · Curse 0 · Knight · Cooldown 6 · Modes: All · **Built**
@@ -548,6 +549,7 @@ The knight moves like a rook this move and can capture. It cannot start from the
 *The Knight has no regrets.*
 
 - Synergy: The Storm Closes In. Escape the edge in one move.
+- Built: Pigeons (Hatoful Gambit) and Camels (Lawrence Of Arabia) can use it too.
 
 ### MOD-C004 · Retaliatory Swipe (Look What You Made Me Do)
 *Ref: Taylor Swift, Reputation* · **Tier B** · Cost 2 · Curse 0 · Pawn · Cooldown 4 · Modes: All · **Built**
@@ -908,6 +910,7 @@ Both of the owner's knights become Pigeons. Pigeons move like knights. Every 5 r
 - Built: the hop square shows as a dashed teal ring. A hop never takes a King or leaves a King in check. If the square is no longer safe, the Pigeon stays put.
 - Gerald will not sit on Pigeons.
 - Synergy: Did I Do That? Pigeons can use the rook move.
+- Conflict: Lawrence Of Arabia. It turns every knight into a Camel, so one side cannot draft both.
 
 ### MOD-E002 · The Small Council (Do You Hear The Pawns Sing)
 *Ref: Les Misérables* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -917,6 +920,8 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 - Conflict: The Storm Closes In. Crowded endgame.
 - Changed from v0.2: 8 pawns on rank 3 and 4 behind, instead of all 12 on rank 3.
 - Conflict: Holy Knight. One side cannot draft both.
+- Conflict: Elephant In The Room. It turns every bishop into an Elephant, so one side cannot draft both.
+- Conflict: Lawrence Of Arabia. It turns every knight into a Camel, so one side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
 *Ref: John Wick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -993,15 +998,23 @@ One of your bishops becomes an Archbishop. Each move, it moves like a bishop or 
 - Interaction: This Is My Swamp. In the Swamp it moves one square, with no knight jump. It is not stuck the way a knight is.
 - Conflict: The Small Council. It has no bishops, so one side cannot draft both.
 - Pair: the bishop-side twin of Equivalent Exchange.
+- Conflict: Elephant In The Room. It turns every bishop into an Elephant, so one side cannot draft both.
 
 ### MOD-E011 · Lawrence Of Arabia
-*Ref: Lawrence of Arabia* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Lawrence of Arabia* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Your knights become Camels. A Camel leaps three squares one way and one square the other, jumping over pieces.
 
 *The camel has crossed the desert. The desert was the queenside. Nobody was ready.*
 
 - Balance: a Camel stays on one square colour, like a bishop. Cheap trade, real tradeoffs.
+- Built: Camels have their own piece art and write L in the move list (C is the Chancellor).
+- Ruling: only your starting knights become Camels. A knight you promote to later is a normal knight. A captured Camel bought back with Moneyball is still a Camel.
+- Ruling: Ghost knights become Ghost Camels, and a Sus disguise shows a Camel instead of a knight.
+- Ruling: infection does not slow a Camel, like a knight.
+- Interaction: Did I Do That? A Camel can use the rook move, like a knight.
+- Interaction: This Is My Swamp. A Camel is trapped for 2 turns like a knight, then leaps out.
+- Conflict: Hatoful Gambit and The Small Council. Each one replaces or removes the knights, so one side cannot draft them with this card.
 
 ### MOD-E012 · Hopscotch
 *Ref: Fairy chess Grasshopper* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1089,13 +1102,21 @@ Your knights may repeat the same L-jump in a straight line, as long as each land
 - Ruling: known in fairy chess as the Nightrider.
 
 ### MOD-E020 · Elephant In The Room
-*Ref: Xiangqi elephants* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+*Ref: Xiangqi elephants* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
 
 Your bishops become Elephants. An Elephant moves exactly two squares diagonally, jumping over the square between.
 
 *Nobody is talking about the elephants. The elephants are fine with this.*
 
 - Pricing: a weaker piece, so the card pays back a point, like a curse.
+- Built: Elephants have their own piece art (an elephant head) and write E in the move list. Unlike a xiangqi elephant, nothing on the square between can block the jump.
+- Ruling: only your starting bishops become Elephants. A bishop you promote to later is a normal bishop. A captured Elephant bought back with Moneyball is still an Elephant.
+- Ruling: an Elephant is not a bishop for other cards. Twin Telepathy does not move it and it does not clear infection. Infection does not slow it.
+- Interaction: This Is My Swamp. An Elephant is treated like a knight: entering the Swamp traps it for 2 turns, then it jumps out normally.
+- Ruling: Ghost bishops (I'm Literally Right Here) become Ghost Elephants, so they still look like the rest of your army.
+- Conflict: Holy Knight, The Small Council and Forgive Me, For I Have Moved. Each needs a bishop, so one side cannot draft them with this card.
+- Interaction: Sus. A disguise never shows a bishop, since you have none. It shows an Elephant instead.
+- Note: an Elephant stays on its colour and can only ever reach 16 squares (a quarter of the board), so it can never give mate alone.
 
 ## Balance summary
 
@@ -1193,7 +1214,7 @@ Values the game uses today. "Built" cards match the build.
 | D020 | Masquerade | D | S | 4 | 2 | Shared | Design |
 | E009 | Slay Queen (The Amazon) | E | S | 5 | 0 | Owner | Built |
 | E010 | Holy Knight (The Archbishop) | E | A | 4 | 0 | Owner | Built |
-| E011 | Lawrence Of Arabia | E | B | 1 | 0 | Owner | Design |
+| E011 | Lawrence Of Arabia | E | B | 1 | 0 | Owner | Built |
 | E012 | Hopscotch | E | B | 2 | 0 | Owner | Design |
 | E013 | Overseas Hire (The Cannon) | E | A | 3 | 0 | Owner | Design |
 | E014 | Crab Rave | E | A | 3 | 0 | Owner | Built |
@@ -1202,9 +1223,9 @@ Values the game uses today. "Built" cards match the build.
 | E017 | The Bodyguard | E | A | 3 | 0 | Owner | Design |
 | E018 | Zerg Rush | E | A | 3 | 0 | Owner | Built |
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Design |
-| E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Design |
+| E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
-47 of 100 built. The other 53 are designs (v0.4).
+49 of 100 built. The other 51 are designs (v0.4).
 
 ### Balance test plan
 

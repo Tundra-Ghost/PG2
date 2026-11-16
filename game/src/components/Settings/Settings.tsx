@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ALL_MODIFIERS, modifierRegistry } from '@pigeon-chess/game-core';
 import type { AccountControls } from '../../online/useAccount';
 import type { AppSettings } from '../../settings';
 import { saveSettings } from '../../settings';
@@ -116,7 +117,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: 'audio',         label: 'Audio' },
   { id: 'display',       label: 'Display' },
   { id: 'gameplay',      label: 'Gameplay' },
-  { id: 'accessibility', label: 'Access.' },
+  { id: 'accessibility', label: 'Accessibility' },
   { id: 'feedback',      label: 'Feedback' },
 ];
 
@@ -236,7 +237,7 @@ export default function Settings({ settings: initial, onSave, onBack, account, f
               />
               <Toggle
                 label="Auto-Queen on Promotion"
-                sub="Skip the modal — always promote to queen"
+                sub="Skip the choice and always promote to a queen"
                 value={s.autoQueen}
                 onChange={v => update({ autoQueen: v })}
               />
@@ -275,7 +276,7 @@ export default function Settings({ settings: initial, onSave, onBack, account, f
               <StaticRow label="Pigeon Chess"  sub="v0.1.0 · Phase 0 · Viktor Crumb's Domain" />
               <StaticRow label="Audio Credits" sub="SFX from pigeon-chess prototype · BGM: Treasure Trove Tango (CC)" />
               <StaticRow label="Engine"        sub="Custom chess engine · Vite + React + TypeScript" />
-              <StaticRow label="Modifiers"     sub="Modifier Bible v0.2 · 5 of 40 implemented" />
+              <StaticRow label="Modifiers"     sub={`${modifierRegistry.getAll().length} of ${ALL_MODIFIERS.length} playable`} />
             </>
           )}
 

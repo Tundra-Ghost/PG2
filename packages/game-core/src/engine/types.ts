@@ -12,6 +12,8 @@ export type PieceType =
   | 'pigeon'       // future: MOD-E001 Hatoful Gambit
   | 'chancellor'   // MOD-E004 Equivalent Exchange
   | 'archbishop'   // MOD-E010 Holy Knight
+  | 'elephant'     // MOD-E020 Elephant In The Room
+  | 'camel'        // MOD-E011 Lawrence Of Arabia
   | 'royal_guard'; // future: MOD-E003 Royal Guard
 
 export type Color = 'white' | 'black';

@@ -4,7 +4,7 @@ import {
   getSelectedTitle,
   type LocalProfile,
 } from '../../profile';
-import { ALL_MODIFIERS } from '@pigeon-chess/game-core';
+import { ALL_MODIFIERS, modifierRegistry } from '@pigeon-chess/game-core';
 import { playClick } from '../../sound';
 import styles from './MainMenu.module.css';
 
@@ -41,7 +41,8 @@ interface MenuCard {
   action?: () => void;
 }
 
-const LIVE_MODIFIER_COUNT = 5;
+/** Modifiers you can play today: the ones the engine has built. */
+const LIVE_MODIFIER_COUNT = modifierRegistry.getAll().length;
 
 function getModifierName(id: string): string {
   return ALL_MODIFIERS.find(mod => mod.id === id)?.name ?? id;

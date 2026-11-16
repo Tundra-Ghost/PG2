@@ -204,7 +204,7 @@ export default function ProfileSetup({
         </div>
         {history.length === 0 ? (
           <p className={styles.placeholder}>
-            {isOffline ? 'No recorded matches in this category yet.' : 'No data yet. Online history is reserved for future server-backed play.'}
+            {isOffline ? 'No recorded matches in this category yet.' : 'Online games are not recorded here yet.'}
           </p>
         ) : (
           <div className={styles.historyList}>
@@ -406,7 +406,7 @@ export default function ProfileSetup({
                 <StatCard label="Overall" stats={totalStats} placeholder="No games played yet." />
                 <StatCard label="Campaign / Story" stats={viewProfile.stats.modes.story} placeholder="No Campaign data yet." />
                 <StatCard label="Quick Play" stats={viewProfile.stats.modes.quick} placeholder="No Quick Play data yet." />
-                <StatCard label="Online" stats={viewProfile.stats.modes.online} placeholder="No data yet. Online tracking is reserved for future server-backed play." />
+                <StatCard label="Online" stats={viewProfile.stats.modes.online} placeholder="Online games are not recorded here yet." />
               </div>
             )}
 

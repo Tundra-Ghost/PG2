@@ -34,7 +34,7 @@ function getPieceTooltipLines(piece: PieceType | undefined, infectedReach: numbe
     lines.push('Winter Is Coming: This piece is frozen for one turn.');
   }
   if ((piece.cooldowns[SWAMP_ID] ?? 0) > 0) {
-    lines.push('This Is My Swamp: This knight is stuck in the Swamp.');
+    lines.push('This Is My Swamp: This piece is stuck in the Swamp.');
   }
   if (piece.isPacifist) {
     lines.push('Conscientious Objector: This piece refuses to capture.');
@@ -50,6 +50,12 @@ function getPieceTooltipLines(piece: PieceType | undefined, infectedReach: numbe
   }
   if (piece.type === 'archbishop') {
     lines.push('Archbishop: Moves like a bishop or a knight.');
+  }
+  if (piece.type === 'elephant') {
+    lines.push('Elephant: Jumps exactly 2 squares diagonally.');
+  }
+  if (piece.type === 'camel') {
+    lines.push('Camel: Leaps 3 squares one way and 1 the other.');
   }
   if (piece.type === 'queen' && piece.isAmazon) {
     lines.push('Slay Queen: This Queen also moves like a knight.');

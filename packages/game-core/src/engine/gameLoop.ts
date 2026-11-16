@@ -39,6 +39,11 @@ function toSquare(f: number, r: number): Square {
 // Position hashing  (threefold-repetition detection)
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** Position-key letters where the first letter of the type would collide. */
+const POSITION_SYM: Partial<Record<PieceType, string>> = {
+  knight: 'N', pigeon: 'H', royal_guard: 'G', elephant: 'El', camel: 'Cm',
+};
+
 /**
  * Produces a deterministic key representing the full chess position.
  * Encodes: piece placement, side to move, castling rights, en-passant file.
@@ -47,7 +52,7 @@ export function positionKey(state: GameState): string {
   // 1. Piece placement — sorted so Map iteration order doesn't matter
   const pieceTokens: string[] = [];
   for (const [sq, p] of state.pieces) {
-    const sym = p.type === 'knight' ? 'N' : p.type === 'pigeon' ? 'H' : p.type[0].toUpperCase();
+    const sym = POSITION_SYM[p.type] ?? p.type[0].toUpperCase();
     pieceTokens.push(`${sq}:${p.color[0]}${sym}`);
   }
   pieceTokens.sort();
@@ -88,7 +93,7 @@ function isInsufficientMaterial(state: GameState): boolean {
 
   // K+B vs K  or  K+N vs K
   if (pieces.length === 3) {
-    const minor = pieces.find(p => p.type === 'bishop' || p.type === 'knight' || p.type === 'pigeon');
+    const minor = pieces.find(p => p.type === 'bishop' || p.type === 'knight' || p.type === 'pigeon' || p.type === 'elephant' || p.type === 'camel');
     if (minor) return true;
   }
 
@@ -386,7 +391,7 @@ export function isStalemate(state: GameState, color: Color): boolean {
 
 /** Standard piece letter. Pawn = ''. Knight = 'N' (NOT 'K'). */
 const PIECE_SYM: Partial<Record<PieceType, string>> = {
-  king: 'K', queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: '', chancellor: 'C', archbishop: 'A', royal_guard: 'G', pigeon: 'H',
+  king: 'K', queen: 'Q', rook: 'R', bishop: 'B', knight: 'N', pawn: '', chancellor: 'C', archbishop: 'A', elephant: 'E', camel: 'L', royal_guard: 'G', pigeon: 'H',
 };
 
 /** Promotion suffix letter. */

@@ -31,6 +31,8 @@ const MARKER_LEGEND: Array<{ modifierId: string } & MarkerLegendEntry> = [
   { modifierId: MODIFIER_IDS.rejectQueen, mark: '»', label: 'Chain ready' },
   { modifierId: MODIFIER_IDS.chancellor, mark: 'C', label: 'Chancellor' },
   { modifierId: MODIFIER_IDS.holyKnight, mark: 'A', label: 'Archbishop in the move list (bishop + knight)' },
+  { modifierId: MODIFIER_IDS.elephantInTheRoom, mark: 'E', label: 'Elephant in the move list (jumps 2 diagonally)' },
+  { modifierId: MODIFIER_IDS.lawrenceOfArabia, mark: 'L', label: 'Camel in the move list (leaps 3 and 1)' },
   { modifierId: MODIFIER_IDS.commitmentIssues, mark: 'T', label: 'Touched: this piece must move' },
   { modifierId: MODIFIER_IDS.slayQueen, mark: 'A', label: 'Amazon badge (Queen + knight)' },
   { modifierId: MODIFIER_IDS.threeKings, mark: '⛨', label: 'Royal Guard' },

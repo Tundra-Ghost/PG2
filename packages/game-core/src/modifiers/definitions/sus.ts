@@ -4,11 +4,20 @@ import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { prngPickIndex } from '../../engine/prng';
 import { MODIFIER_IDS } from '../ids';
 import { getModifierOwner } from '../owner';
+import { armyType } from '../army';
 
 const ID = MODIFIER_IDS.sus;
 /** Types a disguise can show. Special pieces from other cards are never shown. */
 const DISGUISES: PieceType[] = ['pawn', 'knight', 'bishop', 'rook', 'queen'];
-const LETTERS: Partial<Record<PieceType, string>> = { knight: 'N', bishop: 'B', rook: 'R', queen: 'Q' };
+const LETTERS: Partial<Record<PieceType, string>> = { knight: 'N', bishop: 'B', elephant: 'E', camel: 'L', rook: 'R', queen: 'Q' };
+
+/** Called when a card swaps a whole piece type for `color`, so the disguise keeps blending in. */
+export function remapDisguise(state: GameState, color: Color, from: PieceType, to: PieceType): GameState {
+  const disguise = sus(state)[color];
+  if (!disguise || disguise.shownAs !== from) return state;
+  state.modifierState = { ...state.modifierState, [ID]: { ...sus(state), [color]: { ...disguise, shownAs: to } } };
+  return state;
+}
 
 interface Disguise {
   pieceId: string;
@@ -96,7 +105,7 @@ export const susDef: ModifierDefinition = {
       if (candidates.length === 0) continue;
       const [pieceIdx, prngA] = prngPickIndex(next.prngState, candidates.length);
       const piece = candidates[pieceIdx];
-      const choices = DISGUISES.filter(type => type !== piece.type);
+      const choices = DISGUISES.map(type => armyType(next, color, type)).filter(type => type !== piece.type);
       const [typeIdx, prngB] = prngPickIndex(prngA, choices.length);
       next.prngState = prngB;
       next.modifierState = {

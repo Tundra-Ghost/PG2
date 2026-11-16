@@ -4,6 +4,7 @@ import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { prngPickIndex } from '../../engine/prng';
 import { MODIFIER_IDS } from '../ids';
 import { getModifierOwner } from '../owner';
+import { armyType } from '../army';
 
 const ID = MODIFIER_IDS.ghosts;
 export const GHOSTS_PER_SIDE = 2;
@@ -43,7 +44,7 @@ export const ghostsDef: ModifierDefinition = {
         const [typeIdx, prngB] = prngPickIndex(prngA, GHOST_TYPES.length);
         next.prngState = prngB;
         const square = free[sqIdx];
-        const ghost: Piece = { id: `ghost-${color}-${i + 1}`, type: GHOST_TYPES[typeIdx], color, square, isGhost: true, cooldowns: {} };
+        const ghost: Piece = { id: `ghost-${color}-${i + 1}`, type: armyType(next, color, GHOST_TYPES[typeIdx]), color, square, isGhost: true, cooldowns: {} };
         next.pieces.set(square, ghost);
       }
     }

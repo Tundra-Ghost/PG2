@@ -137,6 +137,8 @@ export default function App() {
   const clearPendingRoom = useCallback(() => setPendingRoomId(null), []);
   /** The finished game the debrief is about, while it is open. */
   const [surveyFor, setSurveyFor] = useState<GameSurveyContext | null>(null);
+  /** The finished game the result card offers a debrief for, until it is taken. */
+  const [debriefReady, setDebriefReady] = useState<GameSurveyContext | null>(null);
   const surveyedIds = useRef(new Set<string>());
 
   useEffect(() => {
@@ -361,10 +363,15 @@ export default function App() {
     activePlayerModifierIds,
   ]);
 
-  // Offer the optional debrief shortly after a local game ends, once per game.
+  // Offer the optional debrief on the result card once a local game ends, once
+  // per game. It never opens by itself, so the player sees the final board first.
   useEffect(() => {
+    if (!isFinished(gameState)) {
+      setDebriefReady(null);
+      return;
+    }
     if (screen !== 'game' || !settings.postGameSurveys) return;
-    if (!isFinished(gameState) || surveyedIds.current.has(gameState.id)) return;
+    if (surveyedIds.current.has(gameState.id)) return;
     surveyedIds.current.add(gameState.id);
     const context: GameSurveyContext = {
       mode: vsBot ? 'bot' : 'local',
@@ -377,8 +384,7 @@ export default function App() {
         ending: gameState.status,
       },
     };
-    const timer = setTimeout(() => setSurveyFor(context), 1500);
-    return () => clearTimeout(timer);
+    setDebriefReady(context);
   }, [screen, settings.postGameSurveys, gameState, vsBot, selectedBot, currentMatchMode]);
 
   const surveyOverlay = surveyFor ? (
@@ -736,7 +742,7 @@ export default function App() {
           profile={profile}
           editable={false}
           heading="The Roost"
-          subtitle="Local records, titles, achievements, and offline history for the current serverless prototype. Online sections remain placeholder scaffolding."
+          subtitle="Your records, titles, achievements and match history on this device. Online games are not recorded here yet."
           onBack={() => setScreen('menu')}
         />
         {settingsOverlay}
@@ -910,8 +916,7 @@ export default function App() {
                   profile: botProfile,
                   editable: false,
                   heading: `${opponentName} Dossier`,
-                  subtitle:
-                    'Prototype opponent profile view. Online profile exchange is reserved for future server-backed play.',
+                  subtitle: `${opponentName}'s record, titles and style of play.`,
                 });
               }}
             />
@@ -968,6 +973,15 @@ export default function App() {
             <GameStatus
               state={gameState}
               onNewGame={handleNewGame}
+              sides={vsBot ? { you: 'white', names: { white: playerName, black: opponentName } } : undefined}
+              onDebrief={
+                debriefReady
+                  ? () => {
+                      setSurveyFor(debriefReady);
+                      setDebriefReady(null);
+                    }
+                  : undefined
+              }
             />
           </div>
 

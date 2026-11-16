@@ -138,10 +138,10 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     curseLevel: 0,
     tier: 'B',
     description:
-      'The four central squares (d4, d5, e4, e5) are the Swamp. Any piece in the Swamp moves at 1 square per turn. Knights are trapped for 2 turns upon entering.',
+      'The four central squares (d4, d5, e4, e5) are the Swamp. Any piece in the Swamp moves at 1 square per turn. Knights and other leapers are trapped for 2 turns upon entering.',
     flavor: '"Viktor entered the Swamp to seize the centre. The Swamp seized Viktor. They are negotiating terms."',
     prototypeRules:
-      'A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight that lands in the Swamp is stuck for 2 turns, then leaps out normally. Swamp pieces still give check at full range.',
+      'A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant, Camel) that lands in the Swamp is stuck for 2 turns, then leaps out normally. Swamp pieces still give check at full range.',
   },
   {
     id: 'MOD-A007',
@@ -688,7 +688,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'This turn, your Knight moves like a Rook — any distance horizontally or vertically. It can capture on this move. The Knight is fully aware this is illegal. It moves anyway.',
     flavor: '"The knight moved in a straight line. It looked around. Nobody stopped it. Viktor pretended this was planned."',
     prototypeRules:
-      'Select a knight and press the ability button. It moves like a rook this turn and can capture. Then that knight waits 6 of your turns. Cannot start from the Swamp.',
+      'Select a knight (or Pigeon or Camel) and press the ability button. It moves like a rook this turn and can capture. Then that knight waits 6 of your turns. Cannot start from the Swamp.',
   },
   {
     id: 'MOD-C004',
@@ -1403,6 +1403,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your knights become Camels. A Camel leaps three squares one way and one square the other, jumping over pieces.',
     flavor: '"The camel has crossed the desert. The desert was the queenside. Nobody was ready."',
+    prototypeRules:
+      'Your starting knights become Camels. A Camel leaps 3 squares one way and 1 the other, over pieces. It stays on one square colour. A knight you promote to later is a normal knight. Cannot be drafted with Hatoful Gambit or The Small Council.',
   },
   {
     id: 'MOD-E012',
@@ -1533,5 +1535,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your bishops become Elephants. An Elephant moves exactly two squares diagonally, jumping over the square between.',
     flavor: '"Nobody is talking about the elephants. The elephants are fine with this."',
+    prototypeRules:
+      'Your starting bishops become Elephants. An Elephant moves exactly 2 squares diagonally and jumps the square between. A bishop you promote to later is a normal bishop. Cannot be drafted with Holy Knight, The Small Council or Forgive Me.',
   },
 ];
