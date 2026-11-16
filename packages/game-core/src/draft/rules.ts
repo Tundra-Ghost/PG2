@@ -21,6 +21,8 @@ function needsDarkFirst(cardId: string, ownIds: string[], otherIds: string[]): b
  * Peer Pressure and Main Character Syndrome demand different pieces on the
  * same move, and so does Roll For Initiative with either. Yeah, There Are Three Of Them (Three Kings) has no Queen, so Main Character Syndrome would be free.
  * Overseas Hire, Hopscotch and The Chancellor could each pick the same rook.
+ * The Bodyguard replaces the g-pawn, which The Small Council moves, and its
+ * swap would let a Heavy Is The Crown King skip its order.
  * Leap Of Faith needs a bishop: The Small Council has none, and Elephant In The Room turns them into Elephants.
  */
 const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
@@ -46,6 +48,8 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.hopscotch, MODIFIER_IDS.overseasHire],
   [MODIFIER_IDS.leapOfFaith, MODIFIER_IDS.smallCouncil],
   [MODIFIER_IDS.leapOfFaith, MODIFIER_IDS.elephantInTheRoom],
+  [MODIFIER_IDS.theBodyguard, MODIFIER_IDS.smallCouncil],
+  [MODIFIER_IDS.theBodyguard, MODIFIER_IDS.heavyIsTheCrown],
 ];
 
 /** The card in your draft that rules this one out, if any. */

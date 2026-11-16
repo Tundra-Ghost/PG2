@@ -281,6 +281,8 @@ function pieceMoves(state: GameState, piece: Piece): Square[] {
     case 'grasshopper':
       // MOD-E012: hops exactly one piece on a queen line, landing right behind it
       return grasshopperMoves(state, piece);
+    case 'bodyguard':
+      // MOD-E017: steps like a King, never castles
     case 'royal_guard':
       // MOD-E003: steps like a king, never castles, can be captured
       return stepMoves(state, piece);

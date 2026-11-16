@@ -73,6 +73,9 @@ function getPieceTooltipLines(
   if (piece.type === 'cannon') {
     lines.push('Cannon: Slides like a rook. Captures only by jumping exactly one piece to take the next one.');
   }
+  if (piece.type === 'bodyguard') {
+    lines.push('Bodyguard: Steps one square like a King. As its move, it can swap places with your King next to it.');
+  }
   if (piece.type === 'grasshopper') {
     lines.push('Grasshopper: Hops the first piece on any queen line and lands right behind it. Cannot move without something to hop.');
   }
