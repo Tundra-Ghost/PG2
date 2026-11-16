@@ -12,6 +12,8 @@
 
 .board {
   position: relative;
+  /* Taps and long presses on the board never scroll or zoom the page. */
+  touch-action: none;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
