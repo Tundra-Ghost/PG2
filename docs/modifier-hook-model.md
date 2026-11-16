@@ -314,3 +314,4 @@ Assessment:
 
 - `MOD-E014` Crab Rave: `pawnMoves` in `engine/moveGenerator.ts` adds a one-square sideways step onto an empty, non-void square for the owner's pawns. It is in the move generator, so checkmate, stalemate and the bot all see it. `buildMove` never marks a same-rank pawn step as en passant, and a same-rank pawn step does not reset the 50-move clock.
 - `MOD-E018` Zerg Rush: `pawnMoves` allows the two-square push from any rank for the owner's pawns. `applyMoveInternal` already sets the en passant square for every two-square pawn move, so en passant works from any rank.
+- `MOD-E015` Stonks: `onActivate` removes the owner's a- and h-file pawns and adds a knight on b3 (b6), or the next free square on that rank. `draft/rules.ts` keeps it and The Small Council off the same side.

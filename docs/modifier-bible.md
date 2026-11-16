@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 51 built, 49 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 53 built, 47 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -919,6 +919,7 @@ Both of the owner's knights become Pigeons. Pigeons move like knights. Every 5 r
 - Synergy: Did I Do That? Pigeons can use the rook move.
 - Conflict: Lawrence Of Arabia. It turns every knight into a Camel, so one side cannot draft both.
 - Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
+- Synergy: Stonks. The extra knight changes too.
 
 ### MOD-E002 · The Small Council (Do You Hear The Pawns Sing)
 *Ref: Les Misérables* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -931,6 +932,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 - Conflict: Elephant In The Room. It turns every bishop into an Elephant, so one side cannot draft both.
 - Conflict: Lawrence Of Arabia. It turns every knight into a Camel, so one side cannot draft both.
 - Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
+- Conflict: Stonks. Both rebuild your army, so one side cannot draft both.
 - Conflict: Hatchery. Its pawns fill the third rank, leaving no nest, so one side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
@@ -1026,6 +1028,7 @@ Your knights become Camels. A Camel leaps three squares one way and one square t
 - Interaction: This Is My Swamp. A Camel is trapped for 2 turns like a knight, then leaps out.
 - Conflict: Hatoful Gambit and The Small Council. Each one replaces or removes the knights, so one side cannot draft them with this card.
 - Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
+- Synergy: Stonks. The extra knight changes too.
 
 ### MOD-E012 · Hopscotch
 *Ref: Fairy chess Grasshopper* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1062,13 +1065,19 @@ Your pawns can also step one square sideways onto an empty square. They still ca
 - Ruling: a sideways step can be undone, so it does not reset the 50-move count. Back-and-forth steps end in a repetition draw (Rule 06).
 
 ### MOD-E015 · Stonks
-*Ref: Stonks meme* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Stonks meme* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Start the match with two fewer pawns (the a- and h-pawns) and an extra knight on b3.
 
 *Viktor sold two pawns. Viktor bought a horse. The market reacted.*
 
 - Balance: two pawns are worth about one knight. The trade buys tempo, not material.
+- Ruling: if b3 is taken by another card's piece, the knight takes the next free square on that rank (c3, a3, d3 and so on).
+- Synergy: Hatoful Gambit, Lawrence Of Arabia and Knight Rider. The new knight changes with the others.
+- Ruling: if Sus disguised a sold pawn, the disguise moves to the new knight.
+- Ruling: the knight never lands on a closed or off-board square.
+- Interaction: I'm Literally Right Here. The knight on b3 is public, so a piece there is always real. The Ghosts still bluff on the other squares.
+- Conflict: The Small Council. Both rebuild your army, so one side cannot draft both.
 
 ### MOD-E016 · Hatchery
 *Ref: Pigeons, and their eggs* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1131,6 +1140,7 @@ Your knights may repeat the same L-jump in a straight line, as long as each land
 - Interaction: The Cordyceptic Spread. Infection does not shorten its ride. A ride is at most 3 jumps on an 8x8 board, so this was kept simple.
 - Interaction: Did I Do That? A Nightrider can use the rook move, like a knight.
 - Conflict: Hatoful Gambit, The Small Council and Lawrence Of Arabia. Each one replaces or removes the knights, so one side cannot draft them with this card.
+- Synergy: Stonks. The extra knight changes too.
 
 ### MOD-E020 · Elephant In The Room
 *Ref: Xiangqi elephants* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -1249,14 +1259,14 @@ Values the game uses today. "Built" cards match the build.
 | E012 | Hopscotch | E | B | 2 | 0 | Owner | Design |
 | E013 | Overseas Hire (The Cannon) | E | A | 3 | 0 | Owner | Design |
 | E014 | Crab Rave | E | A | 3 | 0 | Owner | Built |
-| E015 | Stonks | E | B | 2 | 0 | Owner | Design |
+| E015 | Stonks | E | B | 2 | 0 | Owner | Built |
 | E016 | Hatchery | E | A | 3 | 0 | Owner | Built |
 | E017 | The Bodyguard | E | A | 3 | 0 | Owner | Design |
 | E018 | Zerg Rush | E | A | 3 | 0 | Owner | Built |
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
 
-51 of 100 built. The other 49 are designs (v0.4).
+53 of 100 built. The other 47 are designs (v0.4).
 
 ### Balance test plan
 
