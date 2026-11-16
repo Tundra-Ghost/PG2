@@ -132,4 +132,16 @@ describe('MOD-A016 Monument To Gerald', () => {
     // The order was spent on the push: stepping to e4 needs a new order.
     expect(chessEngine.validateMove(state, move('e3', 'e4', 'white')).valid).toBe(false);
   });
+
+  it('says nothing about a push when Forgive Me turns the move into a declaration', () => {
+    let state = withStatue(
+      [makePiece('king', 'white', 'h1'), makePiece('bishop', 'white', 'b2'), makePiece('rook', 'black', 'e5'), makePiece('pawn', 'white', 'a2'), makePiece('king', 'black', 'a8')],
+      [{ id: MODIFIER_IDS.forgiveMe, sourceColor: 'white' }],
+    );
+    state = chessEngine.applyMove(state, move('b2', 'e5', 'white', { ability: MODIFIER_IDS.forgiveMe }));
+    const events = state.eventHistory.length;
+    state = chessEngine.applyMove(state, move('e5', 'e4', 'black'));
+    expect(getStatueSquare(state)).toBe('e4');
+    expect(state.eventHistory.slice(events).some(e => e.modifierId === MONUMENT)).toBe(false);
+  });
 });

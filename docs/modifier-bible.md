@@ -251,6 +251,8 @@ A statue of Gerald stands on e4. Nothing can land on it or pass through it. A pi
 - Ruling: a push may not leave your King in check. A piece Gerald (Distracted Piece) is holding, or a frozen or stuck piece, cannot push.
 - Ruling: castling cannot pass through the statue. Gravity cannot move it; a piece that slides into it stops. The storm swallows it if it is caught on a storm square.
 - Ruling: where the statue stands is part of the position for repetition.
+- Ruling: Bandersnatch Protocol and Twin Telepathy do not copy a push. Only real piece moves are mirrored.
+- Ruling: a confessing piece (Forgive Me) that picks the statue square only declares it; nothing is pushed that move.
 - Synergy: Distracted Piece. Gerald is now in two places. Nobody can explain this.
 
 ### MOD-A017 · Tide Goes In, Tide Goes Out

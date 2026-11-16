@@ -1,7 +1,7 @@
 import type { ModifierDefinition } from '../types';
 import type { Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
-import { statuePushTarget } from '../../engine/statue';
+import { getStatueSquare } from '../../engine/statue';
 import { MODIFIER_IDS } from '../ids';
 
 const ID = MODIFIER_IDS.monumentToGerald;
@@ -35,17 +35,27 @@ export const monumentToGeraldDef: ModifierDefinition = {
     return next;
   },
 
-  onPreMoveApply(state, move) {
-    const beyond = statuePushTarget(state, move.from, move.to);
-    if (!beyond) return { state, move };
-    const next = appendGameEvent(cloneState(state), {
+  /**
+   * Tell the feed about a push once it has happened. Another card (Forgive
+   * Me) can turn the move into something else first, so check the board.
+   */
+  onPostMove(state, move) {
+    if (move.ability) return state;
+    const df = move.to.charCodeAt(0) - move.from.charCodeAt(0);
+    const dr = Number(move.to[1]) - Number(move.from[1]);
+    const beyond = `${String.fromCharCode(move.to.charCodeAt(0) + df)}${Number(move.to[1]) + dr}`;
+    const pushed = Math.max(Math.abs(df), Math.abs(dr)) === 1
+      && getStatueSquare(state) === beyond
+      && state.pieces.get(move.from) !== undefined
+      && !state.pieces.has(move.to);
+    if (!pushed) return state;
+    return appendGameEvent(cloneState(state), {
       ply: state.moveHistory.length + 1,
       type: 'modifier',
       modifierId: ID,
       title: 'Monument To Gerald',
       message: `Gerald's statue is pushed from ${move.to} to ${beyond}.`,
-      squares: [move.to, beyond],
+      squares: [move.to, beyond as Square],
     });
-    return { state: next, move };
   },
 };
