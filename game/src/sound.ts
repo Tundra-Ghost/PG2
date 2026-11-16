@@ -57,6 +57,12 @@ function playSfx(path: string) {
 let bgmEl: HTMLAudioElement | null = null;
 let currentBgmPath: string | null = null;
 let pendingBgm: string | null = null;
+/** True while the music is paused only because the page is hidden. */
+let pausedByHide = false;
+
+function pageHidden(): boolean {
+  return typeof document !== 'undefined' && document.visibilityState === 'hidden';
+}
 
 function applyBgmSettings() {
   if (!bgmEl) return;
@@ -79,6 +85,13 @@ function startBgm(path: string) {
   bgmEl.volume = opts.bgmVolume;
   currentBgmPath = path;
 
+  // A screen can change while the app is in the background. Wait for the
+  // player to come back before starting the new track.
+  if (pageHidden()) {
+    pausedByHide = true;
+    return;
+  }
+
   bgmEl.play().catch(() => {
     // Browser blocked autoplay — queue for first user gesture
     pendingBgm = path;
@@ -93,6 +106,40 @@ function stopBgm() {
     currentBgmPath = null;
   }
   pendingBgm = null;
+  pausedByHide = false;
+}
+
+// ── Leaving the page ───────────────────────────────────────────────────────
+// Phones keep a background tab's audio playing, so the music is paused when
+// the player switches app, locks the screen or leaves, and resumes on return.
+
+function pauseForHide() {
+  if (bgmEl && !bgmEl.paused) {
+    bgmEl.pause();
+    pausedByHide = true;
+  }
+}
+
+function resumeAfterHide() {
+  if (!pausedByHide) return;
+  pausedByHide = false;
+  if (!bgmEl || !opts.bgmEnabled) return;
+  const path = currentBgmPath;
+  bgmEl.play().catch(() => {
+    // Some browsers need a fresh tap to play again: wait for the next one.
+    pendingBgm = path;
+  });
+}
+
+if (typeof document !== 'undefined' && typeof window !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') pauseForHide();
+    else resumeAfterHide();
+  });
+  window.addEventListener('pagehide', pauseForHide);
+  window.addEventListener('pageshow', () => {
+    if (!pageHidden()) resumeAfterHide();
+  });
 }
 
 /**
