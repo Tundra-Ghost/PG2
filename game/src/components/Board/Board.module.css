@@ -12,8 +12,9 @@
 
 .board {
   position: relative;
-  /* Taps and long presses on the board never scroll or zoom the page. */
-  touch-action: none;
+  /* Taps and long presses on the board never scroll the page. Pinch-zoom
+     still works, for players who need a closer look. */
+  touch-action: pinch-zoom;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
