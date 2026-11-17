@@ -3,6 +3,7 @@ import { MODIFIER_IDS } from '../modifiers/ids';
 import { statuePushMoves } from './statue';
 import { cannonAttacks, cannonMoves, grasshopperMoves } from './hops';
 import { affectsColor } from '../modifiers/owner';
+import { getVisibleSquares, isHopHidden } from './visibility';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -227,6 +228,16 @@ function pawnMoves(state: GameState, piece: Piece): Square[] {
  * Used by moveValidator Stage 4 and checkmate/stalemate detection.
  */
 export function getLegalMovesForPiece(state: GameState, piece: Piece): Square[] {
+  const moves = boardMoves(state, piece);
+  // MOD-E012/E013: under fog, a hop needs its whole path in view, like
+  // Leap Of Faith, so a move never gives a hidden piece away (#157).
+  if (piece.type !== 'grasshopper' && piece.type !== 'cannon') return moves;
+  const visible = getVisibleSquares(state, piece.color);
+  return visible ? moves.filter(to => !isHopHidden(state, piece.square, to, visible)) : moves;
+}
+
+/** Moves on the real board, fog ignored. Threats and check use these. */
+function boardMoves(state: GameState, piece: Piece): Square[] {
   // MOD-A016: stepping into the statue pushes it (the piece stays put).
   return [...pieceMoves(state, piece).filter(sq => !isVoidSquare(state, sq)), ...statuePushMoves(state, piece)];
 }
@@ -340,7 +351,7 @@ function getLegalMovesForPieceNocastle(state: GameState, piece: Piece): Square[]
     }
     return result;
   }
-  return getLegalMovesForPiece(state, piece);
+  return boardMoves(state, piece);
 }
 
 /**

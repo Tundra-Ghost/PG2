@@ -56,7 +56,7 @@ export { getConfession } from './modifiers/definitions/forgive-me';
 export { getShownNotation, getShownType, getSusPiece } from './modifiers/definitions/sus';
 export { getSmokeSquares } from './modifiers/definitions/smoke-cloud';
 export { getLavaPreview } from './modifiers/definitions/floor-is-lava';
-export { getVisibleSquares, isMoveHidden } from './engine/visibility';
+export { getVisibleSquares, isHopHidden, isMoveHidden } from './engine/visibility';
 export { isSwampSquare, SWAMP_SQUARES } from './modifiers/definitions/swamp';
 export { getQuietZoneSquares } from './modifiers/definitions/quiet-quitting';
 export { getBankedEnPassant } from './modifiers/definitions/banked-en-passant';

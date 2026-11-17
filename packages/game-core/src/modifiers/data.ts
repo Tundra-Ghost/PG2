@@ -1438,7 +1438,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'One of your rooks becomes a Grasshopper. It moves along any queen line but must hop over exactly one piece and land on the square right behind it, capturing an enemy there. That side loses castling on the Grasshopper side.',
     flavor: '"It needs something to jump over. It is always looking for something to jump over. It is exhausting."',
     prototypeRules:
-      'One random rook becomes a Grasshopper. Along any queen line it hops the first piece of either colour and lands on the square right behind it, capturing an enemy there. With nothing to hop, it cannot move that way. It gives check the same way. That side loses castling on the Grasshopper side.',
+      'One random rook becomes a Grasshopper. Along any queen line it hops the first piece of either colour and lands on the square right behind it, capturing an enemy there. With nothing to hop, it cannot move that way. It gives check the same way. That side loses castling on the Grasshopper side. Under fog, a hop needs its whole path in view.',
   },
   {
     id: 'MOD-E013',
@@ -1454,7 +1454,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'One of your rooks becomes a Cannon. It moves like a rook, but captures only by jumping over exactly one piece on its line to take the next one. That side loses castling on the Cannon side.',
     flavor: '"The cannon arrived from abroad. It brought its own rules. It is very proud of them."',
     prototypeRules:
-      'One random rook becomes a Cannon. It slides like a rook onto empty squares. It captures only by jumping over exactly one piece of either colour on its line and taking the next piece behind it. It gives check the same way, only through a screen. That side loses castling on the Cannon side.',
+      'One random rook becomes a Cannon. It slides like a rook onto empty squares. It captures only by jumping over exactly one piece of either colour on its line and taking the next piece behind it. It gives check the same way, only through a screen. That side loses castling on the Cannon side. Under fog, a capture needs its whole path in view.',
   },
   {
     id: 'MOD-E014',

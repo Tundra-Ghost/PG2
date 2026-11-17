@@ -72,6 +72,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [x] MOD-A008 Bandersnatch Protocol (mirror twin copies each move across the d/e line)
 - [x] Event banners name the players instead of white and black
 - [x] Fog: bots plan on their own fogged view (they still know where the enemy King is)
+- [x] Fog: Grasshopper and Cannon hops need their whole path in view (#157)
 - [ ] Fog: online play shows fog from the player's side only once draft works online
 - [x] MOD-E001 Hatoful Gambit (owner's knights become Pigeons; every 5 rounds they announce a square and hop there one move later)
 - [x] MOD-D007 Recalculating… (1-2 fake dots per selection; picking one flashes RECALCULATING… and you pick again)
