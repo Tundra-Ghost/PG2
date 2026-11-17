@@ -15,6 +15,9 @@
 
 ## Change log
 
+**Balance round 2 (2026-11-17)**
+- New prices from the balance harness (#150): Elephant In The Room -1 to -3, Roll For Initiative -2 to -3 (curse 3), Stonks 2 to 3, Hatchery 3 to 4.
+
 **v0.4 (2026-11-14)**
 - 60 new design cards, 12 per category (A009 to E020), for 100 in all. None were built at the time; cards built since are marked **Built**. Design cards show in the Collection and under "Show upcoming" in the draft, and the draft never offers them until they are built.
 - Each new card was checked against the design rules: legible at a glance (Rule 03), skill still decides (Pillar 2), the King is never removed or hidden (Rule 04), no softlocks (Rule 06), curses priced by moves lost (Rule 08). The rulings under each card record how.
@@ -1195,11 +1198,11 @@ A pigeon Egg sits on your d3 square. It cannot move. If it survives 10 rounds, i
 - Ruling: Gerald, the Berserker, Sus, They Were The Traitor and Forgive Me never pick the Egg, since it cannot move. It cannot be sacrificed with This Is Necessary.
 - Ruling: Gravitational Anomaly still slides the Egg, and can push it off the board like any piece.
 - Ruling: the Egg's count is part of the position, so waiting for it is not a threefold repetition. An Egg that changes sides keeps counting for its new side.
-- Changed in balance round 2: cost 3 to 4. It won 72% of harness games at 3 (#150).
 - Ruling: an Egg bought back with Moneyball starts a fresh 10-move count.
 - Ruling: a hatched Pigeon only hops on its own if its side drafted Hatoful Gambit.
 - Ruling: King and Egg against a lone King is a draw, since the Pigeon it becomes cannot mate alone.
 - Conflict: The Small Council. Its pawns fill your third rank, so one side cannot draft both.
+- Changed in balance round 2: cost 3 to 4. It won 72% of harness games at 3 (#150).
 
 ### MOD-E017 · The Bodyguard
 *Ref: The Bodyguard (1992)* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
