@@ -34,7 +34,7 @@ export const stonksDef: ModifierDefinition = {
   id: ID,
   name: 'Stonks',
   category: 'E',
-  pointCost: 2,
+  pointCost: 3,
   curseRating: 0,
   activeFor: 'both',
   draftScope: 'owned',

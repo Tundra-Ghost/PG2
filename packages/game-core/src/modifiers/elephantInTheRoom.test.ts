@@ -182,6 +182,6 @@ describe('MOD-E020 Elephant In The Room', () => {
   it('is offered in the draft and pays back a point', () => {
     const built = new Set(modifierRegistry.getAll().map(def => def.id));
     expect(built.has(ELEPHANT)).toBe(true);
-    expect(ALL_MODIFIERS.find(c => c.id === ELEPHANT)).toMatchObject({ cost: -1, curseLevel: 1 });
+    expect(ALL_MODIFIERS.find(c => c.id === ELEPHANT)).toMatchObject({ cost: -3, curseLevel: 1 });
   });
 });

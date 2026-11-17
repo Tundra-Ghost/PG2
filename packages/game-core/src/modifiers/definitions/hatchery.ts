@@ -36,7 +36,7 @@ export const hatcheryDef: ModifierDefinition = {
   id: ID,
   name: 'Hatchery',
   category: 'E',
-  pointCost: 3,
+  pointCost: 4,
   curseRating: 0,
   activeFor: 'both',
   draftScope: 'owned',

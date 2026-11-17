@@ -558,7 +558,7 @@ If one of your pawns can capture, you must make a pawn capture. Your opponent ca
 - Conflict: Roll For Initiative. Same reason.
 
 ### MOD-B020 · Roll For Initiative
-*Ref: Dungeons & Dragons* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Built**
+*Ref: Dungeons & Dragons* · **Tier A** · Cost -3 · Curse 3 · Scope: Owner · Modes: All · **Built**
 
 On every 3rd move you make, a die picks a piece type. You must move a piece of that type if you can. If you cannot, you choose freely.
 
@@ -575,6 +575,7 @@ On every 3rd move you make, a die picks a piece type. You must move a piece of t
 - Conflict: Peer Pressure and Main Character Syndrome. Each demands a piece on the same move, so one side cannot draft the die with either.
 - Interaction: Commitment Issues. While the die binds you, only a piece of that type can be touched.
 - Interaction: Lunch Break wins. A rook or Queen roll at lunch leaves you free.
+- Changed in balance round 2: cost -2 to -3 and curse 2 to 3. It won 12% of harness games at -2 (#150).
 
 ## Category C: Active Abilities
 
@@ -1163,7 +1164,7 @@ Your pawns can also step one square sideways onto an empty square. They still ca
 - Interaction: Peer Pressure. A sideways step is not a capture, so it never forces you and never counts as the forced capture.
 
 ### MOD-E015 · Stonks
-*Ref: Stonks meme* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Built**
+*Ref: Stonks meme* · **Tier B** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Start the match with two fewer pawns (the a- and h-pawns) and an extra knight on b3.
 
@@ -1176,9 +1177,10 @@ Start the match with two fewer pawns (the a- and h-pawns) and an extra knight on
 - Ruling: the knight never lands on a closed or off-board square.
 - Interaction: I'm Literally Right Here. The knight on b3 is public, so a piece there is always real. The Ghosts still bluff on the other squares.
 - Conflict: The Small Council. Both rebuild your army, so one side cannot draft both.
+- Changed in balance round 2: cost 2 to 3. It won 76% of harness games at 2 (#150).
 
 ### MOD-E016 · Hatchery
-*Ref: Pigeons, and their eggs* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
+*Ref: Pigeons, and their eggs* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 A pigeon Egg sits on your d3 square. It cannot move. If it survives 10 rounds, it hatches into a Pigeon, which moves like a knight.
 
@@ -1193,6 +1195,7 @@ A pigeon Egg sits on your d3 square. It cannot move. If it survives 10 rounds, i
 - Ruling: Gerald, the Berserker, Sus, They Were The Traitor and Forgive Me never pick the Egg, since it cannot move. It cannot be sacrificed with This Is Necessary.
 - Ruling: Gravitational Anomaly still slides the Egg, and can push it off the board like any piece.
 - Ruling: the Egg's count is part of the position, so waiting for it is not a threefold repetition. An Egg that changes sides keeps counting for its new side.
+- Changed in balance round 2: cost 3 to 4. It won 72% of harness games at 3 (#150).
 - Ruling: an Egg bought back with Moneyball starts a fresh 10-move count.
 - Ruling: a hatched Pigeon only hops on its own if its side drafted Hatoful Gambit.
 - Ruling: King and Egg against a lone King is a draw, since the Pigeon it becomes cannot mate alone.
@@ -1246,13 +1249,13 @@ Your knights may repeat the same L-jump in a straight line, as long as each land
 - Synergy: Stonks. The extra knight changes too.
 
 ### MOD-E020 · Elephant In The Room
-*Ref: Xiangqi elephants* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
+*Ref: Xiangqi elephants* · **Tier B** · Cost -3 · Curse 1 · Scope: Owner · Modes: All · **Built**
 
 Your bishops become Elephants. An Elephant moves exactly two squares diagonally, jumping over the square between.
 
 *Nobody is talking about the elephants. The elephants are fine with this.*
 
-- Pricing: a weaker piece, so the card pays back a point, like a curse.
+- Pricing: a weaker piece, so the card pays back points, like a curse.
 - Built: Elephants have their own piece art (an elephant head) and write E in the move list. Unlike a xiangqi elephant, nothing on the square between can block the jump.
 - Ruling: only your starting bishops become Elephants. A bishop you promote to later is a normal bishop. A captured Elephant bought back with Moneyball is still an Elephant.
 - Ruling: an Elephant is not a bishop for other cards. Twin Telepathy does not move it and it does not clear infection. Infection does not slow it.
@@ -1261,6 +1264,7 @@ Your bishops become Elephants. An Elephant moves exactly two squares diagonally,
 - Conflict: Holy Knight, The Small Council, Forgive Me, For I Have Moved and Leap Of Faith. Each needs a bishop, so one side cannot draft them with this card.
 - Interaction: Sus. A disguise never shows a bishop, since you have none. It shows an Elephant instead.
 - Note: an Elephant stays on its colour and can only ever reach 16 squares (a quarter of the board), so it can never give mate alone.
+- Changed in balance round 2: cost -1 to -3. It won 11% of harness games at -1 (#150).
 
 ## Balance summary
 
@@ -1331,7 +1335,7 @@ Values the game uses today. "Built" cards match the build.
 | B017 | MINE! | B | A | -2 | 2 | Owner | Design |
 | B018 | Rubber Banding | B | A | -2 | 2 | Owner | Design |
 | B019 | Peer Pressure | B | A | -2 | 2 | Owner | Built |
-| B020 | Roll For Initiative | B | A | -2 | 2 | Owner | Built |
+| B020 | Roll For Initiative | B | A | -3 | 3 | Owner | Built |
 | C009 | YEET | C | A | 3 | 0 | Owner | Design |
 | C010 | Leap Of Faith | C | A | 3 | 0 | Owner | Built |
 | C011 | GET OVER HERE! | C | S | 4 | 0 | Owner | Design |
@@ -1362,12 +1366,12 @@ Values the game uses today. "Built" cards match the build.
 | E012 | Hopscotch | E | B | 2 | 0 | Owner | Built |
 | E013 | Overseas Hire (The Cannon) | E | A | 3 | 0 | Owner | Built |
 | E014 | Crab Rave | E | A | 3 | 0 | Owner | Built |
-| E015 | Stonks | E | B | 2 | 0 | Owner | Built |
-| E016 | Hatchery | E | A | 3 | 0 | Owner | Built |
+| E015 | Stonks | E | B | 3 | 0 | Owner | Built |
+| E016 | Hatchery | E | A | 4 | 0 | Owner | Built |
 | E017 | The Bodyguard | E | A | 3 | 0 | Owner | Built |
 | E018 | Zerg Rush | E | A | 3 | 0 | Owner | Built |
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
-| E020 | Elephant In The Room | E | B | -1 | 1 | Owner | Built |
+| E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
 64 of 100 built. The other 36 are designs (v0.4).
 
