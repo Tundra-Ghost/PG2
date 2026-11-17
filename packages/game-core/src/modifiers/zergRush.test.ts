@@ -59,23 +59,47 @@ describe('MOD-E018 Zerg Rush', () => {
     expect(state.flags.enPassantSquare).toBeNull();
   });
 
-  it('I\'ve Been Waiting For This banks a two-square move from any rank', () => {
+  it('I\'ve Been Waiting For This cannot bank a dash from another rank', () => {
     let state = withZerg([makePiece('pawn', 'white', 'd4'), makePiece('pawn', 'black', 'e6')]);
     state = chessEngine.activateDraftModifiers(state, [{ id: MODIFIER_IDS.bankedEnPassant, sourceColor: 'black' }]);
     state = chessEngine.applyMove(state, move('d4', 'd6', 'white'));
     const banked = getAbilityOptions(state, 'e6').find(o => o.modifierId === MODIFIER_IDS.bankedEnPassant);
-    expect(banked?.targets).toEqual(['d5']);
+    expect(banked?.targets ?? []).toEqual([]);
   });
 
-  it('can be taken en passant from any rank', () => {
+  it('I\'ve Been Waiting For This still banks a two-square move from the starting rank', () => {
+    let state = withZerg([makePiece('pawn', 'white', 'd2'), makePiece('pawn', 'black', 'e4')]);
+    state = chessEngine.activateDraftModifiers(state, [{ id: MODIFIER_IDS.bankedEnPassant, sourceColor: 'black' }]);
+    state = chessEngine.applyMove(state, move('d2', 'd4', 'white'));
+    const banked = getAbilityOptions(state, 'e4').find(o => o.modifierId === MODIFIER_IDS.bankedEnPassant);
+    expect(banked?.targets).toEqual(['d3']);
+  });
+
+  it('a dash from another rank cannot be taken en passant', () => {
     let state = withZerg([makePiece('pawn', 'white', 'd4'), makePiece('pawn', 'black', 'e6')]);
     state = chessEngine.applyMove(state, move('d4', 'd6', 'white'));
-    expect(state.flags.enPassantSquare).toBe('d5');
-    const ep = buildMove(state, 'e6', 'd5');
+    expect(state.flags.enPassantSquare).toBeNull();
+    expect(movesFrom(state, 'e6')).not.toContain('d5');
+    expect(buildMove(state, 'e6', 'd5').isEnPassant).toBeFalsy();
+  });
+
+  it('a black dash from another rank cannot be taken en passant', () => {
+    let state = withZerg([makePiece('pawn', 'black', 'c5'), makePiece('pawn', 'white', 'd3')], 'black');
+    state = { ...state, turn: 'black' };
+    state = chessEngine.applyMove(state, move('c5', 'c3', 'black'));
+    expect(state.flags.enPassantSquare).toBeNull();
+    expect(movesFrom(state, 'd3')).not.toContain('c4');
+  });
+
+  it('a normal two-square move from the starting rank can still be taken en passant', () => {
+    let state = withZerg([makePiece('pawn', 'white', 'd2'), makePiece('pawn', 'black', 'e4')]);
+    state = chessEngine.applyMove(state, move('d2', 'd4', 'white'));
+    expect(state.flags.enPassantSquare).toBe('d3');
+    const ep = buildMove(state, 'e4', 'd3');
     expect(ep.isEnPassant).toBe(true);
     state = chessEngine.applyMove(state, ep);
-    expect(state.pieces.has('d6')).toBe(false);
-    expect(state.pieces.get('d5')).toMatchObject({ type: 'pawn', color: 'black' });
+    expect(state.pieces.has('d4')).toBe(false);
+    expect(state.pieces.get('d3')).toMatchObject({ type: 'pawn', color: 'black' });
   });
 
   it('may not leave the King in check', () => {

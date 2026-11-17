@@ -17,6 +17,7 @@
 
 **Balance round 2 (2026-11-17)**
 - New prices from the balance harness (#150): Elephant In The Room -1 to -3, Roll For Initiative -2 to -3 (curse 3), Stonks 2 to 3, Hatchery 3 to 4.
+- Zerg Rush: en passant only against a normal two-square move from the starting rank, not a dash from another rank.
 
 **v0.4 (2026-11-14)**
 - 60 new design cards, 12 per category (A009 to E020), for 100 in all. None were built at the time; cards built since are marked **Built**. Design cards show in the Collection and under "Show upcoming" in the draft, and the draft never offers them until they are built.
@@ -1226,11 +1227,12 @@ Your pawns may move two squares forward from any rank, if both squares are empty
 
 *The pawns are coming. All of them. Right now.*
 
-- Ruling: en passant works against every two-square move, from any rank.
+- Ruling: en passant may be taken only against a normal two-square move from the pawn's starting rank. A Zerg Rush dash from any other rank cannot be taken en passant, and I've Been Waiting For This cannot bank it.
 - Ruling: a two-square move may reach the last rank and promote. The promoted piece cannot be taken en passant.
 - Ruling: a two-square move may not leave your King in check. It may block a check.
 - Ruling: a pawn slowed by The Cordyceptic Spread still loses its two-square move.
 - Not Gotta Go Fast: that is one pawn on a cooldown; this is all of them, always.
+- Changed in balance round 2: en passant used to work against every two-square move, from any rank. It won 25% of harness games at 3 (#150), so dashes from other ranks are now safe from en passant. Cost stays 3.
 
 ### MOD-E019 · Knight Rider
 *Ref: Knight Rider (KITT)* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Built**
