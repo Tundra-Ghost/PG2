@@ -102,7 +102,7 @@ export const bankedEnPassantDef: ModifierDefinition = {
     const moved = state.pieces.get(move.to);
     if (moved?.type !== 'pawn' || Math.abs(Number(move.to[1]) - Number(move.from[1])) !== 2) return state;
     // Only a normal two-square move from the starting rank can be banked, not a
-    // MOD-E018 Zerg Rush dash from another rank.
+    // MOD-E018 Zerg Rush two-square move from another rank.
     if (move.from[1] !== (moved.color === 'white' ? '2' : '7')) return state;
     const f = FILES.indexOf(move.to[0]);
     const added: Record<string, Bank> = {};

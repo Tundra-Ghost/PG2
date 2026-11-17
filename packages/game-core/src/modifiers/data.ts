@@ -773,7 +773,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'En passant is no longer a one-turn window. Bank it. Store the capture for up to 3 turns. Execute it whenever the moment is right. One banked en passant per pawn.',
     flavor: '"The pawn remembered. The pawn waited three turns. The pawn struck. \'I\'ve been waiting for this.\'"',
     prototypeRules:
-      'When an enemy pawn double-steps past your pawn, your pawn banks the en passant. For 3 of your turns, select it and press the ability button to take it, as long as both pawns stay put. Then that pawn waits 3 of your turns.',
+      'When an enemy pawn double-steps from its starting rank past your pawn, your pawn banks the en passant. For 3 of your turns, select it and press the ability button to take it, as long as both pawns stay put. Then that pawn waits 3 of your turns.',
   },
 
   // Design cards (not built yet): Active Abilities 009-020

@@ -340,8 +340,8 @@ export function applyMoveInternal(state: GameState, move: Move): GameState {
   next.pieces.set(move.to, { ...piece, square: move.to, type: promotedType });
 
   // Double-pawn-push → set en passant square. Only a normal two-square move
-  // from the pawn's starting rank counts: a MOD-E018 Zerg Rush dash from any
-  // other rank cannot be taken en passant (and a dash that promotes is no
+  // from the pawn's starting rank counts: a MOD-E018 Zerg Rush two-square move
+  // from any other rank cannot be taken en passant (and one that promotes is no
   // longer a pawn anyway).
   if (piece.type === 'pawn' && !move.promotion) {
     const rankDiff = Math.abs(rankIndex(move.to) - rankIndex(move.from));

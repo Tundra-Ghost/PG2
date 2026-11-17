@@ -59,7 +59,7 @@ describe('MOD-E018 Zerg Rush', () => {
     expect(state.flags.enPassantSquare).toBeNull();
   });
 
-  it('I\'ve Been Waiting For This cannot bank a dash from another rank', () => {
+  it('I\'ve Been Waiting For This cannot bank a two-square move from another rank', () => {
     let state = withZerg([makePiece('pawn', 'white', 'd4'), makePiece('pawn', 'black', 'e6')]);
     state = chessEngine.activateDraftModifiers(state, [{ id: MODIFIER_IDS.bankedEnPassant, sourceColor: 'black' }]);
     state = chessEngine.applyMove(state, move('d4', 'd6', 'white'));
@@ -75,7 +75,7 @@ describe('MOD-E018 Zerg Rush', () => {
     expect(banked?.targets).toEqual(['d3']);
   });
 
-  it('a dash from another rank cannot be taken en passant', () => {
+  it('a two-square move from another rank cannot be taken en passant', () => {
     let state = withZerg([makePiece('pawn', 'white', 'd4'), makePiece('pawn', 'black', 'e6')]);
     state = chessEngine.applyMove(state, move('d4', 'd6', 'white'));
     expect(state.flags.enPassantSquare).toBeNull();
@@ -83,7 +83,7 @@ describe('MOD-E018 Zerg Rush', () => {
     expect(buildMove(state, 'e6', 'd5').isEnPassant).toBeFalsy();
   });
 
-  it('a black dash from another rank cannot be taken en passant', () => {
+  it('a black two-square move from another rank cannot be taken en passant', () => {
     let state = withZerg([makePiece('pawn', 'black', 'c5'), makePiece('pawn', 'white', 'd3')], 'black');
     state = { ...state, turn: 'black' };
     state = chessEngine.applyMove(state, move('c5', 'c3', 'black'));
