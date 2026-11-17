@@ -81,7 +81,9 @@ describe('buildPuzzleState', () => {
       const first = chessEngine.applyMove(state, { from: 'g1', to: 'h1', playerColor: 'white' });
       expect(() => getPigeonBotMove(first, 'black'), def.id).not.toThrow();
     }
-  });
+    // One bot move per built card: this grows with the catalog and ran past
+    // the 5 s default on a busy CI runner.
+  }, 20_000);
 });
 
 describe('validatePuzzle', () => {

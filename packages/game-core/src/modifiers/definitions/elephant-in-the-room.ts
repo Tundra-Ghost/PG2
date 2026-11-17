@@ -17,7 +17,7 @@ export const elephantInTheRoomDef: ModifierDefinition = {
   id: ID,
   name: 'Elephant In The Room',
   category: 'E',
-  pointCost: -1,
+  pointCost: -3,
   curseRating: 1,
   activeFor: 'both',
   draftScope: 'owned',
