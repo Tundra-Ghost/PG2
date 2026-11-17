@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
-import { buildMove, getVisibleSquares, isHopHidden, getShooBlocker, getTouchedPiece, hasTouchMove, touchPiece, touchedReason } from '@pigeon-chess/game-core';
+import { buildMove, getShooBlocker, getTouchedPiece, hasTouchMove, touchPiece, touchedReason } from '@pigeon-chess/game-core';
 import {
   flipSquare,
   flippedMovesLeft,
@@ -65,11 +65,7 @@ interface PendingPromotion {
 
 function getDisplayLegalMoves(state: GameState, from: Square): Square[] {
   const legalMoves = chessEngine.getLegalMoves(state, from);
-  const mover = state.pieces.get(from);
-  const visible = mover ? getVisibleSquares(state, mover.color) : null;
   return legalMoves.filter(to => {
-    // Under fog, a hop over a hidden piece would give it away (#157).
-    if (isHopHidden(state, from, to, visible)) return false;
     if (chessEngine.isPromotionMove(state, from, to)) {
       return getValidPromotionTypes(state, from, to).length > 0;
     }

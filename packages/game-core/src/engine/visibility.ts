@@ -43,7 +43,7 @@ export function isMoveHidden(state: GameState, record: MoveRecord, viewer: Color
 /**
  * True when a hop from `from` to `to` (a Grasshopper move, or a Cannon move
  * past a screen) depends on a square the mover cannot see. Such a move dot
- * would give a hidden piece away, so the board does not show it. Like Leap
+ * would give a hidden piece away, so it is not a legal move. Like Leap
  * Of Faith (MOD-C010), the whole path must be in view: the squares before
  * the screen, the screen and the landing square. Plain slides are not hops
  * and return false.

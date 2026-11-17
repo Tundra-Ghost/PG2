@@ -3,7 +3,8 @@ import '../modifiers/index';
 import { MODIFIER_IDS } from '../modifiers/ids';
 import { makeEmptyState, makePiece } from '../modifiers/testHelpers';
 import { chessEngine } from './ChessEngine';
-import { botView } from './bot';
+import { getPigeonBotMove } from './bot';
+import { isInCheck } from './moveGenerator';
 import { isHopHidden } from './visibility';
 
 const dark = { id: MODIFIER_IDS.darkAndScared, name: 'Dark', activeFor: 'both' as const, sourceColor: null };
@@ -18,38 +19,50 @@ function setup(fog: boolean) {
     makePiece('pawn', 'white', 'e2'), // seen screen: the hop lands on f3
     makePiece('cannon', 'white', 'a1'),
     makePiece('pawn', 'white', 'a2'), // the Cannon's screen
-    makePiece('knight', 'black', 'a6'), // hidden target past the screen
+    makePiece('queen', 'black', 'a6'), // hidden target past the screen
   ]);
   if (fog) state.activeModifiers = [dark];
   return state;
 }
 
+const move = (from: string, to: string) => ({ from, to, playerColor: 'white' }) as Parameters<typeof chessEngine.validateMove>[1];
+
 describe('hops under fog (#157)', () => {
-  it('hides a Grasshopper hop over a hidden piece, keeps one in view', () => {
+  it('a Grasshopper cannot hop a hidden piece, but can hop one in view', () => {
     const state = setup(true);
     const moves = chessEngine.getLegalMoves(state, 'd1');
-    expect(moves).toEqual(expect.arrayContaining(['d6', 'f3']));
+    expect(moves).toContain('f3');
+    expect(moves).not.toContain('d6');
     expect(isHopHidden(state, 'd1', 'd6')).toBe(true);
-    expect(isHopHidden(state, 'd1', 'f3')).toBe(false);
+    expect(chessEngine.validateMove(state, move('d1', 'd6')).valid).toBe(false);
   });
 
-  it('hides a Cannon capture of a hidden piece, keeps its slides', () => {
+  it('a Cannon cannot capture a hidden piece, and keeps its slides', () => {
     const state = setup(true);
     const moves = chessEngine.getLegalMoves(state, 'a1');
-    expect(moves).toEqual(expect.arrayContaining(['a6', 'b1']));
-    expect(isHopHidden(state, 'a1', 'a6')).toBe(true);
-    expect(isHopHidden(state, 'a1', 'b1')).toBe(false);
+    expect(moves).toContain('b1');
+    expect(moves).not.toContain('a6');
+    expect(chessEngine.validateMove(state, move('a1', 'a6')).valid).toBe(false);
   });
 
-  it('shows every hop without fog', () => {
+  it('every hop is legal without fog', () => {
     const state = setup(false);
+    expect(chessEngine.getLegalMoves(state, 'd1')).toContain('d6');
+    expect(chessEngine.getLegalMoves(state, 'a1')).toContain('a6');
     expect(isHopHidden(state, 'd1', 'd6')).toBe(false);
-    expect(isHopHidden(state, 'a1', 'a6')).toBe(false);
   });
 
-  it('the bot plans on the same view: no hop over a hidden piece', () => {
-    const view = botView(setup(true), 'white');
-    expect(chessEngine.getLegalMoves(view, 'd1')).not.toContain('d6');
-    expect(chessEngine.getLegalMoves(view, 'a1')).not.toContain('a6');
+  it('threats still use the real board: a Cannon checks a King it cannot see', () => {
+    const state = setup(true);
+    state.pieces.delete('a6');
+    state.pieces.delete('h8');
+    state.pieces.set('a6', makePiece('king', 'black', 'a6'));
+    expect(isInCheck(state, 'black')).toBe(true);
+  });
+
+  it('the bot does not take the hidden queen either', () => {
+    const state = setup(true);
+    expect(getPigeonBotMove(state, 'white', { depth: 1 })).not.toMatchObject({ from: 'a1', to: 'a6' });
+    expect(getPigeonBotMove(setup(false), 'white', { depth: 1 })).toMatchObject({ from: 'a1', to: 'a6' });
   });
 });
