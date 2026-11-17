@@ -18,6 +18,7 @@
 **Balance round 2 (2026-11-17)**
 - New prices from the balance harness (#150): Elephant In The Room -1 to -3, Roll For Initiative -2 to -3 (curse 3), Stonks 2 to 3, Hatchery 3 to 4.
 - Zerg Rush: en passant only against a normal two-square move from the starting rank, not a two-square move from any other rank.
+- Fog and hops (#157): Hopscotch and Overseas Hire show a hop only when its whole path is in view, like Leap Of Faith.
 
 **v0.4 (2026-11-14)**
 - 60 new design cards, 12 per category (A009 to E020), for 100 in all. None were built at the time; cards built since are marked **Built**. Design cards show in the Collection and under "Show upcoming" in the draft, and the draft never offers them until they are built.
@@ -1134,7 +1135,7 @@ One of your rooks becomes a Grasshopper. It moves along any queen line but must 
 - Built: one random rook becomes the Grasshopper (seeded). That side loses castling on the Grasshopper side. Ghost rooks are never picked.
 - Built: it hops the first piece of either colour on the line, however far away, and lands on the very next square. It captures an enemy there and cannot land on its own piece. It never hops a void square (the Statue, vents, the Storm) and cannot push the Statue.
 - Built: a hop that leaves your King in check is illegal (Core rule 2).
-- Ruling: under fog, hops use the real board, so a move dot can show that a hidden piece stands right before it. The same is true of a Cannon's captures. Open question for the fog cards: hide such dots instead.
+- Ruling: under fog, a hop shows a move dot only when its whole path is in view: the squares before the screen, the screen and the landing square. This matches Leap Of Faith, so a dot never gives a hidden piece away (#157).
 - Conflict: Equivalent Exchange (The Chancellor) and Overseas Hire (The Cannon). Each changes a random rook, so one side cannot draft two of them.
 
 ### MOD-E013 · Overseas Hire (The Cannon)
@@ -1149,6 +1150,7 @@ One of your rooks becomes a Cannon. It moves like a rook, but captures only by j
 - Built: the screen can be any piece of either colour. Only the next piece behind it can be taken, and only if it is an enemy. It never hops two screens and never hops a void square (the Statue, vents, the Storm).
 - Built: the Cannon threatens the squares past a screen, not the squares it can only slide to. A King may not step onto a threatened square or castle through one, and moving a piece onto the line between an enemy Cannon and your King is illegal when it makes a screen.
 - Built: a capture or slide that leaves your King in check is illegal (Core rule 2).
+- Ruling: under fog, a capture shows a move dot only when its whole path is in view, as for Hopscotch (#157). Slides show like a rook's.
 - Conflict: Equivalent Exchange (The Chancellor) and Hopscotch. Each changes a random rook, so one side cannot draft two of them.
 
 ### MOD-E014 · Crab Rave

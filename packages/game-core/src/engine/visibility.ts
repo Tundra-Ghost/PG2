@@ -1,4 +1,5 @@
 import type { Color, GameState, MoveRecord, Square } from './types';
+import { lineSquares } from './hops';
 import { modifierRegistry } from '../modifiers/registry';
 
 /**
@@ -37,4 +38,30 @@ export function getVisibleSquares(state: GameState, viewer: Color): Set<Square> 
 export function isMoveHidden(state: GameState, record: MoveRecord, viewer: Color, visible = getVisibleSquares(state, viewer)): boolean {
   if (!visible || record.pieceMoved.color === viewer) return false;
   return !visible.has(record.move.to);
+}
+
+/**
+ * True when a hop from `from` to `to` (a Grasshopper move, or a Cannon move
+ * past a screen) depends on a square the mover cannot see. Such a move dot
+ * would give a hidden piece away, so the board does not show it. Like Leap
+ * Of Faith (MOD-C010), the whole path must be in view: the squares before
+ * the screen, the screen and the landing square. Plain slides are not hops
+ * and return false.
+ */
+export function isHopHidden(state: GameState, from: Square, to: Square, visible?: Set<Square> | null): boolean {
+  const piece = state.pieces.get(from);
+  if (!piece || (piece.type !== 'grasshopper' && piece.type !== 'cannon')) return false;
+  const view = visible === undefined ? getVisibleSquares(state, piece.color) : visible;
+  if (!view) return false;
+  const df = Math.sign(to.charCodeAt(0) - from.charCodeAt(0));
+  const dr = Math.sign(Number(to[1]) - Number(from[1]));
+  const path: Square[] = [];
+  for (const sq of lineSquares(state, from, df, dr)) {
+    path.push(sq);
+    if (sq === to) break;
+  }
+  if (path[path.length - 1] !== to) return false;
+  const between = path.slice(0, -1);
+  if (piece.type === 'cannon' && !between.some(sq => state.pieces.has(sq))) return false;
+  return path.some(sq => !view.has(sq));
 }
