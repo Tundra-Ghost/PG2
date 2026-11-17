@@ -339,11 +339,14 @@ export function applyMoveInternal(state: GameState, move: Move): GameState {
   const promotedType: PieceType = move.promotion ?? piece.type;
   next.pieces.set(move.to, { ...piece, square: move.to, type: promotedType });
 
-  // Double-pawn-push → set en passant square. A push that promotes (MOD-E018)
-  // is no longer a pawn, so it cannot be taken en passant.
+  // Double-pawn-push → set en passant square. Only a normal two-square move
+  // from the pawn's starting rank counts: a MOD-E018 Zerg Rush two-square move
+  // from any other rank cannot be taken en passant (and one that promotes is no
+  // longer a pawn anyway).
   if (piece.type === 'pawn' && !move.promotion) {
     const rankDiff = Math.abs(rankIndex(move.to) - rankIndex(move.from));
-    if (rankDiff === 2) {
+    const startRank = piece.color === 'white' ? 1 : 6;
+    if (rankDiff === 2 && rankIndex(move.from) === startRank) {
       const epRank = (rankIndex(move.from) + rankIndex(move.to)) / 2;
       next.flags.enPassantSquare = toSquare(fileIndex(move.from), epRank);
     }
