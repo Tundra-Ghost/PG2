@@ -177,18 +177,6 @@ export default function Square({
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const [tooltipShift, setTooltipShift] = useState(0);
 
-  // Keep the tooltip on screen: on a phone, one over the a- or h-file
-  // would otherwise hang off the edge.
-  useLayoutEffect(() => {
-    if (!showTooltip) {
-      setTooltipShift(0);
-      return;
-    }
-    const el = tooltipRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    setTooltipShift(shift => tooltipShiftFor(rect.left - shift, rect.right - shift, document.documentElement.clientWidth));
-  }, [showTooltip]);
   const touchTimerRef = useRef<number | null>(null);
   const longPressTriggeredRef = useRef(false);
 
@@ -211,6 +199,21 @@ export default function Square({
     ...(crownOrder ? [`Heavy Is The Crown: the ${crownOrder} king is ordered here. It can move here on its next turn.`] : []),
   ];
   const hasTooltip = tooltipLines.length > 0;
+  // Measure again when the text changes while the tooltip is open.
+  const tooltipKey = tooltipLines.join('\n');
+
+  // Keep the tooltip on screen: on a phone, one over the a- or h-file
+  // would otherwise hang off the edge.
+  useLayoutEffect(() => {
+    if (!showTooltip || !hasTooltip) {
+      setTooltipShift(0);
+      return;
+    }
+    const el = tooltipRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    setTooltipShift(shift => tooltipShiftFor(rect.left - shift, rect.right - shift, document.documentElement.clientWidth));
+  }, [showTooltip, hasTooltip, tooltipKey]);
 
   function clearTouchTimer() {
     if (touchTimerRef.current !== null) {
