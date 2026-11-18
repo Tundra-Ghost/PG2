@@ -1,8 +1,9 @@
-import { useRef, useState, type TouchEvent } from 'react';
+import { useLayoutEffect, useRef, useState, type TouchEvent } from 'react';
 import type { Piece as PieceType, Square as SquareType, TileEffectType } from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import type { SquareView } from '../Board/boardView';
 import styles from './Square.module.css';
+import { tooltipShiftFor } from './tooltipShift';
 
 /**
  * The Phaser board draws every square. This transparent square sits on top of
@@ -173,6 +174,21 @@ export default function Square({
   holdNeverTaps = false,
 }: SquareProps) {
   const [showTooltip, setShowTooltip] = useState(false);
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
+  const [tooltipShift, setTooltipShift] = useState(0);
+
+  // Keep the tooltip on screen: on a phone, one over the a- or h-file
+  // would otherwise hang off the edge.
+  useLayoutEffect(() => {
+    if (!showTooltip) {
+      setTooltipShift(0);
+      return;
+    }
+    const el = tooltipRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    setTooltipShift(shift => tooltipShiftFor(rect.left - shift, rect.right - shift, document.documentElement.clientWidth));
+  }, [showTooltip]);
   const touchTimerRef = useRef<number | null>(null);
   const longPressTriggeredRef = useRef(false);
 
@@ -234,7 +250,12 @@ export default function Square({
   }
 
   const tooltip = hasTooltip && showTooltip && (
-    <div className={styles.tooltip} role="tooltip">
+    <div
+      ref={tooltipRef}
+      className={styles.tooltip}
+      role="tooltip"
+      style={tooltipShift ? { transform: `translateX(calc(-50% + ${tooltipShift}px))` } : undefined}
+    >
       {tooltipLines.map(line => (
         <div key={line} className={styles.tooltipLine}>
           {line}
