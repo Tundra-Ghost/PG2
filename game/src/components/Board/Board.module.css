@@ -329,3 +329,16 @@
 @media (prefers-reduced-motion: reduce) {
   .notice { animation: none; }
 }
+
+/* Reduced motion: the rule flashes show for their full time without fading. */
+:global(body.reduce-motion) .pieceMovedFlash,
+:global(body.reduce-motion) .recalcFlash {
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pieceMovedFlash,
+  .recalcFlash {
+    animation: none !important;
+  }
+}
