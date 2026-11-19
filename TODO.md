@@ -175,7 +175,7 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 - [ ] Art guide 2.4: storm in slate, Tier C badge in grey, cost shown with +/- icon instead of gold/green
 - [ ] Art guide 7.3: authored icons for piece status badges (replace G, O, B, ! letters)
 - [ ] Art guide 14: wire the made modifier sounds (lava, Gerald, freeze, cannon, storm, vent, traitor, gong)
-- [ ] Art guide 9/13: reduced-motion setting and screen reader labels for event banners
+- [x] Art guide 9/13: Reduce Motion setting (Settings > Accessibility, also follows the device setting); event banners and notices already use role="status"
 - [x] Bible D006: only offer Cat Mode once It's Dark And I'm Scared is drafted
 - [x] TDD 4: move bot tie-breaks and runRandomDraft to the seeded PRNG
 - [x] Bible balance test plan: bot-vs-bot win-rate harness per modifier (`pnpm --filter @pigeon-chess/game-core balance`)

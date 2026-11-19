@@ -4,6 +4,7 @@ import { SPRITES } from '../../characters';
 import type { SquareView } from '../Board/boardView';
 import { getPieceMarkers } from '../Piece/pieceMarkers';
 import { PIECE_GLYPHS, PIECE_TYPES, pieceTextureKey, renderPieceCanvas } from './pieceTextures';
+import { prefersCalm } from '../../settings';
 
 /** Square size the scene is laid out at; the canvas scales to fit. */
 export const CELL = 80;
@@ -99,7 +100,11 @@ export class BoardScene extends Phaser.Scene {
   private statueSprite: Phaser.GameObjects.Image | null = null;
   /** Burst keys already played, so a redraw never replays a flash. */
   private playedBursts = new Set<string>();
-  private calm = false;
+  /** Reduce Motion: the device setting or the in-game one, read live so a mid-match toggle applies. */
+  private get calm(): boolean {
+    return prefersCalm();
+  }
+  private pulseTween: Phaser.Tweens.Tween | null = null;
 
   constructor() {
     super('board');
@@ -141,13 +146,8 @@ export class BoardScene extends Phaser.Scene {
     this.pulseLayer = this.add.graphics().setDepth(DEPTH.pulse);
     this.badgeLayer = this.add.graphics().setDepth(DEPTH.badges);
     this.markLayer = this.add.graphics().setDepth(DEPTH.marks);
-    this.calm = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
     // Flashes already on screen when the board opens are not replayed.
     for (const view of this.views) if (view.burst) this.playedBursts.add(`${view.burst.key}:${view.square}`);
-    if (!this.calm) {
-      // Lava and storm warnings breathe, like their CSS versions.
-      this.tweens.add({ targets: this.pulseLayer, alpha: 0.55, duration: 750, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-    }
     this.ready = true;
     this.loadPieceTextures();
     this.redraw();
@@ -158,7 +158,21 @@ export class BoardScene extends Phaser.Scene {
     if (this.ready) this.redraw();
   }
 
+  /** Lava and storm warnings breathe, like their CSS versions, unless motion is reduced. */
+  private syncPulse() {
+    if (this.calm) {
+      if (this.pulseTween) {
+        this.pulseTween.remove();
+        this.pulseTween = null;
+        this.pulseLayer.setAlpha(1);
+      }
+    } else if (!this.pulseTween) {
+      this.pulseTween = this.tweens.add({ targets: this.pulseLayer, alpha: 0.55, duration: 750, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    }
+  }
+
   private redraw() {
+    this.syncPulse();
     const theme = readTheme();
     const g = this.squareLayer.clear();
     const tiles = this.tileLayer.clear();
@@ -264,8 +278,12 @@ export class BoardScene extends Phaser.Scene {
           bird.setScale((CELL * 0.62) / bird.width);
           this.geraldSprites.set(piece.id, bird);
           // He lands from above, like the DOM version.
-          bird.setPosition(x + CELL * 0.19, y + CELL * 0.02).setAlpha(0);
-          this.tweens.add({ targets: bird, y: y + CELL * 0.16, alpha: 1, duration: 280, ease: 'Cubic.easeOut' });
+          if (this.calm) {
+            bird.setPosition(x + CELL * 0.19, y + CELL * 0.16);
+          } else {
+            bird.setPosition(x + CELL * 0.19, y + CELL * 0.02).setAlpha(0);
+            this.tweens.add({ targets: bird, y: y + CELL * 0.16, alpha: 1, duration: 280, ease: 'Cubic.easeOut' });
+          }
         } else {
           bird.setPosition(x + CELL * 0.19, y + CELL * 0.16);
         }
