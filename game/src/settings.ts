@@ -13,6 +13,8 @@ export interface AppSettings {
   showCoordinates: boolean;
   // Accessibility / Display
   highContrast: boolean;
+  /** Turn off animations, even when the device does not ask for it. */
+  reduceMotion: boolean;
   // Feedback
   postGameSurveys: boolean;
 }
@@ -27,6 +29,7 @@ const DEFAULTS: AppSettings = {
   confirmResign: true,
   showCoordinates: true,
   highContrast: false,
+  reduceMotion: false,
   postGameSurveys: true,
 };
 
@@ -57,9 +60,17 @@ export function saveSettings(s: AppSettings): void {
   });
   // Sync high-contrast CSS class on body
   document.body.classList.toggle('high-contrast', s.highContrast);
+  document.body.classList.toggle('reduce-motion', s.reduceMotion);
 }
 
 /** Apply settings at startup (sync sound + CSS without a save event). */
 export function applySettings(s: AppSettings): void {
   saveSettings(s);
+}
+
+/** True when animations should stop: the device asks for it, or the player turned on Reduce Motion. */
+export function prefersCalm(): boolean {
+  if (typeof window === 'undefined') return false;
+  if (document.body?.classList.contains('reduce-motion')) return true;
+  return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 }

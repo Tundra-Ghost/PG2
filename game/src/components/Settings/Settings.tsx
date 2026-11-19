@@ -265,6 +265,12 @@ export default function Settings({ settings: initial, onSave, onBack, account, f
                 value={s.highContrast}
                 onChange={v => update({ highContrast: v })}
               />
+              <Toggle
+                label="Reduce Motion"
+                sub="Turn off board and menu animations"
+                value={s.reduceMotion}
+                onChange={v => update({ reduceMotion: v })}
+              />
               <LockedRow label="Colour-Blind Mode"  sub="Alternate board and highlight palette" />
               <LockedRow label="Large Piece Mode"   sub="Increases piece size to 130%" />
             </>

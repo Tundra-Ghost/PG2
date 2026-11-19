@@ -4,6 +4,7 @@ import { SPRITES } from '../../characters';
 import type { SquareView } from '../Board/boardView';
 import { getPieceMarkers } from '../Piece/pieceMarkers';
 import { PIECE_GLYPHS, PIECE_TYPES, pieceTextureKey, renderPieceCanvas } from './pieceTextures';
+import { prefersCalm } from '../../settings';
 
 /** Square size the scene is laid out at; the canvas scales to fit. */
 export const CELL = 80;
@@ -141,7 +142,7 @@ export class BoardScene extends Phaser.Scene {
     this.pulseLayer = this.add.graphics().setDepth(DEPTH.pulse);
     this.badgeLayer = this.add.graphics().setDepth(DEPTH.badges);
     this.markLayer = this.add.graphics().setDepth(DEPTH.marks);
-    this.calm = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+    this.calm = prefersCalm();
     // Flashes already on screen when the board opens are not replayed.
     for (const view of this.views) if (view.burst) this.playedBursts.add(`${view.burst.key}:${view.square}`);
     if (!this.calm) {
