@@ -42,8 +42,9 @@ This backlog is ordered against the current repo state and the intended GDD/TDD 
 ## Priority 1: Stabilize The Prototype Core
 
 - [x] Add a test runner for `game/` and create the first engine test suite
-- [ ] Cover remaining TDD-critical chess rule edges with tests: broader move legality matrix, check-state handling, and rule-regression cases
+- [x] Cover remaining TDD-critical chess rule edges with tests: broader move legality matrix, check-state handling, and rule-regression cases
   - [x] Perft test (`engine/perft.test.ts`): 5 standard positions to depth 3 or 4, checks castling, en passant, promotion, pins and check
+  - [x] Draw rules (`engine/drawRules.test.ts`): insufficient material cases, 50-move resets and mate on the 100th half-move, threefold with castling rights
 - [x] Add deterministic tests for draw logic: threefold repetition, 50-move rule, insufficient material
 - [x] Audit engine state transitions in `packages/game-core/src/engine/gameLoop.ts` against the TDD move-validation pipeline
 - [x] Confirm current modifier hooks do not break core chess legality
