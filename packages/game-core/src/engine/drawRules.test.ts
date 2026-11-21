@@ -28,6 +28,8 @@ describe('insufficient material', () => {
   it('a pawn, a rook or two knights can still mate, so play goes on', () => {
     expect(statusAfterPass([makePiece('pawn', 'white', 'a2')])).toBe('active');
     expect(statusAfterPass([makePiece('rook', 'white', 'a1')])).toBe('active');
+    expect(statusAfterPass([makePiece('knight', 'white', 'g1'), makePiece('knight', 'white', 'b1')])).toBe('active');
+    // A knight each is not a forced draw either.
     expect(statusAfterPass([makePiece('knight', 'white', 'g1'), makePiece('knight', 'black', 'g8')])).toBe('active');
   });
 });
