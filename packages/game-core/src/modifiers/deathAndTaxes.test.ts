@@ -87,12 +87,56 @@ describe('MOD-B013 Death And Taxes', () => {
   it('never gives a Sus disguise away', () => {
     const fake = withTax([...PIECES(), makePiece('knight', 'white', 'a2', 'fake-pawn')]);
     fake.modifierState = { ...fake.modifierState, [MODIFIER_IDS.sus]: { white: { pieceId: 'fake-pawn', shownAs: 'pawn' } } };
-    // The fake pawn on a2 is the rearmost "pawn": no tax this time.
-    expect(getTaxedPawn(fake, 'white')).toBeNull();
+    // The fake pawn on a2 is the rearmost "pawn": it is taxed like one.
+    expect(getTaxedPawn(fake, 'white')).toBe('a2');
     const hidden = withTax(PIECES());
     hidden.modifierState = { ...hidden.modifierState, [MODIFIER_IDS.sus]: { white: { pieceId: 'white-pawn-b2', shownAs: 'knight' } } };
     // b2 looks like a knight, so c2 is taken.
     expect(getTaxedPawn(hidden, 'white')).toBe('c2');
+  });
+
+  it('always warns on tax day, even with no pawn to take yet', () => {
+    let state = withTax([
+      makePiece('king', 'white', 'a4'),
+      makePiece('pawn', 'white', 'd4'),
+      makePiece('rook', 'white', 'd1'),
+      makePiece('rook', 'black', 'h4'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+    state.ownMoves = { white: TAX_EVERY - 1, black: TAX_EVERY - 1 };
+    state = chessEngine.beginTurn(state);
+    const warning = state.eventHistory[state.eventHistory.length - 1];
+    expect(warning).toMatchObject({ modifierId: TAX, title: 'TAX DAY' });
+    expect(warning.squares).toBeUndefined();
+    // The King steps off the pin, so d4 can now be taken.
+    state = chessEngine.applyMove(state, move('a4', 'a3', 'white'));
+    expect(state.pieces.get('d4')).toBeUndefined();
+  });
+
+  it('clears en passant when it taxes a pawn that just double-stepped', () => {
+    let state = withTax([
+      makePiece('king', 'white', 'a1'),
+      makePiece('pawn', 'white', 'e2'),
+      makePiece('pawn', 'white', 'g5'),
+      makePiece('pawn', 'black', 'd4'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+    state.ownMoves = { white: TAX_EVERY - 1, black: TAX_EVERY - 1 };
+    state = chessEngine.applyMove(state, move('e2', 'e4', 'white'));
+    expect(state.pieces.get('e4')).toBeUndefined();
+    expect(state.flags.enPassantSquare).toBeNull();
+  });
+
+  it('warns even when the owner is in check on tax day', () => {
+    let state = withTax([
+      makePiece('king', 'white', 'e1'),
+      makePiece('pawn', 'white', 'b2'),
+      makePiece('rook', 'black', 'e8'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+    state.ownMoves = { white: TAX_EVERY - 1, black: TAX_EVERY - 1 };
+    state = chessEngine.beginTurn(state);
+    expect(state.eventHistory[state.eventHistory.length - 1]).toMatchObject({ modifierId: TAX, title: 'TAX DAY' });
   });
 
   it('only taxes its owner', () => {

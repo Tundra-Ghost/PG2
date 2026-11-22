@@ -482,7 +482,8 @@ Every 10 of your moves, the tax office collects one of your pawns: the one furth
 - Ruling: the tax never takes a pawn that is shielding your King from check; it takes the next one.
 - Built: the feed warns at the start of your 10th, 20th, ... move and marks the pawn. The tax is taken right after that move from the board as it then stands, so moving the marked pawn forward can shift the tax to another pawn. On a tie, the pawn nearest the a-file goes first.
 - Built: if tax day is a pass or skipped turn, the tax is taken after your next real move, so passing never dodges it.
-- Built: "pawn" means what your opponent sees. Under Sus, a disguised pawn is never taken, and if a piece disguised as a pawn is the rearmost, no tax is taken that time.
+- Built: "pawn" means what your opponent sees. Under Sus, a disguised pawn is never taken, and a piece disguised as a pawn is taxed like one, so the tax never gives a disguise away.
+- Built: the warning is always posted on tax day while you have pawns, even when none can be taken yet (for example, you are in check).
 - Built: the tax is removal, not a capture, so it never feeds capture cards such as Moneyball.
 - Interaction: MINE!. Both may hit on your 40th move: the seagull moves first, then the tax is taken.
 - Conflict: The Small Council (one side). Its 12 pawns would make the curse cheap.
