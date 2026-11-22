@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ALL_MODIFIERS, modifierRegistry } from '@pigeon-chess/game-core';
 import type { AccountControls } from '../../online/useAccount';
 import type { AppSettings } from '../../settings';
@@ -135,13 +135,27 @@ export default function Settings({ settings: initial, onSave, onBack, account, f
     onSave(next);
   }
 
+  const boxRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  // Move focus into the box, and give it back on close.
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    closeRef.current?.focus();
+    return () => previous?.focus?.();
+  }, []);
+
+  // Settings sits on top, so it takes Escape in the capture phase and stops it
+  // reaching the match drawer or leave dialog underneath.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.defaultPrevented) return;
-      if (shouldCloseOnEscape(event.key, event.target as HTMLInputElement | null)) onBack();
+      if (event.key !== 'Escape') return;
+      event.stopPropagation();
+      const fields = boxRef.current?.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('input, textarea') ?? [];
+      if (shouldCloseOnEscape(event.key, fields)) onBack();
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
   }, [onBack]);
 
   return (
@@ -155,11 +169,12 @@ export default function Settings({ settings: initial, onSave, onBack, account, f
         }}
       />
 
-      <div className={styles.box} role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <div ref={boxRef} className={styles.box} role="dialog" aria-modal="true" aria-labelledby="settings-title">
         {/* ── Box header ─────────────────────────────────────── */}
         <div className={styles.boxHeader}>
           <span className={styles.boxTitle} id="settings-title">Settings</span>
           <button
+            ref={closeRef}
             className={styles.closeBtn}
             onClick={() => {
               playClick();
