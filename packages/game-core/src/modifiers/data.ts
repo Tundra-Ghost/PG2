@@ -188,6 +188,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'shared',
     description:
       'Every 6 rounds a flock lands on a random empty 2×2 area of ranks 3 to 6. Nothing can land on or cross those squares for 2 rounds. The landing spot is shown one round ahead.',
+    prototypeRules:
+      'Every 6 rounds (rounds 7, 13, 19, ...) a flock lands on a random 2×2 block of empty squares on ranks 3 to 6, chosen with the game seed. The block is marked one round ahead. If a piece steps into the marked block, the flock picks another open block when it lands. For 2 rounds nothing can land on or slide through those squares, and they block check. Knights still jump over. A flock never lands where it would take away the last legal move of either King, and skips its landing if no block is open. A flock that shields a King from check stays until it no longer does.',
     flavor: '"The pigeons have chosen a spot. It is the spot Viktor needed. This is not a coincidence."',
   },
   {
