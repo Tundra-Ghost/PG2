@@ -546,6 +546,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'owned',
     description:
       'Every 10 of your moves, the tax office collects one of your pawns: the one furthest back. You are warned one move before. Once you have no pawns, the curse ends.',
+    prototypeRules:
+      'At the start of your 10th, 20th, 30th ... move the feed warns you and marks the pawn that would be taken. Right after that move, the tax office removes your rearmost pawn as the board then stands (on a tie, the one nearest the a-file). It never takes a pawn whose removal would leave your King in check; it takes the next one back instead. Once you have no pawns, nothing more is taken. If tax day is a pass or skipped turn, the tax is taken after your next real move. Pawns are what your opponent sees, so under Sus a piece disguised as a pawn is taxed like one and a disguised pawn is never taken. The warning is always posted on tax day while you have pawns, even when none can be taken yet. A taxed pawn cannot be taken en passant. Cannot be drafted with The Small Council.',
     flavor: '"Viktor has filed his return. The pawn has been seized. Viktor is told this is normal."',
   },
   {
