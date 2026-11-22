@@ -110,6 +110,7 @@ Three hidden Vents spawn on ranks 3 to 6. The first non-king piece to land on a 
 - Synergy: I'm Literally Right Here. Decoys can trigger Vents.
 - Synergy: It's Dark And I'm Scared. Nobody can track Vents in fog.
 - Changed from v0.2: Vents only spawn on ranks 3 to 6. Kings never trigger them. Jam rule added.
+- Conflict: Thinking With Portals. Only one of the two may be in a match, whoever drafts it.
 
 ### MOD-A004 · Winter Is Coming (To Your Pieces)
 *Ref: Game of Thrones* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
@@ -183,6 +184,7 @@ Every 6 rounds a flock lands on a random empty 2×2 area of ranks 3 to 6. Nothin
 - Built: the flock lands at the start of rounds 7, 13, 19 and so on, and flies off 2 rounds later. The spot is picked with the game seed and marked with grey stripes one round ahead.
 - Built: if a piece steps into the marked spot, the flock picks another open 2×2 when it lands. If no 2×2 is open, it skips that landing.
 - Built: a flock square works like a Dirt Hut wall: sliders stop before it, nothing lands on it, and it blocks check. Knights still jump over it. A flock that shields the waiting King from check stays until it no longer does.
+- Conflict: Thinking With Portals. Only one of the two may be in a match, whoever drafts it.
 
 ### MOD-A010 · The Factory Must Grow
 *Ref: Factorio* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**

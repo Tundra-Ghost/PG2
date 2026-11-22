@@ -3,6 +3,7 @@ import type { GameState, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { teleport } from '../../engine/teleport';
 import { MODIFIER_IDS } from '../ids';
+import { getShownType } from './sus';
 
 const ID = MODIFIER_IDS.thinkingWithPortals;
 
@@ -14,6 +15,11 @@ export function portalExit(square: Square): Square | null {
   if (square === BLUE_PORTAL) return ORANGE_PORTAL;
   if (square === ORANGE_PORTAL) return BLUE_PORTAL;
   return null;
+}
+
+interface PortalState {
+  /** The piece making this move, so only that piece jumps (another card may slide a different piece onto the portal). */
+  mover?: string;
 }
 
 function side(color: string): string {
@@ -44,13 +50,22 @@ export const thinkingWithPortalsDef: ModifierDefinition = {
     return next;
   },
 
+  onPreMoveApply(state, move) {
+    const mover = state.pieces.get(move.from);
+    if (!mover) return { state, move };
+    return { state: { ...state, modifierState: { ...state.modifierState, [ID]: { mover: mover.id } satisfies PortalState } }, move };
+  },
+
   onPostMove(state, move) {
+    const moverId = (state.modifierState[ID] as PortalState | undefined)?.mover;
+    if (moverId) state = { ...state, modifierState: { ...state.modifierState, [ID]: {} } };
     if (move.ability) return state;
     const exit = portalExit(move.to);
     if (!exit) return state;
     const piece = state.pieces.get(move.to);
-    // The mover may already be gone (a vent, a capture chain): only the piece that moved here jumps.
-    if (!piece || piece.color !== move.playerColor) return state;
+    // Only the piece that moved here jumps. It may be gone (a vent, a chain),
+    // or another card may have slid a different piece onto the portal.
+    if (!piece || piece.id !== moverId) return state;
     // Kings do not fit. An occupied or blocked exit, or a jump that exposes
     // the mover's own King, leaves the piece on the entry portal.
     const jump = teleport(state, move.to, exit, { capture: false });
@@ -63,7 +78,8 @@ export const thinkingWithPortalsDef: ModifierDefinition = {
       type: 'modifier',
       modifierId: ID,
       title: 'Portal',
-      message: `${side(piece.color)}'s ${piece.type} steps through the portal from ${move.to} to ${exit}.`,
+      // Sus: name the piece as the opponent sees it.
+      message: `${side(piece.color)}'s ${getShownType(state, piece, piece.color === 'white' ? 'black' : 'white')} steps through the portal from ${move.to} to ${exit}.`,
       squares: [move.to, exit],
     });
   },

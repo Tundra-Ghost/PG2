@@ -6,6 +6,7 @@ import { MODIFIER_IDS } from './ids';
 import { getValidOptions, pickBlocker } from '../draft/rules';
 import { ALL_MODIFIERS } from './data';
 import { makeEmptyState, makePiece, move } from './testHelpers';
+import { modifierRegistry } from './registry';
 
 const PORTALS = MODIFIER_IDS.thinkingWithPortals;
 
@@ -74,5 +75,25 @@ describe('MOD-A011 Thinking With Portals', () => {
     expect(ids(getValidOptions([MODIFIER_IDS.theBirds], [], built))).not.toContain(PORTALS);
     const card = ALL_MODIFIERS.find(c => c.id === PORTALS)!;
     expect(pickBlocker(card, [], [MODIFIER_IDS.ventTiles], built)).toMatch(/Vent Tiles/);
+  });
+});
+
+describe('MOD-A011 review fixes', () => {
+  it('only the piece that moved jumps, even if another card slid a different piece onto the portal', () => {
+    let state = withPortals([...KINGS(), makePiece('rook', 'white', 'c1'), makePiece('knight', 'white', 'b4')]);
+    const def = modifierRegistry.get(PORTALS)!;
+    const m = move('c1', 'c4', 'white');
+    const prepared = def.onPreMoveApply!(state, m).state;
+    // As if Gravity ran first: the rook slid on to d4 and the knight slid onto c4.
+    const shifted = { ...prepared, pieces: new Map(prepared.pieces) };
+    const rook = shifted.pieces.get('c1')!;
+    const knight = shifted.pieces.get('b4')!;
+    shifted.pieces.delete('c1');
+    shifted.pieces.delete('b4');
+    shifted.pieces.set('d4', { ...rook, square: 'd4' });
+    shifted.pieces.set('c4', { ...knight, square: 'c4' });
+    state = def.onPostMove!(shifted, m);
+    expect(state.pieces.get('c4')).toMatchObject({ type: 'knight' });
+    expect(state.pieces.get('f5')).toBeUndefined();
   });
 });

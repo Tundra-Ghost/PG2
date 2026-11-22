@@ -48,7 +48,7 @@ export const MODIFIER_SUMMARIES: Record<string, string> = {
   // Design cards (not built yet)
   'MOD-A009': 'A flock lands on empty squares every few rounds and blocks them.',
   'MOD-A010': 'The two middle ranks are conveyor belts that slide pieces each round.',
-  'MOD-A011': 'Two linked portals move any piece that stops on one to the other.',
+  'MOD-A011': 'Two linked portals move a non-King piece to the other, if it is empty.',
   'MOD-A012': 'Sliding pieces that move onto the central ice keep sliding.',
   'MOD-A013': 'Pieces on the four centre squares rotate one step each round.',
   'MOD-A014': 'Hidden mines destroy pieces, but numbered squares reveal where they are.',
