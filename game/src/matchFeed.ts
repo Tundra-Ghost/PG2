@@ -27,8 +27,9 @@ export function formatActorMove(label: string, notation: string): string {
 
 export function formatEventMessage(message: string, whiteLabel: string, blackLabel: string): string {
   return message
-    .replace(/\bwhite ([a-z_]+)/gi, `${whiteLabel}'s $1`)
-    .replace(/\bblack ([a-z_]+)/gi, `${blackLabel}'s $1`)
+    // "the white pawn" reads "Name's pawn", not "the Name's pawn".
+    .replace(/\b(?:the )?white ([a-z_]+)/gi, `${whiteLabel}'s $1`)
+    .replace(/\b(?:the )?black ([a-z_]+)/gi, `${blackLabel}'s $1`)
     .replace(/\bwhite\b/gi, whiteLabel)
     .replace(/\bblack\b/gi, blackLabel);
 }
