@@ -542,8 +542,9 @@ Every 8 of your moves, a seagull swoops in and carries your most advanced pawn o
 
 - Ruling: the seagull never lands a pawn on rank 1 or 8 and never exposes your King.
 - Built: the seagull comes right after your 8th, 16th, ... move. On a tie for most advanced, it takes the pawn nearest the a-file. If that pawn cannot go back (blocked, Lava, a wall, flock, storm or statue, or it would expose your King), nothing happens that time.
-- Built: a pass or skipped turn counts as a move but brings no seagull.
-- Built: under Sus, a pawn disguised as another piece is left alone, so the seagull never gives it away.
+- Built: if the 8th move is a pass or skipped turn (shooing Gerald, no legal move), the seagull comes right after your next real move instead, so passing never dodges it.
+- Built: a pawn carried back to its start rank may double-step again.
+- Built: "pawn" means what your opponent sees. Under Sus, a pawn disguised as another piece is skipped, and if a piece disguised as a pawn is in the lead, the seagull does nothing that time. Either way the disguise is never given away.
 - Conflict: The Small Council (one side). Its 12 pawns would make the curse cheap.
 - Lore: the seagull is not a pigeon. The pigeons are embarrassed for it.
 
@@ -1064,6 +1065,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 - Conflict: Hatchery. Its pawns fill the third rank, leaving no nest, so one side cannot draft both.
 - Conflict: Leap Of Faith. There are no bishops to leap, so one side cannot draft both.
 - Conflict: The Bodyguard. This card rebuilds the pawns, so whether the Bodyguard survives would depend on which card goes first. One side cannot draft both.
+- Conflict: MINE!. Its 12 pawns would make the curse cheap, so one side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
 *Ref: John Wick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**

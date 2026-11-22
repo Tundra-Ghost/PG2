@@ -22,14 +22,17 @@ function progress(pawn: Piece): number {
  * pawn goes one square back toward its own side, if that square is empty,
  * not Lava, void or the back rank, and the move does not expose its King.
  * Ties go to the pawn nearest the a-file, so the choice needs no dice.
- * A pawn disguised by Sus is left alone, so the seagull never gives it away.
+ * Pawns are what the opponent sees (Sus), so a disguise is never given away.
  */
 export function getSeagullTarget(state: GameState, color: Color): { from: Square; to: Square } | null {
-  const pawns = Array.from(state.pieces.values())
-    .filter(p => p.color === color && p.type === 'pawn' && getShownType(state, p, color === 'white' ? 'black' : 'white') === 'pawn')
+  // Rank what the opponent sees as pawns. If the lead one is a Sus fake,
+  // the seagull does nothing, so its choice never gives a disguise away.
+  const opponent: Color = color === 'white' ? 'black' : 'white';
+  const shown = Array.from(state.pieces.values())
+    .filter(p => p.color === color && getShownType(state, p, opponent) === 'pawn')
     .sort((a, b) => progress(b) - progress(a) || a.square.localeCompare(b.square));
-  const pawn = pawns[0];
-  if (!pawn) return null;
+  const pawn = shown[0];
+  if (!pawn || pawn.type !== 'pawn') return null;
   const back = offset(pawn.square, 0, color === 'white' ? -1 : 1);
   if (!canMovePieceTo(state, pawn, back)) return null;
   const after = cloneState(state);
@@ -49,11 +52,18 @@ export const mineDef: ModifierDefinition = {
   draftScope: 'owned',
 
   // After your 8th, 16th, ... move. The move counter has not ticked yet, so
-  // ownMoveNumber is the move just made.
+  // ownMoveNumber is the move just made. A pass runs no onPostMove, so a
+  // seagull due on a pass comes on your next real move instead: passing
+  // (shooing Gerald) never dodges it.
   onPostMove(state, move) {
     const color = move.playerColor;
     if (state.status !== 'active' || !affectsColor(state, ID, color)) return state;
-    if (ownMoveNumber(state, color) % SEAGULL_EVERY !== 0) return state;
+    const cycle = Math.floor(ownMoveNumber(state, color) / SEAGULL_EVERY);
+    const fired = (state.modifierState[ID] as Partial<Record<Color, number>> | undefined) ?? {};
+    if (cycle <= (fired[color] ?? 0)) return state;
+    const marked = cloneState(state);
+    marked.modifierState = { ...marked.modifierState, [ID]: { ...fired, [color]: cycle } };
+    state = marked;
     const target = getSeagullTarget(state, color);
     const ply = state.moveHistory.length + 1;
     if (!target) {

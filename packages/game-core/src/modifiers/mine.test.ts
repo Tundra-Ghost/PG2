@@ -58,6 +58,40 @@ describe('MOD-B017 MINE!', () => {
     expect(state.flags.enPassantSquare).toBeNull();
   });
 
+  it('never gives a Sus disguise away', () => {
+    const base = [
+      makePiece('king', 'white', 'a1'),
+      makePiece('knight', 'white', 'd6', 'fake-pawn'),
+      makePiece('pawn', 'white', 'e5', 'real-pawn'),
+      makePiece('pawn', 'white', 'f4', 'hidden-pawn'),
+      makePiece('king', 'black', 'h8'),
+    ];
+    // The knight on d6 is shown to Black as a pawn: it leads, so the seagull does nothing.
+    const fake = withMine(base);
+    fake.modifierState = { ...fake.modifierState, [MODIFIER_IDS.sus]: { white: { pieceId: 'fake-pawn', shownAs: 'pawn' } } };
+    expect(getSeagullTarget(fake, 'white')).toBeNull();
+    // The pawn on e5 is shown as a knight: the seagull skips it and takes f4.
+    const hidden = withMine(base.filter(p => p.id !== 'fake-pawn'));
+    hidden.modifierState = { ...hidden.modifierState, [MODIFIER_IDS.sus]: { white: { pieceId: 'real-pawn', shownAs: 'knight' } } };
+    expect(getSeagullTarget(hidden, 'white')).toEqual({ from: 'f4', to: 'f3' });
+  });
+
+  it('a seagull due on a pass comes on the next real move', () => {
+    let state = withMine([makePiece('king', 'white', 'a1'), makePiece('pawn', 'white', 'd5'), makePiece('rook', 'white', 'h1'), makePiece('king', 'black', 'h8')]);
+    state = playWhiteMoves(state, SEAGULL_EVERY - 1);
+    state = chessEngine.applyMove({ ...state, positionHistory: {} }, move('h8', 'g8', 'black'));
+    state = chessEngine.passTurn(state);
+    expect(state.turn).toBe('black');
+    expect(state.pieces.get('d5')).toBeDefined();
+    expect(state.eventHistory.some(e => e.modifierId === MINE)).toBe(false);
+    state = chessEngine.applyMove({ ...state, positionHistory: {} }, move('g8', 'h8', 'black'));
+    state = chessEngine.applyMove({ ...state, positionHistory: {} }, move('h1', 'h2', 'white'));
+    expect(state.pieces.get('d4')).toMatchObject({ type: 'pawn' });
+    // Only once: the next one is due after move 16.
+    state = playWhiteMoves(state, 1);
+    expect(state.eventHistory.filter(e => e.modifierId === MINE)).toHaveLength(1);
+  });
+
   it('moves black pawns up the board', () => {
     const state = withMine([makePiece('king', 'black', 'h8'), makePiece('pawn', 'black', 'c4'), makePiece('king', 'white', 'a1')]);
     expect(getSeagullTarget(state, 'black')).toEqual({ from: 'c4', to: 'c5' });
