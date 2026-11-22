@@ -44,6 +44,20 @@ describe('MOD-B017 MINE!', () => {
     expect(state.pieces.get('d3')).toMatchObject({ type: 'pawn' });
   });
 
+  it('clears en passant when it carries a pawn that just double-stepped', () => {
+    let state = withMine([
+      makePiece('king', 'white', 'a1'),
+      makePiece('pawn', 'white', 'e2'),
+      makePiece('pawn', 'black', 'd4'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+    state = playWhiteMoves(state, SEAGULL_EVERY - 1);
+    state = chessEngine.applyMove({ ...state, positionHistory: {} }, move('h8', 'g8', 'black'));
+    state = chessEngine.applyMove({ ...state, positionHistory: {} }, move('e2', 'e4', 'white'));
+    expect(state.pieces.get('e3')).toMatchObject({ type: 'pawn', color: 'white' });
+    expect(state.flags.enPassantSquare).toBeNull();
+  });
+
   it('moves black pawns up the board', () => {
     const state = withMine([makePiece('king', 'black', 'h8'), makePiece('pawn', 'black', 'c4'), makePiece('king', 'white', 'a1')]);
     expect(getSeagullTarget(state, 'black')).toEqual({ from: 'c4', to: 'c5' });

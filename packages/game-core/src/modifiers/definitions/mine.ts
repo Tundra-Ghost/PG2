@@ -64,6 +64,8 @@ export const mineDef: ModifierDefinition = {
     }
     const next = cloneState(state);
     shiftPiece(next, target.from, target.to);
+    // A pawn carried back after a double step can no longer be taken en passant.
+    if (next.flags.enPassantSquare) next.flags = { ...next.flags, enPassantSquare: null };
     return appendGameEvent(next, {
       ply, type: 'modifier', modifierId: ID, title: 'MINE!',
       message: `A seagull carries the ${color} pawn from ${target.from} back to ${target.to}.`,
