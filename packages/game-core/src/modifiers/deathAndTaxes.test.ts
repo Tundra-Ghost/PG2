@@ -3,7 +3,7 @@ import { chessEngine } from '../engine/ChessEngine';
 import type { GameState, Piece, Square } from '../engine/types';
 import './index';
 import { MODIFIER_IDS } from './ids';
-import { TAX_EVERY, getTaxedPawn } from './definitions/death-and-taxes';
+import { TAX_EVERY, getTaxDayPawn, getTaxedPawn } from './definitions/death-and-taxes';
 import { getValidOptions } from '../draft/rules';
 import { makeEmptyState, makePiece, move } from './testHelpers';
 
@@ -50,6 +50,16 @@ describe('MOD-B013 Death And Taxes', () => {
     expect(state.pieces.get('b2')).toBeUndefined();
     expect(state.pieces.get('c2')).toBeDefined();
     expect(state.eventHistory[state.eventHistory.length - 1]).toMatchObject({ modifierId: TAX, title: 'TAXED' });
+  });
+
+  it('marks the taxed pawn only on tax day (#179)', () => {
+    let state = withTax(PIECES());
+    state = playWhiteMoves(state, TAX_EVERY - 1);
+    expect(getTaxDayPawn(state)).toBeNull(); // Black to move
+    state = chessEngine.applyMove({ ...state, positionHistory: {} }, move('h8', 'g8', 'black'));
+    expect(getTaxDayPawn(state)).toBe('b2');
+    state = chessEngine.applyMove({ ...state, positionHistory: {} }, move('a1', 'b1', 'white'));
+    expect(getTaxDayPawn(state)).toBeNull();
   });
 
   it('never takes a pawn that shields its King from check', () => {

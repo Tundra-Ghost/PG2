@@ -51,6 +51,16 @@ export function isTaxMove(state: GameState, color: Color): boolean {
   return Math.floor(ownMoveNumber(state, color) / TAX_EVERY) > (collected(state)[color] ?? 0);
 }
 
+/**
+ * The pawn to mark on the board: on tax day (the move after which the tax
+ * is taken), the pawn that would go if the board stayed as it is. Null on
+ * other moves. Public: both players see it, as both read the warning.
+ */
+export function getTaxDayPawn(state: GameState): Square | null {
+  if (state.status !== 'active' || !isTaxMove(state, state.turn)) return null;
+  return getTaxedPawn(state, state.turn);
+}
+
 function side(color: Color): string {
   return color === 'white' ? 'White' : 'Black';
 }

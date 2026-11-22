@@ -224,6 +224,7 @@ export class BoardScene extends Phaser.Scene {
       if (view.blindSpot) this.drawBlindSpotEdges(index, x, y);
       if (view.smoke) this.drawSmoke(x, y);
       if (view.lavaNext) this.drawLavaNext(x, y);
+      if (view.taxed) this.drawTaxed(x, y);
       if (view.wall) this.drawWall(x, y);
       // Drawn over the fog: both players always see the flock (like the eye).
       if (view.flock) this.drawFlock(view.flock, x, y);
@@ -584,6 +585,30 @@ export class BoardScene extends Phaser.Scene {
     side(r, t, r, b);
     side(r, b, l, b);
     side(l, b, l, t);
+  }
+
+  /** Death And Taxes: a dashed red frame with a coin, on the pawn taxed after this move. */
+  private drawTaxed(x: number, y: number) {
+    const g = this.fogLayer;
+    const inset = CELL * 0.08;
+    const size = CELL - inset * 2;
+    g.lineStyle(3, 0xd0342c, 0.95);
+    const steps = 4;
+    const side = (x1: number, y1: number, x2: number, y2: number) => {
+      for (let i = 0; i < steps; i++) {
+        const t0 = i / steps;
+        const t1 = (i + 0.6) / steps;
+        g.lineBetween(x1 + (x2 - x1) * t0, y1 + (y2 - y1) * t0, x1 + (x2 - x1) * t1, y1 + (y2 - y1) * t1);
+      }
+    };
+    const l = x + inset, t = y + inset, r = x + inset + size, b = y + inset + size;
+    side(l, t, r, t);
+    side(r, t, r, b);
+    side(r, b, l, b);
+    side(l, b, l, t);
+    // A gold coin in the corner, so the mark reads as "tax", not "danger".
+    g.fillStyle(0xe0b040, 1).fillCircle(r - CELL * 0.12, t + CELL * 0.12, CELL * 0.1);
+    g.lineStyle(2, 0x7a5a10, 1).strokeCircle(r - CELL * 0.12, t + CELL * 0.12, CELL * 0.1);
   }
 
   /** Big Beak Is Watching: a golden eye on the Surveillance Square. */
