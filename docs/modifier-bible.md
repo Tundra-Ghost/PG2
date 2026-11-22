@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 71 built, 29 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 72 built, 28 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -472,7 +472,7 @@ Every 8th move you make with a rook, bishop or queen, the piece sneezes and stop
 - Ruling: a one-square slide cannot sneeze. It does not have room.
 
 ### MOD-B013 · Death And Taxes
-*Ref: Benjamin Franklin* · **Tier S** · Cost -3 · Curse 3 · Scope: Owner · Modes: All · **Design**
+*Ref: Benjamin Franklin* · **Tier S** · Cost -3 · Curse 3 · Scope: Owner · Modes: All · **Built**
 
 Every 10 of your moves, the tax office collects one of your pawns: the one furthest back. You are warned one move before. Once you have no pawns, the curse ends.
 
@@ -480,6 +480,12 @@ Every 10 of your moves, the tax office collects one of your pawns: the one furth
 
 - Pricing: costs about 4 pawns in a 40-round game, so it grants the full 3 points.
 - Ruling: the tax never takes a pawn that is shielding your King from check; it takes the next one.
+- Built: the feed warns at the start of your 10th, 20th, ... move and marks the pawn. The tax is taken right after that move from the board as it then stands, so moving the marked pawn forward can shift the tax to another pawn. On a tie, the pawn nearest the a-file goes first.
+- Built: if tax day is a pass or skipped turn, the tax is taken after your next real move, so passing never dodges it.
+- Built: "pawn" means what your opponent sees. Under Sus, a disguised pawn is never taken, and if a piece disguised as a pawn is the rearmost, no tax is taken that time.
+- Built: the tax is removal, not a capture, so it never feeds capture cards such as Moneyball.
+- Interaction: MINE!. Both may hit on your 40th move: the seagull moves first, then the tax is taken.
+- Conflict: The Small Council (one side). Its 12 pawns would make the curse cheap.
 
 ### MOD-B014 · Imposter Syndrome
 *Ref: Every new job* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -1066,6 +1072,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 - Conflict: Leap Of Faith. There are no bishops to leap, so one side cannot draft both.
 - Conflict: The Bodyguard. This card rebuilds the pawns, so whether the Bodyguard survives would depend on which card goes first. One side cannot draft both.
 - Conflict: MINE!. Its 12 pawns would make the curse cheap, so one side cannot draft both.
+- Conflict: Death And Taxes. Its 12 pawns would make the curse cheap, so one side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
 *Ref: John Wick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1379,7 +1386,7 @@ Values the game uses today. "Built" cards match the build.
 | B010 | Main Character Syndrome | B | B | -1 | 1 | Owner | Built |
 | B011 | Case Of The Mondays | B | B | -1 | 1 | Owner | Built |
 | B012 | Bless You | B | B | -1 | 1 | Owner | Design |
-| B013 | Death And Taxes | B | S | -3 | 3 | Owner | Design |
+| B013 | Death And Taxes | B | S | -3 | 3 | Owner | Built |
 | B014 | Imposter Syndrome | B | B | -1 | 1 | Owner | Built |
 | B015 | Commitment Issues | B | B | -1 | 1 | Owner | Built |
 | B016 | Lunch Break | B | A | -2 | 2 | Owner | Built |
@@ -1424,7 +1431,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-71 of 100 built. The other 29 are designs (v0.4).
+72 of 100 built. The other 28 are designs (v0.4).
 
 ### Balance test plan
 
