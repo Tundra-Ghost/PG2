@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 67 built, 33 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 68 built, 32 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -306,11 +306,11 @@ Negative effects that grant extra point budget. Curses fill the Madness Meter. A
 
 ### Move rules
 
-Some curses limit which move you may make this turn: Peer Pressure, Main Character Syndrome, Roll For Initiative, Case Of The Mondays and Lunch Break. They share one set of rulings:
+Some curses limit which move you may make this turn: Peer Pressure, Main Character Syndrome, Roll For Initiative, Case Of The Mondays, Lunch Break and Imposter Syndrome. They share one set of rulings:
 
 - In check, none of them apply. Any legal move is allowed.
 - A move rule only applies when at least one legal move keeps it. It never takes away your last move.
-- When two apply to one side, they are checked in this order: Lunch Break, Case Of The Mondays, Peer Pressure, Main Character Syndrome, Roll For Initiative. A later rule only applies if some legal move keeps every earlier one too.
+- When two apply to one side, they are checked in this order: Lunch Break, Case Of The Mondays, Imposter Syndrome, Peer Pressure, Main Character Syndrome, Roll For Initiative. A later rule only applies if some legal move keeps every earlier one too.
 - Rules that demand a move ("you must move X") also forbid shooing Gerald. Rules that only forbid some moves do not.
 - Two rules that demand different pieces on the same move cannot be drafted by one side (see each card's conflicts).
 
@@ -479,14 +479,19 @@ Every 10 of your moves, the tax office collects one of your pawns: the one furth
 - Ruling: the tax never takes a pawn that is shielding your King from check; it takes the next one.
 
 ### MOD-B014 · Imposter Syndrome
-*Ref: Every new job* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+*Ref: Every new job* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
 
 After your Queen captures, she doubts herself. Her next move can only be one square, like a King.
 
 *She took the rook. She is not sure she deserved to take the rook. She will take one small step now.*
 
-- Ruling: the doubt shows as a small cloud over the Queen.
+- Changed from design: the doubt shows as a … badge on the Queen, not a cloud (the cloud mark is Smoke's).
 - Synergy: Main Character Syndrome. She must move, but only a little. Character development.
+- Ruling: the doubt lasts until her next move, however long she waits. If she captures with that one-square move, she doubts again.
+- Ruling: it is a move rule (see Move rules above): it does not apply in check, and never takes away your last move. Abilities that keep her in place (Quiet Quitting, GET OVER HERE!) do not count as her move.
+- Ruling: only a Queen that was a Queen when she captured. A pawn that captures and promotes to a Queen does not doubt.
+- Ruling: under Sus, a disguised Queen never shows the badge to the opponent.
+- Conflict: Yeah, There Are Three Of Them (one side). There is no Queen to doubt.
 
 ### MOD-B015 · Commitment Issues
 *Ref: The touch-move rule* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -1055,6 +1060,7 @@ The owner's queen becomes a Royal Guard and a second Guard stands on their third
 - Conflict: Slay Queen. One side cannot draft both.
 - Conflict: Main Character Syndrome. There is no Queen to demand, so one side cannot draft both.
 - Conflict: GET OVER HERE!. There is no Queen to pull with, so one side cannot draft both.
+- Conflict: Imposter Syndrome. There is no Queen to doubt, so one side cannot draft both.
 
 ### MOD-E004 · Equivalent Exchange (The Chancellor)
 *Ref: Fullmetal Alchemist* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**
@@ -1358,7 +1364,7 @@ Values the game uses today. "Built" cards match the build.
 | B011 | Case Of The Mondays | B | B | -1 | 1 | Owner | Built |
 | B012 | Bless You | B | B | -1 | 1 | Owner | Design |
 | B013 | Death And Taxes | B | S | -3 | 3 | Owner | Design |
-| B014 | Imposter Syndrome | B | B | -1 | 1 | Owner | Design |
+| B014 | Imposter Syndrome | B | B | -1 | 1 | Owner | Built |
 | B015 | Commitment Issues | B | B | -1 | 1 | Owner | Built |
 | B016 | Lunch Break | B | A | -2 | 2 | Owner | Built |
 | B017 | MINE! | B | A | -2 | 2 | Owner | Design |
@@ -1402,7 +1408,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-67 of 100 built. The other 33 are designs (v0.4).
+68 of 100 built. The other 32 are designs (v0.4).
 
 ### Balance test plan
 

@@ -56,6 +56,9 @@ function getPieceTooltipLines(
   if (piece.isTouched) {
     lines.push('Commitment Issues: This piece was touched. It must move this turn.');
   }
+  if (piece.isDoubting) {
+    lines.push('Imposter Syndrome: This Queen doubts herself. Her next move is only one square.');
+  }
   if (piece.isShielded) {
     lines.push('Hold My Bread: This piece is guarded. It cannot be captured this move.');
   }

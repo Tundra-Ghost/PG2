@@ -63,9 +63,9 @@ describe('pickBlocker', () => {
 describe('unlimited practice drafts', () => {
   it('lifts the budget, count and category caps but keeps shared cards exclusive', () => {
     // Cards with a same-side conflict are left out (Slay Queen, Holy Knight,
-    // Elephant In The Room, Lawrence Of Arabia, Knight Rider, Hatchery, GET OVER HERE!): one side cannot hold them with
+    // Elephant In The Room, Lawrence Of Arabia, Knight Rider, Hatchery, GET OVER HERE!, Imposter Syndrome): one side cannot hold them with
     // their partner card, even in practice.
-    const conflicting: string[] = [MODIFIER_IDS.slayQueen, MODIFIER_IDS.holyKnight, MODIFIER_IDS.elephantInTheRoom, MODIFIER_IDS.lawrenceOfArabia, MODIFIER_IDS.knightRider, MODIFIER_IDS.hatchery, MODIFIER_IDS.getOverHere];
+    const conflicting: string[] = [MODIFIER_IDS.slayQueen, MODIFIER_IDS.holyKnight, MODIFIER_IDS.elephantInTheRoom, MODIFIER_IDS.lawrenceOfArabia, MODIFIER_IDS.knightRider, MODIFIER_IDS.hatchery, MODIFIER_IDS.getOverHere, MODIFIER_IDS.imposterSyndrome];
     const all = ALL_MODIFIERS
       .filter(c => implemented.has(c.id) && !isSharedDraftModifier(c.id) && !conflicting.includes(c.id))
       .map(c => c.id);

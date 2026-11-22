@@ -558,6 +558,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'owned',
     description:
       'After your Queen captures, she doubts herself. Her next move can only be one square, like a King.',
+    prototypeRules:
+      'After your Queen captures, she doubts herself: her next move can only be one square, like a King. The doubt lasts until she moves, and she shows a \u2026 badge. Abilities that keep her in place do not count as her move. In check, she may move anywhere, and the rule never takes away your last move. A pawn that captures and promotes to a Queen does not doubt.',
     flavor: '"She took the rook. She is not sure she deserved to take the rook. She will take one small step now."',
   },
   {

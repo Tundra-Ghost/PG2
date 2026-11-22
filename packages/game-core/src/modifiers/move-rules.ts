@@ -40,6 +40,7 @@ export type MoveRuleSource = (state: GameState, color: Color) => MoveRule | null
 const RULE_ORDER: ModifierID[] = [
   'MOD-B016', // Lunch Break
   'MOD-B011', // Case Of The Mondays
+  'MOD-B014', // Imposter Syndrome
   'MOD-B019', // Peer Pressure
   'MOD-B010', // Main Character Syndrome
   'MOD-B020', // Roll For Initiative
