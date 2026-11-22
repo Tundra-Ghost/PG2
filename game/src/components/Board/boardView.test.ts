@@ -69,6 +69,13 @@ describe('buildSquareViews', () => {
     expect(getPieceMarkers(real).marks).toContain('♞');
   });
 
+  it('marks a piece guarded by Hold My Bread', () => {
+    const bishop = { id: 'b', type: 'bishop' as const, color: 'white' as const, square: 'e5' as const, cooldowns: {}, isShielded: true };
+    expect(getPieceMarkers(bishop).marks).toContain('◇');
+    expect(getPieceMarkers(bishop).label).toContain('guarded');
+    expect(getPieceMarkers({ ...bishop, isShielded: false }).marks).not.toContain('◇');
+  });
+
   it('marks only an Amazon queen, with a knight so it never clashes with the Archbishop A', () => {
     const queen = { id: 'q', type: 'queen' as const, color: 'white' as const, square: 'd1' as const, cooldowns: {}, isAmazon: true };
     expect(getPieceMarkers(queen).marks).toContain('♞');

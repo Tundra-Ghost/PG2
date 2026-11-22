@@ -77,6 +77,8 @@ export function getBestCaptureTarget(state: GameState, from: Square): Square | n
   for (const to of moves) {
     const target = state.pieces.get(to);
     if (!target || target.color === piece.color) continue;
+    // MOD-C013: a piece guarded by Hold My Bread cannot be chained.
+    if (target.isShielded) continue;
     const projected = applyMoveInternal(state, buildMove(state, from, to));
     if (isInCheck(projected, piece.color)) continue;
     // MOD-E009: the Amazon is worth more than a plain queen.

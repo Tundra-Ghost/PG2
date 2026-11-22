@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 66 built, 34 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 67 built, 33 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -736,13 +736,18 @@ Select a piece and press Swap, then pick one of your pieces next to it. The two 
 - Changed from design: the design gave no cooldown; the build uses 7 of your moves, on both pieces.
 
 ### MOD-C013 · Hold My Bread
-*Ref: "Hold my beer" meme* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: "Hold my beer" meme* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Pawn · Cooldown 6 · Modes: All · **Built**
 
 A pawn guards an adjacent friendly piece. That piece cannot be captured during your opponent's next move. Uses your move.
 
 *The pawn said hold my bread. The bishop held the bread. The bishop survived.*
 
 - Ruling: cannot shield your King. Check is check.
+- Ruling: "adjacent" means the 8 squares around the pawn. Any piece of yours but the King.
+- Ruling: the shield lasts for your opponent's next move only, and stops every capture of that piece: normal moves, en passant and abilities that would remove it. The piece shows a ◇ badge while guarded.
+- Ruling: it does not change the board, so it is never allowed in check.
+- Ruling: chain captures (the Berserker, Reject Queen's chain) skip a guarded piece. The shield ends after the opponent's first move, even if The Snap gives them another.
+- Ruling: the pawn then waits 6 of your moves (the cooldown on the card).
 
 ### MOD-C014 · Run, Forrest, Run
 *Ref: Forrest Gump* · **Tier B** · Cost 2 · Curse 0 · King · Cooldown 10 · Scope: Owner · Modes: All · **Built**
@@ -1364,7 +1369,7 @@ Values the game uses today. "Built" cards match the build.
 | C010 | Leap Of Faith | C | A | 3 | 0 | Owner | Built |
 | C011 | GET OVER HERE! | C | S | 4 | 0 | Owner | Built |
 | C012 | Freaky Friday | C | B | 2 | 0 | Owner | Built |
-| C013 | Hold My Bread | C | B | 2 | 0 | Owner | Design |
+| C013 | Hold My Bread | C | B | 2 | 0 | Owner | Built |
 | C014 | Run, Forrest, Run | C | B | 2 | 0 | Owner | Built |
 | C015 | Ctrl+Z | C | S | 4 | 0 | Owner | Design |
 | C016 | Bullet Time | C | A | 4 | 0 | Owner | Design |
@@ -1397,7 +1402,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-66 of 100 built. The other 34 are designs (v0.4).
+67 of 100 built. The other 33 are designs (v0.4).
 
 ### Balance test plan
 

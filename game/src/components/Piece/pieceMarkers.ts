@@ -30,6 +30,8 @@ export function getPieceMarkers(piece: Piece): PieceMarkers {
   // ♞, not A: the Archbishop already uses A in the move list.
   if (amazon) marks.push('♞');
   if (piece.isTouched) marks.push('T');
+  // MOD-C013 Hold My Bread: guarded for one enemy move.
+  if (piece.isShielded) marks.push('◇');
   if (eggRounds !== undefined) marks.push(String(eggRounds));
 
   const label = [
@@ -42,6 +44,7 @@ export function getPieceMarkers(piece: Piece): PieceMarkers {
     hasPromotionChain ? 'chain ready' : null,
     amazon ? 'amazon, also moves like a knight' : null,
     piece.isTouched ? 'touched, must move' : null,
+    piece.isShielded ? 'guarded, cannot be captured this move' : null,
     eggRounds !== undefined ? `egg, hatches in ${eggRounds} of its side's moves` : null,
   ]
     .filter(Boolean)
