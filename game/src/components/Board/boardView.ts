@@ -120,7 +120,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
       // Sus: the opponent's disguised piece is drawn as its fake type.
       const shownType = real && viewer ? getShownType(state, real, viewer) : real?.type;
       const piece = real && shownType !== real.type
-        ? { ...real, type: shownType!, isAmazon: shownType === 'queen' && hasAmazon(state, real.color) }
+        ? { ...real, type: shownType!, isAmazon: shownType === 'queen' && hasAmazon(state, real.color), isDoubting: false }
         : real;
       views.push({
         square,

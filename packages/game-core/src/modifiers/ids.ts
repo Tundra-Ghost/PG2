@@ -27,6 +27,7 @@ export const MODIFIER_IDS = {
   yeet: 'MOD-C009',
   getOverHere: 'MOD-C011',
   holdMyBread: 'MOD-C013',
+  imposterSyndrome: 'MOD-B014',
   monumentToGerald: 'MOD-A016',
   smallCouncil: 'MOD-E002',
   threeKings: 'MOD-E003',

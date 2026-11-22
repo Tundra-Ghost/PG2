@@ -76,6 +76,12 @@ describe('buildSquareViews', () => {
     expect(getPieceMarkers({ ...bishop, isShielded: false }).marks).not.toContain('◇');
   });
 
+  it('marks a doubting Queen for Imposter Syndrome', () => {
+    const queen = { id: 'q', type: 'queen' as const, color: 'white' as const, square: 'd1' as const, cooldowns: {}, isDoubting: true };
+    expect(getPieceMarkers(queen).marks).toContain('…');
+    expect(getPieceMarkers(queen).label).toContain('doubting');
+  });
+
   it('marks only an Amazon queen, with a knight so it never clashes with the Archbishop A', () => {
     const queen = { id: 'q', type: 'queen' as const, color: 'white' as const, square: 'd1' as const, cooldowns: {}, isAmazon: true };
     expect(getPieceMarkers(queen).marks).toContain('♞');

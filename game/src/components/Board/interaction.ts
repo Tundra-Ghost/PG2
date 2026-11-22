@@ -62,6 +62,7 @@ const MARKER_LEGEND: LegendRow[] = [
   },
   { modifierId: MODIFIER_IDS.commitmentIssues, mark: 'T', label: 'Touched: this piece must move' },
   { modifierId: MODIFIER_IDS.holdMyBread, mark: '◇', label: 'Guarded: cannot be captured this move' },
+  { modifierId: MODIFIER_IDS.imposterSyndrome, mark: '…', label: 'Doubting: her next move is only one square' },
   { modifierId: MODIFIER_IDS.slayQueen, mark: '♞', label: 'Amazon: this Queen also moves like a knight' },
   { modifierId: MODIFIER_IDS.threeKings, mark: '⛨', label: 'Royal Guard' },
   { modifierId: MODIFIER_IDS.ventTiles, mark: '●', label: 'Vent shaft' },
