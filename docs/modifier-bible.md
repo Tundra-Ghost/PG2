@@ -664,7 +664,7 @@ When an enemy pawn double-steps from its starting rank past your pawn, your pawn
 - Ruling: a Zerg Rush two-square move from any other rank is not banked.
 
 ### MOD-C009 · YEET
-*Ref: The internet* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
+*Ref: The internet* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Rook · Cooldown 6 · Modes: All · **Built**
 
 Your rook shoves an adjacent enemy piece one square straight away from it, if that square is empty. The rook stays put. Uses your move.
 
@@ -676,7 +676,9 @@ Your rook shoves an adjacent enemy piece one square straight away from it, if th
 - Ruling: the landing square must be empty and on the board (not void or storm). Lava is allowed, and the piece burns. A pawn is never shoved onto rank 1 or 8.
 - Ruling: the shove may not leave your own King in check. In check, it is only allowed if it ends the check.
 - Ruling: under fog, only pieces you can see, onto squares you can see, so the button reveals nothing.
-- Changed from design: the design gave no cooldown; the build uses 6 of your moves.
+- Ruling: under Sus, the pawn rule follows what the rook's owner sees, so a disguise is never given away.
+- Ruling: the rook acts from a distance and enters no square. Quiet Quitting does not stop the shove, but a piece is never shoved into a zone of the other side.
+- Ruling: the rook then waits 6 of your moves (the cooldown on the card).
 
 ### MOD-C010 · Leap Of Faith
 *Ref: Assassin's Creed* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Bishop · Cooldown 5 · Modes: All · **Built**

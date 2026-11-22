@@ -2,6 +2,7 @@ import type { ModifierDefinition } from '../types';
 import type { Color, GameState, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { MODIFIER_IDS } from '../ids';
+import { modifierRegistry } from '../registry';
 
 const ID = MODIFIER_IDS.quietQuitting;
 const FILES = 'abcdefgh';
@@ -36,6 +37,12 @@ function zoneSquares(center: Square): Square[] {
     }
   }
   return squares;
+}
+
+/** True if a piece of `color` may not be put on `sq`: it is inside a zone of the other side. */
+export function isQuietZoneClosedTo(state: GameState, sq: Square, color: Color): boolean {
+  const owner = getQuietZoneSquares(state).get(sq);
+  return owner !== undefined && owner !== color;
 }
 
 /** Squares inside a live zone, with the side that owns each zone. For the board tint. */
@@ -86,6 +93,9 @@ export const quietQuittingDef: ModifierDefinition = {
   },
 
   onPreMoveValidate(state, move) {
+    // A shove or pull acts from a distance: its piece enters nothing. Those
+    // abilities keep enemies out of zones themselves (see isQuietZoneClosedTo).
+    if (move.ability && modifierRegistry.get(move.ability)?.ability?.entersTarget === false) return { blocked: false };
     for (const zone of liveZones(state)) {
       if (zone.color === move.playerColor) continue;
       if (zoneSquares(zone.center).includes(move.to)) {

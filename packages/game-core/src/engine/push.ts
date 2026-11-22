@@ -1,4 +1,4 @@
-import type { GameState, Piece, Square } from './types';
+import type { GameState, Piece, PieceType, Square } from './types';
 
 /**
  * Shared push and pull helpers: Get Off My Lawn (C017), YEET (C009),
@@ -28,17 +28,18 @@ export function isLavaSquare(state: GameState, sq: Square): boolean {
 /**
  * True if a pushed or pulled `piece` may land on `sq`: an empty, real square
  * (not void, storm or statue). A pawn never lands on rank 1 or 8, where it
- * could not stand. Lava is allowed only with `allowLava`.
+ * could not stand. Lava is allowed only with `allowLava`. `shownType` is
+ * the type the mover sees (Sus), so the pawn rule never gives a disguise away.
  */
 export function canMovePieceTo(
   state: GameState,
   piece: Piece,
   sq: Square | null,
-  { allowLava = false }: { allowLava?: boolean } = {},
+  { allowLava = false, shownType = piece.type }: { allowLava?: boolean; shownType?: PieceType } = {},
 ): sq is Square {
   // Void covers used vents, storm and the statue. Inlined so this file imports nothing.
   if (!sq || state.pieces.has(sq) || state.tiles.get(sq)?.isVoid) return false;
-  if (piece.type === 'pawn' && (sq[1] === '1' || sq[1] === '8')) return false;
+  if (shownType === 'pawn' && (sq[1] === '1' || sq[1] === '8')) return false;
   return allowLava || !isLavaSquare(state, sq);
 }
 

@@ -31,6 +31,12 @@ export interface AbilitySpec {
   cooldown: number;
   /** Candidate target squares (self-check is filtered by the engine). */
   getTargets: (state: GameState, piece: Piece) => Square[];
+  /**
+   * False when the target is a piece acted on from a distance (a shove or a
+   * pull), so the ability's own piece never enters the target square. Zone
+   * cards such as Quiet Quitting then ignore the target. Default true.
+   */
+  entersTarget?: boolean;
   /** Physical effect. Default: the piece moves to the target like a normal move. */
   apply?: (state: GameState, move: Move) => AbilityResult;
   /** Move-list text. Default: piece letter, from, x or -, to. */

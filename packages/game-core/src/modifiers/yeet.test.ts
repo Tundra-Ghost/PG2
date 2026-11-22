@@ -72,6 +72,59 @@ describe('MOD-C009 YEET', () => {
       makePiece('king', 'black', 'h8'),
     ]);
     expect(targets(state, 'd4')).toEqual([]);
+    const ends = withYeet([
+      makePiece('king', 'white', 'a3'),
+      makePiece('rook', 'white', 'd2'),
+      makePiece('rook', 'black', 'd3'), // checks a3 along rank 3
+      makePiece('king', 'black', 'h8'),
+    ]);
+    // Shoving d3 up to d4 takes it off rank 3 and ends the check.
+    expect(targets(ends, 'd2')).toEqual(['d3']);
+  });
+
+  it('works under fog on pieces in view', () => {
+    const state = withYeet(
+      [
+        makePiece('king', 'white', 'a1'),
+        makePiece('rook', 'white', 'a5'),
+        makePiece('knight', 'black', 'b5'),
+        makePiece('king', 'black', 'h8'),
+      ],
+      [{ id: MODIFIER_IDS.darkAndScared, sourceColor: 'white' }],
+    );
+    // a5 sees 2 squares around it: b5 and c5 are in view.
+    expect(targets(state, 'a5')).toEqual(['b5']);
+  });
+
+  it('under Sus, follows the type the rook owner sees', () => {
+    const state = withYeet([
+      makePiece('king', 'white', 'a1'),
+      makePiece('rook', 'white', 'd6'),
+      makePiece('pawn', 'black', 'd7'), // really a pawn, shown as a knight
+      makePiece('king', 'black', 'h1'),
+    ]);
+    state.modifierState[MODIFIER_IDS.sus] = { black: { pieceId: 'black-pawn-d7', shownAs: 'knight' } };
+    state.activeModifiers.push({ id: MODIFIER_IDS.sus, name: 'Sus', activeFor: 'black', sourceColor: 'black' });
+    // A real knight could be shoved to d8, so the disguise must be too.
+    expect(targets(state, 'd6')).toEqual(['d7']);
+  });
+
+  it('acts from a distance: Quiet Quitting only stops shoves into a zone', () => {
+    const base = [
+      makePiece('king', 'white', 'a1'),
+      makePiece('rook', 'white', 'd4'),
+      makePiece('bishop', 'black', 'e4'),
+      makePiece('king', 'black', 'h8'),
+    ];
+    // A black zone around e5 covers e4: White may still shove the bishop out of it.
+    const black = withYeet([...base, makePiece('queen', 'black', 'e5')]);
+    black.modifierState[MODIFIER_IDS.quietQuitting] = [{ queenId: 'black-queen-e5', color: 'black', center: 'e5', turnsLeft: 2 }];
+    black.activeModifiers.push({ id: MODIFIER_IDS.quietQuitting, name: 'Quiet Quitting', activeFor: 'black', sourceColor: 'black' });
+    expect(targets(black, 'd4')).toEqual(['e4']);
+    // A white zone around g4 covers f4: the black bishop may not be shoved into it.
+    const white = withYeet([...base, makePiece('queen', 'white', 'g4')]);
+    white.modifierState[MODIFIER_IDS.quietQuitting] = [{ queenId: 'white-queen-g4', color: 'white', center: 'g4', turnsLeft: 2 }];
+    expect(targets(white, 'd4')).toEqual([]);
   });
 
   it('shoves onto Lava, which burns the piece (synergy)', () => {
@@ -93,17 +146,17 @@ describe('MOD-C009 YEET', () => {
     expect(next.pieces.has('e4')).toBe(false);
   });
 
-  it('never shoves a pawn onto rank 1 or 8, and only owns its side', () => {
+  it('never shoves a pawn onto rank 1 or 8, and only works for its owner', () => {
     const state = withYeet([
       makePiece('king', 'white', 'a1'),
       makePiece('rook', 'white', 'd3'),
       makePiece('pawn', 'black', 'd2'),
       makePiece('rook', 'black', 'e6'),
-      makePiece('pawn', 'white', 'e7'),
+      makePiece('knight', 'white', 'e5'),
       makePiece('king', 'black', 'h8'),
     ]);
     expect(targets(state, 'd3')).toEqual([]);
-    // Black did not draft YEET.
+    // Black did not draft YEET, though the white knight on e5 could go to e4.
     const black = { ...state, turn: 'black' as const };
     expect(targets(black, 'e6')).toEqual([]);
   });

@@ -30,7 +30,7 @@ export function getLawnPushes(state: GameState, king: Piece): { from: Square; to
       if (getShownType(state, piece, king.color) !== 'pawn') continue;
       const back = offset(sq, 0, piece.color === 'white' ? -1 : 1);
       // Not onto Lava, storm or the pawn's own back rank.
-      if (canMovePieceTo(state, piece, back)) pushes.push({ from: sq, to: back });
+      if (canMovePieceTo(state, piece, back, { shownType: 'pawn' })) pushes.push({ from: sq, to: back });
     }
   }
   return pushes;

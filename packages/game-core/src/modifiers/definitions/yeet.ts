@@ -4,6 +4,8 @@ import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { canMovePieceTo, offset, ORTHOGONAL_DIRECTIONS, shiftPiece } from '../../engine/push';
 import { getVisibleSquares } from '../../engine/visibility';
 import { MODIFIER_IDS } from '../ids';
+import { isQuietZoneClosedTo } from './quiet-quitting';
+import { getShownType } from './sus';
 
 const ID = MODIFIER_IDS.yeet;
 
@@ -26,7 +28,9 @@ export function getYeetShoves(state: GameState, rook: Piece): { from: Square; to
     if (visible && !visible.has(sq)) continue;
     const beyond = offset(sq, df, dr);
     if (visible && beyond && !visible.has(beyond)) continue;
-    if (canMovePieceTo(state, piece, beyond, { allowLava: true })) shoves.push({ from: sq, to: beyond });
+    const shownType = getShownType(state, piece, rook.color);
+    if (beyond && isQuietZoneClosedTo(state, beyond, piece.color)) continue;
+    if (canMovePieceTo(state, piece, beyond, { allowLava: true, shownType })) shoves.push({ from: sq, to: beyond });
   }
   return shoves;
 }
@@ -45,6 +49,7 @@ export const yeetDef: ModifierDefinition = {
     label: 'YEET',
     hint: 'Pick an enemy piece next to the rook (not the King). It is shoved one square straight away, if that square is empty.',
     pieceTypes: ['rook'],
+    entersTarget: false,
     cooldown: YEET_COOLDOWN,
     getTargets: (state, rook) => getYeetShoves(state, rook).map(s => s.from),
     apply(state, move) {
