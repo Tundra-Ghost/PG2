@@ -678,6 +678,7 @@ Your rook shoves an adjacent enemy piece one square straight away from it, if th
 - Ruling: under fog, only pieces you can see, onto squares you can see, so the button reveals nothing.
 - Ruling: under Sus, the pawn rule follows what the rook's owner sees, so a disguise is never given away.
 - Ruling: the rook acts from a distance and enters no square. Quiet Quitting does not stop the shove, but a piece is never shoved into a zone of the other side.
+- Ruling: a rook shoved out of its corner has moved, so castling on that side ends.
 - Ruling: the rook then waits 6 of your moves (the cooldown on the card).
 
 ### MOD-C010 · Leap Of Faith
@@ -712,6 +713,8 @@ Your Queen pulls the first enemy piece on one of her lines to the square next to
 - Ruling: the landing square may not be Lava (the pull never captures). A pawn is never pulled onto rank 1 or 8; under Sus this follows what the Queen's owner sees.
 - Ruling: under fog, the whole line up to the piece must be in view, so the button reveals nothing.
 - Ruling: the Queen acts from a distance and enters no square. Quiet Quitting does not stop the pull, but a piece is never pulled into a zone of the other side.
+- Ruling: a rook pulled out of its corner has moved, so castling on that side ends.
+- Conflict: Yeah, There Are Three Of Them (one side). It turns the Queen into Royal Guards, so the pull would have no Queen.
 - Ruling: the Queen then waits 8 of your moves (the cooldown on the card).
 
 ### MOD-C012 · Freaky Friday
@@ -1046,6 +1049,7 @@ The owner's queen becomes a Royal Guard and a second Guard stands on their third
 - Changed from v0.2: Guards are captured normally instead of being "checkmated".
 - Conflict: Slay Queen. One side cannot draft both.
 - Conflict: Main Character Syndrome. There is no Queen to demand, so one side cannot draft both.
+- Conflict: GET OVER HERE!. There is no Queen to pull with, so one side cannot draft both.
 
 ### MOD-E004 · Equivalent Exchange (The Chancellor)
 *Ref: Fullmetal Alchemist* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**

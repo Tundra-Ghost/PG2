@@ -50,6 +50,7 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.leapOfFaith, MODIFIER_IDS.elephantInTheRoom],
   [MODIFIER_IDS.theBodyguard, MODIFIER_IDS.smallCouncil],
   [MODIFIER_IDS.theBodyguard, MODIFIER_IDS.heavyIsTheCrown],
+  [MODIFIER_IDS.getOverHere, MODIFIER_IDS.threeKings],
 ];
 
 /** The card in your draft that rules this one out, if any. */

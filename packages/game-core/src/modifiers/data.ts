@@ -791,7 +791,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your rook shoves an adjacent enemy piece one square straight away from it, if that square is empty. The rook stays put. Uses your move.',
     prototypeRules:
-      'Select a rook and press YEET, then tap an enemy piece straight next to it (not the King). That piece is shoved one square further along the same line, if that square is empty and on the board. Lava is allowed and burns it. A pawn is never shoved onto rank 1 or 8. The rook stays put. The shove may not leave your King in check, and under fog you can only shove what you see onto squares you see. Under Sus, the pawn rule follows what you see. A piece is never shoved into an enemy Quiet Quitting zone. Then the rook waits 6 of your moves.',
+      'Select a rook and press YEET, then tap an enemy piece straight next to it (not the King). That piece is shoved one square further along the same line, if that square is empty and on the board. Lava is allowed and burns it. A pawn is never shoved onto rank 1 or 8. The rook stays put. The shove may not leave your King in check, and under fog you can only shove what you see onto squares you see. Under Sus, the pawn rule follows what you see. A piece is never shoved into one of your own Quiet Quitting zones. A rook moved out of its corner loses castling on that side. Then the rook waits 6 of your moves.',
     flavor: '"The rook did not ask. The bishop is now somewhere else."',
   },
   {
@@ -823,7 +823,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your Queen pulls the first enemy piece on one of her lines to the square next to her. Uses your move. The piece is not captured, but now it is very close.',
     prototypeRules:
-      'Select your Queen and press Get over here, then tap the first enemy piece on one of her 8 lines (not the King, and not one already next to her). It is pulled to the square next to her on that line. Not onto Lava, and a pawn is never pulled onto rank 1 or 8 (under Sus this follows what you see). Void squares end a line. Under fog the whole line must be in view. A piece is never pulled into an enemy Quiet Quitting zone. The pull may not leave your King in check. Then the Queen waits 8 of your moves.',
+      'Select your Queen and press Get over here, then tap the first enemy piece on one of her 8 lines (not the King, and not one already next to her). It is pulled to the square next to her on that line. Not onto Lava, and a pawn is never pulled onto rank 1 or 8 (under Sus this follows what you see). Void squares end a line. Under fog the whole line must be in view. A piece is never pulled into one of your own Quiet Quitting zones. A rook moved out of its corner loses castling on that side. The pull may not leave your King in check. Then the Queen waits 8 of your moves.',
     flavor: '"The queen threw a chain. Nobody knows where she got the chain."',
   },
   {

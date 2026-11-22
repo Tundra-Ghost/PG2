@@ -63,9 +63,9 @@ describe('pickBlocker', () => {
 describe('unlimited practice drafts', () => {
   it('lifts the budget, count and category caps but keeps shared cards exclusive', () => {
     // Cards with a same-side conflict are left out (Slay Queen, Holy Knight,
-    // Elephant In The Room, Lawrence Of Arabia, Knight Rider, Hatchery): one side cannot hold them with
+    // Elephant In The Room, Lawrence Of Arabia, Knight Rider, Hatchery, GET OVER HERE!): one side cannot hold them with
     // their partner card, even in practice.
-    const conflicting: string[] = [MODIFIER_IDS.slayQueen, MODIFIER_IDS.holyKnight, MODIFIER_IDS.elephantInTheRoom, MODIFIER_IDS.lawrenceOfArabia, MODIFIER_IDS.knightRider, MODIFIER_IDS.hatchery];
+    const conflicting: string[] = [MODIFIER_IDS.slayQueen, MODIFIER_IDS.holyKnight, MODIFIER_IDS.elephantInTheRoom, MODIFIER_IDS.lawrenceOfArabia, MODIFIER_IDS.knightRider, MODIFIER_IDS.hatchery, MODIFIER_IDS.getOverHere];
     const all = ALL_MODIFIERS
       .filter(c => implemented.has(c.id) && !isSharedDraftModifier(c.id) && !conflicting.includes(c.id))
       .map(c => c.id);
@@ -76,6 +76,8 @@ describe('unlimited practice drafts', () => {
     expect(left.every(id => id === all[all.length - 1] || isSharedDraftModifier(id))).toBe(true);
 
     expect(getValidOptions([MODIFIER_IDS.slayQueen], [], implemented, { unlimited: true }).map(c => c.id))
+      .not.toContain(MODIFIER_IDS.threeKings);
+    expect(getValidOptions([MODIFIER_IDS.getOverHere], [], implemented, { unlimited: true }).map(c => c.id))
       .not.toContain(MODIFIER_IDS.threeKings);
     expect(getValidOptions([MODIFIER_IDS.holyKnight], [], implemented, { unlimited: true }).map(c => c.id))
       .not.toContain(MODIFIER_IDS.smallCouncil);

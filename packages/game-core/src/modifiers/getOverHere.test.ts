@@ -144,4 +144,17 @@ describe('MOD-C011 GET OVER HERE!', () => {
     state.activeModifiers.push({ id: MODIFIER_IDS.sus, name: 'Sus', activeFor: 'black', sourceColor: 'black' });
     expect(targets(state, 'd1')).toEqual(['g1']);
   });
+
+  it('ends castling on the side of a corner rook it pulls', () => {
+    const state = withPull([
+      makePiece('king', 'white', 'a1'),
+      makePiece('queen', 'white', 'h4'),
+      makePiece('rook', 'black', 'h8'),
+      makePiece('king', 'black', 'e8'),
+    ]);
+    state.flags.castlingRights.black = { kingSide: true, queenSide: true };
+    const next = chessEngine.applyMove(state, move('h4', 'h8', 'white', { ability: PULL }));
+    expect(next.pieces.get('h5')).toMatchObject({ type: 'rook', color: 'black' });
+    expect(next.flags.castlingRights.black).toEqual({ kingSide: false, queenSide: true });
+  });
 });

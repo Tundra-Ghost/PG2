@@ -43,9 +43,20 @@ export function canMovePieceTo(
   return allowLava || !isLavaSquare(state, sq);
 }
 
-/** Moves the piece on `from` to `to` on `next` (mutates it). */
+/**
+ * Moves the piece on `from` to `to` on `next` (mutates it). A rook pushed or
+ * pulled out of its corner has moved, so castling on that side ends.
+ */
 export function shiftPiece(next: GameState, from: Square, to: Square): void {
   const piece = next.pieces.get(from)!;
   next.pieces.delete(from);
   next.pieces.set(to, { ...piece, square: to });
+  const home = piece.color === 'white' ? '1' : '8';
+  if (piece.type === 'rook' && from[1] === home && (from[0] === 'a' || from[0] === 'h')) {
+    const side = from[0] === 'h' ? 'kingSide' : 'queenSide';
+    next.flags = {
+      ...next.flags,
+      castlingRights: { ...next.flags.castlingRights, [piece.color]: { ...next.flags.castlingRights[piece.color], [side]: false } },
+    };
+  }
 }
