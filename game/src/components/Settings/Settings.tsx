@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ALL_MODIFIERS, modifierRegistry } from '@pigeon-chess/game-core';
 import type { AccountControls } from '../../online/useAccount';
 import type { AppSettings } from '../../settings';
 import { saveSettings } from '../../settings';
 import { playClick } from '../../sound';
 import AccountPanel from './AccountPanel';
+import { shouldCloseOnEscape } from './escapeClose';
 import FeedbackPanel from './FeedbackPanel';
 import styles from './Settings.module.css';
 
@@ -134,6 +135,15 @@ export default function Settings({ settings: initial, onSave, onBack, account, f
     onSave(next);
   }
 
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) return;
+      if (shouldCloseOnEscape(event.key, event.target as HTMLInputElement | null)) onBack();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onBack]);
+
   return (
     <div className={`${styles.root} menu-theme`}>
       {/* Backdrop — click outside to close */}
@@ -145,10 +155,10 @@ export default function Settings({ settings: initial, onSave, onBack, account, f
         }}
       />
 
-      <div className={styles.box}>
+      <div className={styles.box} role="dialog" aria-modal="true" aria-labelledby="settings-title">
         {/* ── Box header ─────────────────────────────────────── */}
         <div className={styles.boxHeader}>
-          <span className={styles.boxTitle}>Settings</span>
+          <span className={styles.boxTitle} id="settings-title">Settings</span>
           <button
             className={styles.closeBtn}
             onClick={() => {
