@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import '../modifiers/index';
 import { MODIFIER_IDS } from '../modifiers/ids';
-import { formatBalanceReport, isFlagged, playBalanceGame, runCardBalance } from './harness';
+import { chessEngine } from '../engine/ChessEngine';
+import { addCompensationPawns, cardCost, compensation, formatBalanceReport, isFlagged, playBalanceGame, runCardBalance } from './harness';
 
 const quick = { bot: 'chick' as const, maxPlies: 30 };
 
@@ -31,5 +32,34 @@ describe('balance harness', () => {
     expect(isFlagged({ ...base, winRate: 0.7 })).toBe(true);
     expect(isFlagged({ ...base, winRate: 0.5 })).toBe(false);
     expect(isFlagged({ ...base, winRate: null })).toBe(false);
+  });
+
+  it('compensates the other side for a positive cost', () => {
+    const cost = cardCost(MODIFIER_IDS.stonks);
+    expect(cost).toBeGreaterThan(0);
+    expect(compensation([MODIFIER_IDS.stonks], 'white')).toEqual({ color: 'black', pawns: Math.ceil(cost) });
+  });
+
+  it('compensates the curse side for a negative cost', () => {
+    const cost = cardCost(MODIFIER_IDS.elephantInTheRoom);
+    expect(cost).toBeLessThan(0);
+    expect(compensation([MODIFIER_IDS.elephantInTheRoom], 'black')).toEqual({ color: 'black', pawns: -cost });
+    expect(compensation([], 'white')).toBeNull();
+  });
+
+  it('puts compensation pawns on the third rank, center first', () => {
+    const state = chessEngine.getInitialState();
+    expect(addCompensationPawns(state, 'black', 3)).toBe(3);
+    expect(['d6', 'e6', 'c6'].map(sq => state.pieces.get(sq as never)?.type)).toEqual(['pawn', 'pawn', 'pawn']);
+    expect(state.pieces.get('d6' as never)?.color).toBe('black');
+    expect(state.pieces.has('f6' as never)).toBe(false);
+  });
+
+  it('cost compensation changes games and stays reproducible', () => {
+    const opts = { ...quick, maxPlies: 40 };
+    const a = runCardBalance(MODIFIER_IDS.stonks, { ...opts, games: 4 });
+    const b = runCardBalance(MODIFIER_IDS.stonks, { ...opts, games: 4 });
+    expect(a).toEqual(b);
+    expect(a.cost).toBe(cardCost(MODIFIER_IDS.stonks));
   });
 });

@@ -1,12 +1,24 @@
-import type { Color, GameState } from '../engine/types';
+import type { Color, GameState, Square } from '../engine/types';
 import { chessEngine } from '../engine/ChessEngine';
 import { getChickBotMove, getPigeonBotMove } from '../engine/bot';
+import { positionKey } from '../engine/gameLoop';
+import { ALL_MODIFIERS } from '../modifiers/data';
 import { getDraftScope } from '../modifiers/scope';
 
 /**
  * Bible balance test plan: bot-vs-bot games with one card on one side, so
  * each card's win rate can be compared with plain chess. Run it with
  * `pnpm --filter @pigeon-chess/game-core balance`.
+ *
+ * Cost-aware: in a real draft a card's cost is budget the drafter cannot
+ * spend elsewhere. So each game compensates for it with material at
+ * 1 point = 1 pawn (the Bible's curse pricing rates a lost piece, about
+ * 3 to 4 pawns, at 3 points):
+ * - a card with cost c > 0 gives the other side c extra pawns;
+ * - a curse with cost -c gives the card side c extra pawns.
+ * Extra pawns stand on that side's third rank (rank 3 for White, rank 6
+ * for Black), filling d, e, c, f, b, g, a, h in that order and skipping
+ * taken squares. Half points round up. A fairly priced card lands near 50%.
  */
 
 export type BalanceBot = 'chick' | 'pigeon';
@@ -21,6 +33,8 @@ export interface BalanceOptions {
   depth?: number;
   /** First game seed. Game n uses seed + n, so runs repeat exactly. */
   seed?: number;
+  /** Compensate for card costs with pawns (see above). Default true. */
+  costAware?: boolean;
 }
 
 export interface GameResult {
@@ -45,6 +59,38 @@ export interface CardResult {
   avgPlies: number;
   /** wins / (wins + losses), or null when every game was drawn. */
   winRate: number | null;
+  /** Card cost from the catalog (0 when unknown or plain chess). */
+  cost: number;
+}
+
+/** Catalog cost of a card, 0 when it has none. */
+export function cardCost(id: string): number {
+  return ALL_MODIFIERS.find(card => card.id === id)?.cost ?? 0;
+}
+
+const COMPENSATION_FILES = ['d', 'e', 'c', 'f', 'b', 'g', 'a', 'h'] as const;
+
+/** Adds `count` extra pawns for `color` on its third rank. Returns how many fit. */
+export function addCompensationPawns(state: GameState, color: Color, count: number): number {
+  const rank = color === 'white' ? '3' : '6';
+  let added = 0;
+  for (const file of COMPENSATION_FILES) {
+    if (added >= count) break;
+    const square = `${file}${rank}` as Square;
+    const tile = state.tiles.get(square);
+    if (state.pieces.has(square) || tile?.isVoid || tile?.statue) continue;
+    state.pieces.set(square, { id: `balance-pawn-${color}-${file}`, type: 'pawn', color, square, cooldowns: {} });
+    added++;
+  }
+  return added;
+}
+
+/** Which side gets how many compensation pawns for these cards. */
+export function compensation(cardIds: string[], cardSide: Color): { color: Color; pawns: number } | null {
+  const total = cardIds.reduce((sum, id) => sum + cardCost(id), 0);
+  if (total === 0) return null;
+  const other: Color = cardSide === 'white' ? 'black' : 'white';
+  return { color: total > 0 ? other : cardSide, pawns: Math.ceil(Math.abs(total)) };
 }
 
 function botMove(state: GameState, bot: BalanceBot, depth: number) {
@@ -59,12 +105,16 @@ export function playBalanceGame(
   cardIds: string[],
   cardSide: Color,
   seed: number,
-  { maxPlies = 160, bot = 'pigeon', depth = 1 }: BalanceOptions = {},
+  { maxPlies = 160, bot = 'pigeon', depth = 1, costAware = true }: BalanceOptions = {},
 ): GameResult {
   let state = chessEngine.getInitialState();
   state.prngSeed = seed;
   state.prngState = seed;
   state = chessEngine.activateDraftModifiers(state, cardIds.map(id => ({ id, sourceColor: cardSide })));
+  const comp = costAware ? compensation(cardIds, cardSide) : null;
+  if (comp && addCompensationPawns(state, comp.color, comp.pawns) > 0) {
+    state.positionHistory = { [positionKey(state)]: 1 };
+  }
   state = chessEngine.beginTurn(state);
   let skipped = 0;
   let steps = 0;
@@ -99,6 +149,7 @@ export function runCardBalance(id: string | null, options: BalanceOptions = {}):
     skipped: 0,
     avgPlies: 0,
     winRate: null,
+    cost: id ? cardCost(id) : 0,
   };
   let plies = 0;
   for (let n = 0; n < games; n++) {
@@ -124,17 +175,17 @@ export function isFlagged(result: CardResult): boolean {
 
 /** A markdown table of results, flagged cards marked. */
 export function formatBalanceReport(results: CardResult[], names: Map<string, string>, options: BalanceOptions = {}): string {
-  const { games = 20, maxPlies = 160, bot = 'pigeon', depth = 1, seed = 1 } = options;
+  const { games = 20, maxPlies = 160, bot = 'pigeon', depth = 1, seed = 1, costAware = true } = options;
   const pct = (n: number | null) => (n === null ? 'n/a' : `${Math.round(n * 100)}%`);
   const lines = [
-    `Bot: ${bot}${bot === 'pigeon' ? ` depth ${depth}` : ''}. ${games} games per card, card side alternating. Cap ${maxPlies} moves (counts as a draw). Seed ${seed}.`,
+    `Bot: ${bot}${bot === 'pigeon' ? ` depth ${depth}` : ''}. ${games} games per card, card side alternating. Cap ${maxPlies} moves (counts as a draw). Seed ${seed}.${costAware ? ' Cost-aware: 1 point = 1 extra pawn for the other side (or for a curse\'s owner).' : ' No cost compensation.'}`,
     '',
-    '| Card | Name | Scope | Win rate | W | L | D | Capped | Skipped turns | Avg moves | Flag |',
-    '|---|---|---|---|---|---|---|---|---|---|---|',
+    '| Card | Name | Scope | Cost | Win rate | W | L | D | Capped | Skipped turns | Avg moves | Flag |',
+    '|---|---|---|---|---|---|---|---|---|---|---|---|',
   ];
   for (const r of results) {
     lines.push(
-      `| ${r.id} | ${names.get(r.id) ?? ''} | ${r.id === 'plain chess' ? '' : r.shared ? 'Shared' : 'Owner'} | ${pct(r.winRate)} | ${r.wins} | ${r.losses} | ${r.draws} | ${r.capped} | ${r.skipped} | ${r.avgPlies} | ${isFlagged(r) ? 'outside 40-60%' : ''} |`,
+      `| ${r.id} | ${names.get(r.id) ?? ''} | ${r.id === 'plain chess' ? '' : r.shared ? 'Shared' : 'Owner'} | ${r.id === 'plain chess' ? '' : r.cost} | ${pct(r.winRate)} | ${r.wins} | ${r.losses} | ${r.draws} | ${r.capped} | ${r.skipped} | ${r.avgPlies} | ${isFlagged(r) ? 'outside 40-60%' : ''} |`,
     );
   }
   return lines.join('\n');
