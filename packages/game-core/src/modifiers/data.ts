@@ -776,7 +776,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'When an enemy pawn double-steps from its starting rank past your pawn, your pawn banks the en passant. For 3 of your turns, select it and press the ability button to take it, as long as both pawns stay put. Then that pawn waits 3 of your turns.',
   },
 
-  // Active Abilities 009-020 (v0.4): C009 and C010 are built, the rest are design cards
+  // Active Abilities 009-020 (v0.4): C009, C010 and C011 are built, the rest are design cards
 
   {
     id: 'MOD-C009',
@@ -822,6 +822,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'owned',
     description:
       'Your Queen pulls the first enemy piece on one of her lines to the square next to her. Uses your move. The piece is not captured, but now it is very close.',
+    prototypeRules:
+      'Select your Queen and press Get over here, then tap the first enemy piece on one of her 8 lines (not the King, and not one already next to her). It is pulled to the square next to her on that line. Not onto Lava, and a pawn is never pulled onto rank 1 or 8 (under Sus this follows what you see). Void squares end a line. Under fog the whole line must be in view. A piece is never pulled into an enemy Quiet Quitting zone. The pull may not leave your King in check. Then the Queen waits 8 of your moves.',
     flavor: '"The queen threw a chain. Nobody knows where she got the chain."',
   },
   {

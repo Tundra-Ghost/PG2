@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 65 built, 35 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 66 built, 34 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -700,7 +700,7 @@ Your bishop jumps over the first piece on one of its diagonals and lands on the 
 - Conflict: The Small Council and Elephant In The Room. Your army has no bishops with either, so one side cannot draft both.
 
 ### MOD-C011 · GET OVER HERE!
-*Ref: Mortal Kombat* · **Tier S** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Mortal Kombat* · **Tier S** · Cost 4 · Curse 0 · Scope: Owner · Queen · Cooldown 8 · Modes: All · **Built**
 
 Your Queen pulls the first enemy piece on one of her lines to the square next to her. Uses your move. The piece is not captured, but now it is very close.
 
@@ -708,6 +708,11 @@ Your Queen pulls the first enemy piece on one of her lines to the square next to
 
 - Ruling: cannot pull a King, and the pull may not leave your own King in check.
 - Balance: the pulled piece may defend itself next move. The pull sets up, it does not win.
+- Ruling: "her lines" are the 8 queen directions. The first piece on a line must be an enemy at least two squares away; it moves to the square next to her on that line. Void squares (storm, statue, used vents) end a line.
+- Ruling: the landing square may not be Lava (the pull never captures). A pawn is never pulled onto rank 1 or 8; under Sus this follows what the Queen's owner sees.
+- Ruling: under fog, the whole line up to the piece must be in view, so the button reveals nothing.
+- Ruling: the Queen acts from a distance and enters no square. Quiet Quitting does not stop the pull, but a piece is never pulled into a zone of the other side.
+- Ruling: the Queen then waits 8 of your moves (the cooldown on the card).
 
 ### MOD-C012 · Freaky Friday
 *Ref: Freaky Friday* · **Tier B** · Cost 2 · Curse 0 · Any non-king piece · Cooldown 7 · Scope: Owner · Modes: All · **Built**
@@ -1353,7 +1358,7 @@ Values the game uses today. "Built" cards match the build.
 | B020 | Roll For Initiative | B | A | -3 | 3 | Owner | Built |
 | C009 | YEET | C | A | 3 | 0 | Owner | Built |
 | C010 | Leap Of Faith | C | A | 3 | 0 | Owner | Built |
-| C011 | GET OVER HERE! | C | S | 4 | 0 | Owner | Design |
+| C011 | GET OVER HERE! | C | S | 4 | 0 | Owner | Built |
 | C012 | Freaky Friday | C | B | 2 | 0 | Owner | Built |
 | C013 | Hold My Bread | C | B | 2 | 0 | Owner | Design |
 | C014 | Run, Forrest, Run | C | B | 2 | 0 | Owner | Built |
@@ -1388,7 +1393,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-65 of 100 built. The other 35 are designs (v0.4).
+66 of 100 built. The other 34 are designs (v0.4).
 
 ### Balance test plan
 
