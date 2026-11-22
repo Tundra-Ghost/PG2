@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 64 built, 36 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 65 built, 35 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -664,7 +664,7 @@ When an enemy pawn double-steps from its starting rank past your pawn, your pawn
 - Ruling: a Zerg Rush two-square move from any other rank is not banked.
 
 ### MOD-C009 · YEET
-*Ref: The internet* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: The internet* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Rook · Cooldown 6 · Modes: All · **Built**
 
 Your rook shoves an adjacent enemy piece one square straight away from it, if that square is empty. The rook stays put. Uses your move.
 
@@ -672,6 +672,13 @@ Your rook shoves an adjacent enemy piece one square straight away from it, if th
 
 - Ruling: cannot shove a King, and cannot shove a piece off the board or into a capture.
 - Synergy: The Floor Is Lava. Yes. That is what it is for.
+- Ruling: "adjacent" means the 4 squares straight next to the rook (rook lines). The piece moves one square further along that line.
+- Ruling: the landing square must be empty and on the board (not void or storm). Lava is allowed, and the piece burns. A pawn is never shoved onto rank 1 or 8.
+- Ruling: the shove may not leave your own King in check. In check, it is only allowed if it ends the check.
+- Ruling: under fog, only pieces you can see, onto squares you can see, so the button reveals nothing.
+- Ruling: under Sus, the pawn rule follows what the rook's owner sees, so a disguise is never given away.
+- Ruling: the rook acts from a distance and enters no square. Quiet Quitting does not stop the shove, but a piece is never shoved into a zone of the other side.
+- Ruling: the rook then waits 6 of your moves (the cooldown on the card).
 
 ### MOD-C010 · Leap Of Faith
 *Ref: Assassin's Creed* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Bishop · Cooldown 5 · Modes: All · **Built**
@@ -1344,7 +1351,7 @@ Values the game uses today. "Built" cards match the build.
 | B018 | Rubber Banding | B | A | -2 | 2 | Owner | Design |
 | B019 | Peer Pressure | B | A | -2 | 2 | Owner | Built |
 | B020 | Roll For Initiative | B | A | -3 | 3 | Owner | Built |
-| C009 | YEET | C | A | 3 | 0 | Owner | Design |
+| C009 | YEET | C | A | 3 | 0 | Owner | Built |
 | C010 | Leap Of Faith | C | A | 3 | 0 | Owner | Built |
 | C011 | GET OVER HERE! | C | S | 4 | 0 | Owner | Design |
 | C012 | Freaky Friday | C | B | 2 | 0 | Owner | Built |
@@ -1381,7 +1388,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-64 of 100 built. The other 36 are designs (v0.4).
+65 of 100 built. The other 35 are designs (v0.4).
 
 ### Balance test plan
 

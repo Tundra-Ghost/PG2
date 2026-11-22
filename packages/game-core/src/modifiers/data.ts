@@ -776,7 +776,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'When an enemy pawn double-steps from its starting rank past your pawn, your pawn banks the en passant. For 3 of your turns, select it and press the ability button to take it, as long as both pawns stay put. Then that pawn waits 3 of your turns.',
   },
 
-  // Design cards (not built yet): Active Abilities 009-020
+  // Active Abilities 009-020 (v0.4): C009 and C010 are built, the rest are design cards
 
   {
     id: 'MOD-C009',
@@ -790,6 +790,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'owned',
     description:
       'Your rook shoves an adjacent enemy piece one square straight away from it, if that square is empty. The rook stays put. Uses your move.',
+    prototypeRules:
+      'Select a rook and press YEET, then tap an enemy piece straight next to it (not the King). That piece is shoved one square further along the same line, if that square is empty and on the board. Lava is allowed and burns it. A pawn is never shoved onto rank 1 or 8. The rook stays put. The shove may not leave your King in check, and under fog you can only shove what you see onto squares you see. Under Sus, the pawn rule follows what you see. A piece is never shoved into an enemy Quiet Quitting zone. Then the rook waits 6 of your moves.',
     flavor: '"The rook did not ask. The bishop is now somewhere else."',
   },
   {

@@ -1,4 +1,5 @@
 import type { GameState, Piece, PieceType, Square } from './types';
+import { ALL_DIRECTIONS, DIAGONAL_DIRECTIONS, ORTHOGONAL_DIRECTIONS, offset } from './push';
 
 /**
  * MOD-A016 Monument To Gerald: a statue tile. It is also a void square, so
@@ -6,11 +7,9 @@ import type { GameState, Piece, PieceType, Square } from './types';
  * A piece next to it may push it one square the same way instead of moving.
  */
 
-const ALL: ReadonlyArray<readonly [number, number]> = [
-  [1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1],
-];
-const ORTHOGONAL = ALL.slice(0, 4);
-const DIAGONAL = ALL.slice(4);
+const ALL = ALL_DIRECTIONS;
+const ORTHOGONAL = ORTHOGONAL_DIRECTIONS;
+const DIAGONAL = DIAGONAL_DIRECTIONS;
 
 /** Directions a piece may step into the statue. Leapers never push. */
 function pushDirections(piece: Piece): ReadonlyArray<readonly [number, number]> {
@@ -21,13 +20,6 @@ function pushDirections(piece: Piece): ReadonlyArray<readonly [number, number]> 
     pawn: [[0, piece.color === 'white' ? 1 : -1]],
   };
   return kinds[piece.type] ?? [];
-}
-
-function offset(sq: Square, df: number, dr: number): Square | null {
-  const f = sq.charCodeAt(0) - 97 + df;
-  const r = Number(sq[1]) - 1 + dr;
-  if (f < 0 || f > 7 || r < 0 || r > 7) return null;
-  return `${String.fromCharCode(97 + f)}${r + 1}` as Square;
 }
 
 export function isStatueSquare(state: GameState, sq: Square): boolean {

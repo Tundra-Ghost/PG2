@@ -24,6 +24,7 @@ export const MODIFIER_IDS = {
   runForrestRun: 'MOD-C014',
   freakyFriday: 'MOD-C012',
   getOffMyLawn: 'MOD-C017',
+  yeet: 'MOD-C009',
   monumentToGerald: 'MOD-A016',
   smallCouncil: 'MOD-E002',
   threeKings: 'MOD-E003',
