@@ -69,6 +69,7 @@ export const MODIFIER_IDS = {
   theBodyguard: 'MOD-E017',
   dirtHut: 'MOD-C018',
   theBirds: 'MOD-A009',
+  mine: 'MOD-B017',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];

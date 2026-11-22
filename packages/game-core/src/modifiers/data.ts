@@ -608,6 +608,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'owned',
     description:
       'Every 8 of your moves, a seagull swoops in and carries your most advanced pawn one square back toward your side, if that square is empty.',
+    prototypeRules:
+      'Right after your 8th, 16th, 24th ... move, a seagull carries your most advanced pawn one square straight back toward your side. On a tie, the pawn nearest the a-file. Nothing happens if that square is taken, Lava, void (a wall, flock, storm or statue) or your back rank, or if the move would expose your King. A pawn carried back to its start rank may double-step again. Cannot be drafted with The Small Council.',
     flavor: '"The seagull took the pawn. The seagull said mine. Viktor disagrees about whose it was."',
   },
   {

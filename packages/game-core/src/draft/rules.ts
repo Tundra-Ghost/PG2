@@ -24,6 +24,7 @@ function needsDarkFirst(cardId: string, ownIds: string[], otherIds: string[]): b
  * The Bodyguard replaces the g-pawn, which The Small Council moves, and its
  * swap would let a Heavy Is The Crown King skip its order.
  * Leap Of Faith needs a bishop: The Small Council has none, and Elephant In The Room turns them into Elephants.
+ * MINE! is priced for 8 pawns; The Small Council's 12 would make it a cheap curse.
  */
 const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.slayQueen, MODIFIER_IDS.threeKings],
@@ -52,6 +53,7 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.theBodyguard, MODIFIER_IDS.heavyIsTheCrown],
   [MODIFIER_IDS.getOverHere, MODIFIER_IDS.threeKings],
   [MODIFIER_IDS.imposterSyndrome, MODIFIER_IDS.threeKings],
+  [MODIFIER_IDS.mine, MODIFIER_IDS.smallCouncil],
 ];
 
 /** The card in your draft that rules this one out, if any. */

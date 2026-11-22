@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 70 built, 30 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 71 built, 29 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -534,13 +534,17 @@ Every 10 of your moves, your rooks and Queen go on lunch. On your next move they
 - Interaction: Main Character Syndrome and Roll For Initiative. Lunch is checked first, so a Queen demand or a rook or Queen roll waits and you choose freely.
 
 ### MOD-B017 · MINE!
-*Ref: Finding Nemo* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
+*Ref: Finding Nemo* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Built**
 
 Every 8 of your moves, a seagull swoops in and carries your most advanced pawn one square back toward your side, if that square is empty.
 
 *The seagull took the pawn. The seagull said mine. Viktor disagrees about whose it was.*
 
 - Ruling: the seagull never lands a pawn on rank 1 or 8 and never exposes your King.
+- Built: the seagull comes right after your 8th, 16th, ... move. On a tie for most advanced, it takes the pawn nearest the a-file. If that pawn cannot go back (blocked, Lava, a wall, flock, storm or statue, or it would expose your King), nothing happens that time.
+- Built: a pass or skipped turn counts as a move but brings no seagull.
+- Built: under Sus, a pawn disguised as another piece is left alone, so the seagull never gives it away.
+- Conflict: The Small Council (one side). Its 12 pawns would make the curse cheap.
 - Lore: the seagull is not a pigeon. The pigeons are embarrassed for it.
 
 ### MOD-B018 · Rubber Banding
@@ -1377,7 +1381,7 @@ Values the game uses today. "Built" cards match the build.
 | B014 | Imposter Syndrome | B | B | -1 | 1 | Owner | Built |
 | B015 | Commitment Issues | B | B | -1 | 1 | Owner | Built |
 | B016 | Lunch Break | B | A | -2 | 2 | Owner | Built |
-| B017 | MINE! | B | A | -2 | 2 | Owner | Design |
+| B017 | MINE! | B | A | -2 | 2 | Owner | Built |
 | B018 | Rubber Banding | B | A | -2 | 2 | Owner | Design |
 | B019 | Peer Pressure | B | A | -2 | 2 | Owner | Built |
 | B020 | Roll For Initiative | B | A | -3 | 3 | Owner | Built |
@@ -1418,7 +1422,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-70 of 100 built. The other 30 are designs (v0.4).
+71 of 100 built. The other 29 are designs (v0.4).
 
 ### Balance test plan
 
