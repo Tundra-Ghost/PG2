@@ -165,7 +165,7 @@ export function runCardBalance(id: string | null, options: BalanceOptions = {}):
     avgPlies: 0,
     winRate: null,
     cost: id ? cardCost(id) : 0,
-    compPawns: id ? compensation([id], 'white')?.pawns ?? 0 : 0,
+    compPawns: id && options.costAware !== false ? compensation([id], 'white')?.pawns ?? 0 : 0,
     missingPawns: 0,
   };
   let plies = 0;

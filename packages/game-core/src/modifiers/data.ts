@@ -776,7 +776,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'When an enemy pawn double-steps from its starting rank past your pawn, your pawn banks the en passant. For 3 of your turns, select it and press the ability button to take it, as long as both pawns stay put. Then that pawn waits 3 of your turns.',
   },
 
-  // Active Abilities 009-020 (v0.4): C009, C010 and C011 are built, the rest are design cards
+  // Active Abilities 009-020 (v0.4): C009, C010, C011 and C013 are built, the rest are design cards
 
   {
     id: 'MOD-C009',
@@ -854,6 +854,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'owned',
     description:
       'A pawn guards an adjacent friendly piece. That piece cannot be captured during your opponent\'s next move. Uses your move.',
+    prototypeRules:
+      'Select a pawn and press Hold my bread, then tap one of your pieces on the 8 squares around it (not the King). During your opponent\'s next move that piece cannot be captured: not by a move, en passant, or an ability. It shows a ◇ badge while guarded. The pawn stays put. Not allowed in check. Then the pawn waits 6 of your moves.',
     flavor: '"The pawn said hold my bread. The bishop held the bread. The bishop survived."',
   },
   {

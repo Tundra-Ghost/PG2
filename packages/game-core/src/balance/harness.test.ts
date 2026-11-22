@@ -70,6 +70,7 @@ describe('balance harness', () => {
     expect(a).toEqual(b);
     expect(a.cost).toBe(cardCost(MODIFIER_IDS.stonks));
     expect(a.compPawns).toBe(Math.ceil(a.cost));
+    expect(runCardBalance(MODIFIER_IDS.stonks, { ...opts, games: 1, costAware: false }).compPawns).toBe(0);
     const plain = playBalanceGame([MODIFIER_IDS.stonks], 'white', 3, { ...opts, costAware: false });
     const comp = playBalanceGame([MODIFIER_IDS.stonks], 'white', 3, opts);
     expect(plain.extraPawns).toBe(0);
