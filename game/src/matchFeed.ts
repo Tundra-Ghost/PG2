@@ -27,9 +27,10 @@ export function formatActorMove(label: string, notation: string): string {
 
 export function formatEventMessage(message: string, whiteLabel: string, blackLabel: string): string {
   return message
-    // "the white pawn" reads "Name's pawn", not "the Name's pawn".
-    .replace(/\b(?:the )?white ([a-z_]+)/gi, `${whiteLabel}'s $1`)
-    .replace(/\b(?:the )?black ([a-z_]+)/gi, `${blackLabel}'s $1`)
+    // "the white pawn" reads "Name's pawn", not "the Name's pawn". Only a
+    // lowercase side name is a possessive; "White shoos Gerald" stays a subject.
+    .replace(/\b(?:[Tt]he )?white ([a-z_]+)/g, `${whiteLabel}'s $1`)
+    .replace(/\b(?:[Tt]he )?black ([a-z_]+)/g, `${blackLabel}'s $1`)
     .replace(/\bwhite\b/gi, whiteLabel)
     .replace(/\bblack\b/gi, blackLabel);
 }

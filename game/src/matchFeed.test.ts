@@ -38,6 +38,11 @@ describe('event message labels (#178)', () => {
       .toBe("Bo's pawn on e2 guards the bishop on f1.");
   });
 
+  it('keeps a capitalised side name as the subject', () => {
+    expect(formatEventMessage('White shoos Gerald away.', 'Ann', 'Bo')).toBe('Ann shoos Gerald away.');
+    expect(formatEventMessage('Black must move a pawn.', 'Ann', 'Bo')).toBe('Bo must move a pawn.');
+  });
+
   it('keeps plain side names', () => {
     expect(formatEventMessage('Check on white. Then black.', 'Ann', 'Bo')).toBe('Check on Ann. Then Bo.');
   });
