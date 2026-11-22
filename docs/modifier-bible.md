@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 72 built, 28 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 73 built, 27 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -14,6 +14,10 @@
 | E | Asymmetric Armies | Non-standard piece configurations |
 
 ## Change log
+
+**Batch 9 (2026-11-22)**
+- Match conflicts: some shared cards use the same squares, so only one of each pair may be in a match, whoever drafts it. The draft hides the second card and says why.
+- Thinking With Portals built. Conflicts: Vent Tiles, The Birds.
 
 **Balance round 2 (2026-11-17)**
 - New prices from the balance harness (#150): Elephant In The Room -1 to -3, Roll For Initiative -2 to -3 (curse 3), Stonks 2 to 3, Hatchery 3 to 4.
@@ -106,6 +110,7 @@ Three hidden Vents spawn on ranks 3 to 6. The first non-king piece to land on a 
 - Synergy: I'm Literally Right Here. Decoys can trigger Vents.
 - Synergy: It's Dark And I'm Scared. Nobody can track Vents in fog.
 - Changed from v0.2: Vents only spawn on ranks 3 to 6. Kings never trigger them. Jam rule added.
+- Conflict: Thinking With Portals. Only one of the two may be in a match, whoever drafts it.
 
 ### MOD-A004 · Winter Is Coming (To Your Pieces)
 *Ref: Game of Thrones* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
@@ -179,6 +184,7 @@ Every 6 rounds a flock lands on a random empty 2×2 area of ranks 3 to 6. Nothin
 - Built: the flock lands at the start of rounds 7, 13, 19 and so on, and flies off 2 rounds later. The spot is picked with the game seed and marked with grey stripes one round ahead.
 - Built: if a piece steps into the marked spot, the flock picks another open 2×2 when it lands. If no 2×2 is open, it skips that landing.
 - Built: a flock square works like a Dirt Hut wall: sliders stop before it, nothing lands on it, and it blocks check. Knights still jump over it. A flock that shields the waiting King from check stays until it no longer does.
+- Conflict: Thinking With Portals. Only one of the two may be in a match, whoever drafts it.
 
 ### MOD-A010 · The Factory Must Grow
 *Ref: Factorio* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
@@ -192,7 +198,7 @@ Ranks 4 and 5 are conveyor belts. At the end of each round, every piece on rank 
 - Conflict: This Is My Swamp. Pieces may ride into the Swamp. Intended.
 
 ### MOD-A011 · Thinking With Portals
-*Ref: Portal* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Design**
+*Ref: Portal* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
 
 A blue portal sits on c4 and an orange portal on f5. A non-King piece that ends its move on one portal steps out of the other, if that square is empty. Portals never capture and stay all match.
 
@@ -201,6 +207,8 @@ A blue portal sits on c4 and an orange portal on f5. A non-King piece that ends 
 - Ruling: if the exit is occupied, the piece simply stays on the entry portal.
 - Ruling: the jump may not leave its own King in check; if it would, it does not happen.
 - Not Vent Tiles: portals are visible, permanent and never capture.
+- Built: only a normal move (a capture too) that ends on a portal uses it. Abilities and pieces pushed or slid there by other cards do not. A pawn that double-steps onto a portal and jumps cannot be taken en passant.
+- Conflict: Vent Tiles and The Birds. A vent or a flock could land on a portal, so only one of the three may be in a match, whoever drafts it.
 
 ### MOD-A012 · Let It Go
 *Ref: Frozen* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
@@ -1373,7 +1381,7 @@ Values the game uses today. "Built" cards match the build.
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 | A009 | The Birds (Hitchcock Mode) | A | B | 2 | 0 | Shared | Built |
 | A010 | The Factory Must Grow | A | A | 3 | 1 | Shared | Design |
-| A011 | Thinking With Portals | A | B | 2 | 0 | Shared | Design |
+| A011 | Thinking With Portals | A | B | 2 | 0 | Shared | Built |
 | A012 | Let It Go | A | A | 3 | 1 | Shared | Design |
 | A013 | The Magic Roundabout | A | B | 2 | 0 | Shared | Design |
 | A014 | Minesweeper | A | A | 3 | 1 | Shared | Design |
@@ -1432,7 +1440,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-72 of 100 built. The other 28 are designs (v0.4).
+73 of 100 built. The other 27 are designs (v0.4).
 
 ### Balance test plan
 

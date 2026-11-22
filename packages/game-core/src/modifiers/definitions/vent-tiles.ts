@@ -1,9 +1,10 @@
 import type { ModifierDefinition } from '../types';
-import type { Color, GameState, Square } from '../../engine/types';
+import type { Color, GameState, Piece, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
-import { isInCheck } from '../../engine/moveGenerator';
+import { teleport } from '../../engine/teleport';
 import { prngPickIndex } from '../../engine/prng';
 import { MODIFIER_IDS } from '../ids';
+import { getShownType } from './sus';
 
 const ID = MODIFIER_IDS.ventTiles;
 const FILES = 'abcdefgh';
@@ -29,6 +30,11 @@ function ventCandidates(state: GameState): Square[] {
     }
   }
   return squares;
+}
+
+/** Sus: a piece is named as the other side sees it, so the log never gives a disguise away. */
+function shown(state: GameState, piece: Piece): string {
+  return getShownType(state, piece, piece.color === 'white' ? 'black' : 'white');
 }
 
 function label(color: Color): string {
@@ -68,17 +74,13 @@ export const ventTilesDef: ModifierDefinition = {
     if (piece.type === 'king') return state;
 
     const exit = oppositeSquare(vent);
-    const occupant = state.pieces.get(exit);
-    // A void exit (a Dirt Hut wall, a flock, the statue) jams the vent.
-    if (state.tiles.get(exit)?.isVoid) return state;
-
-    const ejected = cloneState(state);
-    ejected.pieces.delete(vent);
-    ejected.pieces.set(exit, { ...piece, square: exit });
-
-    // A king on the exit, or a jump that exposes the mover's own king, jams
-    // the vent: nothing happens and it stays hidden for the next piece.
-    if (occupant?.type === 'king' || isInCheck(ejected, piece.color)) return state;
+    // A void exit (a Dirt Hut wall, a flock, the statue), a King on the exit,
+    // or a jump that exposes the mover's own King jams the vent: nothing
+    // happens and it stays hidden for the next piece.
+    const jump = teleport(state, vent, exit, { capture: true });
+    if (!jump) return state;
+    const ejected = jump.state;
+    const occupant = jump.taken;
 
     ejected.tiles.set(vent, { ...ejected.tiles.get(vent)!, isVent: false, isVoid: true });
     return appendGameEvent(ejected, {
@@ -87,8 +89,8 @@ export const ventTilesDef: ModifierDefinition = {
       modifierId: ID,
       title: 'Vent',
       message: occupant
-        ? `${label(piece.color)}'s ${piece.type} vents from ${vent} to ${exit}, taking the ${occupant.color} ${occupant.type}.`
-        : `${label(piece.color)}'s ${piece.type} vents from ${vent} to ${exit}.`,
+        ? `${label(piece.color)}'s ${shown(state, piece)} vents from ${vent} to ${exit}, taking the ${occupant.color} ${shown(state, occupant)}.`
+        : `${label(piece.color)}'s ${shown(state, piece)} vents from ${vent} to ${exit}.`,
     });
   },
 };

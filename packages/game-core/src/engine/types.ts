@@ -64,6 +64,7 @@ export interface TileState {
   statue?: boolean;       // MOD-A016: Gerald's statue (also isVoid)
   barrier?: Barrier;      // MOD-C018 wall, MOD-A009 flock: timed, also isVoid
   flockWarning?: boolean; // MOD-A009: a flock lands here next round
+  portal?: 'blue' | 'orange'; // MOD-A011: a fixed portal
 }
 
 /**
