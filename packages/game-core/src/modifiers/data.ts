@@ -790,6 +790,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'owned',
     description:
       'Your rook shoves an adjacent enemy piece one square straight away from it, if that square is empty. The rook stays put. Uses your move.',
+    prototypeRules:
+      'Select a rook and press YEET, then tap an enemy piece straight next to it (not the King). That piece is shoved one square further along the same line, if that square is empty and on the board. Lava is allowed and burns it. A pawn is never shoved onto rank 1 or 8. The rook stays put. The shove may not leave your King in check, and under fog you can only shove what you see onto squares you see. Then the rook waits 6 of your moves.',
     flavor: '"The rook did not ask. The bishop is now somewhere else."',
   },
   {
