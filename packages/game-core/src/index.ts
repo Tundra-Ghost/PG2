@@ -57,6 +57,7 @@ export { getShownNotation, getShownType, getSusPiece } from './modifiers/definit
 export { getSmokeSquares } from './modifiers/definitions/smoke-cloud';
 export { getLavaPreview } from './modifiers/definitions/floor-is-lava';
 export { getBarrier, getBarriers } from './engine/barriers';
+export { getFlockPreview } from './modifiers/definitions/the-birds';
 export { getVisibleSquares, isHopHidden, isMoveHidden } from './engine/visibility';
 export { isSwampSquare, SWAMP_SQUARES } from './modifiers/definitions/swamp';
 export { getQuietZoneSquares } from './modifiers/definitions/quiet-quitting';

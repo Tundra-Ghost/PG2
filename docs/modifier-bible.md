@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 69 built, 31 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 70 built, 30 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -167,7 +167,7 @@ The board is split by an invisible axis. A move on one half is mirrored on the o
 - Built: the mirror twin moves. When a piece moves, the own piece on the mirror of its start square (across the d/e line, same rank) makes the mirrored move if it is legal for it, and it can capture. Kings, castling and abilities never mirror, and a mirrored pawn that reaches the last rank becomes a Queen. Two pieces can never land on the same square, so the swap rule is not needed. A cyan line marks the axis.
 
 ### MOD-A009 · The Birds (Hitchcock Mode)
-*Ref: The Birds (1963)* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Design**
+*Ref: The Birds (1963)* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
 
 Every 6 rounds a flock lands on a random empty 2×2 area of ranks 3 to 6. Nothing can land on or cross those squares for 2 rounds. The landing spot is shown one round ahead.
 
@@ -176,6 +176,9 @@ Every 6 rounds a flock lands on a random empty 2×2 area of ranks 3 to 6. Nothin
 - Ruling: the flock only lands on empty squares, so it never removes a piece.
 - Synergy: The Storm Closes In. Fewer open lanes on a shrinking board.
 - Safety: a flock never lands on a square that would leave a King with no legal move.
+- Built: the flock lands at the start of rounds 7, 13, 19 and so on, and flies off 2 rounds later. The spot is picked with the game seed and marked with grey stripes one round ahead.
+- Built: if a piece steps into the marked spot, the flock picks another open 2×2 when it lands. If no 2×2 is open, it skips that landing.
+- Built: a flock square works like a Dirt Hut wall: sliders stop before it, nothing lands on it, and it blocks check. Knights still jump over it. A flock that shields the waiting King from check stays until it no longer does.
 
 ### MOD-A010 · The Factory Must Grow
 *Ref: Factorio* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
@@ -1354,7 +1357,7 @@ Values the game uses today. "Built" cards match the build.
 | E006 | BOY. | E | A | 4 | 0 | Owner | Built |
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
-| A009 | The Birds (Hitchcock Mode) | A | B | 2 | 0 | Shared | Design |
+| A009 | The Birds (Hitchcock Mode) | A | B | 2 | 0 | Shared | Built |
 | A010 | The Factory Must Grow | A | A | 3 | 1 | Shared | Design |
 | A011 | Thinking With Portals | A | B | 2 | 0 | Shared | Design |
 | A012 | Let It Go | A | A | 3 | 1 | Shared | Design |
@@ -1415,7 +1418,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-69 of 100 built. The other 31 are designs (v0.4).
+70 of 100 built. The other 30 are designs (v0.4).
 
 ### Balance test plan
 

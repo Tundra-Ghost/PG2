@@ -225,6 +225,7 @@ export class BoardScene extends Phaser.Scene {
       if (view.smoke) this.drawSmoke(x, y);
       if (view.lavaNext) this.drawLavaNext(x, y);
       if (view.wall) this.drawWall(x, y);
+      if (view.flock) this.drawFlock(view.flock, x, y, pulse);
       if (view.confession) this.drawConfession(view.confession, cx, cy);
       if (view.mirrorEdge) this.drawMirrorEdge(view.mirrorEdge === 'right' ? x + CELL : x, y);
       // Drawn over the fog: both players always see the eye.
@@ -522,6 +523,28 @@ export class BoardScene extends Phaser.Scene {
     if (!inSpot(index + 8)) dashed(x, y + CELL - 1.5, x + CELL, y + CELL - 1.5);
     if (col === 0 || !inSpot(index - 1)) dashed(x + 1.5, y, x + 1.5, y + CELL);
     if (col === 7 || !inSpot(index + 1)) dashed(x + CELL - 1.5, y, x + CELL - 1.5, y + CELL);
+  }
+
+  /** The Birds: dark birds on a grey patch, or a dashed ring a round before they land. */
+  private drawFlock(kind: 'warning' | 'active', x: number, y: number, pulse: Phaser.GameObjects.Graphics) {
+    if (kind === 'warning') {
+      pulse.lineStyle(5, 0x3c4658, 0.4);
+      stripes(pulse, x, y, 11, 1);
+      return;
+    }
+    const g = this.tileLayer;
+    g.fillStyle(0x5a6272, 0.85).fillRect(x, y, CELL, CELL);
+    g.lineStyle(4, 0x14181f, 1);
+    for (const [px, py, s] of [[0.32, 0.34, 0.16], [0.68, 0.44, 0.14], [0.42, 0.7, 0.15]] as const) {
+      const cx = x + CELL * px;
+      const cy = y + CELL * py;
+      const w = CELL * s;
+      g.beginPath();
+      g.moveTo(cx - w, cy - w * 0.4);
+      g.lineTo(cx, cy + w * 0.2);
+      g.lineTo(cx + w, cy - w * 0.4);
+      g.strokePath();
+    }
   }
 
   /** Dirt Hut: a block of packed dirt with a grassy top. */

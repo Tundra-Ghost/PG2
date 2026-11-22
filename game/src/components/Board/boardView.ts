@@ -59,6 +59,8 @@ export interface SquareView {
   confession?: 'piece' | 'target';
   /** The Floor Is Lava: lava moves here at the next rotation. */
   lavaNext?: boolean;
+  /** The Birds: a flock sits here, or lands here next round. */
+  flock?: 'warning' | 'active';
   /** Dirt Hut: a wall built by this side stands here. */
   wall?: 'white' | 'black';
   /** Bandersnatch Protocol: the mirror axis runs along this edge of a d-file square. */
@@ -141,6 +143,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(piece?.type === 'pigeon' && pigeonsHopFor(piece.color) ? { pigeonsHop: true } : {}),
         isShaft: tile?.isVoid === true && !storm && !tile.isClosed && !tile.statue && !tile.barrier,
         ...(tile?.barrier?.kind === 'wall' && tile.barrier.owner ? { wall: tile.barrier.owner } : {}),
+        ...(tile?.barrier?.kind === 'flock' ? { flock: 'active' as const } : tile?.flockWarning ? { flock: 'warning' as const } : {}),
         ...(tile?.statue ? { statue: true } : {}),
         isClosed: tile?.isClosed === true,
         storm,
