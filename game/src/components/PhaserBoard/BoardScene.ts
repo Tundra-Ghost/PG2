@@ -587,12 +587,14 @@ export class BoardScene extends Phaser.Scene {
     side(l, b, l, t);
   }
 
-  /** Death And Taxes: a dashed red frame with a coin, on the pawn taxed after this move. */
+  /** Death And Taxes: a dashed red frame on navy with a coin, on the pawn taxed after this move. */
   private drawTaxed(x: number, y: number) {
     const g = this.fogLayer;
     const inset = CELL * 0.08;
     const size = CELL - inset * 2;
-    g.lineStyle(3, 0xd0342c, 0.95);
+    // A solid navy line under the red dashes keeps the frame clear on dark squares too.
+    g.lineStyle(5, 0x14213d, 0.9).strokeRect(x + inset, y + inset, size, size);
+    g.lineStyle(3, 0xe8463c, 1);
     const steps = 4;
     const side = (x1: number, y1: number, x2: number, y2: number) => {
       for (let i = 0; i < steps; i++) {
@@ -606,9 +608,9 @@ export class BoardScene extends Phaser.Scene {
     side(r, t, r, b);
     side(r, b, l, b);
     side(l, b, l, t);
-    // A gold coin in the corner, so the mark reads as "tax", not "danger".
-    g.fillStyle(0xe0b040, 1).fillCircle(r - CELL * 0.12, t + CELL * 0.12, CELL * 0.1);
-    g.lineStyle(2, 0x7a5a10, 1).strokeCircle(r - CELL * 0.12, t + CELL * 0.12, CELL * 0.1);
+    // A gold coin in the bottom-left corner (badges use the top-right), so the mark reads as "tax".
+    g.fillStyle(0xe0b040, 1).fillCircle(l + CELL * 0.12, b - CELL * 0.12, CELL * 0.1);
+    g.lineStyle(2, 0x14213d, 1).strokeCircle(l + CELL * 0.12, b - CELL * 0.12, CELL * 0.1);
   }
 
   /** Big Beak Is Watching: a golden eye on the Surveillance Square. */
