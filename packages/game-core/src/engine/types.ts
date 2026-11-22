@@ -66,6 +66,7 @@ export interface TileState {
   flockWarning?: boolean; // MOD-A009: a flock lands here next round
   portal?: 'blue' | 'orange'; // MOD-A011: a fixed portal
   tide?: 'warning' | 'active'; // MOD-A017: water next round, or water now
+  cropCircle?: 'warning' | 'active'; // MOD-A019: a crop circle next round, or now
 }
 
 /**

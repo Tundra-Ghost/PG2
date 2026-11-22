@@ -336,6 +336,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'shared',
     description:
       'Every 8 rounds a 3×3 crop circle appears on the middle ranks for 3 rounds. Pieces inside it cannot be captured. They can still move and capture out of it.',
+    prototypeRules:
+      'On rounds 9 to 11, 17 to 19, and so on (8 rounds apart, 3 rounds each) a 3×3 crop circle covers a block inside ranks 3 to 6, picked with the game seed and marked one round ahead. No move, ability, en passant or Berserker chain may capture a piece standing inside it. Pieces inside move and capture normally. Check is not affected: a King in the circle is in check as usual. The FOR THE EMPEROR cannonball flies over circle pieces.',
     flavor: '"Something made these patterns overnight. Viktor\'s bishop is inside one. It feels safe. It has not asked why."',
   },
   {

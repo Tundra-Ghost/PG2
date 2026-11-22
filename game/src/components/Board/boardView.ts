@@ -67,6 +67,8 @@ export interface SquareView {
   portal?: 'blue' | 'orange';
   /** Tide Goes In: water here now, or next round. */
   tide?: 'warning' | 'active';
+  /** Crop Circles: a circle here now, or next round. */
+  cropCircle?: 'warning' | 'active';
   /** Dirt Hut: a wall built by this side stands here. */
   wall?: 'white' | 'black';
   /** Bandersnatch Protocol: the mirror axis runs along this edge of a d-file square. */
@@ -154,6 +156,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(tile?.statue ? { statue: true } : {}),
         ...(tile?.portal ? { portal: tile.portal } : {}),
         ...(tile?.tide ? { tide: tile.tide } : {}),
+        ...(tile?.cropCircle ? { cropCircle: tile.cropCircle } : {}),
         isClosed: tile?.isClosed === true,
         storm,
         quietZone: quietZones.get(square),

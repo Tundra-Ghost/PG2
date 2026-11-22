@@ -224,6 +224,7 @@ export class BoardScene extends Phaser.Scene {
       if (view.blindSpot) this.drawBlindSpotEdges(index, x, y);
       if (view.smoke) this.drawSmoke(x, y);
       if (view.tide) this.drawTide(view.tide, x, y);
+      if (view.cropCircle) this.drawCrop(view.cropCircle, x, y);
       if (view.portal) this.drawPortal(view.portal, cx, cy);
       if (view.lavaNext) this.drawLavaNext(x, y);
       if (view.taxed) this.drawTaxed(x, y);
@@ -603,6 +604,17 @@ export class BoardScene extends Phaser.Scene {
       }
       g.strokePath();
     }
+  }
+
+  /** Crop Circles: wheat-gold square with flattened rings; just the rings, dashed-looking, as a warning. */
+  private drawCrop(kind: 'warning' | 'active', x: number, y: number) {
+    const g = this.tileLayer;
+    const cx = x + CELL / 2;
+    const cy = y + CELL / 2;
+    if (kind === 'active') g.fillStyle(0xd9b24a, 0.42).fillRect(x, y, CELL, CELL);
+    g.lineStyle(3, 0x6b4a0c, kind === 'active' ? 0.85 : 0.6);
+    g.strokeCircle(cx, cy, CELL * 0.4);
+    if (kind === 'active') g.strokeCircle(cx, cy, CELL * 0.22);
   }
 
   /** Thinking With Portals: a glowing oval ring, blue or orange, under the piece. */

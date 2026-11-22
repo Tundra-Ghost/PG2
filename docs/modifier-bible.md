@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 74 built, 26 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 75 built, 25 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -18,6 +18,7 @@
 **Batch 9 (2026-11-22)**
 - Match conflicts: some shared cards use the same squares, so only one of each pair may be in a match, whoever drafts it. The draft hides the second card and says why.
 - Thinking With Portals built. Conflicts: Vent Tiles, The Birds.
+- Crop Circles built. Conflicts: This Is My Swamp, The Magic Roundabout, The Birds, Tide Goes In.
 - Tide Goes In, Tide Goes Out built. Conflicts: This Is My Swamp, The Magic Roundabout, Thinking With Portals, The Birds.
 
 **Balance round 2 (2026-11-17)**
@@ -149,6 +150,7 @@ The four centre squares (d4, d5, e4, e5) are the Swamp. A piece that starts its 
 - Conflict: Did I Do That? The rook move cannot start in the Swamp.
 - Changed from v0.2: pieces can pass through; the limit only applies when starting in the Swamp.
 - Conflict: Tide Goes In, Tide Goes Out. Both use ranks 4 and 5; only one may be in a match, whoever drafts it.
+- Conflict: Crop Circles. Both use the middle ranks; only one may be in a match, whoever drafts it.
 
 ### MOD-A007 · Gravitational Anomaly (Don't Think About It)
 *Ref: Interstellar / Gravity Falls* · **Tier S** · Cost 5 · Curse 2 · Scope: Shared · Modes: All except Ranked S1 · **Built**
@@ -188,6 +190,7 @@ Every 6 rounds a flock lands on a random empty 2×2 area of ranks 3 to 6. Nothin
 - Built: a flock square works like a Dirt Hut wall: sliders stop before it, nothing lands on it, and it blocks check. Knights still jump over it. A flock that shields the waiting King from check stays until it no longer does.
 - Conflict: Thinking With Portals. Only one of the two may be in a match, whoever drafts it.
 - Conflict: Tide Goes In, Tide Goes Out. Both use ranks 4 and 5; only one may be in a match, whoever drafts it.
+- Conflict: Crop Circles. Both use the middle ranks; only one may be in a match, whoever drafts it.
 
 ### MOD-A010 · The Factory Must Grow
 *Ref: Factorio* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
@@ -236,6 +239,7 @@ The four centre squares are a roundabout. At the end of each round, pieces on d4
 - Ruling: a King rotates only if the new square is safe.
 - Ruling: rotation never captures. A blocked piece waits.
 - Conflict: Tide Goes In, Tide Goes Out. Both use ranks 4 and 5; only one may be in a match, whoever drafts it.
+- Conflict: Crop Circles. Both use the middle ranks; only one may be in a match, whoever drafts it.
 
 ### MOD-A014 · Minesweeper
 *Ref: Minesweeper* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
@@ -287,6 +291,7 @@ Every 8 rounds the tide comes in and ranks 4 and 5 become water for 4 rounds. Pi
 - Conflict: The Factory Must Grow. Belts stop while flooded.
 - Built: water on rounds 9 to 12, 17 to 20, and so on. Kings ignore the water: they may stop on it too. A pawn whose every step lands on water (a white pawn on rank 3 or 4, a black pawn on rank 6 or 5) waits for the tide to go out. Water is not a wall, so lines of check cross it. Abilities that act from a distance are not affected.
 - Conflict: This Is My Swamp, The Magic Roundabout, Thinking With Portals and The Birds all use ranks 4 and 5. Only one of each pair may be in a match, whoever drafts it.
+- Conflict: Crop Circles. Both use the middle ranks; only one may be in a match, whoever drafts it.
 
 ### MOD-A018 · Shake It Off
 *Ref: Taylor Swift* · **Tier S** · Cost 4 · Curse 2 · Scope: Shared · Modes: All · **Design**
@@ -299,7 +304,7 @@ Every 10 rounds an earthquake moves every non-King piece one square in a random 
 - Skill: the one-round warning is the point. A prepared player gains from the quake.
 
 ### MOD-A019 · Crop Circles
-*Ref: Signs / The X-Files* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Design**
+*Ref: Signs / The X-Files* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
 
 Every 8 rounds a 3×3 crop circle appears on the middle ranks for 3 rounds. Pieces inside it cannot be captured. They can still move and capture out of it.
 
@@ -307,6 +312,8 @@ Every 8 rounds a 3×3 crop circle appears on the middle ranks for 3 rounds. Piec
 
 - Ruling: a King in the circle is still in check normally. Safe zones never break check.
 - Synergy: FOR THE EMPEROR. The cannonball passes over circle pieces.
+- Built: circles appear on rounds 9 to 11, 17 to 19, and so on, on a 3×3 block inside ranks 3 to 6 picked with the game seed. The spot is marked one round ahead, so both players can plan. Berserker chains cannot take a circle piece either.
+- Conflict: This Is My Swamp, The Magic Roundabout, The Birds and Tide Goes In, Tide Goes Out all use the middle ranks. Only one of each pair may be in a match, whoever drafts it.
 
 ### MOD-A020 · One Way Street
 *Ref: Every city centre* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Design**
@@ -1396,7 +1403,7 @@ Values the game uses today. "Built" cards match the build.
 | A016 | Monument To Gerald | A | B | 1 | 0 | Shared | Built |
 | A017 | Tide Goes In, Tide Goes Out | A | A | 3 | 1 | Shared | Built |
 | A018 | Shake It Off | A | S | 4 | 2 | Shared | Design |
-| A019 | Crop Circles | A | B | 2 | 0 | Shared | Design |
+| A019 | Crop Circles | A | B | 2 | 0 | Shared | Built |
 | A020 | One Way Street | A | B | 2 | 1 | Shared | Design |
 | B009 | Speedrun Any% | B | A | -2 | 2 | Owner | Design |
 | B010 | Main Character Syndrome | B | B | -1 | 1 | Owner | Built |
@@ -1447,7 +1454,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-74 of 100 built. The other 26 are designs (v0.4).
+75 of 100 built. The other 25 are designs (v0.4).
 
 ### Balance test plan
 

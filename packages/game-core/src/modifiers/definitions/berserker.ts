@@ -14,6 +14,7 @@ import {
 } from '../../engine/gameLoop';
 import { getLegalMovesForPiece, isInCheck } from '../../engine/moveGenerator';
 import { MODIFIER_IDS } from '../ids';
+import { isInCropCircle } from './crop-circles';
 
 const ID = MODIFIER_IDS.berserker;
 
@@ -79,6 +80,8 @@ export function getBestCaptureTarget(state: GameState, from: Square): Square | n
     if (!target || target.color === piece.color) continue;
     // MOD-C013: a piece guarded by Hold My Bread cannot be chained.
     if (target.isShielded) continue;
+    // MOD-A019: nor can a piece in a crop circle.
+    if (isInCropCircle(state, to)) continue;
     const projected = applyMoveInternal(state, buildMove(state, from, to));
     if (isInCheck(projected, piece.color)) continue;
     // MOD-E009: the Amazon is worth more than a plain queen.

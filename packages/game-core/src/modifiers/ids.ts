@@ -73,6 +73,7 @@ export const MODIFIER_IDS = {
   deathAndTaxes: 'MOD-B013',
   thinkingWithPortals: 'MOD-A011',
   tideGoesIn: 'MOD-A017',
+  cropCircles: 'MOD-A019',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];

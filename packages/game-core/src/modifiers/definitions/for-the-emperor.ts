@@ -2,6 +2,7 @@ import type { ModifierDefinition } from '../types';
 import type { GameState, Piece, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { MODIFIER_IDS } from '../ids';
+import { isInCropCircle } from './crop-circles';
 
 const ID = MODIFIER_IDS.forTheEmperor;
 const FILES = 'abcdefgh';
@@ -10,7 +11,7 @@ const DIRECTIONS: Array<[number, number]> = [[0, 1], [0, -1], [1, 0], [-1, 0]];
 /**
  * The first piece the cannonball meets in each direction, any colour.
  * Kings stop the ball harmlessly, so they are never targets. Void shafts
- * are flown over.
+ * are flown over, and so are pieces in a crop circle.
  */
 export function cannonTargets(state: GameState, rook: Piece): Square[] {
   const targets: Square[] = [];
@@ -24,6 +25,8 @@ export function cannonTargets(state: GameState, rook: Piece): Square[] {
       const sq = `${FILES[f]}${r}` as Square;
       const hit = state.pieces.get(sq);
       if (!hit) continue;
+      // MOD-A019: the cannonball passes over pieces in a crop circle.
+      if (isInCropCircle(state, sq)) continue;
       if (hit.type !== 'king') targets.push(sq);
       break;
     }
