@@ -218,6 +218,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'shared',
     description:
       'A blue portal sits on c4 and an orange portal on f5. A non-King piece that ends its move on one portal steps out of the other, if that square is empty. Portals never capture and stay all match.',
+    prototypeRules:
+      'Blue portal on c4, orange portal on f5, for the whole match. A non-King piece of the side that moved, ending a normal move (a capture too) on one portal, is moved straight to the other portal. If that square holds any piece, is blocked (a wall, a flock, the statue), or the jump would leave its own King in check, the piece stays on the entry portal. Abilities do not use the portals. A pawn that double-steps onto a portal and jumps cannot be taken en passant.',
     flavor: '"Viktor\'s rook entered on the left. It left on the right. Viktor is still on the left."',
   },
   {

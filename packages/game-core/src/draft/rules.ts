@@ -57,6 +57,26 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.deathAndTaxes, MODIFIER_IDS.smallCouncil],
 ];
 
+/**
+ * Shared cards whose squares overlap, so only one may be in a match, whoever
+ * drafts it. Checked against both drafts.
+ * Thinking With Portals sits on c4 and f5: a Vent Tile or a flock could land on a portal.
+ */
+const MATCH_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
+  [MODIFIER_IDS.thinkingWithPortals, MODIFIER_IDS.ventTiles],
+  [MODIFIER_IDS.thinkingWithPortals, MODIFIER_IDS.theBirds],
+];
+
+/** The card in either draft that rules this one out of the match, if any. */
+function matchConflict(cardId: string, ownIds: string[], otherIds: string[]): string | null {
+  const all = [...ownIds, ...otherIds];
+  for (const [a, b] of MATCH_CONFLICTS) {
+    if (cardId === a && all.includes(b)) return b;
+    if (cardId === b && all.includes(a)) return a;
+  }
+  return null;
+}
+
 /** The card in your draft that rules this one out, if any. */
 function ownConflict(cardId: string, ownIds: string[]): string | null {
   for (const [a, b] of OWN_CONFLICTS) {
@@ -103,6 +123,7 @@ export function getValidOptions(
     if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return false;
     if (needsDarkFirst(card.id, ownIds, otherIds)) return false;
     if (ownConflict(card.id, ownIds)) return false;
+    if (matchConflict(card.id, ownIds, otherIds)) return false;
     if (unlimited) return true;
     if (ownCards.length >= MAX_COUNT) return false;
     if (totalCost + card.cost > BUDGET) return false;
@@ -161,6 +182,11 @@ export function pickBlocker(
   if (conflict) {
     const name = ALL_MODIFIERS.find(c => c.id === conflict)?.name ?? conflict;
     return `Does not work with ${name}.`;
+  }
+  const clash = matchConflict(card.id, ownIds, otherIds);
+  if (clash) {
+    const name = ALL_MODIFIERS.find(c => c.id === clash)?.name ?? clash;
+    return `Shares squares with ${name}, already in this match.`;
   }
   if (unlimited) return null;
   if (ownCards.length >= MAX_COUNT) return `Your draft is full (${MAX_COUNT} modifiers).`;

@@ -223,6 +223,7 @@ export class BoardScene extends Phaser.Scene {
       }
       if (view.blindSpot) this.drawBlindSpotEdges(index, x, y);
       if (view.smoke) this.drawSmoke(x, y);
+      if (view.portal) this.drawPortal(view.portal, cx, cy);
       if (view.lavaNext) this.drawLavaNext(x, y);
       if (view.taxed) this.drawTaxed(x, y);
       if (view.wall) this.drawWall(x, y);
@@ -585,6 +586,18 @@ export class BoardScene extends Phaser.Scene {
     side(r, t, r, b);
     side(r, b, l, b);
     side(l, b, l, t);
+  }
+
+  /** Thinking With Portals: a glowing oval ring, blue or orange, under the piece. */
+  private drawPortal(kind: 'blue' | 'orange', cx: number, cy: number) {
+    const g = this.tileLayer;
+    const color = kind === 'blue' ? 0x1f6fe0 : 0xf07a12;
+    const w = CELL * 0.84;
+    const h = CELL * 0.84;
+    g.fillStyle(color, 0.16).fillEllipse(cx, cy, w, h);
+    // A navy outline keeps the ring clear on light and dark squares.
+    g.lineStyle(7, 0x14213d, 0.85).strokeEllipse(cx, cy, w, h);
+    g.lineStyle(4, color, 1).strokeEllipse(cx, cy, w, h);
   }
 
   /** Death And Taxes: a dashed red frame on navy with a coin, on the pawn taxed after this move. */
