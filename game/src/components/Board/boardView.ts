@@ -59,6 +59,8 @@ export interface SquareView {
   confession?: 'piece' | 'target';
   /** The Floor Is Lava: lava moves here at the next rotation. */
   lavaNext?: boolean;
+  /** Dirt Hut: a wall built by this side stands here. */
+  wall?: 'white' | 'black';
   /** Bandersnatch Protocol: the mirror axis runs along this edge of a d-file square. */
   mirrorEdge?: 'left' | 'right';
 }
@@ -137,7 +139,8 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         crownOrder: crownOrders.get(square),
         pigeonHop: pigeonHops.get(square),
         ...(piece?.type === 'pigeon' && pigeonsHopFor(piece.color) ? { pigeonsHop: true } : {}),
-        isShaft: tile?.isVoid === true && !storm && !tile.isClosed && !tile.statue,
+        isShaft: tile?.isVoid === true && !storm && !tile.isClosed && !tile.statue && !tile.barrier,
+        ...(tile?.barrier?.kind === 'wall' && tile.barrier.owner ? { wall: tile.barrier.owner } : {}),
         ...(tile?.statue ? { statue: true } : {}),
         isClosed: tile?.isClosed === true,
         storm,

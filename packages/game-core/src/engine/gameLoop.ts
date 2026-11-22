@@ -82,7 +82,14 @@ export function positionKey(state: GameState): string {
   const statue = getStatueSquare(state);
   const statueToken = statue ? `|g${statue}` : '';
 
-  return `${pieceTokens.join(',')}|${sideToken}|${castleToken}|${epToken}${statueToken}`;
+  // 6. MOD-C018 walls and MOD-A009 flocks block squares, so they count too.
+  const barriers = Array.from(state.tiles.entries())
+    .filter(([, tile]) => tile.barrier)
+    .map(([sq, tile]) => `${sq}${tile.barrier!.owner?.[0] ?? 'f'}${tile.barrier!.until}`)
+    .sort();
+  const barrierToken = barriers.length > 0 ? `|b${barriers.join('')}` : '';
+
+  return `${pieceTokens.join(',')}|${sideToken}|${castleToken}|${epToken}${statueToken}${barrierToken}`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

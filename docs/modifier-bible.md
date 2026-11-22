@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 68 built, 32 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 69 built, 31 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -804,7 +804,7 @@ Select your King, press Get off my lawn, then tap the King. Every enemy pawn nex
 - Changed from design: the design gave no cooldown; the build uses 8 of your moves.
 
 ### MOD-C018 · Dirt Hut
-*Ref: Minecraft* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Minecraft* · **Tier A** · Cost 3 · Curse 0 · Rook · Cooldown 6 · Scope: Owner · Modes: All · **Built**
 
 Your rook places a wall on an empty square next to it. Nothing can land on or cross the wall for 4 rounds. Uses your move.
 
@@ -812,6 +812,12 @@ Your rook places a wall on an empty square next to it. Nothing can land on or cr
 
 - Ruling: a wall never cuts off the last legal move of either King.
 - Safety: at most 2 walls of yours at a time.
+- Built: select a rook, press Build wall, then tap an empty square next to it (any of the 8). Then that rook waits 6 of your moves.
+- Built: a wall is a void square, like Gerald's statue. Sliders stop before it, nothing lands on it, and it blocks check. Knights and other leapers still jump over it.
+- Built: the wall crumbles at the start of your move 4 rounds later. Walls cannot go on Lava or storm squares. Gerald's statue cannot be pushed onto a wall, and Gravitational Anomaly slides stop at it.
+- Built: a wall that shields the waiting King from check stays up until it no longer does, so a crumbling wall never leaves a King in check off its turn.
+- Built: under fog, a wall can only go on a square you can see. A vent whose exit is a wall stays shut.
+- Changed from design: the design gave no cooldown; the build uses 6 of your moves.
 
 ### MOD-C019 · Everyone Has A Price
 *Ref: Every heist movie* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1381,7 +1387,7 @@ Values the game uses today. "Built" cards match the build.
 | C015 | Ctrl+Z | C | S | 4 | 0 | Owner | Design |
 | C016 | Bullet Time | C | A | 4 | 0 | Owner | Design |
 | C017 | Get Off My Lawn | C | B | 3 | 0 | Owner | Built |
-| C018 | Dirt Hut | C | A | 3 | 0 | Owner | Design |
+| C018 | Dirt Hut | C | A | 3 | 0 | Owner | Built |
 | C019 | Everyone Has A Price | C | S | 5 | 0 | Owner | Design |
 | C020 | Gotta Go Fast | C | B | 2 | 0 | Owner | Built |
 | D009 | Invisibility Cloak | D | A | 3 | 0 | Owner | Design |
@@ -1409,7 +1415,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-68 of 100 built. The other 32 are designs (v0.4).
+69 of 100 built. The other 31 are designs (v0.4).
 
 ### Balance test plan
 

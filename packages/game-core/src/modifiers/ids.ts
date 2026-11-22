@@ -67,6 +67,7 @@ export const MODIFIER_IDS = {
   hopscotch: 'MOD-E012',
   leapOfFaith: 'MOD-C010',
   theBodyguard: 'MOD-E017',
+  dirtHut: 'MOD-C018',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];

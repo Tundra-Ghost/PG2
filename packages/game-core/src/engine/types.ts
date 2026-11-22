@@ -62,6 +62,20 @@ export interface TileState {
   isSurveilled?: boolean; // future: MOD-D008
   noFlyZone?: Color;      // future: MOD-C001
   statue?: boolean;       // MOD-A016: Gerald's statue (also isVoid)
+  barrier?: Barrier;      // MOD-C018 wall, MOD-A009 flock: timed, also isVoid
+  flockWarning?: boolean; // MOD-A009: a flock lands here next round
+}
+
+/**
+ * A timed blocked square: a Dirt Hut wall (MOD-C018) or a flock of birds
+ * (MOD-A009). See engine/barriers.ts.
+ */
+export interface Barrier {
+  kind: 'wall' | 'flock';
+  /** The side that built a wall. Flocks belong to nobody. */
+  owner?: Color;
+  /** The barrier lifts at the start of the turn with this turnNumber. */
+  until: number;
 }
 
 export interface CastlingRights {
