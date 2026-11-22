@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 73 built, 27 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 74 built, 26 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -18,6 +18,7 @@
 **Batch 9 (2026-11-22)**
 - Match conflicts: some shared cards use the same squares, so only one of each pair may be in a match, whoever drafts it. The draft hides the second card and says why.
 - Thinking With Portals built. Conflicts: Vent Tiles, The Birds.
+- Tide Goes In, Tide Goes Out built. Conflicts: This Is My Swamp, The Magic Roundabout, Thinking With Portals, The Birds.
 
 **Balance round 2 (2026-11-17)**
 - New prices from the balance harness (#150): Elephant In The Room -1 to -3, Roll For Initiative -2 to -3 (curse 3), Stonks 2 to 3, Hatchery 3 to 4.
@@ -147,6 +148,7 @@ The four centre squares (d4, d5, e4, e5) are the Swamp. A piece that starts its 
 - Synergy: I Hereby Declare. A decree through the Swamp makes a wall.
 - Conflict: Did I Do That? The rook move cannot start in the Swamp.
 - Changed from v0.2: pieces can pass through; the limit only applies when starting in the Swamp.
+- Conflict: Tide Goes In, Tide Goes Out. Both use ranks 4 and 5; only one may be in a match, whoever drafts it.
 
 ### MOD-A007 · Gravitational Anomaly (Don't Think About It)
 *Ref: Interstellar / Gravity Falls* · **Tier S** · Cost 5 · Curse 2 · Scope: Shared · Modes: All except Ranked S1 · **Built**
@@ -185,6 +187,7 @@ Every 6 rounds a flock lands on a random empty 2×2 area of ranks 3 to 6. Nothin
 - Built: if a piece steps into the marked spot, the flock picks another open 2×2 when it lands. If no 2×2 is open, it skips that landing.
 - Built: a flock square works like a Dirt Hut wall: sliders stop before it, nothing lands on it, and it blocks check. Knights still jump over it. A flock that shields the waiting King from check stays until it no longer does.
 - Conflict: Thinking With Portals. Only one of the two may be in a match, whoever drafts it.
+- Conflict: Tide Goes In, Tide Goes Out. Both use ranks 4 and 5; only one may be in a match, whoever drafts it.
 
 ### MOD-A010 · The Factory Must Grow
 *Ref: Factorio* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
@@ -209,6 +212,7 @@ A blue portal sits on c4 and an orange portal on f5. A non-King piece that ends 
 - Not Vent Tiles: portals are visible, permanent and never capture.
 - Built: only a normal move (a capture too) that ends on a portal uses it. Abilities and pieces pushed or slid there by other cards do not. A pawn that double-steps onto a portal and jumps cannot be taken en passant.
 - Conflict: Vent Tiles and The Birds. A vent or a flock could land on a portal, so only one of the three may be in a match, whoever drafts it.
+- Conflict: Tide Goes In, Tide Goes Out. Both use ranks 4 and 5; only one may be in a match, whoever drafts it.
 
 ### MOD-A012 · Let It Go
 *Ref: Frozen* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
@@ -231,6 +235,7 @@ The four centre squares are a roundabout. At the end of each round, pieces on d4
 - Conflict: This Is My Swamp. Both use the centre; only one may be in a match.
 - Ruling: a King rotates only if the new square is safe.
 - Ruling: rotation never captures. A blocked piece waits.
+- Conflict: Tide Goes In, Tide Goes Out. Both use ranks 4 and 5; only one may be in a match, whoever drafts it.
 
 ### MOD-A014 · Minesweeper
 *Ref: Minesweeper* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
@@ -272,7 +277,7 @@ A statue of Gerald stands on e4. Nothing can land on it or pass through it. A pi
 - Synergy: Distracted Piece. Gerald is now in two places. Nobody can explain this.
 
 ### MOD-A017 · Tide Goes In, Tide Goes Out
-*Ref: "You can't explain that" meme* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
+*Ref: "You can't explain that" meme* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
 Every 8 rounds the tide comes in and ranks 4 and 5 become water for 4 rounds. Pieces may cross water but only knights may stop on it. A piece already on water when the tide arrives may only move off it. A warning shows the round before.
 
@@ -280,6 +285,8 @@ Every 8 rounds the tide comes in and ranks 4 and 5 become water for 4 rounds. Pi
 
 - Ruling: a King caught by the tide may still move normally. The King is sacred.
 - Conflict: The Factory Must Grow. Belts stop while flooded.
+- Built: water on rounds 9 to 12, 17 to 20, and so on. Kings ignore the water: they may stop on it too. A pawn whose every step lands on water (a white pawn on rank 3 or 4, a black pawn on rank 6 or 5) waits for the tide to go out. Water is not a wall, so lines of check cross it. Abilities that act from a distance are not affected.
+- Conflict: This Is My Swamp, The Magic Roundabout, Thinking With Portals and The Birds all use ranks 4 and 5. Only one of each pair may be in a match, whoever drafts it.
 
 ### MOD-A018 · Shake It Off
 *Ref: Taylor Swift* · **Tier S** · Cost 4 · Curse 2 · Scope: Shared · Modes: All · **Design**
@@ -1387,7 +1394,7 @@ Values the game uses today. "Built" cards match the build.
 | A014 | Minesweeper | A | A | 3 | 1 | Shared | Design |
 | A015 | The Roomba | A | B | 2 | 0 | Shared | Design |
 | A016 | Monument To Gerald | A | B | 1 | 0 | Shared | Built |
-| A017 | Tide Goes In, Tide Goes Out | A | A | 3 | 1 | Shared | Design |
+| A017 | Tide Goes In, Tide Goes Out | A | A | 3 | 1 | Shared | Built |
 | A018 | Shake It Off | A | S | 4 | 2 | Shared | Design |
 | A019 | Crop Circles | A | B | 2 | 0 | Shared | Design |
 | A020 | One Way Street | A | B | 2 | 1 | Shared | Design |
@@ -1440,7 +1447,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-73 of 100 built. The other 27 are designs (v0.4).
+74 of 100 built. The other 26 are designs (v0.4).
 
 ### Balance test plan
 
