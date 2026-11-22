@@ -746,6 +746,7 @@ A pawn guards an adjacent friendly piece. That piece cannot be captured during y
 - Ruling: "adjacent" means the 8 squares around the pawn. Any piece of yours but the King.
 - Ruling: the shield lasts for your opponent's next move only, and stops every capture of that piece: normal moves, en passant and abilities that would remove it. The piece shows a ◇ badge while guarded.
 - Ruling: it does not change the board, so it is never allowed in check.
+- Ruling: chain captures (the Berserker, Reject Queen's chain) skip a guarded piece. The shield ends after the opponent's first move, even if The Snap gives them another.
 - Ruling: the pawn then waits 6 of your moves (the cooldown on the card).
 
 ### MOD-C014 · Run, Forrest, Run

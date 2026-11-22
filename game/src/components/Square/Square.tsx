@@ -56,6 +56,9 @@ function getPieceTooltipLines(
   if (piece.isTouched) {
     lines.push('Commitment Issues: This piece was touched. It must move this turn.');
   }
+  if (piece.isShielded) {
+    lines.push('Hold My Bread: This piece is guarded. It cannot be captured this move.');
+  }
   if (piece.type === 'archbishop') {
     lines.push('Archbishop: Moves like a bishop or a knight.');
   }

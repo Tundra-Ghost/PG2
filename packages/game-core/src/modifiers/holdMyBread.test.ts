@@ -102,4 +102,46 @@ describe('MOD-C013 Hold My Bread', () => {
     ]);
     expect(targets({ ...state, turn: 'black' }, 'd5')).toEqual([]);
   });
+
+  it('a Berserker chain skips a guarded piece', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'a1'),
+      { ...makePiece('rook', 'white', 'd1'), isBerserker: true },
+      makePiece('king', 'black', 'h8'),
+      makePiece('knight', 'black', 'd4'),
+      { ...makePiece('bishop', 'black', 'd6'), isShielded: true },
+    ]);
+    state.activeModifiers = [{ id: MODIFIER_IDS.berserker, name: 'Berserker', activeFor: 'both', sourceColor: 'white' }];
+    const next = chessEngine.applyMove(state, move('d1', 'd4', 'white'));
+    expect(next.pieces.get('d6')).toMatchObject({ type: 'bishop', color: 'black' });
+  });
+
+  it('ends after the first enemy move, even when The Snap gives an extra move', () => {
+    const state = withBread([
+      makePiece('king', 'white', 'a1'),
+      makePiece('pawn', 'white', 'd4'),
+      makePiece('bishop', 'white', 'e5'),
+      makePiece('rook', 'black', 'e8'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+    const shielded = shield(state, 'd4', 'e5');
+    // Simulate an extra black move: Black keeps the turn after its first move.
+    const afterBlack = chessEngine.applyMove({ ...shielded, tempoTokens: { white: 0, black: 1 } }, move('h8', 'g8', 'black', { extraTurn: true }));
+    expect(afterBlack.turn).toBe('black');
+    expect(afterBlack.pieces.get('e5')!.isShielded).toBe(false);
+    expect(validateMove(afterBlack, move('e8', 'e5', 'black')).valid).toBe(true);
+  });
+
+  it('rejects a bad ability move while a shield is up, without throwing', () => {
+    const state = withBread([
+      makePiece('king', 'white', 'a1'),
+      makePiece('pawn', 'white', 'd4'),
+      makePiece('bishop', 'white', 'e5'),
+      makePiece('pawn', 'black', 'h7'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+    const shielded = shield(state, 'd4', 'e5');
+    expect(validateMove(shielded, move('h7', 'h6', 'black', { ability: MODIFIER_IDS.forTheEmperor })).valid).toBe(false);
+    expect(validateMove(shielded, move('h7', 'g6', 'black', { ability: BREAD })).valid).toBe(false);
+  });
 });

@@ -855,7 +855,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'A pawn guards an adjacent friendly piece. That piece cannot be captured during your opponent\'s next move. Uses your move.',
     prototypeRules:
-      'Select a pawn and press Hold my bread, then tap one of your pieces on the 8 squares around it (not the King). During your opponent\'s next move that piece cannot be captured: not by a move, en passant, or an ability. It shows a ◇ badge while guarded. The pawn stays put. Not allowed in check. Then the pawn waits 6 of your moves.',
+      'Select a pawn and press Hold my bread, then tap one of your pieces on the 8 squares around it (not the King). During your opponent\'s next move that piece cannot be captured: not by a move, en passant, an ability or a chain capture. The shield ends after their first move, even with an extra move from The Snap. It shows a ◇ badge while guarded. The pawn stays put. Not allowed in check. Then the pawn waits 6 of your moves.',
     flavor: '"The pawn said hold my bread. The bishop held the bread. The bishop survived."',
   },
   {

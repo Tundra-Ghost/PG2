@@ -1,7 +1,7 @@
 import type { ModifierDefinition } from '../types';
 import type { Color, GameState, Move, Piece, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
-import { performAbility } from '../../engine/abilities';
+import { checkAbilityMove, performAbility } from '../../engine/abilities';
 import { ALL_DIRECTIONS, offset } from '../../engine/push';
 import { MODIFIER_IDS } from '../ids';
 
@@ -34,8 +34,10 @@ function shieldTargets(state: GameState, pawn: Piece): Square[] {
 function capturedIds(state: GameState, move: Move): string[] {
   if (move.ability) {
     // Abilities can remove pieces away from their target (a rook shot, a backwards swipe).
+    // Hooks run before the engine checks the ability, so check it here first.
+    if (checkAbilityMove(state, move)) return [];
     const before = new Set(Array.from(state.pieces.values(), p => p.id));
-    const after = performAbility(state, move).state;
+    const after = performAbility(cloneState(state), move).state;
     for (const p of after.pieces.values()) before.delete(p.id);
     return [...before];
   }
@@ -47,6 +49,19 @@ function capturedIds(state: GameState, move: Move): string[] {
     if (passed && passed.color !== move.playerColor) return [passed.id];
   }
   return [];
+}
+
+function clearShields(state: GameState, ends: (s: Shield) => boolean): GameState {
+  const list = shields(state);
+  const ended = list.filter(ends);
+  if (ended.length === 0) return state;
+  const next = cloneState(state);
+  next.modifierState[ID] = list.filter(s => !ends(s));
+  const ids = new Set(ended.map(s => s.pieceId));
+  for (const [sq, piece] of next.pieces) {
+    if (ids.has(piece.id) && piece.isShielded) next.pieces.set(sq, { ...piece, isShielded: false });
+  }
+  return next;
 }
 
 /** MOD-C013: a pawn shields a neighbouring friendly piece from capture for one enemy move. */
@@ -97,18 +112,14 @@ export const holdMyBreadDef: ModifierDefinition = {
     return { blocked: false };
   },
 
+  // The shield ends as soon as the opponent has moved, even if The Snap
+  // gives them another move straight after.
+  onPostMove(state, move) {
+    return clearShields(state, s => s.color !== move.playerColor);
+  },
+
+  // A turn that came back without an enemy move (a pass) also ends it.
   onTurnEnd(state) {
-    const list = shields(state);
-    if (list.length === 0) return state;
-    // state.turn is the side about to move: the shield owner's opponent has just moved.
-    const ended = list.filter(s => s.color === state.turn);
-    if (ended.length === 0) return state;
-    const next = cloneState(state);
-    next.modifierState[ID] = list.filter(s => s.color !== state.turn);
-    const ids = new Set(ended.map(s => s.pieceId));
-    for (const [sq, piece] of next.pieces) {
-      if (ids.has(piece.id) && piece.isShielded) next.pieces.set(sq, { ...piece, isShielded: false });
-    }
-    return next;
+    return clearShields(state, s => s.color === state.turn);
   },
 };
