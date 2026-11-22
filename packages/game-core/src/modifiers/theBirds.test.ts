@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { chessEngine } from '../engine/ChessEngine';
-import { cutsOffAKing, getBarriers } from '../engine/barriers';
+import { cutsOffAKing, getBarriers, placeBarriers } from '../engine/barriers';
 import type { GameState, Square } from '../engine/types';
 import './index';
 import { MODIFIER_IDS } from './ids';
@@ -72,6 +72,12 @@ describe('MOD-A009 The Birds', () => {
     state.pieces.set(rookSq, makePiece('rook', 'white', rookSq));
     const targets = chessEngine.getLegalMoves(state, rookSq);
     for (const sq of flock) expect(targets).not.toContain(sq);
+    // Nor slide past: every square beyond the flock on that rank is out of reach.
+    const files = flock.filter(sq => sq[1] === rank).map(sq => sq[0]).sort();
+    const beyond = rookSq[0] === 'a'
+      ? 'abcdefgh'.slice('abcdefgh'.indexOf(files[1]) + 1)
+      : 'abcdefgh'.slice(0, 'abcdefgh'.indexOf(files[0]));
+    for (const f of beyond) expect(targets).not.toContain(`${f}${rank}`);
   });
 
   it('never lands on a piece: a piece in the marked spot sends the flock elsewhere', () => {
@@ -115,10 +121,19 @@ describe('MOD-A009 The Birds', () => {
     expect(again.prngState).toBe(state.prngState);
   });
 
-  it('a Dirt Hut wall and the flock share the board (interaction)', () => {
-    let state = withBirds([...BASE(), makePiece('rook', 'white', 'h1')]);
-    state = chessEngine.applyMove(state, move('h1', 'h2', 'white', { ability: MODIFIER_IDS.dirtHut }));
-    expect(state.tiles.get('h2')?.barrier?.kind).toBe('wall');
-    expect(getBarriers(state, 'flock')).toHaveLength(0);
+  it('lands around Dirt Hut walls, never on them (interaction)', () => {
+    const state = withBirds();
+    // Walls on every square of ranks 3 to 6 except c4, d4, c5 and d5.
+    const open = ['c4', 'd4', 'c5', 'd5'];
+    const walls: Square[] = [];
+    for (const f of 'abcdefgh') for (const r of [3, 4, 5, 6]) {
+      const sq = `${f}${r}` as Square;
+      if (!open.includes(sq)) walls.push(sq);
+    }
+    placeBarriers(state, walls, { kind: 'wall', owner: 'white', until: 999 });
+    state.turnNumber = 13;
+    const landed = theBirdsDef.onTurnStart!(state);
+    expect(getBarriers(landed, 'flock').map(b => b.square).sort()).toEqual([...open].sort());
+    expect(getBarriers(landed, 'wall')).toHaveLength(walls.length);
   });
 });
