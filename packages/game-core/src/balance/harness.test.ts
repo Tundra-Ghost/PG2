@@ -47,12 +47,20 @@ describe('balance harness', () => {
     expect(compensation([], 'white')).toBeNull();
   });
 
-  it('puts compensation pawns on the third rank, center first', () => {
+  it('puts compensation pawns on edge squares and skips blocked ones', () => {
     const state = chessEngine.getInitialState();
+    state.tiles.set('h6', { square: 'h6', effects: [], isVoid: true });
+    state.tiles.set('b6', { square: 'b6', effects: [], isVent: true });
     expect(addCompensationPawns(state, 'black', 3)).toBe(3);
-    expect(['d6', 'e6', 'c6'].map(sq => state.pieces.get(sq as never)?.type)).toEqual(['pawn', 'pawn', 'pawn']);
-    expect(state.pieces.get('d6' as never)?.color).toBe('black');
-    expect(state.pieces.has('f6' as never)).toBe(false);
+    expect(['a6', 'g6', 'a5'].map(sq => state.pieces.get(sq as never)?.type)).toEqual(['pawn', 'pawn', 'pawn']);
+    expect(state.pieces.get('a6' as never)?.color).toBe('black');
+    expect(state.pieces.has('h6' as never) || state.pieces.has('b6' as never)).toBe(false);
+    // Only six squares exist, so a bigger count reports the shortfall.
+    expect(addCompensationPawns(chessEngine.getInitialState(), 'white', 7)).toBe(6);
+  });
+
+  it('gives shared cards no compensation', () => {
+    expect(compensation([MODIFIER_IDS.floorIsLava], 'white')).toBeNull();
   });
 
   it('cost compensation changes games and stays reproducible', () => {
@@ -61,5 +69,11 @@ describe('balance harness', () => {
     const b = runCardBalance(MODIFIER_IDS.stonks, { ...opts, games: 4 });
     expect(a).toEqual(b);
     expect(a.cost).toBe(cardCost(MODIFIER_IDS.stonks));
+    expect(a.compPawns).toBe(Math.ceil(a.cost));
+    const plain = playBalanceGame([MODIFIER_IDS.stonks], 'white', 3, { ...opts, costAware: false });
+    const comp = playBalanceGame([MODIFIER_IDS.stonks], 'white', 3, opts);
+    expect(plain.extraPawns).toBe(0);
+    expect(comp.extraPawns).toBe(Math.ceil(a.cost));
+    expect(comp.missingPawns).toBe(0);
   });
 });
