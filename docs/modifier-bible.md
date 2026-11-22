@@ -489,8 +489,9 @@ After your Queen captures, she doubts herself. Her next move can only be one squ
 - Synergy: Main Character Syndrome. She must move, but only a little. Character development.
 - Ruling: the doubt lasts until her next move, however long she waits. If she captures with that one-square move, she doubts again.
 - Ruling: it is a move rule (see Move rules above): it does not apply in check, and never takes away your last move. Abilities that keep her in place (Quiet Quitting, GET OVER HERE!) do not count as her move.
+- Ruling: a Freaky Friday swap is an ability, so it does not count as her move; she keeps her doubt. Her doubt follows her if another card moves her (a Berserker chain, a vent).
 - Ruling: only a Queen that was a Queen when she captured. A pawn that captures and promotes to a Queen does not doubt.
-- Ruling: under Sus, a disguised Queen never shows the badge to the opponent.
+- Ruling: under Sus, a disguised Queen never shows the badge to the opponent, and her doubt is not announced in the feed.
 - Conflict: Yeah, There Are Three Of Them (one side). There is no Queen to doubt.
 
 ### MOD-B015 · Commitment Issues

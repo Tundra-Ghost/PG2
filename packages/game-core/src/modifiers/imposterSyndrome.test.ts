@@ -98,4 +98,38 @@ describe('MOD-B014 Imposter Syndrome', () => {
     expect(validateMove(state, move('d5', 'd8', 'white')).valid).toBe(false);
     expect(validateMove(state, move('d5', 'd6', 'white')).valid).toBe(true);
   });
+
+  it('under Sus, never announces a disguised Queen', () => {
+    let state = withImposter([
+      makePiece('king', 'white', 'a1'),
+      makePiece('queen', 'white', 'd1'),
+      makePiece('rook', 'black', 'd5'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+    state.modifierState[MODIFIER_IDS.sus] = { white: { pieceId: 'white-queen-d1', shownAs: 'rook' } };
+    state.activeModifiers.push({ id: MODIFIER_IDS.sus, name: 'Sus', activeFor: 'white', sourceColor: 'white' });
+    state = chessEngine.applyMove(state, move('d1', 'd5', 'white'));
+    expect(state.pieces.get('d5')!.isDoubting).toBe(true);
+    expect(state.eventHistory.some(e => e.modifierId === IMPOSTER)).toBe(false);
+  });
+
+  for (const order of ['imposter first', 'berserker first'] as const) {
+    it(`doubts a Berserker Queen after a chain capture (${order})`, () => {
+      const pieces = [
+        makePiece('king', 'white', 'a1'),
+        { ...makePiece('queen', 'white', 'd1'), isBerserker: true },
+        makePiece('knight', 'black', 'd4'),
+        makePiece('bishop', 'black', 'd6'),
+        makePiece('king', 'black', 'h8'),
+      ];
+      let state = makeEmptyState(pieces);
+      const imposter = { id: IMPOSTER, name: 'Imposter Syndrome', activeFor: 'both' as const, sourceColor: 'white' as const };
+      const berserker = { id: MODIFIER_IDS.berserker, name: 'Berserker', activeFor: 'both' as const, sourceColor: 'white' as const };
+      state.activeModifiers = order === 'imposter first' ? [imposter, berserker] : [berserker, imposter];
+      state = chessEngine.applyMove(state, move('d1', 'd4', 'white'));
+      const queen = Array.from(state.pieces.values()).find(p => p.type === 'queen' && p.color === 'white')!;
+      expect(queen.square).toBe('d6');
+      expect(queen.isDoubting).toBe(true);
+    });
+  }
 });

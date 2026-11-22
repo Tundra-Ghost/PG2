@@ -33,7 +33,7 @@ export function getPieceMarkers(piece: Piece): PieceMarkers {
   // MOD-C013 Hold My Bread: guarded for one enemy move.
   if (piece.isShielded) marks.push('◇');
   // MOD-B014 Imposter Syndrome: the Queen doubts herself.
-  if (piece.isDoubting) marks.push('…');
+  if (piece.isDoubting && piece.type === 'queen') marks.push('…');
   if (eggRounds !== undefined) marks.push(String(eggRounds));
 
   const label = [
@@ -47,7 +47,7 @@ export function getPieceMarkers(piece: Piece): PieceMarkers {
     amazon ? 'amazon, also moves like a knight' : null,
     piece.isTouched ? 'touched, must move' : null,
     piece.isShielded ? 'guarded, cannot be captured this move' : null,
-    piece.isDoubting ? 'doubting, next move only one square' : null,
+    piece.isDoubting && piece.type === 'queen' ? 'doubting, next move only one square' : null,
     eggRounds !== undefined ? `egg, hatches in ${eggRounds} of its side's moves` : null,
   ]
     .filter(Boolean)

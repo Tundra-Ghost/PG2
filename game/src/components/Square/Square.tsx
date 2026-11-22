@@ -56,7 +56,7 @@ function getPieceTooltipLines(
   if (piece.isTouched) {
     lines.push('Commitment Issues: This piece was touched. It must move this turn.');
   }
-  if (piece.isDoubting) {
+  if (piece.isDoubting && piece.type === 'queen') {
     lines.push('Imposter Syndrome: This Queen doubts herself. Her next move is only one square.');
   }
   if (piece.isShielded) {
