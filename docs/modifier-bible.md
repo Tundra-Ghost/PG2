@@ -815,6 +815,8 @@ Your rook places a wall on an empty square next to it. Nothing can land on or cr
 - Built: select a rook, press Build wall, then tap an empty square next to it (any of the 8). Then that rook waits 6 of your moves.
 - Built: a wall is a void square, like Gerald's statue. Sliders stop before it, nothing lands on it, and it blocks check. Knights and other leapers still jump over it.
 - Built: the wall crumbles at the start of your move 4 rounds later. Walls cannot go on Lava or storm squares. Gerald's statue cannot be pushed onto a wall, and Gravitational Anomaly slides stop at it.
+- Built: a wall that shields the waiting King from check stays up until it no longer does, so a crumbling wall never leaves a King in check off its turn.
+- Built: under fog, a wall can only go on a square you can see. A vent whose exit is a wall stays shut.
 - Changed from design: the design gave no cooldown; the build uses 6 of your moves.
 
 ### MOD-C019 · Everyone Has A Price

@@ -1,5 +1,5 @@
 import type { Barrier, Color, GameState, Square, TileState } from './types';
-import { getLegalMovesForPiece } from './moveGenerator';
+import { getLegalMovesForPiece, isInCheck } from './moveGenerator';
 import { validateMove } from './moveValidator';
 
 /**
@@ -61,9 +61,18 @@ export function clearBarrier(next: GameState, sq: Square): void {
 export function liftExpiredBarriers(state: GameState, kind: Barrier['kind']): { state: GameState; lifted: Square[] } {
   const due = getBarriers(state, kind).filter(b => state.turnNumber >= b.barrier.until);
   if (due.length === 0) return { state, lifted: [] };
+  const waiting: Color = state.turn === 'white' ? 'black' : 'white';
   const next = { ...state, tiles: new Map(state.tiles) };
-  for (const { square } of due) clearBarrier(next, square);
-  return { state: next, lifted: due.map(b => b.square) };
+  const lifted: Square[] = [];
+  for (const { square } of due) {
+    // A barrier that shields the waiting side's King from check stays one
+    // more turn: lifting it would leave a King in check off its turn.
+    const tile = next.tiles.get(square)!;
+    clearBarrier(next, square);
+    if (isInCheck(next, waiting)) next.tiles.set(square, tile);
+    else lifted.push(square);
+  }
+  return lifted.length === 0 ? { state, lifted } : { state: next, lifted };
 }
 
 /** Squares the King of `color` may legally move to, as if it were its turn. */

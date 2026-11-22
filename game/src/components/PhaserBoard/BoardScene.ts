@@ -524,7 +524,6 @@ export class BoardScene extends Phaser.Scene {
     if (col === 7 || !inSpot(index + 1)) dashed(x + CELL - 1.5, y, x + CELL - 1.5, y + CELL);
   }
 
-  /** The Floor Is Lava: a dashed amber square where lava goes next. */
   /** Dirt Hut: a block of packed dirt with a grassy top. */
   private drawWall(x: number, y: number) {
     const g = this.tileLayer;
@@ -539,6 +538,7 @@ export class BoardScene extends Phaser.Scene {
     g.lineStyle(3, 0x2e1c0c, 1).strokeRect(x + inset, y + inset, size, size);
   }
 
+  /** The Floor Is Lava: a dashed amber square where lava goes next. */
   private drawLavaNext(x: number, y: number) {
     const g = this.tileLayer;
     const inset = CELL * 0.12;

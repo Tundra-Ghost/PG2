@@ -933,7 +933,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your rook places a wall on an empty square next to it. Nothing can land on or cross the wall for 4 rounds. Uses your move.',
     prototypeRules:
-      'Select a rook, press Build wall, then tap an empty square next to it (any of the 8). A dirt wall stands there for 4 rounds: no piece can land on it or slide through it, and it blocks check like Gerald\'s statue. Knights still jump over it. Uses your move, then that rook waits 6 of your turns. At most 2 of your walls at a time. A wall is never placed where it would take away the last legal move of either King.',
+      'Select a rook, press Build wall, then tap an empty square next to it (any of the 8). A dirt wall stands there for 4 rounds: no piece can land on it or slide through it, and it blocks check like Gerald\'s statue. Knights still jump over it. Not on Lava or storm squares. Uses your move, then that rook waits 6 of your turns. At most 2 of your walls at a time. A wall is never placed where it would take away the last legal move of either King.',
     flavor: '"Viktor built a wall. It is made of dirt. It is the best wall he has ever built."',
   },
   {

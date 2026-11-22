@@ -85,7 +85,7 @@ export function positionKey(state: GameState): string {
   // 6. MOD-C018 walls and MOD-A009 flocks block squares, so they count too.
   const barriers = Array.from(state.tiles.entries())
     .filter(([, tile]) => tile.barrier)
-    .map(([sq]) => sq)
+    .map(([sq, tile]) => `${sq}${tile.barrier!.owner?.[0] ?? 'f'}${tile.barrier!.until}`)
     .sort();
   const barrierToken = barriers.length > 0 ? `|b${barriers.join('')}` : '';
 

@@ -69,6 +69,8 @@ export const ventTilesDef: ModifierDefinition = {
 
     const exit = oppositeSquare(vent);
     const occupant = state.pieces.get(exit);
+    // A void exit (a Dirt Hut wall, a flock, the statue) jams the vent.
+    if (state.tiles.get(exit)?.isVoid) return state;
 
     const ejected = cloneState(state);
     ejected.pieces.delete(vent);

@@ -58,7 +58,33 @@ describe('MOD-C018 Dirt Hut', () => {
     // 8 plies after it was built, at the owner's turn, the wall is gone.
     expect(state.turn).toBe('white');
     expect(state.tiles.get('d5')).toBeUndefined();
-    expect(state.eventHistory.at(-1)?.message).toContain('crumbles');
+    expect(state.eventHistory[state.eventHistory.length - 1]?.message).toContain('crumbles');
+  });
+
+  it('stays up while it shields the waiting King from check', () => {
+    let state = withHut([
+      makePiece('king', 'white', 'a1'),
+      makePiece('rook', 'white', 'd4'),
+      makePiece('rook', 'white', 'e1'),
+      makePiece('king', 'black', 'h7'),
+    ]);
+    state = chessEngine.applyMove(state, build('d4', 'e5'));
+    // Black walks its King behind the wall on the e-file.
+    const walk: [Square, Square, 'white' | 'black'][] = [
+      ['h7', 'g8', 'black'], ['a1', 'a2', 'white'], ['g8', 'f8', 'black'], ['a2', 'a1', 'white'],
+      ['f8', 'e8', 'black'], ['a1', 'a2', 'white'], ['e8', 'd8', 'black'],
+    ];
+    for (const [from, to, color] of walk.slice(0, 5)) state = chessEngine.applyMove(state, move(from, to, color));
+    state = chessEngine.applyMove(state, move('a1', 'a2', 'white'));
+    state = chessEngine.applyMove(state, move('e8', 'e7', 'black'));
+    // White's turn, 8 plies after the build: the wall would crumble, but it shields e7.
+    expect(state.turn).toBe('white');
+    expect(state.tiles.get('e5')?.barrier).toBeDefined();
+    expect(chessEngine.getLegalMoves(state, 'e1')).not.toContain('e7');
+    // Once Black steps off the file, it crumbles at White's next turn.
+    state = chessEngine.applyMove(state, move('a2', 'a1', 'white'));
+    state = chessEngine.applyMove(state, move('e7', 'd7', 'black'));
+    expect(state.tiles.get('e5')).toBeUndefined();
   });
 
   it('blocks a line of check', () => {

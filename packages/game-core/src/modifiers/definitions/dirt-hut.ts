@@ -3,6 +3,7 @@ import type { Color, GameState, Piece, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { canHoldBarrier, cutsOffAKing, getBarriers, liftExpiredBarriers, placeBarriers } from '../../engine/barriers';
 import { ALL_DIRECTIONS, offset } from '../../engine/push';
+import { getVisibleSquares } from '../../engine/visibility';
 import { MODIFIER_IDS } from '../ids';
 
 const ID = MODIFIER_IDS.dirtHut;
@@ -22,9 +23,11 @@ export function wallCount(state: GameState, color: Color): number {
 export function getWallTargets(state: GameState, rook: Piece): Square[] {
   if (wallCount(state, rook.color) >= MAX_WALLS) return [];
   const targets: Square[] = [];
+  // Under fog only squares the builder can see, so a target never gives a hidden piece away.
+  const visible = getVisibleSquares(state, rook.color);
   for (const [df, dr] of ALL_DIRECTIONS) {
     const sq = offset(rook.square, df, dr);
-    if (!sq || !canHoldBarrier(state, sq)) continue;
+    if (!sq || (visible && !visible.has(sq)) || !canHoldBarrier(state, sq)) continue;
     // Never take away the last legal move of either King.
     if (cutsOffAKing(state, [sq])) continue;
     targets.push(sq);
