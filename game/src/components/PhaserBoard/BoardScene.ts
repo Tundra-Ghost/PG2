@@ -224,6 +224,7 @@ export class BoardScene extends Phaser.Scene {
       if (view.blindSpot) this.drawBlindSpotEdges(index, x, y);
       if (view.smoke) this.drawSmoke(x, y);
       if (view.lavaNext) this.drawLavaNext(x, y);
+      if (view.wall) this.drawWall(x, y);
       if (view.confession) this.drawConfession(view.confession, cx, cy);
       if (view.mirrorEdge) this.drawMirrorEdge(view.mirrorEdge === 'right' ? x + CELL : x, y);
       // Drawn over the fog: both players always see the eye.
@@ -524,6 +525,20 @@ export class BoardScene extends Phaser.Scene {
   }
 
   /** The Floor Is Lava: a dashed amber square where lava goes next. */
+  /** Dirt Hut: a block of packed dirt with a grassy top. */
+  private drawWall(x: number, y: number) {
+    const g = this.tileLayer;
+    const inset = CELL * 0.1;
+    const size = CELL - inset * 2;
+    g.fillStyle(0x6b4423, 1).fillRect(x + inset, y + inset, size, size);
+    g.fillStyle(0x5c9a3a, 1).fillRect(x + inset, y + inset, size, size * 0.22);
+    g.fillStyle(0x4a2e16, 1);
+    for (const [px, py] of [[0.3, 0.5], [0.65, 0.42], [0.45, 0.72], [0.75, 0.75], [0.22, 0.8]] as const) {
+      g.fillRect(x + CELL * px - 3, y + CELL * py - 3, 6, 6);
+    }
+    g.lineStyle(3, 0x2e1c0c, 1).strokeRect(x + inset, y + inset, size, size);
+  }
+
   private drawLavaNext(x: number, y: number) {
     const g = this.tileLayer;
     const inset = CELL * 0.12;

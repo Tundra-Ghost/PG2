@@ -69,7 +69,8 @@ export function slideAll(
     const r = Number(piece.square[1]) - 1;
     const to = square(f + df, r + dr);
     // MOD-A016: Gerald's statue is solid. It stops a slide, it is no hole.
-    if (to !== null && next.tiles.get(to)?.statue) continue;
+    // Dirt Hut walls and flocks (engine/barriers.ts) are solid in the same way.
+    if (to !== null && (next.tiles.get(to)?.statue || next.tiles.get(to)?.barrier)) continue;
     const off = to === null || next.tiles.get(to)?.isVoid === true;
     if (off) {
       if (piece.type === 'king') continue;
