@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { GameEvent } from '@pigeon-chess/game-core';
-import { getModifierEventBannerMessage, pickBannerEvent } from './matchFeed';
+import { formatEventMessage, getModifierEventBannerMessage, pickBannerEvent } from './matchFeed';
 
 function event(id: string, modifierId: string): GameEvent {
   return { id, ply: 1, type: 'modifier', modifierId, title: id, message: id };
@@ -26,6 +26,24 @@ describe('banner event choice', () => {
 describe('banner message', () => {
   it('names the players instead of white and black', () => {
     const event = { id: 'e1', ply: 4, type: 'modifier', title: 'Smoke', message: 'The black side sees through it.' } as GameEvent;
-    expect(getModifierEventBannerMessage(event, 'Player', 'Chick')).toBe("Smoke: The Chick's side sees through it.");
+    expect(getModifierEventBannerMessage(event, 'Player', 'Chick')).toBe("Smoke: Chick's side sees through it.");
+  });
+});
+
+describe('event message labels (#178)', () => {
+  it('drops "the" before a side name', () => {
+    expect(formatEventMessage('A seagull carries the white pawn from g5 back to g4.', 'Ann', 'Bo'))
+      .toBe("A seagull carries Ann's pawn from g5 back to g4.");
+    expect(formatEventMessage('The black pawn on e2 guards the bishop on f1.', 'Ann', 'Bo'))
+      .toBe("Bo's pawn on e2 guards the bishop on f1.");
+  });
+
+  it('keeps a capitalised side name as the subject', () => {
+    expect(formatEventMessage('White shoos Gerald away.', 'Ann', 'Bo')).toBe('Ann shoos Gerald away.');
+    expect(formatEventMessage('Black must move a pawn.', 'Ann', 'Bo')).toBe('Bo must move a pawn.');
+  });
+
+  it('keeps plain side names', () => {
+    expect(formatEventMessage('Check on white. Then black.', 'Ann', 'Bo')).toBe('Check on Ann. Then Bo.');
   });
 });
