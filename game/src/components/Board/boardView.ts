@@ -1,5 +1,5 @@
 import type { Color, GameState, Piece, PieceType, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getBlindSpot, getConfession, getLavaPreview, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
+import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -59,6 +59,8 @@ export interface SquareView {
   confession?: 'piece' | 'target';
   /** The Floor Is Lava: lava moves here at the next rotation. */
   lavaNext?: boolean;
+  /** Death And Taxes: the tax office takes this pawn after this move. */
+  taxed?: boolean;
   /** The Birds: a flock sits here, or lands here next round. */
   flock?: 'warning' | 'active';
   /** Dirt Hut: a wall built by this side stands here. */
@@ -107,6 +109,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const eye = getSurveillanceSquare(state);
   const smoke = getSmokeSquares(state);
   const lavaNext = new Set(getLavaPreview(state));
+  const taxed = getTaxDayPawn(state);
   const ownSus = viewer ? getSusPiece(state, viewer) : null;
   const confession = getConfession(state);
   const mirrorEdge = isBandersnatchActive(state) ? (orientation === 'white' ? 'right' : 'left') : null;
@@ -155,6 +158,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(eye === square ? { surveillance: true } : {}),
         ...(smoke.has(square) ? { smoke: smoke.get(square) } : {}),
         ...(lavaNext.has(square) ? { lavaNext: true } : {}),
+        ...(!hidden && taxed === square ? { taxed: true } : {}),
         ...(ownSus && real?.id === ownSus.pieceId ? { susAs: ownSus.shownAs } : {}),
         ...(mirrorEdge && file === 'd' ? { mirrorEdge } : {}),
         ...(confession?.square === square ? { confession: 'piece' as const } : confession?.declared === square ? { confession: 'target' as const } : {}),
