@@ -1,9 +1,11 @@
 import type { ModifierDefinition } from '../types';
 import type { Color, GameState, Move, PieceType, Square } from '../../engine/types';
-import { appendGameEvent, cloneState } from '../../engine/gameLoop';
+import { appendGameEvent, applyMoveInternal, cloneState } from '../../engine/gameLoop';
+import { isInCheck } from '../../engine/moveGenerator';
 import { validateMove } from '../../engine/moveValidator';
 import { MODIFIER_IDS } from '../ids';
 import { affectsColor } from '../owner';
+import { getShownType } from './sus';
 
 const ID = MODIFIER_IDS.blessYou;
 const FILES = 'abcdefgh';
@@ -17,7 +19,7 @@ interface BlessState {
   count?: Partial<Record<Color, number>>;
   /** Set on the move being made: the slider's id, and where it meant to go if it sneezed. */
   mover?: string;
-  sneezed?: { from: Square; meant: Square; stopped: Square };
+  sneezed?: { from: Square; meant: Square; stopped: Square; shownAs: PieceType };
 }
 
 function read(state: GameState): BlessState {
@@ -70,7 +72,8 @@ export const blessYouDef: ModifierDefinition = {
   draftScope: 'owned',
 
   onPreMoveApply(state, move) {
-    if (checkingStop) return { state, move };
+    // Abilities never count, including a move Forgive Me turned into a declaration.
+    if (checkingStop || move.ability) return { state, move };
     const piece = state.pieces.get(move.from);
     if (!piece || !SLIDERS.includes(piece.type) || piece.color !== move.playerColor) return { state, move };
     if (!affectsColor(state, ID, piece.color)) return { state, move };
@@ -79,13 +82,18 @@ export const blessYouDef: ModifierDefinition = {
     let played: Move = move;
     if (sneezeIn(state, piece.color) === 1) {
       const stopped = oneShort(move.from, move.to);
-      if (stopped) {
+      // Only a move that is legal in full may sneeze: a stop short must never
+      // turn an illegal move (one that ignores check) into a legal one.
+      const fullIsSafe = stopped !== null && !isInCheck(applyMoveInternal(cloneState(state), move), piece.color);
+      if (stopped && fullIsSafe) {
         const short: Move = { ...move, to: stopped };
         // A stop that is not allowed (it leaves the King in check, or another card
         // forbids that square, such as Tide's water) lets the move happen in full.
         if (canStop(state, short)) {
           played = short;
-          next = { ...next, sneezed: { from: move.from, meant: move.to, stopped } };
+          // Sus: named as the opponent sees it. Saved now: a portal or vent may move it on before onPostMove.
+          const shownAs = getShownType(state, piece, piece.color === 'white' ? 'black' : 'white');
+          next = { ...next, sneezed: { from: move.from, meant: move.to, stopped, shownAs } };
         }
       }
     }
@@ -100,13 +108,12 @@ export const blessYouDef: ModifierDefinition = {
     let next = cloneState(state);
     next.modifierState = { ...next.modifierState, [ID]: { count } satisfies BlessState };
     if (mine.sneezed) {
-      const piece = next.pieces.get(mine.sneezed.stopped);
       next = appendGameEvent(next, {
         ply: state.moveHistory.length + 1,
         type: 'modifier',
         modifierId: ID,
         title: 'ACHOO',
-        message: `${color === 'white' ? 'White' : 'Black'}'s ${piece?.type ?? 'piece'} sneezes and stops on ${mine.sneezed.stopped}, one square short of ${mine.sneezed.meant}.`,
+        message: `${color === 'white' ? 'White' : 'Black'}'s ${mine.sneezed.shownAs} sneezes and stops on ${mine.sneezed.stopped}, one square short of ${mine.sneezed.meant}.`,
         squares: [mine.sneezed.stopped, mine.sneezed.meant],
       });
     }

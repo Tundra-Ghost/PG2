@@ -5,6 +5,7 @@ import './index';
 import { MODIFIER_IDS } from './ids';
 import { SNEEZE_EVERY, sneezeIn } from './definitions/bless-you';
 import { makeEmptyState, makePiece, move } from './testHelpers';
+import { modifierRegistry } from './registry';
 
 const BLESS = MODIFIER_IDS.blessYou;
 
@@ -92,5 +93,21 @@ describe('MOD-B012 Bless You', () => {
     state = play(state, 'a1', 'a6', 'white');
     expect(state.pieces.get('a6')).toMatchObject({ type: 'rook' });
     expect(sneezeIn(state, 'white')).toBe(SNEEZE_EVERY);
+  });
+
+  it('ability moves never count or sneeze (Forgive Me declarations)', () => {
+    const state = withBless(BASE());
+    const primed = { ...state, modifierState: { ...state.modifierState, [BLESS]: { count: { white: SNEEZE_EVERY - 1 } } } };
+    const declared = move('c1', 'f4', 'white', { ability: MODIFIER_IDS.forgiveMe });
+    const result = modifierRegistry.get(BLESS)!.onPreMoveApply!(primed, declared);
+    expect(result.move.to).toBe('f4');
+    expect(result.state).toBe(primed);
+  });
+
+  it('a sneeze never makes a move that ignores check legal', () => {
+    // Rook e8 checks the King on e1. Bb2-f6 does not block; its stop short on e5 would.
+    let state = withBless([makePiece('king', 'white', 'e1'), makePiece('bishop', 'white', 'b2'), makePiece('rook', 'black', 'e8'), makePiece('king', 'black', 'a8'), makePiece('pawn', 'black', 'a7')]);
+    state = { ...state, modifierState: { ...state.modifierState, [BLESS]: { count: { white: SNEEZE_EVERY - 1 } } } };
+    expect(chessEngine.validateMove(state, move('b2', 'f6', 'white')).valid).toBe(false);
   });
 });

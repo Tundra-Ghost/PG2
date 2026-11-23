@@ -160,7 +160,8 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(tile?.portal ? { portal: tile.portal } : {}),
         ...(tile?.tide ? { tide: tile.tide } : {}),
         ...(tile?.cropCircle ? { cropCircle: tile.cropCircle } : {}),
-        // Bless You: counted on the pieces as the viewer sees them (Sus), so a disguise is never given away.
+        // Bless You: badges go on the pieces as the viewer sees them (Sus). The count itself follows real
+        // moves, which Sus already says can show a disguise through how the piece moves.
         ...(piece && ['rook', 'bishop', 'queen'].includes(piece.type) && sneezes[piece.color] != null ? { sneezeIn: sneezes[piece.color]! } : {}),
         isClosed: tile?.isClosed === true,
         storm,
