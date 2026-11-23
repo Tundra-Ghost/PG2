@@ -1,0 +1,9 @@
+{"calib":0,"w":53,"l":54,"d":13}
+{"calib":5,"w":44,"l":44,"d":32}
+{"id":"MOD-B001","name":"YOU DIED (But A Piece Did)","cost":-3,"costAware":false,"w":0,"l":40,"d":0,"skipped":0,"capped":0}
+{"id":"MOD-B001","name":"YOU DIED (But A Piece Did)","cost":-3,"costAware":true,"w":1,"l":37,"d":2,"skipped":0,"capped":1}
+{"id":"MOD-B005","name":"50 First Moves","cost":-2,"costAware":false,"w":16,"l":18,"d":6,"skipped":0,"capped":4}
+{"id":"MOD-B005","name":"50 First Moves","cost":-2,"costAware":true,"w":10,"l":17,"d":13,"skipped":0,"capped":12}
+{"id":"MOD-B010","name":"Main Character Syndrome","cost":-1,"costAware":false,"w":16,"l":14,"d":10,"skipped":0,"capped":8}
+{"id":"MOD-B010","name":"Main Character Syndrome","cost":-1,"costAware":true,"w":14,"l":18,"d":8,"skipped":0,"capped":7}
+{"id":"MOD-B015","name":"Commitment Issues","cost":-1,"costAware":false,"w":16,"l":18,"d":6,"skipped":0,"capped":4}

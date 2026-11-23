@@ -1,0 +1,10 @@
+{"calib":2,"w":61,"l":31,"d":28}
+{"id":"MOD-B003","name":"No, I Don't Think I Will","cost":-1,"costAware":false,"w":16,"l":18,"d":6,"skipped":0,"capped":4}
+{"id":"MOD-B003","name":"No, I Don't Think I Will","cost":-1,"costAware":true,"w":14,"l":14,"d":12,"skipped":0,"capped":4}
+{"id":"MOD-B007","name":"Conscientious Objector","cost":-1,"costAware":false,"w":11,"l":18,"d":11,"skipped":0,"capped":7}
+{"id":"MOD-B007","name":"Conscientious Objector","cost":-1,"costAware":true,"w":13,"l":20,"d":7,"skipped":0,"capped":3}
+{"id":"MOD-B013","name":"Death And Taxes","cost":-3,"costAware":false,"w":17,"l":16,"d":7,"skipped":0,"capped":5}
+{"id":"MOD-B013","name":"Death And Taxes","cost":-3,"costAware":true,"w":15,"l":15,"d":10,"skipped":0,"capped":8}
+{"id":"MOD-B017","name":"MINE!","cost":-2,"costAware":false,"w":18,"l":17,"d":5,"skipped":0,"capped":4}
+{"id":"MOD-B017","name":"MINE!","cost":-2,"costAware":true,"w":17,"l":15,"d":8,"skipped":0,"capped":8}
+{"id":"MOD-C002","name":"Forgive Me, For I Have Moved","cost":3,"costAware":false,"w":14,"l":18,"d":8,"skipped":0,"capped":5}
