@@ -426,6 +426,16 @@ export class BoardScene extends Phaser.Scene {
           .setOrigin(0.5).setDepth(DEPTH.tileIcons),
       );
     }
+    if (view.sneezeIn !== undefined) {
+      // Bless You: moves left before a sneeze, top-left (the top-right is for other badges). Red when it is the next one.
+      this.labels.push(
+        this.add.text(x + 5, y + 3, String(view.sneezeIn), {
+          fontFamily: MONO, fontSize: '13px', fontStyle: 'bold',
+          color: '#ffffff', backgroundColor: view.sneezeIn === 1 ? 'rgba(170,24,20,0.95)' : 'rgba(20,33,61,0.85)',
+          padding: { x: 3, y: 1 },
+        }).setOrigin(0, 0).setDepth(DEPTH.badges),
+      );
+    }
     if (view.infectedReach !== undefined) {
       this.labels.push(
         this.add.text(x + CELL - 5, y + 3, String(view.infectedReach), {

@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 75 built, 25 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 76 built, 24 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -18,6 +18,7 @@
 **Batch 9 (2026-11-22)**
 - Match conflicts: some shared cards use the same squares, so only one of each pair may be in a match, whoever drafts it. The draft hides the second card and says why.
 - Thinking With Portals built. Conflicts: Vent Tiles, The Birds.
+- Bless You built.
 - Crop Circles built. Conflicts: This Is My Swamp, The Magic Roundabout, The Birds, Tide Goes In.
 - Tide Goes In, Tide Goes Out built. Conflicts: This Is My Swamp, The Magic Roundabout, Thinking With Portals, The Birds.
 
@@ -484,7 +485,7 @@ For your first 6 moves, none of your pieces may move more than 2 squares.
 - Interaction: Main Character Syndrome and Peer Pressure. Mondays is checked first, so a Queen demand asks for a short Queen move. Pawn captures are always 1 square.
 
 ### MOD-B012 · Bless You
-*Ref: Sneezing, universally* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Design**
+*Ref: Sneezing, universally* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
 
 Every 8th move you make with a rook, bishop or queen, the piece sneezes and stops one square short. A counter on the piece shows when the next sneeze is due.
 
@@ -492,6 +493,7 @@ Every 8th move you make with a rook, bishop or queen, the piece sneezes and stop
 
 - Ruling: if stopping short is illegal (it leaves your King in check), the move happens in full.
 - Ruling: a one-square slide cannot sneeze. It does not have room.
+- Built: rook, bishop and queen moves are counted together per side; abilities do not count. A sneeze that cannot happen (a one-square move, an Amazon's knight move, or a stop that would leave your King in check) is spent, not saved. A sneezing capture stops short, so it captures nothing. The counter shows on every one of your rooks, bishops and queens, turning red when the next move sneezes.
 
 ### MOD-B013 · Death And Taxes
 *Ref: Benjamin Franklin* · **Tier S** · Cost -3 · Curse 3 · Scope: Owner · Modes: All · **Built**
@@ -1408,7 +1410,7 @@ Values the game uses today. "Built" cards match the build.
 | B009 | Speedrun Any% | B | A | -2 | 2 | Owner | Design |
 | B010 | Main Character Syndrome | B | B | -1 | 1 | Owner | Built |
 | B011 | Case Of The Mondays | B | B | -1 | 1 | Owner | Built |
-| B012 | Bless You | B | B | -1 | 1 | Owner | Design |
+| B012 | Bless You | B | B | -1 | 1 | Owner | Built |
 | B013 | Death And Taxes | B | S | -3 | 3 | Owner | Built |
 | B014 | Imposter Syndrome | B | B | -1 | 1 | Owner | Built |
 | B015 | Commitment Issues | B | B | -1 | 1 | Owner | Built |
@@ -1454,7 +1456,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-75 of 100 built. The other 25 are designs (v0.4).
+76 of 100 built. The other 24 are designs (v0.4).
 
 ### Balance test plan
 

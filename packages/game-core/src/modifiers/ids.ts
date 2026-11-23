@@ -74,6 +74,7 @@ export const MODIFIER_IDS = {
   thinkingWithPortals: 'MOD-A011',
   tideGoesIn: 'MOD-A017',
   cropCircles: 'MOD-A019',
+  blessYou: 'MOD-B012',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];
