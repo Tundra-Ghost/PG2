@@ -7,3 +7,13 @@
 {"id":"MOD-B010","name":"Main Character Syndrome","cost":-1,"costAware":false,"w":16,"l":14,"d":10,"skipped":0,"capped":8}
 {"id":"MOD-B010","name":"Main Character Syndrome","cost":-1,"costAware":true,"w":14,"l":18,"d":8,"skipped":0,"capped":7}
 {"id":"MOD-B015","name":"Commitment Issues","cost":-1,"costAware":false,"w":16,"l":18,"d":6,"skipped":0,"capped":4}
+{"id":"MOD-B015","name":"Commitment Issues","cost":-1,"costAware":true,"w":14,"l":14,"d":12,"skipped":0,"capped":4}
+{"id":"MOD-B020","name":"Roll For Initiative","cost":-3,"costAware":false,"w":2,"l":32,"d":6,"skipped":0,"capped":5}
+{"id":"MOD-B020","name":"Roll For Initiative","cost":-3,"costAware":true,"w":3,"l":34,"d":3,"skipped":0,"capped":2}
+{"id":"MOD-C004","name":"Retaliatory Swipe","cost":2,"costAware":false,"w":20,"l":14,"d":6,"skipped":0,"capped":5}
+{"id":"MOD-C004","name":"Retaliatory Swipe","cost":2,"costAware":true,"w":19,"l":10,"d":11,"skipped":0,"capped":9}
+{"id":"MOD-C008","name":"I've Been Waiting For This","cost":2,"costAware":false,"w":16,"l":18,"d":6,"skipped":0,"capped":4}
+{"id":"MOD-C008","name":"I've Been Waiting For This","cost":2,"costAware":true,"w":16,"l":12,"d":12,"skipped":0,"capped":7}
+{"id":"MOD-C012","name":"Freaky Friday","cost":2,"costAware":false,"w":15,"l":20,"d":5,"skipped":0,"capped":4}
+{"id":"MOD-C012","name":"Freaky Friday","cost":2,"costAware":true,"w":21,"l":11,"d":8,"skipped":0,"capped":4}
+{"id":"MOD-C018","name":"Dirt Hut","cost":3,"costAware":false,"w":17,"l":17,"d":6,"skipped":0,"capped":4}
