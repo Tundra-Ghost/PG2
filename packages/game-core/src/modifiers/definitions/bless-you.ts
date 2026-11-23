@@ -1,7 +1,7 @@
 import type { ModifierDefinition } from '../types';
 import type { Color, GameState, Move, PieceType, Square } from '../../engine/types';
-import { appendGameEvent, applyMoveInternal, cloneState } from '../../engine/gameLoop';
-import { isInCheck } from '../../engine/moveGenerator';
+import { appendGameEvent, cloneState } from '../../engine/gameLoop';
+import { validateMove } from '../../engine/moveValidator';
 import { MODIFIER_IDS } from '../ids';
 import { affectsColor } from '../owner';
 
@@ -31,6 +31,19 @@ export function sneezeIn(state: GameState, color: Color): number | null {
   return SNEEZE_EVERY - (made % SNEEZE_EVERY);
 }
 
+/** True while the short stop is being checked, so that check never sneezes again. */
+let checkingStop = false;
+
+/** True if the short stop is a legal move in its own right: every card's rules and no self-check. */
+function canStop(state: GameState, short: Move): boolean {
+  checkingStop = true;
+  try {
+    return validateMove(state, short).valid;
+  } finally {
+    checkingStop = false;
+  }
+}
+
 /** The square one step back along a straight line, or null for a one-square or non-line move. */
 function oneShort(from: Square, to: Square): Square | null {
   const df = FILES.indexOf(to[0]) - FILES.indexOf(from[0]);
@@ -57,6 +70,7 @@ export const blessYouDef: ModifierDefinition = {
   draftScope: 'owned',
 
   onPreMoveApply(state, move) {
+    if (checkingStop) return { state, move };
     const piece = state.pieces.get(move.from);
     if (!piece || !SLIDERS.includes(piece.type) || piece.color !== move.playerColor) return { state, move };
     if (!affectsColor(state, ID, piece.color)) return { state, move };
@@ -67,8 +81,9 @@ export const blessYouDef: ModifierDefinition = {
       const stopped = oneShort(move.from, move.to);
       if (stopped) {
         const short: Move = { ...move, to: stopped };
-        // Stopping short may never leave its own King in check; then the move happens in full.
-        if (!isInCheck(applyMoveInternal(cloneState(state), short), piece.color)) {
+        // A stop that is not allowed (it leaves the King in check, or another card
+        // forbids that square, such as Tide's water) lets the move happen in full.
+        if (canStop(state, short)) {
           played = short;
           next = { ...next, sneezed: { from: move.from, meant: move.to, stopped } };
         }

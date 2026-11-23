@@ -493,7 +493,7 @@ Every 8th move you make with a rook, bishop or queen, the piece sneezes and stop
 
 - Ruling: if stopping short is illegal (it leaves your King in check), the move happens in full.
 - Ruling: a one-square slide cannot sneeze. It does not have room.
-- Built: rook, bishop and queen moves are counted together per side; abilities do not count. A sneeze that cannot happen (a one-square move, an Amazon's knight move, or a stop that would leave your King in check) is spent, not saved. A sneezing capture stops short, so it captures nothing. The counter shows on every one of your rooks, bishops and queens, turning red when the next move sneezes.
+- Built: rook, bishop and queen moves are counted together per side; abilities do not count. A sneeze that cannot happen (a one-square move, an Amazon's knight move, or a stop that is not allowed, such as one that leaves your King in check or lands on Tide water) is spent, not saved. A sneezing capture stops short, so it captures nothing. The counter shows on every one of your rooks, bishops and queens, turning red when the next move sneezes.
 
 ### MOD-B013 · Death And Taxes
 *Ref: Benjamin Franklin* · **Tier S** · Cost -3 · Curse 3 · Scope: Owner · Modes: All · **Built**

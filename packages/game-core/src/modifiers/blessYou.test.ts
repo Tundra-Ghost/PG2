@@ -82,4 +82,15 @@ describe('MOD-B012 Bless You', () => {
     state = play(state, 'd5', 'd6', 'white');
     expect(state.pieces.get('d6')).toMatchObject({ type: 'queen' });
   });
+
+  it('never sneezes onto a square another card forbids: Tide water (interaction)', () => {
+    // Ra1-a6 would stop short on a5, which is water while the tide is in.
+    let state = withBless([makePiece('king', 'white', 'e1'), makePiece('rook', 'white', 'a1'), makePiece('king', 'black', 'h8'), makePiece('pawn', 'black', 'h7')], [{ id: MODIFIER_IDS.tideGoesIn, sourceColor: null }]);
+    const tiles = new Map(state.tiles);
+    for (const f of 'abcdefgh') for (const r of ['4', '5']) tiles.set(`${f}${r}` as Square, { square: `${f}${r}` as Square, effects: [], tide: 'active' });
+    state = { ...state, tiles, modifierState: { ...state.modifierState, [BLESS]: { count: { white: SNEEZE_EVERY - 1 } } } };
+    state = play(state, 'a1', 'a6', 'white');
+    expect(state.pieces.get('a6')).toMatchObject({ type: 'rook' });
+    expect(sneezeIn(state, 'white')).toBe(SNEEZE_EVERY);
+  });
 });
