@@ -223,6 +223,7 @@ export class BoardScene extends Phaser.Scene {
       }
       if (view.blindSpot) this.drawBlindSpotEdges(index, x, y);
       if (view.smoke) this.drawSmoke(x, y);
+      if (view.tide) this.drawTide(view.tide, x, y);
       if (view.portal) this.drawPortal(view.portal, cx, cy);
       if (view.lavaNext) this.drawLavaNext(x, y);
       if (view.taxed) this.drawTaxed(x, y);
@@ -586,6 +587,22 @@ export class BoardScene extends Phaser.Scene {
     side(r, t, r, b);
     side(r, b, l, b);
     side(l, b, l, t);
+  }
+
+  /** Tide Goes In: blue water with wave lines, or just the wave lines as a warning. */
+  private drawTide(kind: 'warning' | 'active', x: number, y: number) {
+    const g = this.tileLayer;
+    if (kind === 'active') g.fillStyle(0x1a5fb4, 0.38).fillRect(x, y, CELL, CELL);
+    g.lineStyle(3, 0x0c3a78, kind === 'active' ? 0.9 : 0.75);
+    for (const row of [0.35, 0.65]) {
+      const wy = y + CELL * row;
+      g.beginPath();
+      g.moveTo(x + CELL * 0.15, wy);
+      for (let i = 1; i <= 4; i++) {
+        g.lineTo(x + CELL * (0.15 + i * 0.175), wy + (i % 2 === 0 ? 0 : -CELL * 0.06));
+      }
+      g.strokePath();
+    }
   }
 
   /** Thinking With Portals: a glowing oval ring, blue or orange, under the piece. */

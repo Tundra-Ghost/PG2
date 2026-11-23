@@ -65,6 +65,8 @@ export interface SquareView {
   flock?: 'warning' | 'active';
   /** Thinking With Portals: a portal sits here. */
   portal?: 'blue' | 'orange';
+  /** Tide Goes In: water here now, or next round. */
+  tide?: 'warning' | 'active';
   /** Dirt Hut: a wall built by this side stands here. */
   wall?: 'white' | 'black';
   /** Bandersnatch Protocol: the mirror axis runs along this edge of a d-file square. */
@@ -151,6 +153,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(tile?.barrier?.kind === 'flock' ? { flock: 'active' as const } : tile?.flockWarning ? { flock: 'warning' as const } : {}),
         ...(tile?.statue ? { statue: true } : {}),
         ...(tile?.portal ? { portal: tile.portal } : {}),
+        ...(tile?.tide ? { tide: tile.tide } : {}),
         isClosed: tile?.isClosed === true,
         storm,
         quietZone: quietZones.get(square),

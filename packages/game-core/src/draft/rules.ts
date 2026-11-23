@@ -61,10 +61,16 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
  * Shared cards whose squares overlap, so only one may be in a match, whoever
  * drafts it. Checked against both drafts.
  * Thinking With Portals sits on c4 and f5: a Vent Tile or a flock could land on a portal.
+ * Tide Goes In floods ranks 4 and 5: the Swamp, the roundabout, the portals and
+ * flocks would sit in the water.
  */
 const MATCH_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.thinkingWithPortals, MODIFIER_IDS.ventTiles],
   [MODIFIER_IDS.thinkingWithPortals, MODIFIER_IDS.theBirds],
+  [MODIFIER_IDS.tideGoesIn, MODIFIER_IDS.thisIsMySwamp],
+  [MODIFIER_IDS.tideGoesIn, MODIFIER_IDS.theBirds],
+  [MODIFIER_IDS.tideGoesIn, MODIFIER_IDS.thinkingWithPortals],
+  [MODIFIER_IDS.tideGoesIn, 'MOD-A013'], // The Magic Roundabout
 ];
 
 /** The card in either draft that rules this one out of the match, if any. */
