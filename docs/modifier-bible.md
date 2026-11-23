@@ -279,7 +279,7 @@ A statue of Gerald stands on e4. Nothing can land on it or pass through it. A pi
 ### MOD-A017 · Tide Goes In, Tide Goes Out
 *Ref: "You can't explain that" meme* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
-Every 8 rounds the tide comes in and ranks 4 and 5 become water for 4 rounds. Pieces may cross water but only knights may stop on it. A piece already on water when the tide arrives may only move off it. A warning shows the round before.
+Every 8 rounds the tide comes in and ranks 4 and 5 become water for 4 rounds. Pieces may cross water but only knights and Kings may stop on it. A piece already on water when the tide arrives may only move off it. A warning shows the round before.
 
 *The tide came in. The tide went out. Viktor cannot explain that.*
 

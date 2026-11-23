@@ -81,8 +81,14 @@ describe('MOD-A017 Tide Goes In, Tide Goes Out', () => {
     expect(isFlooded(state)).toBe(true);
     expect(state.pieces.get('d4')?.type).toBe('king');
     expect(chessEngine.validateMove(state, move('d4', 'e5', 'white')).valid).toBe(true);
-    // The rook on a8 still checks along the a-file and rank 8; d5 stays safe, a5 does not.
+    // It may step from water to water.
     expect(chessEngine.validateMove(state, move('d4', 'd5', 'white')).valid).toBe(true);
+    // The a8 rook still checks along the a-file across the water: a King on b4 may not step to a4.
+    const onB4 = { ...state, pieces: new Map(state.pieces) };
+    const king = onB4.pieces.get('d4')!;
+    onB4.pieces.delete('d4');
+    onB4.pieces.set('b4', { ...king, square: 'b4' });
+    expect(chessEngine.validateMove(onB4, move('b4', 'a4', 'white')).valid).toBe(false);
   });
 
   it('shares ranks 4 and 5 with This Is My Swamp and The Birds: one per match (interaction)', () => {
@@ -91,5 +97,6 @@ describe('MOD-A017 Tide Goes In, Tide Goes Out', () => {
     expect(ids).not.toContain(MODIFIER_IDS.thisIsMySwamp);
     expect(ids).not.toContain(MODIFIER_IDS.theBirds);
     expect(ids).not.toContain(MODIFIER_IDS.thinkingWithPortals);
+    expect(getValidOptions([], [TIDE_ID], new Set([...built, 'MOD-A013'])).map(c => c.id)).not.toContain('MOD-A013');
   });
 });

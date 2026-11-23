@@ -305,7 +305,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     tier: 'A',
     scope: 'shared',
     description:
-      'Every 8 rounds the tide comes in and ranks 4 and 5 become water for 4 rounds. Pieces may cross water but only knights may stop on it. A piece already on water when the tide arrives may only move off it. A warning shows the round before.',
+      'Every 8 rounds the tide comes in and ranks 4 and 5 become water for 4 rounds. Pieces may cross water but only knights and Kings may stop on it. A piece already on water when the tide arrives may only move off it. A warning shows the round before.',
     prototypeRules:
       'Ranks 4 and 5 are water on rounds 9 to 12, 17 to 20, and so on (8 rounds apart, 4 rounds each), marked one round ahead. While flooded, only knights and Kings may end a move on water; any other piece may cross it, and a piece caught on it must move off it (a pawn whose every step lands on water waits). Water is not a wall: lines of check cross it. Abilities that act from a distance are not affected.',
     flavor: '"The tide came in. The tide went out. Viktor cannot explain that."',

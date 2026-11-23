@@ -54,7 +54,7 @@ export const MODIFIER_SUMMARIES: Record<string, string> = {
   'MOD-A014': 'Hidden mines destroy pieces, but numbered squares reveal where they are.',
   'MOD-A015': 'A robot vacuum circles the board edge and pushes pieces inward.',
   'MOD-A016': 'A pushable statue of Gerald blocks the centre of the board.',
-  'MOD-A017': 'Every 8 rounds the middle ranks flood and only knights can stop there.',
+  'MOD-A017': 'Every 8 rounds the middle ranks flood; only knights and Kings stop there.',
   'MOD-A018': 'Earthquakes shove every piece one square, with arrows shown a round ahead.',
   'MOD-A019': 'Temporary crop circles protect the pieces standing inside them.',
   'MOD-A020': 'Two files become one-way streets for pieces moving along them.',
