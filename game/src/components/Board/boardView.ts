@@ -1,5 +1,5 @@
 import type { Color, GameState, Piece, PieceType, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
+import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -67,6 +67,8 @@ export interface SquareView {
   portal?: 'blue' | 'orange';
   /** Tide Goes In: water here now, or next round. */
   tide?: 'warning' | 'active';
+  /** Bless You: this slider's side sneezes after this many more rook, bishop or queen moves (1 = the next one). */
+  sneezeIn?: number;
   /** Crop Circles: a circle here now, or next round. */
   cropCircle?: 'warning' | 'active';
   /** Dirt Hut: a wall built by this side stands here. */
@@ -116,6 +118,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const smoke = getSmokeSquares(state);
   const lavaNext = new Set(getLavaPreview(state));
   const taxed = getTaxDayPawn(state);
+  const sneezes = { white: sneezeIn(state, 'white'), black: sneezeIn(state, 'black') };
   const ownSus = viewer ? getSusPiece(state, viewer) : null;
   const confession = getConfession(state);
   const mirrorEdge = isBandersnatchActive(state) ? (orientation === 'white' ? 'right' : 'left') : null;
@@ -157,6 +160,9 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(tile?.portal ? { portal: tile.portal } : {}),
         ...(tile?.tide ? { tide: tile.tide } : {}),
         ...(tile?.cropCircle ? { cropCircle: tile.cropCircle } : {}),
+        // Bless You: badges go on the pieces as the viewer sees them (Sus). The count itself follows real
+        // moves, which Sus already says can show a disguise through how the piece moves.
+        ...(piece && ['rook', 'bishop', 'queen'].includes(piece.type) && sneezes[piece.color] != null ? { sneezeIn: sneezes[piece.color]! } : {}),
         isClosed: tile?.isClosed === true,
         storm,
         quietZone: quietZones.get(square),

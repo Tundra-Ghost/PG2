@@ -538,6 +538,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'owned',
     description:
       'Every 8th move you make with a rook, bishop or queen, the piece sneezes and stops one square short. A counter on the piece shows when the next sneeze is due.',
+    prototypeRules:
+      'Your rook, bishop and queen moves are counted together. On the 8th, 16th, ... such move, a move of two or more squares along a line stops one square short, so it never captures. A one-square move, a knight-style Amazon move, or a stop that is not allowed (it would leave your King in check, or another card forbids that square) plays in full, and that sneeze is spent. Abilities do not count. Your rooks, bishops and queens show how many of these moves are left before the next sneeze.',
     flavor: '"The bishop sneezed. The bishop is very sorry. The bishop is one square short of where it meant to be."',
   },
   {
