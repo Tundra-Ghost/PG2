@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { chessEngine } from '../engine/ChessEngine';
+import { getPigeonBotMove } from '../engine/bot';
 import type { GameState, Square } from '../engine/types';
 import './index';
 import { MODIFIER_IDS } from './ids';
@@ -63,5 +64,32 @@ describe('MOD-B001 YOU DIED (But A Piece Did)', () => {
       expect(next.moveHistory).toHaveLength(2);
       expect(chessEngine.isInCheck(next, 'white')).toBe(false);
     }
+  });
+
+  // Issue #187: the depth-2 balance run had this card at 0-40. Pin what a full
+  // bot game does, so a wrong-side or every-move takeover would show up here.
+  it.each(['white', 'black'] as const)('in a full bot game it moves only for %s, on every 7th own turn', owner => {
+    let state = chessEngine.activateDraftModifiers(
+      { ...chessEngine.getInitialState(), prngSeed: 3, prngState: 3 },
+      [{ id: YOU_DIED, sourceColor: owner }],
+    );
+    state = chessEngine.beginTurn(state);
+    const botPlies = new Set<number>();
+    while (state.status === 'active' && state.moveHistory.length < 60) {
+      const bot = getPigeonBotMove(state, state.turn, { depth: 1, timeBudgetMs: Infinity });
+      if (!bot) break;
+      botPlies.add(state.moveHistory.length);
+      state = chessEngine.applyMove(state, bot);
+    }
+
+    const ownerStart = owner === 'white' ? 0 : 1;
+    const taken = state.moveHistory.map((_, ply) => ply).filter(ply => !botPlies.has(ply));
+    const expected = state.moveHistory
+      .map((_, ply) => ply)
+      .filter(ply => ply % 2 === ownerStart && (Math.floor(ply / 2) + 1) % 7 === 0);
+    expect(expected.length).toBeGreaterThanOrEqual(3);
+    expect(taken).toEqual(expected);
+    for (const ply of taken) expect(state.moveHistory[ply].move.playerColor).toBe(owner);
+    expect(state.eventHistory.filter(e => e.modifierId === YOU_DIED)).toHaveLength(taken.length);
   });
 });
