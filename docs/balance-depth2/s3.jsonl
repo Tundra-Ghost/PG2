@@ -19,3 +19,11 @@
 {"id":"MOD-D005","name":"Sus (One Of These Is Lying)","cost":3,"costAware":true,"w":15,"l":14,"d":11,"skipped":0,"capped":8}
 {"id":"MOD-E003","name":"Yeah, There Are Three Of Them","cost":3,"costAware":false,"w":5,"l":32,"d":3,"skipped":0,"capped":2}
 {"id":"MOD-E003","name":"Yeah, There Are Three Of Them","cost":3,"costAware":true,"w":3,"l":34,"d":3,"skipped":0,"capped":3}
+{"id":"MOD-E008","name":"Moneyball (We'll Buy Them Back)","cost":4,"costAware":false,"w":33,"l":0,"d":7,"skipped":0,"capped":4}
+{"id":"MOD-E008","name":"Moneyball (We'll Buy Them Back)","cost":4,"costAware":true,"w":20,"l":0,"d":20,"skipped":0,"capped":12}
+{"id":"MOD-E012","name":"Hopscotch","cost":2,"costAware":false,"w":9,"l":28,"d":3,"skipped":0,"capped":1}
+{"id":"MOD-E012","name":"Hopscotch","cost":2,"costAware":true,"w":15,"l":17,"d":8,"skipped":0,"capped":7}
+{"id":"MOD-E016","name":"Hatchery","cost":4,"costAware":false,"w":20,"l":11,"d":9,"skipped":0,"capped":4}
+{"id":"MOD-E016","name":"Hatchery","cost":4,"costAware":true,"w":18,"l":18,"d":4,"skipped":0,"capped":3}
+{"id":"MOD-E020","name":"Elephant In The Room","cost":-3,"costAware":false,"w":10,"l":26,"d":4,"skipped":0,"capped":3}
+{"id":"MOD-E020","name":"Elephant In The Room","cost":-3,"costAware":true,"w":8,"l":20,"d":12,"skipped":0,"capped":5}

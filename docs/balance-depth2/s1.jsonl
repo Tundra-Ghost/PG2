@@ -17,3 +17,13 @@
 {"id":"MOD-C013","name":"Hold My Bread","cost":2,"costAware":false,"w":21,"l":14,"d":5,"skipped":0,"capped":3}
 {"id":"MOD-C013","name":"Hold My Bread","cost":2,"costAware":true,"w":14,"l":16,"d":10,"skipped":0,"capped":8}
 {"id":"MOD-C020","name":"Gotta Go Fast","cost":2,"costAware":false,"w":23,"l":12,"d":5,"skipped":0,"capped":2}
+{"id":"MOD-C020","name":"Gotta Go Fast","cost":2,"costAware":true,"w":22,"l":8,"d":10,"skipped":0,"capped":7}
+{"id":"MOD-E001","name":"Hatoful Gambit","cost":5,"costAware":false,"w":24,"l":12,"d":4,"skipped":0,"capped":1}
+{"id":"MOD-E001","name":"Hatoful Gambit","cost":5,"costAware":true,"w":19,"l":14,"d":7,"skipped":0,"capped":3}
+{"id":"MOD-E006","name":"BOY. (The Berserker)","cost":4,"costAware":false,"w":20,"l":14,"d":6,"skipped":0,"capped":3}
+{"id":"MOD-E006","name":"BOY. (The Berserker)","cost":4,"costAware":true,"w":15,"l":8,"d":17,"skipped":0,"capped":14}
+{"id":"MOD-E010","name":"Holy Knight (The Archbishop)","cost":4,"costAware":false,"w":31,"l":5,"d":4,"skipped":0,"capped":3}
+{"id":"MOD-E010","name":"Holy Knight (The Archbishop)","cost":4,"costAware":true,"w":20,"l":7,"d":13,"skipped":0,"capped":5}
+{"id":"MOD-E014","name":"Crab Rave","cost":3,"costAware":false,"w":18,"l":14,"d":8,"skipped":0,"capped":3}
+{"id":"MOD-E014","name":"Crab Rave","cost":3,"costAware":true,"w":21,"l":8,"d":11,"skipped":0,"capped":9}
+{"id":"MOD-E018","name":"Zerg Rush","cost":3,"costAware":false,"w":20,"l":11,"d":9,"skipped":0,"capped":3}

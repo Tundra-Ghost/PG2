@@ -17,3 +17,14 @@
 {"id":"MOD-C012","name":"Freaky Friday","cost":2,"costAware":false,"w":15,"l":20,"d":5,"skipped":0,"capped":4}
 {"id":"MOD-C012","name":"Freaky Friday","cost":2,"costAware":true,"w":21,"l":11,"d":8,"skipped":0,"capped":4}
 {"id":"MOD-C018","name":"Dirt Hut","cost":3,"costAware":false,"w":17,"l":17,"d":6,"skipped":0,"capped":4}
+{"id":"MOD-C018","name":"Dirt Hut","cost":3,"costAware":true,"w":18,"l":12,"d":10,"skipped":0,"capped":7}
+{"id":"MOD-D006","name":"Cat Mode (Night Vision)","cost":1,"costAware":false,"w":16,"l":18,"d":6,"skipped":0,"capped":4}
+{"id":"MOD-D006","name":"Cat Mode (Night Vision)","cost":1,"costAware":true,"w":15,"l":16,"d":9,"skipped":0,"capped":1}
+{"id":"MOD-E004","name":"Equivalent Exchange (The Chancellor)","cost":5,"costAware":false,"w":21,"l":13,"d":6,"skipped":0,"capped":5}
+{"id":"MOD-E004","name":"Equivalent Exchange (The Chancellor)","cost":5,"costAware":true,"w":22,"l":8,"d":10,"skipped":0,"capped":6}
+{"id":"MOD-E009","name":"Slay Queen (The Amazon)","cost":5,"costAware":false,"w":28,"l":10,"d":2,"skipped":0,"capped":1}
+{"id":"MOD-E009","name":"Slay Queen (The Amazon)","cost":5,"costAware":true,"w":26,"l":7,"d":7,"skipped":0,"capped":2}
+{"id":"MOD-E013","name":"Overseas Hire (The Cannon)","cost":3,"costAware":false,"w":12,"l":21,"d":7,"skipped":0,"capped":4}
+{"id":"MOD-E013","name":"Overseas Hire (The Cannon)","cost":3,"costAware":true,"w":9,"l":22,"d":9,"skipped":0,"capped":6}
+{"id":"MOD-E017","name":"The Bodyguard","cost":3,"costAware":false,"w":13,"l":19,"d":8,"skipped":0,"capped":4}
+{"id":"MOD-E017","name":"The Bodyguard","cost":3,"costAware":true,"w":22,"l":12,"d":6,"skipped":0,"capped":1}

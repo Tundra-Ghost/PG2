@@ -20,3 +20,10 @@
 {"id":"MOD-E002","name":"The Small Council","cost":3,"costAware":false,"w":7,"l":27,"d":6,"skipped":0,"capped":6}
 {"id":"MOD-E002","name":"The Small Council","cost":3,"costAware":true,"w":4,"l":25,"d":11,"skipped":0,"capped":11}
 {"id":"MOD-E007","name":"Reject Queen, Embrace Knight","cost":2,"costAware":false,"w":15,"l":19,"d":6,"skipped":0,"capped":4}
+{"id":"MOD-E007","name":"Reject Queen, Embrace Knight","cost":2,"costAware":true,"w":15,"l":12,"d":13,"skipped":0,"capped":8}
+{"id":"MOD-E011","name":"Lawrence Of Arabia","cost":1,"costAware":false,"w":14,"l":18,"d":8,"skipped":0,"capped":7}
+{"id":"MOD-E011","name":"Lawrence Of Arabia","cost":1,"costAware":true,"w":16,"l":16,"d":8,"skipped":0,"capped":8}
+{"id":"MOD-E015","name":"Stonks","cost":3,"costAware":false,"w":25,"l":8,"d":7,"skipped":0,"capped":3}
+{"id":"MOD-E015","name":"Stonks","cost":3,"costAware":true,"w":20,"l":13,"d":7,"skipped":0,"capped":4}
+{"id":"MOD-E019","name":"Knight Rider","cost":4,"costAware":false,"w":24,"l":10,"d":6,"skipped":0,"capped":5}
+{"id":"MOD-E019","name":"Knight Rider","cost":4,"costAware":true,"w":21,"l":13,"d":6,"skipped":0,"capped":4}
