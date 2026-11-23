@@ -1,7 +1,7 @@
 import type { ModifierDefinition } from '../types';
-import type { Color, GameState, Move, Piece, Square } from '../../engine/types';
+import type { Color, GameState, Piece, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
-import { checkAbilityMove, performAbility } from '../../engine/abilities';
+import { capturedIds } from '../captures';
 import { ALL_DIRECTIONS, offset } from '../../engine/push';
 import { MODIFIER_IDS } from '../ids';
 
@@ -28,27 +28,6 @@ function shieldTargets(state: GameState, pawn: Piece): Square[] {
     if (sq && piece && piece.color === pawn.color && piece.type !== 'king') targets.push(sq);
   }
   return targets;
-}
-
-/** The piece this move would capture: the target square, en passant, or whatever an ability removes. */
-function capturedIds(state: GameState, move: Move): string[] {
-  if (move.ability) {
-    // Abilities can remove pieces away from their target (a rook shot, a backwards swipe).
-    // Hooks run before the engine checks the ability, so check it here first.
-    if (checkAbilityMove(state, move)) return [];
-    const before = new Set(Array.from(state.pieces.values(), p => p.id));
-    const after = performAbility(cloneState(state), move).state;
-    for (const p of after.pieces.values()) before.delete(p.id);
-    return [...before];
-  }
-  const mover = state.pieces.get(move.from);
-  const target = state.pieces.get(move.to);
-  if (target && target.color !== move.playerColor) return [target.id];
-  if (mover?.type === 'pawn' && move.to === state.flags.enPassantSquare && move.to[0] !== move.from[0]) {
-    const passed = state.pieces.get(`${move.to[0]}${move.from[1]}` as Square);
-    if (passed && passed.color !== move.playerColor) return [passed.id];
-  }
-  return [];
 }
 
 function clearShields(state: GameState, ends: (s: Shield) => boolean): GameState {

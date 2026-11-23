@@ -63,6 +63,8 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
  * Thinking With Portals sits on c4 and f5: a Vent Tile or a flock could land on a portal.
  * Tide Goes In floods ranks 4 and 5: the Swamp, the roundabout, the portals and
  * flocks would sit in the water.
+ * Crop Circles appear on ranks 3 to 6, over the Swamp, the roundabout, flocks
+ * or the tide.
  */
 const MATCH_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.thinkingWithPortals, MODIFIER_IDS.ventTiles],
@@ -71,6 +73,10 @@ const MATCH_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.tideGoesIn, MODIFIER_IDS.theBirds],
   [MODIFIER_IDS.tideGoesIn, MODIFIER_IDS.thinkingWithPortals],
   [MODIFIER_IDS.tideGoesIn, 'MOD-A013'], // The Magic Roundabout
+  [MODIFIER_IDS.cropCircles, MODIFIER_IDS.thisIsMySwamp],
+  [MODIFIER_IDS.cropCircles, MODIFIER_IDS.theBirds],
+  [MODIFIER_IDS.cropCircles, MODIFIER_IDS.tideGoesIn],
+  [MODIFIER_IDS.cropCircles, 'MOD-A013'], // The Magic Roundabout
 ];
 
 /** The card in either draft that rules this one out of the match, if any. */
