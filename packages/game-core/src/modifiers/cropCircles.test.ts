@@ -5,6 +5,7 @@ import './index';
 import { MODIFIER_IDS } from './ids';
 import { CROP, isInCropCircle } from './definitions/crop-circles';
 import { cannonTargets } from './definitions/for-the-emperor';
+import { getBestCaptureTarget } from './definitions/berserker';
 import { timedPhase } from './timed';
 import { getValidOptions } from '../draft/rules';
 import { ALL_MODIFIERS } from './data';
@@ -67,12 +68,20 @@ describe('MOD-A019 Crop Circles', () => {
     state = playTo(state, 17);
     const [, , , , centre] = circle(state);
     const file = centre[0];
-    // A black knight in the centre of the circle, a white rook below it, a white pawn it can take.
+    // A black knight in the centre of the circle and a white rook below it.
     const pieces = new Map(state.pieces);
     pieces.set(centre, makePiece('knight', 'black', centre));
     pieces.set(`${file}1` as Square, makePiece('rook', 'white', `${file}1` as Square));
     state = { ...state, pieces };
     expect(chessEngine.validateMove(state, move(`${file}1` as Square, centre, 'white')).valid).toBe(false);
+    // The knight can still capture out: a white pawn two ranks below and one file over.
+    const files = 'abcdefgh';
+    const out = `${files[files.indexOf(file) + 1]}${Number(centre[1]) - 2}` as Square;
+    const withPawn = { ...state, turn: 'black' as const, pieces: new Map(state.pieces) };
+    withPawn.pieces.set(out, makePiece('pawn', 'white', out));
+    expect(chessEngine.validateMove(withPawn, move(centre, out, 'black')).valid).toBe(true);
+    // A Berserker chain cannot take a circle piece either.
+    expect(getBestCaptureTarget(state, `${file}1` as Square)).toBeNull();
   });
 
   it('a King in the circle is still in check normally', () => {

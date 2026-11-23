@@ -26,7 +26,8 @@ export function cannonTargets(state: GameState, rook: Piece): Square[] {
       const hit = state.pieces.get(sq);
       if (!hit) continue;
       // MOD-A019: the cannonball passes over pieces in a crop circle.
-      if (isInCropCircle(state, sq)) continue;
+      // A King still stops the ball harmlessly, circle or not.
+      if (hit.type !== 'king' && isInCropCircle(state, sq)) continue;
       if (hit.type !== 'king') targets.push(sq);
       break;
     }

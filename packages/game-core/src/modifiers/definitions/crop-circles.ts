@@ -109,7 +109,8 @@ export const cropCirclesDef: ModifierDefinition = {
     const inside = new Set<string>();
     for (const sq of crop.squares) {
       const piece = state.pieces.get(sq);
-      if (piece) inside.add(piece.id);
+      // Only enemy pieces: sacrificing your own (The Snap) is not a capture.
+      if (piece && piece.color !== move.playerColor) inside.add(piece.id);
     }
     if (inside.size === 0) return { blocked: false };
     if (capturedIds(state, move).some(id => inside.has(id))) {
