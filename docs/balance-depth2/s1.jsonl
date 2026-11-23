@@ -27,3 +27,4 @@
 {"id":"MOD-E014","name":"Crab Rave","cost":3,"costAware":false,"w":18,"l":14,"d":8,"skipped":0,"capped":3}
 {"id":"MOD-E014","name":"Crab Rave","cost":3,"costAware":true,"w":21,"l":8,"d":11,"skipped":0,"capped":9}
 {"id":"MOD-E018","name":"Zerg Rush","cost":3,"costAware":false,"w":20,"l":11,"d":9,"skipped":0,"capped":3}
+{"id":"MOD-E018","name":"Zerg Rush","cost":3,"costAware":true,"w":18,"l":14,"d":8,"skipped":0,"capped":8}
