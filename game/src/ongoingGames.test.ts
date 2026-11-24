@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import type { GameSummary } from '@pigeon-chess/game-core';
-import { abandonCountsAsLoss, abandonLabel, resumeLabel, describeOnline, describeSave, describeSeat, lastPlayedText } from './ongoingGames';
+import { abandonCountsAsLoss, abandonLabel, resumeLabel, describeOnline, modifierLine, describeSave, describeSeat, lastPlayedText } from './ongoingGames';
 import { SAVE_VERSION, type SavedBotGame } from './savedBotGames';
 
 const NOW = Date.parse('2026-11-16T12:00:00.000Z');
@@ -125,5 +125,28 @@ describe('ongoing games rows', () => {
     const row = describeSeat({ roomId: 'ZZZZZ', token: 't' });
     expect(row.status).toBe('Online');
     expect(row.opponent).toBe('Room ZZZZZ');
+  });
+});
+
+describe('modifierLine', () => {
+  const birds = MODIFIER_IDS.theBirds;
+  const lava = MODIFIER_IDS.floorIsLava;
+  const gerald = MODIFIER_IDS.gerald;
+
+  it('lists shared cards once under Both, not under You', () => {
+    const line = modifierLine([gerald, birds], [], 'Chick');
+    expect(line).toMatch(/^You: /);
+    expect(line).toMatch(/ · Both: /);
+    expect(line.split(' · ')[0]).not.toMatch(/Birds/);
+  });
+
+  it('merges a shared card both sides hold', () => {
+    const line = modifierLine([lava], [lava], 'Chick');
+    expect(line.startsWith('Both: ')).toBe(true);
+    expect(line).not.toMatch(/You:|Chick:/);
+  });
+
+  it('says Standard chess with no cards', () => {
+    expect(modifierLine([], [], 'Chick')).toBe('Standard chess');
   });
 });

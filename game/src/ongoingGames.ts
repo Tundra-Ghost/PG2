@@ -1,4 +1,4 @@
-import { ALL_MODIFIERS, type GameSummary, type SeatRef } from '@pigeon-chess/game-core';
+import { ALL_MODIFIERS, isSharedDraftModifier, type GameSummary, type SeatRef } from '@pigeon-chess/game-core';
 import { getBotSpeaker } from './botChat';
 import type { SavedBotGame } from './savedBotGames';
 
@@ -100,9 +100,6 @@ export function describeSave(save: SavedBotGame, now: number = Date.now()): Ongo
     };
   }
   const { playerModifierIds, botModifierIds } = save.match;
-  const parts: string[] = [];
-  if (playerModifierIds.length > 0) parts.push(`You: ${names(playerModifierIds)}`);
-  if (botModifierIds.length > 0) parts.push(`${opponent}: ${names(botModifierIds)}`);
   const turn = save.summary?.turn ?? 'white';
   return {
     id: save.id,
@@ -113,16 +110,21 @@ export function describeSave(save: SavedBotGame, now: number = Date.now()): Ongo
     side: 'You play White',
     status: turn === 'white' ? 'Your move' : `${opponent}'s move`,
     yourMove: turn === 'white',
-    modifiers: parts.length > 0 ? parts.join(' · ') : 'Standard chess',
+    modifiers: modifierLine(playerModifierIds, botModifierIds, opponent),
     lastPlayed,
     abandonIsLoss: movesPlayed(save) > 0,
   };
 }
 
-function modifierLine(yours: string[], theirs: string[], opponent: string): string {
+/** Who has which cards. Shared cards (like The Birds) change the game for both sides, so they are listed once under "Both". */
+export function modifierLine(yours: string[], theirs: string[], opponent: string): string {
+  const shared = [...new Set([...yours, ...theirs].filter(id => isSharedDraftModifier(id)))];
+  const own = yours.filter(id => !isSharedDraftModifier(id));
+  const other = theirs.filter(id => !isSharedDraftModifier(id));
   const parts: string[] = [];
-  if (yours.length > 0) parts.push(`You: ${names(yours)}`);
-  if (theirs.length > 0) parts.push(`${opponent}: ${names(theirs)}`);
+  if (own.length > 0) parts.push(`You: ${names(own)}`);
+  if (other.length > 0) parts.push(`${opponent}: ${names(other)}`);
+  if (shared.length > 0) parts.push(`Both: ${names(shared)}`);
   return parts.length > 0 ? parts.join(' · ') : 'Standard chess';
 }
 
