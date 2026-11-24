@@ -146,6 +146,18 @@ describe('modifierLine', () => {
     expect(line).not.toMatch(/You:|Chick:/);
   });
 
+  it('lists a shared card only the opponent drafted under Both', () => {
+    expect(modifierLine([], [lava], 'Chick')).toMatch(/^Both: /);
+  });
+
+  it('is used for saved bot games', () => {
+    const row = describeSave(
+      save({ match: { prngSeed: 1, playerModifierIds: [], botModifierIds: [birds], actions: [] }, summary: { turn: 'white', moves: 0 } }),
+      NOW,
+    );
+    expect(row.modifiers).toMatch(/^Both: /);
+  });
+
   it('says Standard chess with no cards', () => {
     expect(modifierLine([], [], 'Chick')).toBe('Standard chess');
   });
