@@ -152,7 +152,7 @@ export default function PuzzleScreen({ settings, onBack }: PuzzleScreenProps) {
     <div className={`${styles.root} menu-theme`}>
       <header className={styles.header}>
         <button type="button" className={styles.button} onClick={onBack}>
-          Menu
+          {'<- Back'}
         </button>
         <div>
           <span className={styles.kicker}>Puzzle mode</span>
