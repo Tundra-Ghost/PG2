@@ -155,7 +155,7 @@ export default function CollectionVault({ onBack }: CollectionVaultProps) {
             onBack();
           }}
         >
-          Back
+          {'<- Back'}
         </button>
 
         <div className={styles.titleBlock}>

@@ -151,7 +151,10 @@ export default function PuzzleScreen({ settings, onBack }: PuzzleScreenProps) {
   return (
     <div className={`${styles.root} menu-theme`}>
       <header className={styles.header}>
-        <button type="button" className={styles.button} onClick={onBack}>
+        <button type="button" className={styles.button} onClick={() => {
+            playClick();
+            onBack();
+          }}>
           {'<- Back'}
         </button>
         <div>

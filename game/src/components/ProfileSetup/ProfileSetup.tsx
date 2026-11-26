@@ -250,7 +250,7 @@ export default function ProfileSetup({
                 onBack();
               }}
             >
-              Back
+              {'<- Back'}
             </button>
             <div className={styles.heading}>
               <span className={styles.kicker}>{editable ? (guest ? 'Guest Profile' : 'Profile') : 'Profile Viewer'}</span>

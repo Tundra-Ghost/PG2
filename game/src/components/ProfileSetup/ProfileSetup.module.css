@@ -46,6 +46,7 @@
   background: transparent;
   border: 1px solid rgb(var(--gold-rgb) / 0.24);
   padding: 0.55rem 0.8rem;
+  min-height: 2.75rem;
   cursor: pointer;
 }
 
