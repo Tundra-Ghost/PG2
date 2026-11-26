@@ -15,6 +15,7 @@ Role agents live in `.claude/agents/`. Each has one job:
 | `manager` | Keeps the "Team board" issue, assigns cards and bugs so nobody overlaps, checks on sessions, reports to the owner |
 | `builder` | Turns design cards from `docs/modifier-bible.md` into playable modifiers, with tests |
 | `graphic-artist` | Owns the look: palette, contrast, layout on phone and desktop, and the modifier icons |
+| `animator` | Owns motion: piece moves, captures, modifier events, popups and screen changes; keeps them fast and respects Reduce Motion |
 | `playtester` | Plays the local build in a browser at phone and desktop sizes, files `playtest` issues |
 | `balance-analyst` | Runs the balance harness and flags cards outside 40% to 60% win rate |
 | `rules-keeper` | Checks cards against the bible's rules and keeps the bible matching the code |
@@ -24,6 +25,6 @@ How work flows:
 - A builder takes cards nobody else is building. Each builder works on its own branch and merges `origin/main` before opening its PR.
 - Before merging a modifier PR, run the `rules-keeper` and `reviewer` agents on it and fix what they find.
 - Playtest issues are the bug queue. Fix them in small PRs that reference the issue.
-- Rules bugs go to a builder; visual bugs go to the graphic artist. The manager decides when it is unclear.
+- Rules bugs go to a builder; visual bugs go to the graphic artist; animation bugs go to the animator. The manager decides when it is unclear.
 - Any visual change runs `node game/scripts/contrast-audit.cjs` (with `pnpm dev` running) and is checked at phone and desktop sizes.
 - Never build a card that conflicts with one being built on another branch; check open PRs first.
