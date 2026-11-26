@@ -179,6 +179,7 @@ export default function PuzzleEditor({ initial, onSave, onTest, onBack }: Puzzle
   }
 
   function back() {
+    playClick();
     if (dirty && !window.confirm('Leave without saving your changes?')) return;
     onBack();
   }
@@ -196,7 +197,7 @@ export default function PuzzleEditor({ initial, onSave, onTest, onBack }: Puzzle
     <div className={`${styles.root} menu-theme`}>
       <header className={styles.header}>
         <button type="button" className={styles.backButton} onClick={back}>
-          Back
+          {'<- Back'}
         </button>
         <div>
           <span className={styles.kicker}>Puzzle creator</span>
