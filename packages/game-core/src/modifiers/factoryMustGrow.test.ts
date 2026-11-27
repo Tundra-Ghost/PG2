@@ -4,6 +4,7 @@ import type { GameState, Piece, Square } from '../engine/types';
 import './index';
 import { MODIFIER_IDS } from './ids';
 import { makeEmptyState, makePiece, move } from './testHelpers';
+import { getCloakedPiece } from './definitions/invisibility-cloak';
 
 const ID = MODIFIER_IDS.factoryMustGrow;
 
@@ -84,5 +85,44 @@ describe('MOD-A010 The Factory Must Grow', () => {
     expect(at(state, 'c4')?.type).toBe('knight');
     state = round(state); // turn 25: the tide is out and the belt runs again
     expect(at(state, 'd4')?.type).toBe('knight');
+  });
+
+  it('stops before a wall, flock, statue, storm or Lava square', () => {
+    let state = start([...KINGS(), makePiece('knight', 'white', 'c4')]);
+    state = { ...state, tiles: new Map(state.tiles).set('d4', { square: 'd4', effects: [], isVoid: true, statue: true }) };
+    state = round(state);
+    expect(at(state, 'c4')?.type).toBe('knight');
+  });
+
+  it('a piece carried out of the Swamp is no longer stuck (interaction)', () => {
+    let state = start([...KINGS(), makePiece('pawn', 'white', 'h2')], [MODIFIER_IDS.thisIsMySwamp]);
+    const knight = { ...makePiece('knight', 'white', 'e4'), cooldowns: { [MODIFIER_IDS.thisIsMySwamp]: 3 } };
+    state = { ...state, pieces: new Map(state.pieces).set('e4', knight) };
+    state = round(state);
+    expect(at(state, 'f4')?.cooldowns[MODIFIER_IDS.thisIsMySwamp]).toBeUndefined();
+  });
+
+  it('a pawn that stepped two squares and then rides cannot be taken en passant', () => {
+    let state = start([makePiece('king', 'white', 'a1'), makePiece('king', 'black', 'h8'), makePiece('pawn', 'black', 'd7'), makePiece('pawn', 'white', 'b5')]);
+    state = chessEngine.applyMove(state, move('a1', 'b1', 'white'));
+    state = chessEngine.applyMove(state, move('d7', 'd5', 'black'));
+    // Rank 5 runs left: b5 goes to a5, then d5 to c5.
+    expect(state.pieces.get('c5')?.type).toBe('pawn');
+    expect(state.flags.enPassantSquare).toBeNull();
+  });
+
+  it('a King already in check never rides to another attacked square', () => {
+    let state = start([makePiece('king', 'white', 'c4'), makePiece('king', 'black', 'h8'), makePiece('rook', 'black', 'b8'), makePiece('rook', 'black', 'd8'), makePiece('pawn', 'white', 'a2')]);
+    state = chessEngine.applyMove(state, move('a2', 'a3', 'white'));
+    state = chessEngine.applyMove(state, move('b8', 'c8', 'black')); // check
+    expect(at(state, 'c4')?.type).toBe('king');
+  });
+
+  it('a hidden piece that blocks the belt is revealed (Invisibility Cloak interaction)', () => {
+    let state = start([...KINGS(), makePiece('bishop', 'white', 'h4'), makePiece('knight', 'black', 'g4')], [MODIFIER_IDS.invisibilityCloak]);
+    expect(getCloakedPiece(state, 'white')).toBe(at(state, 'h4')!.id);
+    state = round(state);
+    expect(at(state, 'g4')?.type).toBe('knight');
+    expect(getCloakedPiece(state, 'white')).toBeNull();
   });
 });

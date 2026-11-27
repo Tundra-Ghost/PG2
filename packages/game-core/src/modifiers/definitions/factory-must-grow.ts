@@ -1,7 +1,7 @@
 import type { ModifierDefinition } from '../types';
 import type { GameState, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
-import { isNewRound, slidePieceSafely } from '../../engine/conveyor';
+import { isNewRound, revealBumped, slidePieceSafely, type Bumped } from '../../engine/conveyor';
 import { offset } from '../../engine/push';
 import { MODIFIER_IDS } from '../ids';
 import { timedPhase } from '../timed';
@@ -47,28 +47,30 @@ export const factoryMustGrowDef: ModifierDefinition = {
   onTurnStart(state) {
     const last = (state.modifierState[ID] as FactoryState | undefined)?.lastRound;
     if (!isNewRound(state, last)) return state;
-    const next = cloneState(state);
+    let next = cloneState(state);
     next.modifierState = { ...next.modifierState, [ID]: { lastRound: state.flags.fullMoveNumber } satisfies FactoryState };
     if (beltsFlooded(state)) return next;
 
     const moved: Square[] = [];
+    const bumped: Bumped = new Set();
     const run = (rank: '4' | '5', df: 1 | -1) => {
       const files = df === 1 ? [...FILES].reverse() : [...FILES];
       for (const f of files) {
         const from = `${f}${rank}` as Square;
         const to = offset(from, df, 0);
-        if (slidePieceSafely(next, from, to)) moved.push(to!);
+        if (slidePieceSafely(next, from, to, bumped)) moved.push(to!);
       }
     };
     run('4', 1);
     run('5', -1);
+    next = revealBumped(next, bumped);
     if (moved.length === 0) return next;
     return appendGameEvent(next, {
       ply: state.moveHistory.length + 1,
       type: 'modifier',
       modifierId: ID,
       title: 'Factory',
-      message: 'The belts move. Rank 4 slides right, rank 5 slides left.',
+      message: 'The belts move. Rank 4 runs towards the h-file, rank 5 towards the a-file.',
       squares: moved,
     });
   },
