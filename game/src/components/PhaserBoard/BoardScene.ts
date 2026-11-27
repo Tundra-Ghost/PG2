@@ -228,6 +228,7 @@ export class BoardScene extends Phaser.Scene {
       if (view.cropCircle) this.drawCrop(view.cropCircle, x, y);
       if (view.portal) this.drawPortal(view.portal, cx, cy);
       for (const flow of view.flow ?? []) this.drawFlow(flow, cx, cy);
+      if (view.roomba) this.drawRoomba(view.roomba, cx, cy);
       if (view.lavaNext) this.drawLavaNext(x, y);
       if (view.lit) this.drawLit(x, y);
       // Drawn over the fog: they are about squares you cannot see.
@@ -715,6 +716,17 @@ export class BoardScene extends Phaser.Scene {
     for (const side of [-1, 1]) {
       g.lineBetween(tx, ty, tx - dx * len * 1.6 + dy * side * len * 1.4, ty - dy * len * 1.6 + dx * side * len * 1.4);
     }
+  }
+
+  /** The Roomba: a grey disc with a light rim and a bumper on the side it is heading. */
+  private drawRoomba(heading: 'up' | 'down' | 'left' | 'right', cx: number, cy: number) {
+    const g = this.tileLayer;
+    const r = CELL * 0.4;
+    g.fillStyle(0x3b4252, 0.55).fillCircle(cx, cy, r);
+    g.lineStyle(3, 0xe5e9f0, 0.8).strokeCircle(cx, cy, r);
+    const [dx, dy] = heading === 'up' ? [0, -1] : heading === 'down' ? [0, 1] : heading === 'left' ? [-1, 0] : [1, 0];
+    g.lineStyle(5, 0x88c0d0, 0.95);
+    g.lineBetween(cx + dx * r * 0.8 - dy * r * 0.55, cy + dy * r * 0.8 - dx * r * 0.55, cx + dx * r * 0.8 + dy * r * 0.55, cy + dy * r * 0.8 + dx * r * 0.55);
   }
 
   /** Crop Circles: wheat-gold square with flattened rings; just the rings, dashed-looking, as a warning. */

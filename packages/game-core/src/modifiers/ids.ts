@@ -80,6 +80,7 @@ export const MODIFIER_IDS = {
   cropCircles: 'MOD-A019',
   factoryMustGrow: 'MOD-A010',
   magicRoundabout: 'MOD-A013',
+  theRoomba: 'MOD-A015',
   blessYou: 'MOD-B012',
   footprints: 'MOD-D011',
   flashlight: 'MOD-D012',

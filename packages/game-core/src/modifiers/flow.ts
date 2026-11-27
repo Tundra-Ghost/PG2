@@ -2,11 +2,23 @@ import type { GameState, Square } from '../engine/types';
 import { MODIFIER_IDS } from './ids';
 import { beltDirection } from './definitions/factory-must-grow';
 import { ROUNDABOUT_NEXT } from './definitions/magic-roundabout';
+import { getRoombaSquare, nextOnRing } from './definitions/the-roomba';
 
 /** A direction drawn on a square, as seen from White's side. */
 export type Flow = 'north' | 'south' | 'east' | 'west';
 
 const FILES = 'abcdefgh';
+
+/** The way from one square to a neighbour along a file or rank. */
+function stepFlow(from: Square, to: Square): Flow {
+  return to[0] > from[0] ? 'east' : to[0] < from[0] ? 'west' : to[1] > from[1] ? 'north' : 'south';
+}
+
+/** MOD-A015: the Roomba's square and the way it goes next, or null without the card. */
+export function getRoomba(state: GameState): { square: Square; heading: Flow } | null {
+  const square = getRoombaSquare(state);
+  return square ? { square, heading: stepFlow(square, nextOnRing(square)) } : null;
+}
 
 /**
  * The arrows the board draws for cards that move pieces one way: the
@@ -24,7 +36,7 @@ export function getFlowArrows(state: GameState): Map<Square, Flow[]> {
   }
   if (active.has(MODIFIER_IDS.magicRoundabout)) {
     for (const [from, to] of Object.entries(ROUNDABOUT_NEXT)) {
-      add(from as Square, to[0] > from[0] ? 'east' : to[0] < from[0] ? 'west' : to[1] > from[1] ? 'north' : 'south');
+      add(from as Square, stepFlow(from as Square, to));
     }
   }
   return arrows;

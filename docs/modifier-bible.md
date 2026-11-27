@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 86 built, 14 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 87 built, 13 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -19,6 +19,7 @@
 - Board-moving cards share one rule set (engine/conveyor.ts): they move pieces once per round, after Black moves; never capture; never put a King in check or add a second checker; reveal a hidden piece that blocks them, and never point at a hidden piece's new square; and turn off en passant for that turn when a pawn slides.
 - The Factory Must Grow built.
 - The Magic Roundabout built. Conflicts: This Is My Swamp, Tide Goes In, Crop Circles, The Factory Must Grow, Monument To Gerald.
+- The Roomba built.
 
 **Batch 11 (2026-11-27)**
 - Hidden pieces (shared code in engine/visibility.ts): a hidden piece looks like an empty square to its opponent. A move it blocks is a bump: it reveals the piece and the player moves again. A hidden piece that gives check is always revealed.
@@ -276,7 +277,7 @@ Four hidden mines sit on ranks 3 to 6, two on each half of the board. When a pie
 - Not Vent Tiles: vents relocate pieces, mines remove them, and mines give clues.
 
 ### MOD-A015 · The Roomba
-*Ref: Robot vacuum videos* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Design**
+*Ref: Robot vacuum videos* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
 
 A robot vacuum travels clockwise around the outer ring of the board, one square per round. When it reaches a piece, it pushes that piece one square inward if that square is empty. Otherwise it waits.
 
@@ -284,6 +285,7 @@ A robot vacuum travels clockwise around the outer ring of the board, one square 
 
 - Ruling: the Roomba never captures and never pushes a King into check.
 - Synergy: The Storm Closes In. Once the storm takes the edge, the Roomba parks itself.
+- Built: it starts on a4 or h5, picked with the game seed, and moves once per round after Black moves. Clockwise as White sees it: up the a-file, along rank 8, down the h-file, back along rank 1. It never blocks a piece and cannot be taken; a piece may stand on it. From a corner it pushes diagonally inward. It uses the shared slide rules (Batch 12): no King is put in check or gains a checker. It also waits before a wall, flock or statue. A hidden piece it bumps is revealed.
 
 ### MOD-A016 · Monument To Gerald
 *Ref: Pigeons and statues, forever* · **Tier B** · Cost 1 · Curse 0 · Scope: Shared · Modes: All · **Built**
@@ -1464,7 +1466,7 @@ Values the game uses today. "Built" cards match the build.
 | A012 | Let It Go | A | A | 3 | 1 | Shared | Design |
 | A013 | The Magic Roundabout | A | B | 2 | 0 | Shared | Built |
 | A014 | Minesweeper | A | A | 3 | 1 | Shared | Design |
-| A015 | The Roomba | A | B | 2 | 0 | Shared | Design |
+| A015 | The Roomba | A | B | 2 | 0 | Shared | Built |
 | A016 | Monument To Gerald | A | B | 1 | 0 | Shared | Built |
 | A017 | Tide Goes In, Tide Goes Out | A | A | 3 | 1 | Shared | Built |
 | A018 | Shake It Off | A | S | 4 | 2 | Shared | Design |
@@ -1519,7 +1521,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-86 of 100 built. The other 14 are designs (v0.4).
+87 of 100 built. The other 13 are designs (v0.4).
 
 ### Balance test plan
 
