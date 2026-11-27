@@ -70,9 +70,9 @@ describe('MOD-D020 Masquerade', () => {
     expect(view.pieces.get('d8')?.type).toBe('queen');
   });
 
-  it('cannot share a match with Sus or Shell Game', () => {
+  it('cannot share a match with the disguise and type-marking cards', () => {
     const ids = new Set(modifierRegistry.getAll().map(def => def.id));
-    for (const other of [MODIFIER_IDS.sus, MODIFIER_IDS.shellGame]) {
+    for (const other of [MODIFIER_IDS.sus, MODIFIER_IDS.shellGame, MODIFIER_IDS.mainCharacterSyndrome, MODIFIER_IDS.imposterSyndrome, MODIFIER_IDS.berserker]) {
       expect(getValidOptions([], [other], ids).some(c => c.id === ID)).toBe(false);
       expect(getValidOptions([other], [], ids).some(c => c.id === ID)).toBe(false);
       expect(getValidOptions([ID], [], ids).some(c => c.id === other)).toBe(false);
