@@ -20,7 +20,7 @@
 - The Factory Must Grow built.
 - The Magic Roundabout built. Conflicts: This Is My Swamp, Tide Goes In, Crop Circles, The Factory Must Grow, Monument To Gerald.
 - The Roomba built. No conflicts.
-- One Way Street built, as a move rule. No conflicts.
+- One Way Street built, as a move rule. Conflict: Bandersnatch Protocol.
 
 **Batch 11 (2026-11-27)**
 - Hidden pieces (shared code in engine/visibility.ts): a hidden piece looks like an empty square to its opponent. A move it blocks is a bump: it reveals the piece and the player moves again. A hidden piece that gives check is always revealed.
@@ -193,6 +193,7 @@ The board is split by an invisible axis. A move on one half is mirrored on the o
 - Balance flag: needs edge case tests with castling.
 - Open question: which piece mirrors? The design text says "for that piece", which is unclear. Define before building.
 - Built: the mirror twin moves. When a piece moves, the own piece on the mirror of its start square (across the d/e line, same rank) makes the mirrored move if it is legal for it, and it can capture. Kings, castling and abilities never mirror, and a mirrored pawn that reaches the last rank becomes a Queen. Two pieces can never land on the same square, so the swap rule is not needed. A cyan line marks the axis.
+- Conflict: One Way Street. Mirrored moves along the c- and f-files would go against the arrows; only one may be in a match, whoever drafts it.
 
 ### MOD-A009 · The Birds (Hitchcock Mode)
 *Ref: The Birds (1963)* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
@@ -353,6 +354,8 @@ The c-file runs north only and the f-file runs south only. A piece moving along 
 - Ruling: arrows only limit movement along the file, never captures that happen to cross it.
 - Built: a move that starts and ends on the c-file must go north; on the f-file, south. Pawns follow the signs too, so a black pawn on the c-file and a white pawn on the f-file cannot step forward, though they can still capture. It is a move rule (see Move rules under Category B): it never takes away the last legal move and does not apply in check. Abilities and Freaky Friday swaps are not limited.
 - Interaction: The Factory Must Grow. c4, c5, f4 and f5 show both arrows. Belts move pieces sideways, which the signs allow.
+- Conflict: Bandersnatch Protocol. It mirrors the c-file onto the f-file, so every copied move along them would go against the arrow. Only one may be in a match, whoever drafts it.
+- Interaction: BOY. (The Berserker). A chain capture along a one-way file follows the signs too.
 
 ## Category B: Cursed
 

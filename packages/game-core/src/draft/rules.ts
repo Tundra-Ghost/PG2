@@ -100,6 +100,8 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
  * or the tide.
  * The Magic Roundabout turns d4, e4, e5 and d5: the Swamp and Gerald's statue
  * sit there, and the belts move the same squares at the same time.
+ * One Way Street: Bandersnatch mirrors the c-file onto the f-file, so every
+ * copied move along them would go against the arrow.
  */
 const MATCH_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.thinkingWithPortals, MODIFIER_IDS.ventTiles],
@@ -115,6 +117,7 @@ const MATCH_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.magicRoundabout, MODIFIER_IDS.thisIsMySwamp],
   [MODIFIER_IDS.magicRoundabout, MODIFIER_IDS.factoryMustGrow],
   [MODIFIER_IDS.magicRoundabout, MODIFIER_IDS.monumentToGerald],
+  [MODIFIER_IDS.oneWayStreet, MODIFIER_IDS.bandersnatch],
 ];
 
 /** The card in either draft that rules this one out of the match, if any. */

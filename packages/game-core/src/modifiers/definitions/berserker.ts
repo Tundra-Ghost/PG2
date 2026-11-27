@@ -6,6 +6,7 @@ import type {
   Square,
 } from '../../engine/types';
 import { prngPickIndex } from '../../engine/prng';
+import { goesTheWrongWay } from './one-way-street';
 import {
   appendGameEvent,
   cloneState,
@@ -82,6 +83,8 @@ export function getBestCaptureTarget(state: GameState, from: Square): Square | n
     if (target.isShielded) continue;
     // MOD-A019: nor can a piece in a crop circle.
     if (isInCropCircle(state, to)) continue;
+    // MOD-A020: nor along a one-way file against its arrow.
+    if (state.activeModifiers.some(mod => mod.id === 'MOD-A020') && goesTheWrongWay(state, { from, to })) continue;
     const projected = applyMoveInternal(state, buildMove(state, from, to));
     if (isInCheck(projected, piece.color)) continue;
     // MOD-E009: the Amazon is worth more than a plain queen.

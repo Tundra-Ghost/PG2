@@ -14,7 +14,7 @@ export function oneWayDirection(file: string): 'north' | 'south' | null {
 }
 
 /** True if the move goes along a one-way file against its arrow. */
-export function goesTheWrongWay(state: { pieces: ReadonlyMap<Square, { type: string }> }, move: Move): boolean {
+export function goesTheWrongWay(state: { pieces: ReadonlyMap<Square, { type: string }> }, move: Pick<Move, 'from' | 'to' | 'ability'>): boolean {
   if (move.ability) return false;
   if (move.from[0] !== move.to[0]) return false; // crossing or leaving the file is fine
   const way = oneWayDirection(move.from[0]);

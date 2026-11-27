@@ -5,6 +5,9 @@ import './index';
 import { MODIFIER_IDS } from './ids';
 import { getFlowArrows } from './flow';
 import { makeEmptyState, makePiece, move } from './testHelpers';
+import { getValidOptions } from '../draft/rules';
+import { ALL_MODIFIERS } from './data';
+import { getBestCaptureTarget } from './definitions/berserker';
 
 const ID = MODIFIER_IDS.oneWayStreet;
 
@@ -59,5 +62,16 @@ describe('MOD-A020 One Way Street', () => {
   it('interaction with The Factory Must Grow: c4, c5, f4 and f5 show both arrows', () => {
     const arrows = getFlowArrows(start([makePiece('king', 'white', 'a1'), makePiece('king', 'black', 'h8')], [MODIFIER_IDS.factoryMustGrow]));
     expect(arrows.get('c4')).toEqual(['east', 'north']);
+  });
+
+  it('one per match with Bandersnatch Protocol, which mirrors c onto f', () => {
+    const built = new Set(ALL_MODIFIERS.map(c => c.id));
+    expect(getValidOptions([], [MODIFIER_IDS.bandersnatch], built).map(c => c.id)).not.toContain(ID);
+    expect(getValidOptions([ID], [], built).map(c => c.id)).not.toContain(MODIFIER_IDS.bandersnatch);
+  });
+
+  it('a Berserker chain capture follows the signs (interaction)', () => {
+    const state = start([makePiece('king', 'white', 'a1'), makePiece('king', 'black', 'h8'), makePiece('rook', 'white', 'c5'), makePiece('queen', 'black', 'c2'), makePiece('pawn', 'black', 'a5')]);
+    expect(getBestCaptureTarget(state, 'c5')).toBe('a5');
   });
 });

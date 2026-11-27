@@ -93,7 +93,7 @@ const MARKER_LEGEND: LegendRow[] = [
   { modifierId: MODIFIER_IDS.factoryMustGrow, mark: '⇄', label: 'Conveyor belt: slides pieces one square after each round' },
   { modifierId: MODIFIER_IDS.magicRoundabout, mark: '↻', label: 'Roundabout: pieces turn one step clockwise after each round' },
   { modifierId: MODIFIER_IDS.theRoomba, mark: '◍', label: 'Roomba: goes round the edge, bumps pieces inward' },
-  { modifierId: MODIFIER_IDS.oneWayStreet, mark: '⇡', label: 'One-way file: move along it only the arrow\'s way' },
+  { modifierId: MODIFIER_IDS.oneWayStreet, mark: '↕', label: 'One-way file: move along it only the arrow\'s way' },
   { modifierId: MODIFIER_IDS.forgiveMe, mark: '✝', label: 'Confession and declared square' },
   { modifierId: MODIFIER_IDS.ghosts, mark: '◌', label: 'Your Ghost (faded)' },
 ];
