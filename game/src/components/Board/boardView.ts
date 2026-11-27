@@ -1,5 +1,5 @@
 import type { Color, GameState, Piece, PieceType, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getFootprints, getFlashlightSquares, getForecast, getHiddenPieceIds, getOwnCups, isCup, getTells, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, getFlowArrows, getRoomba, getQuakeArrows, getMineClues, isLightsOut, MODIFIER_IDS, type Flow } from '@pigeon-chess/game-core';
+import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getFootprints, getFlashlightSquares, getForecast, getHiddenPieceIds, getOwnCups, isCup, getTells, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, getFlowArrows, getRoomba, getQuakeArrows, getMineClues, isLightsOut, getSpoilerMarks, MODIFIER_IDS, type Flow } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -95,6 +95,8 @@ export interface SquareView {
   flow?: ScreenFlow[];
   /** The Roomba is here, heading this way on screen. */
   roomba?: ScreenFlow;
+  /** Spoiler Alert: this side marked this piece to move next. */
+  spoiler?: 'white' | 'black';
   /** Bandersnatch Protocol: the mirror axis runs along this edge of a d-file square. */
   mirrorEdge?: 'left' | 'right';
 }
@@ -168,6 +170,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const ownUnseen = viewer ? getHiddenPieceIds(state, viewer === 'white' ? 'black' : 'white') : new Set<string>();
   // Jump Scare: in the dark round the viewer's own pieces are drawn dark too, all but the King.
   const lightsOut = viewer ? isLightsOut(state) : false;
+  const spoilers = new Map(getSpoilerMarks(state, viewer ?? null).map(mark => [mark.square, mark.color]));
   const mirrorEdge = isBandersnatchActive(state) ? (orientation === 'white' ? 'right' : 'left') : null;
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
   const fileOrder = orientation === 'white' ? [...FILES] : [...FILES].reverse();
@@ -236,6 +239,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(real && ownUnseen.has(real.id) ? { unseen: true } : {}),
         ...(real && viewer && isCup(state, real, viewer) ? { cup: 'enemy' as const } : real && ownCups.has(square) ? { cup: 'own' as const } : {}),
         ...(mirrorEdge && file === 'd' ? { mirrorEdge } : {}),
+        ...(spoilers.has(square) ? { spoiler: spoilers.get(square)! } : {}),
         ...(confession?.square === square ? { confession: 'piece' as const } : confession?.declared === square ? { confession: 'target' as const } : {}),
         // The opponent sees a Ghost as a normal piece.
         ...(real?.isGhost && (!viewer || real.color === viewer) ? { ghost: true } : {}),

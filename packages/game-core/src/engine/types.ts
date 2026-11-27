@@ -180,6 +180,8 @@ export interface Move {
   dropType?: PieceType;
   /** MOD-B009: the clock ran out and this is the seeded random move played instead. */
   timedOut?: boolean;
+  /** MOD-D019: id of the mover's own piece they will move next. */
+  spoiler?: string;
 }
 
 export interface ValidationResult {

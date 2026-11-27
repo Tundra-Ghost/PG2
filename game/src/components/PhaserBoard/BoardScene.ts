@@ -242,6 +242,7 @@ export class BoardScene extends Phaser.Scene {
       // Drawn over the fog: both players always see the flock (like the eye).
       if (view.flock) this.drawFlock(view.flock, x, y);
       if (view.confession) this.drawConfession(view.confession, cx, cy);
+      if (view.spoiler) this.drawSpoiler(cx, cy);
       if (view.mirrorEdge) this.drawMirrorEdge(view.mirrorEdge === 'right' ? x + CELL : x, y);
       // Drawn over the fog: both players always see the eye and the Roomba.
       if (view.surveillance) this.drawEye(cx, cy);
@@ -835,6 +836,15 @@ export class BoardScene extends Phaser.Scene {
   }
 
   /** Forgive Me: a violet ring on the confessing piece, a dashed ghost ring where it declared. */
+  /** MOD-D019 Spoiler Alert: an amber ring with a "next" tick on the marked piece. */
+  private drawSpoiler(cx: number, cy: number) {
+    const g = this.fogLayer;
+    const r = CELL * 0.44;
+    g.lineStyle(4, 0x7a4a00, 0.9).strokeCircle(cx, cy, r);
+    g.lineStyle(2.5, 0xf2b233, 1).strokeCircle(cx, cy, r);
+    g.fillStyle(0xf2b233, 1).fillTriangle(cx + r - 2, cy - r - 2, cx + r + 8, cy - r + 4, cx + r - 2, cy - r + 10);
+  }
+
   private drawConfession(kind: 'piece' | 'target', cx: number, cy: number) {
     const g = this.fogLayer;
     const r = CELL * 0.42;

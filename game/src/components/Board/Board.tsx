@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
-import { buildMove, canCtrlZ, ctrlZ, ctrlZBlocker, getShooBlocker, getTouchedPiece, hasTouchMove, touchPiece, touchedReason, isHiddenPieceMove } from '@pigeon-chess/game-core';
+import { buildMove, needsSpoilerMark, canCtrlZ, ctrlZ, ctrlZBlocker, getShooBlocker, getTouchedPiece, hasTouchMove, touchPiece, touchedReason, isHiddenPieceMove } from '@pigeon-chess/game-core';
 import {
   flipSquare,
   flippedMovesLeft,
@@ -130,7 +130,9 @@ export default function Board({
   const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null);
   /** MOD-E008: an armed drop waiting for the player to pick which piece. */
   const [pendingDrop, setPendingDrop] = useState<{ move: Move; choices: PieceType[] } | null>(null);
-  const boardPopupOpen = pendingPromotion !== null || pendingDrop !== null;
+  /** MOD-D019 Spoiler Alert: a chosen move waiting for the player to mark their next piece. */
+  const [pendingSpoiler, setPendingSpoiler] = useState<{ move: Move; preview: GameState } | null>(null);
+  const boardPopupOpen = pendingPromotion !== null || pendingDrop !== null || pendingSpoiler !== null;
   useEffect(() => {
     onPopupChange?.(boardPopupOpen);
   }, [boardPopupOpen, onPopupChange]);
@@ -234,13 +236,33 @@ export default function Board({
     (move: Move): Move => (extraMode ? { ...move, extraTurn: true } : move),
     [extraMode],
   );
-  const commitMove = useCallback(
+  const sendMove = useCallback(
     (move: Move) => {
       if (onMove) onMove(move);
       else onStateChange?.(chessEngine.applyMove(state, move));
     },
     [onMove, onStateChange, state],
   );
+  const commitMove = useCallback(
+    (move: Move) => {
+      // MOD-D019: first mark the piece you will move next, on the board as it will be.
+      if (move.spoiler === undefined && needsSpoilerMark(state, move)) {
+        const applied = chessEngine.applyMove(state, move);
+        // The preview drops the mark the engine sets by default, so the choice starts blank.
+        const own = { ...(applied.modifierState[MODIFIER_IDS.spoilerAlert] as Record<string, string> | undefined) };
+        delete own[move.playerColor];
+        const preview = { ...applied, modifierState: { ...applied.modifierState, [MODIFIER_IDS.spoilerAlert]: own } };
+        // A bump keeps the turn and is no move, so there is nothing to mark.
+        if (preview.moveHistory.length > state.moveHistory.length && preview.status === 'active') {
+          setPendingSpoiler({ move, preview });
+          return;
+        }
+      }
+      sendMove(move);
+    },
+    [sendMove, state],
+  );
+  useEffect(() => setPendingSpoiler(null), [movesPlayed, state.turn]);
 
   // MOD-B005: during a blackout the cursed side does not see the last move either.
   const forgetsLastMove = isHistoryBlackout(state, controlColor ?? state.turn);
@@ -337,6 +359,14 @@ export default function Board({
     (square: Square) => {
       if (state.status !== 'active') return;
       if (controlColor && state.turn !== controlColor) return; // opponent's turn
+      if (pendingSpoiler) {
+        const marked = pendingSpoiler.preview.pieces.get(square);
+        if (marked && marked.color === pendingSpoiler.move.playerColor) {
+          setPendingSpoiler(null);
+          sendMove({ ...pendingSpoiler.move, spoiler: marked.id });
+        }
+        return;
+      }
       if (pendingPromotion || pendingDrop) return; // modal is open — ignore board clicks
 
       const clickedPiece = state.pieces.get(square);
@@ -466,17 +496,20 @@ export default function Board({
       setSelected(null);
       setLegalMoves([]);
     },
-    [abilityMode, autoQueen, commitMove, controlColor, fakeMoves, flip, legalMoves, onInfo, pendingDrop, pendingPromotion, selected, shooGeraldOrWarn, showMovesFor, state, touch, touched, withTempo],
+    [abilityMode, autoQueen, commitMove, controlColor, pendingSpoiler, sendMove, fakeMoves, flip, legalMoves, onInfo, pendingDrop, pendingPromotion, selected, shooGeraldOrWarn, showMovesFor, state, touch, touched, withTempo],
   );
 
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
   const fileOrder = orientation === 'white' ? [...FILES] : [...FILES].reverse();
+  const spoilerChoices = pendingSpoiler
+    ? [...pendingSpoiler.preview.pieces.values()].filter(p => p.color === pendingSpoiler.move.playerColor).map(p => p.square)
+    : null;
   const squareViews = buildSquareViews({
-    state,
+    state: pendingSpoiler?.preview ?? state,
     orientation,
-    selected,
-    legalMoves,
-    showLegalMoves,
+    selected: pendingSpoiler ? null : selected,
+    legalMoves: spoilerChoices ?? legalMoves,
+    showLegalMoves: showLegalMoves || spoilerChoices !== null,
     checkSquare,
     lastFrom,
     lastTo,
@@ -526,6 +559,12 @@ export default function Board({
             )}
             {recalcKey > 0 && (
               <div key={recalcKey} className={styles.recalcFlash} role="status">RECALCULATING…</div>
+            )}
+            {pendingSpoiler && (
+              <div className={styles.spoilerBar} role="status">
+                <span>Spoiler Alert: tap the piece you will move next.</span>
+                <button type="button" className={styles.spoilerCancel} onClick={() => setPendingSpoiler(null)}>Cancel</button>
+              </div>
             )}
             {pieceMovedFlash && (
               <div className={styles.pieceMovedFlash} role="status">A PIECE MOVED</div>

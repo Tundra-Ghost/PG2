@@ -12,6 +12,7 @@ export const MODIFIER_IDS = {
   ctrlZ: 'MOD-C015',
   bulletTime: 'MOD-C016',
   everyoneHasAPrice: 'MOD-C019',
+  spoilerAlert: 'MOD-D019',
   jumpScare: 'MOD-D016',
   fiftyFirstMoves: 'MOD-B005',
   gerald: 'MOD-B002',
