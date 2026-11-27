@@ -256,7 +256,7 @@ The four centre squares are a roundabout. At the end of each round, pieces on d4
 
 *Viktor entered the roundabout in round 6. He is still deciding where to exit.*
 
-- Conflict: This Is My Swamp. Both use the centre; only one may be in a match.
+- Conflict: This Is My Swamp. Both use the centre; only one may be in a match, whoever drafts it.
 - Ruling: a King rotates only if the new square is safe.
 - Ruling: rotation never captures. A blocked piece waits.
 - Conflict: Tide Goes In, Tide Goes Out. Both use ranks 4 and 5; only one may be in a match, whoever drafts it.
