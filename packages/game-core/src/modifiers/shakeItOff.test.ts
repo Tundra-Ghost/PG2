@@ -37,14 +37,33 @@ function setShakes(state: GameState, shakes: Shake[]): GameState {
 const KINGS = () => [makePiece('king', 'white', 'a1'), makePiece('king', 'black', 'h8')];
 
 describe('MOD-A018 Shake It Off', () => {
-  it('schedule: arrows in round 10 (turns 19-20), quake at the start of round 11, then every 10 rounds', () => {
-    expect(timedPhase(18, QUAKE)).toBeNull();
-    expect(timedPhase(19, QUAKE)).toBe('warning');
+  it('schedule in rounds: arrows in round 10, quake at the start of round 11, then every 10 rounds', () => {
+    expect(timedPhase(9, QUAKE)).toBeNull();
+    expect(timedPhase(10, QUAKE)).toBe('warning');
+    expect(timedPhase(11, QUAKE)).toBe('active');
+    expect(timedPhase(12, QUAKE)).toBeNull();
     expect(timedPhase(20, QUAKE)).toBe('warning');
     expect(timedPhase(21, QUAKE)).toBe('active');
-    expect(timedPhase(23, QUAKE)).toBeNull();
-    expect(timedPhase(39, QUAKE)).toBe('warning');
-    expect(timedPhase(41, QUAKE)).toBe('active');
+  });
+
+  it('an extra turn never brings the quake before Black has moved in round 10', () => {
+    let state = playTo(start([...KINGS(), makePiece('rook', 'white', 'd4')]), 19);
+    state = setShakes(state, [{ id: 'white-rook-d4', df: 1, dr: 0 }]);
+    // White spends an extra turn: turnNumber reaches 21 while it is still round 10.
+    state = chessEngine.applyMove({ ...state, tempoTokens: { ...state.tempoTokens, white: 1 } }, move('a1', 'b1', 'white', { extraTurn: true }));
+    state = chessEngine.applyMove(state, move('b1', 'a1', 'white'));
+    expect(state.turn).toBe('black');
+    expect(state.pieces.get('d4')).toMatchObject({ type: 'rook' });
+    state = chessEngine.applyMove(state, move('h8', 'g8', 'black'));
+    expect(state.pieces.get('e4')).toMatchObject({ type: 'rook' });
+  });
+
+  it('no arrow on a piece that now faces the edge', () => {
+    let state = playTo(start([...KINGS(), makePiece('rook', 'white', 'g4')]), 19);
+    state = setShakes(state, [{ id: 'white-rook-g4', df: 1, dr: 0 }]);
+    expect(getQuakeArrows(state, 'white')).toHaveLength(1);
+    state = chessEngine.applyMove(state, move('g4', 'h4', 'white'));
+    expect(getQuakeArrows(state, 'white')).toEqual([]);
   });
 
   it('shows one on-board arrow per non-King piece a round ahead, the same for the same seed', () => {

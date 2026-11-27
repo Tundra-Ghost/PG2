@@ -1,17 +1,22 @@
 import type { ModifierDefinition } from '../types';
-import type { Color, GameState, Square } from '../../engine/types';
+import type { Color, GameState, Piece, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { prngPickIndex } from '../../engine/prng';
 import { ALL_DIRECTIONS, offset } from '../../engine/push';
 import { revealBumped, shownSlideSquares, slidePieceSafely, type Bumped } from '../../engine/conveyor';
 import { getHiddenPieceIds, getVisibleSquares } from '../../engine/visibility';
 import { MODIFIER_IDS } from '../ids';
+import { getShownType } from './sus';
 import { timedPhase, timedStart, type TimedSchedule } from '../timed';
 
 const ID = MODIFIER_IDS.shakeItOff;
 
-/** Every 10 rounds, shown 1 round ahead. The quake itself is one moment. */
-export const QUAKE: TimedSchedule = { every: 20, stay: 2, warning: 2 };
+/**
+ * Every 10 rounds, shown 1 round ahead. Counted in rounds (fullMoveNumber),
+ * not turns, so an extra turn never moves the quake before Black's move:
+ * arrows in round 10, the quake at the first turn start of round 11.
+ */
+export const QUAKE: TimedSchedule = { every: 10, stay: 1, warning: 1 };
 
 /** One piece's planned shake: one square by df files and dr ranks. */
 export interface Shake {
@@ -21,15 +26,26 @@ export interface Shake {
 }
 
 interface QuakeState {
-  /** The turnNumber of the quake these arrows are for. */
+  /** The round of the quake these arrows are for. */
   plannedFor?: number;
   shakes?: Shake[];
-  /** The turnNumber of the last quake, so it happens once. */
+  /** The round of the last quake, so it happens once. */
   lastQuake?: number;
 }
 
 function quakeState(state: GameState): QuakeState {
   return (state.modifierState[ID] as QuakeState | undefined) ?? {};
+}
+
+/**
+ * True if an arrow this way stays on the board and does not take a pawn to
+ * rank 1 or 8. Uses the type the opponent sees (Sus), so arrows never give a disguise away.
+ */
+function canShake(state: GameState, piece: Piece, df: number, dr: number): boolean {
+  const to = offset(piece.square, df, dr);
+  if (!to) return false;
+  const shown = getShownType(state, piece, piece.color === 'white' ? 'black' : 'white');
+  return !(shown === 'pawn' && (to[1] === '1' || to[1] === '8'));
 }
 
 /**
@@ -47,6 +63,8 @@ export function getQuakeArrows(state: GameState, viewer: Color | null): { square
     const piece = byId.get(shake.id);
     if (!piece || hidden.has(piece.id)) continue;
     if (visible && piece.color !== viewer && !visible.has(piece.square)) continue;
+    // A piece that moved since may now face the edge (or a pawn its last rank): no arrow, it stays.
+    if (!canShake(state, piece, shake.df, shake.dr)) continue;
     out.push({ square: piece.square, df: shake.df, dr: shake.dr });
   }
   return out;
@@ -70,8 +88,9 @@ export const shakeItOffDef: ModifierDefinition = {
 
   onTurnStart(state) {
     if (state.status !== 'active') return state;
-    const phase = timedPhase(state.turnNumber, QUAKE);
-    const start = timedStart(state.turnNumber, QUAKE);
+    const round = state.flags.fullMoveNumber;
+    const phase = timedPhase(round, QUAKE);
+    const start = timedStart(round, QUAKE);
     const memo = quakeState(state);
 
     if (phase === 'warning' && memo.plannedFor !== start) {
@@ -79,7 +98,8 @@ export const shakeItOffDef: ModifierDefinition = {
       let prng = state.prngState;
       const pieces = [...state.pieces.values()].filter(p => p.type !== 'king').sort((a, b) => (a.square < b.square ? -1 : 1));
       for (const piece of pieces) {
-        const dirs = ALL_DIRECTIONS.filter(([df, dr]) => offset(piece.square, df, dr) !== null);
+        const dirs = ALL_DIRECTIONS.filter(([df, dr]) => canShake(state, piece, df, dr));
+        if (dirs.length === 0) continue;
         const [idx, nextPrng] = prngPickIndex(prng, dirs.length);
         prng = nextPrng;
         shakes.push({ id: piece.id, df: dirs[idx][0], dr: dirs[idx][1] });
@@ -130,7 +150,8 @@ export const shakeItOffDef: ModifierDefinition = {
       type: 'modifier',
       modifierId: ID,
       title: 'Earthquake',
-      message: moved.length > 0 ? 'Earthquake! Pieces shake one square the way their arrows point.' : 'Earthquake! Nothing had room to move.',
+      // Count only moves the opponent may see, so a hidden piece's shake is never given away.
+      message: shownSlideSquares(next, moved).length > 0 ? 'Earthquake! Pieces shake one square the way their arrows point.' : 'Earthquake! Nothing had room to move.',
       squares: shownSlideSquares(next, moved),
     });
   },
