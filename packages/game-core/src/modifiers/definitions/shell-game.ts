@@ -1,7 +1,8 @@
 import type { ModifierDefinition } from '../types';
 import type { Color, GameState, Piece, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
-import { isSquareAttacked } from '../../engine/moveGenerator';
+import { isSquareAttacked, pieceAttackSquares } from '../../engine/moveGenerator';
+import { getVisibleSquares, withoutHiddenPieces } from '../../engine/visibility';
 import { prngPickIndex } from '../../engine/prng';
 import { MODIFIER_IDS } from '../ids';
 import { getModifierOwner } from '../owner';
@@ -55,6 +56,16 @@ function lift(state: GameState, color: Color, ids: string[], why: string): GameS
   return next;
 }
 
+/** The board as `color` sees it: enemy pieces hidden from it or in its fog taken off. */
+function ownerView(state: GameState, color: Color): GameState {
+  const view = withoutHiddenPieces(state, color);
+  const visible = getVisibleSquares(state, color);
+  if (!visible) return view;
+  const pieces = new Map(view.pieces);
+  for (const [sq, piece] of pieces) if (piece.color !== color && !visible.has(sq)) pieces.delete(sq);
+  return { ...view, pieces };
+}
+
 /** Lifts every cup that moved, was moved, or stands attacked. */
 function checkCups(state: GameState): GameState {
   let next = state;
@@ -70,15 +81,25 @@ function checkCups(state: GameState): GameState {
     }
     const moved = cups.filter(cup => byId.get(cup.pieceId) && byId.get(cup.pieceId)!.square !== cup.square).map(cup => cup.pieceId);
     next = lift(next, color, moved, 'It moved.');
-    const attacked = (shells(next)[color] ?? []).filter(cup => isSquareAttacked(next, cup.square, enemy)).map(cup => cup.pieceId);
+    // Only attackers the owner can see count, so a lift never gives away a hidden or fogged enemy.
+    const seen = ownerView(next, color);
+    const attacked = (shells(next)[color] ?? []).filter(cup => isSquareAttacked(seen, cup.square, enemy)).map(cup => cup.pieceId);
     next = lift(next, color, attacked, 'It is under attack.');
+    // A cup that gives check is lifted: the check comes from the real piece.
+    const kings = [...next.pieces.values()].filter(p => p.color === enemy && p.type === 'king').map(p => p.square);
+    const checking = (shells(next)[color] ?? []).filter(cup => {
+      const piece = next.pieces.get(cup.square);
+      return piece && pieceAttackSquares(next, piece).some(sq => kings.includes(sq));
+    }).map(cup => cup.pieceId);
+    next = lift(next, color, checking, 'It gives check.');
   }
   return next;
 }
 
 /**
- * MOD-D014: the owner's Queen and two pawns look like cups to the opponent.
- * Each cup is lifted the first time its piece moves or is attacked. The
+ * MOD-D014: the owner's Queen and two pieces from her rank look like cups to
+ * the opponent. Each cup is lifted the first time its piece moves, is
+ * attacked or gives check. The
  * King is never a cup (Core rule 1).
  */
 export const shellGameDef: ModifierDefinition = {
@@ -98,12 +119,18 @@ export const shellGameDef: ModifierDefinition = {
       // Squares, not ids: ids differ each time the start position is built.
       const own = [...next.pieces.values()].filter(p => p.color === color && !p.isGhost).sort((a, b) => a.square.localeCompare(b.square));
       const queen = own.find(p => p.type === 'queen');
-      const pawns = own.filter(p => p.type === 'pawn');
+      // Decoys stand on the Queen's rank, so her square never gives her away.
+      // Without enough of those, pawns make up the rest.
+      const rank = queen?.square[1];
+      const sameRank = own.filter(p => p !== queen && p.type !== 'king' && !p.isRealKing && p.square[1] === rank);
+      const pawns = own.filter(p => p.type === 'pawn' && p.square[1] !== rank);
       const picked: Piece[] = queen ? [queen] : [];
-      for (let i = 0; i < 2 && pawns.length > 0; i++) {
-        const [idx, prng] = prngPickIndex(next.prngState, pawns.length);
-        next.prngState = prng;
-        picked.push(pawns.splice(idx, 1)[0]);
+      for (const pool of [sameRank, pawns]) {
+        while (picked.length < 3 && pool.length > 0) {
+          const [idx, prng] = prngPickIndex(next.prngState, pool.length);
+          next.prngState = prng;
+          picked.push(pool.splice(idx, 1)[0]);
+        }
       }
       next.modifierState = { ...next.modifierState, [ID]: { ...shells(next), [color]: picked.map(p => ({ pieceId: p.id, square: p.square })) } };
     }

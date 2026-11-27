@@ -51,7 +51,7 @@ function needsPartner(cardId: string, ownIds: string[], otherIds: string[]): str
  * MINE! and Death And Taxes are priced for 8 pawns; The Small Council's 12 would make them cheap curses.
  * Invisibility Cloak and Camouflage both hide your pieces, so one player may not draft both.
  * Shell Game disguises your Queen: Sus could disguise the same piece, Yeah, There Are Three Of Them has no Queen, and
- * Main Character Syndrome and Imposter Syndrome mark the Queen in plain sight.
+ * Main Character Syndrome, Imposter Syndrome and Berserker mark the Queen in plain sight.
  */
 const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.slayQueen, MODIFIER_IDS.threeKings],
@@ -87,6 +87,7 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.shellGame, MODIFIER_IDS.threeKings],
   [MODIFIER_IDS.shellGame, MODIFIER_IDS.mainCharacterSyndrome],
   [MODIFIER_IDS.shellGame, MODIFIER_IDS.imposterSyndrome],
+  [MODIFIER_IDS.shellGame, MODIFIER_IDS.berserker],
 ];
 
 /**

@@ -19,7 +19,7 @@
 - Hidden pieces (shared code in engine/visibility.ts): a hidden piece looks like an empty square to its opponent. A move it blocks is a bump: it reveals the piece and the player moves again. A hidden piece that gives check is always revealed.
 - Invisibility Cloak built.
 - Camouflage built. Conflict (same player): Invisibility Cloak.
-- Shell Game built. Conflicts (same player): Sus, Yeah, There Are Three Of Them, Main Character Syndrome, Imposter Syndrome. Death And Taxes never taxes a cup.
+- Shell Game built. Conflicts (same player): Sus, Yeah, There Are Three Of Them, Main Character Syndrome, Imposter Syndrome, BOY. (The Berserker). Death And Taxes never taxes a cup.
 
 **Batch 10 (2026-11-25)**
 - Footprints, Flashlight, Crystal Ball and Tells built.
@@ -1035,9 +1035,10 @@ Your Queen and two of your pawns look like cups to your opponent. Each cup shows
 
 - Ruling: the King is never disguised. Core rule 1.
 - Not Sus: Sus fakes one piece forever; the shell game hides three until they move.
-- Built: the two pawns are picked at random (seeded). A cup is lifted, with an event naming the piece, when its piece moves or is moved by any card, or when an enemy piece attacks its square (checked after every move and at every turn start). Captures and checks follow the real piece. Bots read a cup as a pawn. The owner sees a "U" badge on their cups. Built on the Sus disguise code (getShownType reads a cup as a pawn). Tells and Big Beak never give a cup away; a few other cards' feed lines may call a cup a pawn just before it is lifted.
+- Changed from design: the two decoys are random pieces (seeded) from the Queen's own rank, not pawns, so her back-rank square never gives her away. With too few, pawns fill in.
+- Built: a cup is lifted, with an event naming the piece, when its piece moves or is moved by any card, gives check, or an enemy piece the owner can see attacks its square (checked after every move and at every turn start). The opponent's move dots can still trace the Queen's lines (squares their King may not enter). Captures and checks follow the real piece. Bots read a cup as a pawn. The owner sees a "U" badge on their cups. Built on the Sus disguise code (getShownType reads a cup as a pawn). Tells and Big Beak never give a cup away; a few other cards' feed lines may call a cup a pawn just before it is lifted.
 - Interaction: Death And Taxes. A cup is never taxed while it is a cup.
-- Conflict: Sus (it could disguise the same piece), Yeah, There Are Three Of Them (no Queen), Main Character Syndrome and Imposter Syndrome (they mark the Queen in plain sight). One player may not draft Shell Game with any of them.
+- Conflict: Sus (it could disguise the same piece), Yeah, There Are Three Of Them (no Queen), Main Character Syndrome, Imposter Syndrome and BOY. (The Berserker) (they mark the Queen in plain sight). One player may not draft Shell Game with any of them.
 
 ### MOD-D015 · Camouflage
 *Ref: Predator* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1175,6 +1176,7 @@ The game picks the Berserker, never a King or pawn. After it captures, it takes 
 
 - Conflict: The Floor Is Lava. A chain cannot land on Lava.
 - Changed from v0.2: one extra capture, not an endless chain.
+- Conflict: Shell Game (one side). The B badge would mark the Queen's cup.
 
 ### MOD-E007 · Reject Queen, Embrace Knight (The Underpromoter)
 *Ref: "Reject modernity" meme* · **Tier B** · Cost 2 · Curse 1 · Scope: Owner · Modes: All · **Built**

@@ -28,13 +28,13 @@ function small(): GameState {
 }
 
 describe('Shell Game', () => {
-  it('puts the Queen and two pawns under cups, never the King, only for the opponent', () => {
+  it('puts the Queen and two pieces from her rank under cups, never the King, only for the opponent', () => {
     const s = start();
     const cups = getOwnCups(s, 'white');
     expect(cups).toHaveLength(3);
     expect(cups).toContain('d1');
-    const types = cups.map(sq => s.pieces.get(sq)!.type).sort();
-    expect(types).toEqual(['pawn', 'pawn', 'queen']);
+    expect(cups.every(sq => sq[1] === '1')).toBe(true);
+    expect(cups).not.toContain('e1');
     const queen = s.pieces.get('d1')!;
     expect(isCup(s, queen, 'black')).toBe(true);
     expect(isCup(s, queen, 'white')).toBe(false);
@@ -60,6 +60,29 @@ describe('Shell Game', () => {
     // The rook on c2 attacks the b2 cup (and stops there), but not a2 or d1.
     expect(getOwnCups(next, 'white').sort()).toEqual(['a2', 'd1']);
     expect(next.eventHistory[next.eventHistory.length - 1].message).toContain('under attack');
+  });
+
+  it('a cup that gives check is lifted', () => {
+    const s = chessEngine.activateDraftModifiers(makeEmptyState([
+      makePiece('king', 'white', 'h1'),
+      makePiece('queen', 'white', 'd1'),
+      makePiece('knight', 'white', 'd2'),
+      makePiece('king', 'black', 'd8'),
+    ]), [{ id: MODIFIER_IDS.shellGame, sourceColor: 'white' }]);
+    expect(getOwnCups(s, 'white')).toContain('d1');
+    const next = chessEngine.applyMove(s, move('d2', 'b3', 'white'));
+    expect(chessEngine.isInCheck(next, 'black')).toBe(true);
+    expect(getOwnCups(next, 'white')).not.toContain('d1');
+  });
+
+  it('an attacker the owner cannot see does not lift a cup', () => {
+    const s = small();
+    s.activeModifiers = [...s.activeModifiers, { id: MODIFIER_IDS.invisibilityCloak, name: 'Cloak', activeFor: 'both', sourceColor: 'black' }];
+    s.modifierState = { ...s.modifierState, [MODIFIER_IDS.invisibilityCloak]: { black: { pieceId: 'black-rook-c8', until: 99 } } };
+    s.turn = 'black';
+    // The cloaked rook moves to b8, attacking the b2 cup the owner cannot see it threaten.
+    const next = chessEngine.applyMove(s, move('c8', 'b8', 'black'));
+    expect(getOwnCups(next, 'white').sort()).toEqual(['a2', 'b2', 'd1']);
   });
 
   it('bots read a cup as a pawn', () => {

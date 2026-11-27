@@ -4,6 +4,10 @@ import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { capturedIds } from '../captures';
 import { ALL_DIRECTIONS, offset } from '../../engine/push';
 import { MODIFIER_IDS } from '../ids';
+import { getShownType } from './sus';
+import { isCup } from './shell-game';
+
+const opponentOf = (color: Color): Color => (color === 'white' ? 'black' : 'white');
 
 const ID = MODIFIER_IDS.holdMyBread;
 
@@ -74,7 +78,7 @@ export const holdMyBreadDef: ModifierDefinition = {
           type: 'modifier',
           modifierId: ID,
           title: 'HOLD MY BREAD',
-          message: `The ${pawn.color} pawn on ${move.from} guards the ${friend.type} on ${move.to}. It cannot be captured next move.`,
+          message: `The ${pawn.color} pawn on ${move.from} guards the ${isCup(state, friend, opponentOf(pawn.color)) ? 'cup' : getShownType(state, friend, opponentOf(pawn.color)).replace('_', ' ')} on ${move.to}. It cannot be captured next move.`,
           squares: [move.from, move.to],
         }),
       };

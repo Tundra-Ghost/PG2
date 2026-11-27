@@ -258,7 +258,7 @@ export class BoardScene extends Phaser.Scene {
       const texture = pieceTextureKey(view.cup === 'enemy' ? 'cup' : piece.type, piece.color);
       if (!this.textures.exists(texture)) {
         this.labels.push(
-          this.add.text(cx, cy, PIECE_GLYPHS[piece.type] ?? '?', {
+          this.add.text(cx, cy, PIECE_GLYPHS[view.cup === 'enemy' ? 'cup' : piece.type] ?? '?', {
             fontFamily: 'serif',
             fontSize: '52px',
             color: piece.color === 'white' ? '#f2ead8' : '#2a1c0e',
