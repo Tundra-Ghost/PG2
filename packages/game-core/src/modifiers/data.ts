@@ -250,6 +250,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'shared',
     description:
       'The four centre squares are a roundabout. At the end of each round, pieces on d4, e4, e5 and d5 move one step clockwise around it, if the next square is free.',
+    prototypeRules:
+      'After every round (once Black has moved) each piece on d4, e4, e5 and d5 moves one step clockwise as White sees it (d5 to e5 to e4 to d4 to d5), if the next square is free. A piece whose next square empties follows, so a queue of three turns together; with all four squares full nothing moves. Each piece moves once per round at most. It never captures. No turn may put a King in check or add a checker against it, so a King turns only to a safe square. A hidden piece that blocks a turn is revealed. Not in a match with This Is My Swamp, Tide Goes In, Crop Circles, The Factory Must Grow or Monument To Gerald.',
     flavor: '"Viktor entered the roundabout in round 6. He is still deciding where to exit."',
   },
   {

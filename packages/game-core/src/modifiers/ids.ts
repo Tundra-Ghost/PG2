@@ -79,6 +79,7 @@ export const MODIFIER_IDS = {
   tideGoesIn: 'MOD-A017',
   cropCircles: 'MOD-A019',
   factoryMustGrow: 'MOD-A010',
+  magicRoundabout: 'MOD-A013',
   blessYou: 'MOD-B012',
   footprints: 'MOD-D011',
   flashlight: 'MOD-D012',

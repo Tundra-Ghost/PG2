@@ -98,6 +98,8 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
  * flocks would sit in the water.
  * Crop Circles appear on ranks 3 to 6, over the Swamp, the roundabout, flocks
  * or the tide.
+ * The Magic Roundabout turns d4, e4, e5 and d5: the Swamp and Gerald's statue
+ * sit there, and the belts move the same squares at the same time.
  */
 const MATCH_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.thinkingWithPortals, MODIFIER_IDS.ventTiles],
@@ -105,11 +107,14 @@ const MATCH_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.tideGoesIn, MODIFIER_IDS.thisIsMySwamp],
   [MODIFIER_IDS.tideGoesIn, MODIFIER_IDS.theBirds],
   [MODIFIER_IDS.tideGoesIn, MODIFIER_IDS.thinkingWithPortals],
-  [MODIFIER_IDS.tideGoesIn, 'MOD-A013'], // The Magic Roundabout
+  [MODIFIER_IDS.tideGoesIn, MODIFIER_IDS.magicRoundabout],
   [MODIFIER_IDS.cropCircles, MODIFIER_IDS.thisIsMySwamp],
   [MODIFIER_IDS.cropCircles, MODIFIER_IDS.theBirds],
   [MODIFIER_IDS.cropCircles, MODIFIER_IDS.tideGoesIn],
-  [MODIFIER_IDS.cropCircles, 'MOD-A013'], // The Magic Roundabout
+  [MODIFIER_IDS.cropCircles, MODIFIER_IDS.magicRoundabout],
+  [MODIFIER_IDS.magicRoundabout, MODIFIER_IDS.thisIsMySwamp],
+  [MODIFIER_IDS.magicRoundabout, MODIFIER_IDS.factoryMustGrow],
+  [MODIFIER_IDS.magicRoundabout, MODIFIER_IDS.monumentToGerald],
 ];
 
 /** The card in either draft that rules this one out of the match, if any. */
