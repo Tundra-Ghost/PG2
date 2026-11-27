@@ -25,7 +25,7 @@ interface FactoryState {
 /** True while Tide Goes In (MOD-A017) floods ranks 4 and 5: the belts stop. */
 function beltsFlooded(state: GameState): boolean {
   return state.activeModifiers.some(mod => mod.id === MODIFIER_IDS.tideGoesIn)
-    && timedPhase(state.turnNumber, TIDE) === 'active';
+    && timedPhase(state.flags.fullMoveNumber, TIDE) === 'active';
 }
 
 /**

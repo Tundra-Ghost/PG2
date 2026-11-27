@@ -9,8 +9,11 @@ import { timedPhase, type TimedPhase, type TimedSchedule } from '../timed';
 const ID = MODIFIER_IDS.cropCircles;
 const FILES = 'abcdefgh';
 
-/** Every 8 rounds, for 3 rounds, shown 1 round ahead. */
-export const CROP: TimedSchedule = { every: 16, stay: 6, warning: 2 };
+/**
+ * Every 8 rounds, for 3 rounds, shown 1 round ahead. Counted in rounds
+ * (fullMoveNumber), so an extra turn never moves the circle before Black's move.
+ */
+export const CROP: TimedSchedule = { every: 8, stay: 3, warning: 1 };
 
 interface CropState {
   phase: TimedPhase;
@@ -77,7 +80,7 @@ export const cropCirclesDef: ModifierDefinition = {
   draftScope: 'shared',
 
   onTurnStart(state) {
-    const phase = timedPhase(state.turnNumber, CROP);
+    const phase = timedPhase(state.flags.fullMoveNumber, CROP);
     const was = read(state);
     if (phase === was.phase) return state;
     let squares = was.squares;

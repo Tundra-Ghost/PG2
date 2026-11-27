@@ -39,12 +39,25 @@ function circle(state: GameState): Square[] {
 const KINGS = () => [makePiece('king', 'white', 'a1'), makePiece('king', 'black', 'h8')];
 
 describe('MOD-A019 Crop Circles', () => {
-  it('schedule: shown on turns 15-16, active 17-22, gone on 23', () => {
-    expect(timedPhase(14, CROP)).toBeNull();
-    expect(timedPhase(15, CROP)).toBe('warning');
+  it('schedule in rounds: shown in round 8, active in rounds 9-11, gone in round 12', () => {
+    expect(timedPhase(7, CROP)).toBeNull();
+    expect(timedPhase(8, CROP)).toBe('warning');
+    expect(timedPhase(9, CROP)).toBe('active');
+    expect(timedPhase(11, CROP)).toBe('active');
+    expect(timedPhase(12, CROP)).toBeNull();
     expect(timedPhase(17, CROP)).toBe('active');
-    expect(timedPhase(22, CROP)).toBe('active');
-    expect(timedPhase(23, CROP)).toBeNull();
+  });
+
+  it('an extra turn never brings the circle before Black has moved in round 8', () => {
+    let state = playTo(withCrop([...KINGS(), makePiece('pawn', 'white', 'h2'), makePiece('pawn', 'black', 'a7')]), 15);
+    const squares = circle(state);
+    // White spends an extra turn: turnNumber reaches 17 while it is still round 8.
+    state = chessEngine.applyMove({ ...state, positionHistory: {}, tempoTokens: { ...state.tempoTokens, white: 1 } }, move('a2', 'a1', 'white', { extraTurn: true }));
+    state = chessEngine.applyMove({ ...state, positionHistory: {} }, move('a1', 'a2', 'white'));
+    expect(state.turn).toBe('black');
+    expect(isInCropCircle(state, squares[4])).toBe(false);
+    state = chessEngine.applyMove({ ...state, positionHistory: {} }, move('h7', 'h8', 'black'));
+    expect(isInCropCircle(state, squares[4])).toBe(true);
   });
 
   it('a 3x3 on ranks 3 to 6 is shown a round ahead, then protects, then fades', () => {

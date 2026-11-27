@@ -8,8 +8,11 @@ import { timedPhase, type TimedPhase, type TimedSchedule } from '../timed';
 const ID = MODIFIER_IDS.tideGoesIn;
 const FILES = 'abcdefgh';
 
-/** Every 8 rounds, for 4 rounds, shown 1 round ahead. */
-export const TIDE: TimedSchedule = { every: 16, stay: 8, warning: 2 };
+/**
+ * Every 8 rounds, for 4 rounds, shown 1 round ahead. Counted in rounds
+ * (fullMoveNumber), so an extra turn never moves the tide before Black's move.
+ */
+export const TIDE: TimedSchedule = { every: 8, stay: 4, warning: 1 };
 
 export const WATER_SQUARES: Square[] = [...FILES].flatMap(f => [`${f}4`, `${f}5`] as Square[]);
 const WATER = new Set<Square>(WATER_SQUARES);
@@ -58,7 +61,7 @@ export const tideDef: ModifierDefinition = {
   draftScope: 'shared',
 
   onTurnStart(state) {
-    const phase = timedPhase(state.turnNumber, TIDE);
+    const phase = timedPhase(state.flags.fullMoveNumber, TIDE);
     const was = ((state.modifierState[ID] as { phase?: TimedPhase } | undefined)?.phase) ?? null;
     if (phase === was) return state;
     const next = setTide(state, phase);
