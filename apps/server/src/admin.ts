@@ -44,6 +44,13 @@ export function adminOf(request: FastifyRequest): Player {
 }
 
 export function registerAdminRoutes(app: FastifyInstance, accounts: Accounts, options: AdminOptions): void {
+  // The client asks this on every load, so it answers 200 for everyone and only says
+  // whether the caller is an admin (#234). Every route below still returns 403.
+  app.get('/api/admin/check', async request => {
+    const player = options.adminIds.size > 0 ? await accounts.playerFromHeaders(request.headers).catch(() => null) : null;
+    return { admin: !!player && options.adminIds.has(player.id) };
+  });
+
   void app.register(
     async scope => {
       scope.addHook('onRequest', async (request, reply) => {
@@ -54,8 +61,6 @@ export function registerAdminRoutes(app: FastifyInstance, accounts: Accounts, op
 
       // Made-up admin paths answer like real ones, so nobody can map the routes.
       scope.setNotFoundHandler((_request, reply) => reply.status(403).send({ error: 'Forbidden' }));
-
-      scope.get('/check', async () => ({ ok: true }));
 
       scope.get('/overview', async () => ({ server: options.build }));
 
