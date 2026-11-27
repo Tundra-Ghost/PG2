@@ -218,7 +218,9 @@ export function surveyTotals(responses: SurveyResponse[]): QuestionTotals[] {
   const byId = new Map<string, QuestionTotals & { sum: number }>();
   for (const response of responses) {
     for (const answer of response.answers) {
-      const t = byId.get(answer.id) ?? { id: answer.id, question: answer.question, kind: answer.kind, answered: 0, sum: 0 };
+      // Grouped by id and kind: a text answer can't be averaged with a scale.
+      const key = `${answer.id}:${answer.kind}`;
+      const t = byId.get(key) ?? { id: answer.id, question: answer.question, kind: answer.kind, answered: 0, sum: 0 };
       t.answered += 1;
       if (answer.kind !== 'text') {
         t.counts ??= {};
@@ -226,17 +228,24 @@ export function surveyTotals(responses: SurveyResponse[]): QuestionTotals[] {
         for (const pick of picks) t.counts[pick] = (t.counts[pick] ?? 0) + 1;
       }
       if (answer.kind === 'scale') t.sum += answer.answer as number;
-      byId.set(answer.id, t);
+      byId.set(key, t);
     }
   }
   return [...byId.values()].map(({ sum, ...t }) => (t.kind === 'scale' ? { ...t, average: sum / t.answered } : t));
 }
 
+/** Rows the log sends at most; totals still cover every match. */
+export const SURVEY_LOG_LIMIT = 500;
+
 /** The admin survey log: filtered responses, totals, and the values the filters can take. */
 export function surveyLog(responses: SurveyResponse[], filter: SurveyFilter) {
   const matching = filterSurveys(responses, filter);
   return {
-    responses: matching,
+    // Context is whatever the client sent: version and modifiers are cleaned so the page can trust them.
+    responses: matching
+      .slice(0, SURVEY_LOG_LIMIT)
+      .map(r => ({ ...r, context: { ...r.context, version: surveyVersion(r), modifiers: surveyModifiers(r) } })),
+    total: matching.length,
     totals: surveyTotals(matching),
     versions: [...new Set(responses.map(surveyVersion))].sort().reverse(),
     modifiers: [...new Set(responses.flatMap(surveyModifiers))].sort(),

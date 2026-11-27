@@ -97,17 +97,20 @@ describe('admin access', () => {
     const send = (fun: number, context: Record<string, unknown>) =>
       call('/api/survey', { body: { survey: 'post-game-v1', answers: [{ id: 'fun', kind: 'scale', question: 'Fun?', answer: fun }], context } });
     await send(4, { version: '0.2026.11.27.1', modifiers: ['VENT_TILES'] });
-    await send(2, { version: '0.2026.11.27.2', modifiers: [] });
+    await send(2, { version: '0.2026.11.27.2', modifiers: [{}, 7] });
+    await call('/api/survey', { body: { survey: 'post-game-v1', answers: [{ id: 'fun', kind: 'text', question: 'Fun?', answer: 'meh' }], context: { version: 3 } } });
     const all = (await (await call('/api/admin/surveys', { token: owner.token })).json()) as {
-      responses: { answers: { answer: number }[]; userId?: string }[];
+      responses: { answers: { answer: number | string }[]; userId?: string }[];
       totals: { average: number }[];
       versions: string[];
       modifiers: string[];
     };
-    expect(all.responses.map(r => r.answers[0].answer)).toEqual([2, 4]);
+    expect(all.responses.map(r => r.answers[0].answer)).toEqual(['meh', 2, 4]);
+    expect(all.responses[1]).toMatchObject({ context: { modifiers: [] } });
+    expect(all.responses[0]).toMatchObject({ context: { version: 'unknown' } });
     expect(all.responses[0]).not.toHaveProperty('userId');
-    expect(all.totals[0].average).toBe(3);
-    expect(all.versions).toEqual(['0.2026.11.27.2', '0.2026.11.27.1']);
+    expect(all.totals.find(t => t.average !== undefined)!.average).toBe(3);
+    expect(all.versions).toEqual(['unknown', '0.2026.11.27.2', '0.2026.11.27.1']);
     expect(all.modifiers).toEqual(['VENT_TILES']);
     const vent = (await (await call('/api/admin/surveys?modifier=VENT_TILES&from=2000-01-01&to=bad', { token: owner.token })).json()) as { responses: unknown[] };
     expect(vent.responses).toHaveLength(1);

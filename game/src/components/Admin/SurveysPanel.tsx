@@ -15,6 +15,8 @@ interface QuestionTotals {
 
 interface SurveyLog {
   responses: AdminSurveyResponse[];
+  /** All matches; responses holds the newest few hundred. */
+  total: number;
   totals: QuestionTotals[];
   versions: string[];
   modifiers: string[];
@@ -65,11 +67,11 @@ export default function SurveysPanel() {
         <h2 id="admin-survey-filters" className={styles.heading}>Survey log</h2>
         <div className={styles.filters}>
           <label className={styles.field}>
-            From
+            From (UTC)
             <input type="date" className={styles.input} value={filter.from} onChange={set('from')} />
           </label>
           <label className={styles.field}>
-            To
+            To (UTC)
             <input type="date" className={styles.input} value={filter.to} onChange={set('to')} />
           </label>
           <label className={styles.field}>
@@ -96,7 +98,12 @@ export default function SurveysPanel() {
           </button>
         </div>
         {error && <p className={styles.error} role="alert">{error}</p>}
-        {log && <p className={styles.text}>{log.responses.length} response{log.responses.length === 1 ? '' : 's'}</p>}
+        {log && (
+          <p className={styles.text}>
+            {log.total} response{log.total === 1 ? '' : 's'}
+            {log.total > log.responses.length ? `, newest ${log.responses.length} shown and in the CSV` : ''}
+          </p>
+        )}
       </section>
 
       {log && log.totals.length > 0 && (
@@ -129,7 +136,7 @@ export default function SurveysPanel() {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th scope="col">When</th>
+                  <th scope="col">When (UTC)</th>
                   <th scope="col">Player</th>
                   <th scope="col">Version</th>
                   <th scope="col">Game</th>
@@ -145,7 +152,7 @@ export default function SurveysPanel() {
                     <td>
                       {[r.context.mode, r.context.result].filter(Boolean).join(', ')}
                       {Array.isArray(r.context.modifiers) && r.context.modifiers.length > 0 && (
-                        <> · {(r.context.modifiers as string[]).map(modifierName).join(', ')}</>
+                        <> · {r.context.modifiers.filter((m): m is string => typeof m === 'string').map(modifierName).join(', ')}</>
                       )}
                     </td>
                     <td>
