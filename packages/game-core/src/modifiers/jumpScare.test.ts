@@ -7,6 +7,7 @@ import './index';
 import { MODIFIER_IDS } from './ids';
 import { getLights, isLightsOut } from './definitions/jump-scare';
 import { makeEmptyState, makePiece, move } from './testHelpers';
+import { modifierRegistry } from './registry';
 
 const ID = MODIFIER_IDS.jumpScare;
 
@@ -74,5 +75,29 @@ describe('MOD-D016 Jump Scare', () => {
     const state = start(army(), 11, [{ id: MODIFIER_IDS.nightShift, sourceColor: null }]);
     expect(isLightsOut(state)).toBe(true);
     expect(getHiddenPieceIds(state, 'white').size).toBe(2);
+  });
+});
+
+describe('MOD-D016 Jump Scare review cases', () => {
+  it('a bump never leaves a false check in view', () => {
+    const state = start([makePiece('king', 'white', 'e1'), makePiece('bishop', 'white', 'c4'), makePiece('pawn', 'white', 'h2'),
+      makePiece('king', 'black', 'a8'), makePiece('rook', 'black', 'e6'), makePiece('knight', 'black', 'e4')], 11);
+    const next = chessEngine.applyMove(state, move('c4', 'f7', 'white'));
+    expect(next.turn).toBe('white');
+    expect(getHiddenPieceIds(next, 'white').has('black-rook-e6')).toBe(false);
+    // The knight blocking the rook's line is shown too, so White does not see a check that is not there.
+    expect(getHiddenPieceIds(next, 'white').has('black-knight-e4')).toBe(false);
+    expect(chessEngine.getLegalMoves(next, 'h2').length).toBeGreaterThan(0);
+  });
+
+  it('a piece shown before the lights go out does not skip the announcement', () => {
+    let state = start(army(), 10);
+    state = chessEngine.applyMove(state, move('h2', 'h3', 'white'));
+    // Another card reveals a piece before Jump Scare's turn start runs.
+    const def = modifierRegistry.get(ID)!;
+    const pre = def.revealPieces!(state, ['black-pawn-a5']);
+    expect((pre.modifierState[ID] as { phase: string }).phase).toBe('warning');
+    state = chessEngine.applyMove(state, move('g8', 'f6', 'black'));
+    expect(state.eventHistory.some(e => e.title === 'Lights out!')).toBe(true);
   });
 });

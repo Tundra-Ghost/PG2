@@ -166,7 +166,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const confession = rawConfession && viewer && [...state.pieces.values()].some(p => p.square === rawConfession.square && hiddenEnemies.has(p.id)) ? null : rawConfession;
   const ownCups = new Set(viewer ? getOwnCups(state, viewer) : []);
   const ownUnseen = viewer ? getHiddenPieceIds(state, viewer === 'white' ? 'black' : 'white') : new Set<string>();
-  // Jump Scare: in the dark round the viewer's own pieces are drawn dark too, all but the King.
+  // Jump Scare: in the dark round the viewer's own pieces are hidden too, all but the King (tapping still works).
   const lightsOut = viewer ? isLightsOut(state) : false;
   const mirrorEdge = isBandersnatchActive(state) ? (orientation === 'white' ? 'right' : 'left') : null;
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];

@@ -15,8 +15,9 @@ export const BLACKOUT: TimedSchedule = { every: 10, stay: 1, warning: 1 };
 
 interface ScareState {
   phase: TimedPhase;
-  /** Pieces shown again this dark round (a bump, a check). */
+  /** Pieces shown again in the dark round that started on round `round` (a bump, a check). */
   revealed: string[];
+  round?: number;
 }
 
 function scare(state: GameState): ScareState {
@@ -52,7 +53,7 @@ const MESSAGES: Record<'warning' | 'active' | 'on', { title: string; message: st
 /**
  * MOD-D016: every 10 rounds, one round where every piece except the Kings is
  * hidden from the opponent (engine/visibility.ts: bumps, checks, bots and
- * online redaction), and the board draws each player's own pieces dark too.
+ * online redaction), and the board hides each player's own pieces from them too.
  * A blind move that is not legal is a bump: it reveals what blocked it and
  * the player moves again, so no move is lost.
  */
@@ -70,14 +71,15 @@ export const jumpScareDef: ModifierDefinition = {
     const phase = timedPhase(state.flags.fullMoveNumber, BLACKOUT);
     const was = scare(state).phase;
     if (phase === was) return state;
-    const next: GameState = { ...state, modifierState: { ...state.modifierState, [ID]: { phase, revealed: [] } satisfies ScareState } };
+    const next: GameState = { ...state, modifierState: { ...state.modifierState, [ID]: { ...scare(state), phase } satisfies ScareState } };
     const text = MESSAGES[phase ?? 'on'];
     return appendGameEvent(next, { ply: state.moveHistory.length + 1, type: 'modifier', modifierId: ID, ...text });
   },
 
   getHiddenPieces(state) {
     if (!isLightsOut(state)) return [];
-    const revealed = new Set(scare(state).phase === 'active' ? scare(state).revealed : []);
+    const current = scare(state);
+    const revealed = new Set(current.round === timedStart(state.flags.fullMoveNumber, BLACKOUT) ? current.revealed : []);
     return [...state.pieces.values()].filter(p => p.type !== 'king' && !p.isRealKing && !revealed.has(p.id)).map(p => p.id);
   },
 
@@ -86,7 +88,9 @@ export const jumpScareDef: ModifierDefinition = {
   revealPieces(state, pieceIds) {
     if (!isLightsOut(state)) return state;
     const current = scare(state);
-    const revealed = [...new Set([...current.revealed, ...pieceIds])];
-    return { ...state, modifierState: { ...state.modifierState, [ID]: { phase: 'active', revealed } satisfies ScareState } };
+    const round = timedStart(state.flags.fullMoveNumber, BLACKOUT);
+    const before = current.round === round ? current.revealed : [];
+    const revealed = [...new Set([...before, ...pieceIds])];
+    return { ...state, modifierState: { ...state.modifierState, [ID]: { ...current, revealed, round } satisfies ScareState } };
   },
 };
