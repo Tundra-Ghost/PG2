@@ -14,6 +14,7 @@ import { registerAccountRoutes, type Accounts } from './accounts';
 import { registerAdminRoutes } from './admin';
 import { createFeedbackStore, registerFeedbackRoutes } from './feedback';
 import { createSurveyStore, registerSurveyRoutes } from './survey';
+import { createModeration } from './moderation';
 import { createUsageStore, registerUsageRoutes, type UsageStore } from './usage';
 import { attachSocial, type Presence } from './social';
 import { RoomManager, type Player } from './rooms';
@@ -108,6 +109,16 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
       build: options.build ?? readBuildInfo(),
       usage: usage!,
       surveys,
+      moderation: createModeration(options.accounts.db, options.accounts),
+      rooms,
+      kick(userId) {
+        for (const socket of io.sockets.sockets.values()) if (socket.data.player?.id === userId) socket.disconnect(true);
+      },
+      endRoom(roomId) {
+        if (!rooms.endRoom(roomId)) return false;
+        io.in(roomId).disconnectSockets(true);
+        return true;
+      },
     });
   }
 

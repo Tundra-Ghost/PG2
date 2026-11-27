@@ -103,6 +103,30 @@ export class RoomManager {
     this.expireOld();
   }
 
+  /** Open rooms for the admin's moderator tools, newest activity first. */
+  adminList(): { id: string; white: string | null; black: string | null; whiteId: string | null; blackId: string | null; status: string; moves: number; updatedAt: number }[] {
+    return [...this.rooms.values()]
+      .map(room => ({
+        id: room.id,
+        white: room.seats.white ? (room.seats.white.player?.username ?? 'guest') : null,
+        black: room.seats.black ? (room.seats.black.player?.username ?? 'guest') : null,
+        whiteId: room.seats.white?.player?.id ?? null,
+        blackId: room.seats.black?.player?.id ?? null,
+        status: room.state.status,
+        moves: room.state.moveHistory.length,
+        updatedAt: room.updatedAt,
+      }))
+      .sort((a, b) => b.updatedAt - a.updatedAt);
+  }
+
+  /** Removes a room at once, e.g. a stuck game an admin ends. */
+  endRoom(roomId: string): boolean {
+    if (!this.rooms.has(roomId)) return false;
+    this.rooms.delete(roomId);
+    this.store.remove(roomId);
+    return true;
+  }
+
   /** Every open room's id and whether both seats are taken and the game is over. */
   roomStates(): { id: string; full: boolean; over: boolean }[] {
     return [...this.rooms.values()].map(room => ({

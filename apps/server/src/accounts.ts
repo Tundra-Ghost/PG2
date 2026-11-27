@@ -57,6 +57,19 @@ export function placeholderEmail(name: string): string {
   return `${name.toLowerCase()}@players.pigeon-chess.invalid`;
 }
 
+/** Banned accounts. Created before Better Auth starts, because its session hook reads it. */
+function createBanTable(db: DatabaseSync): void {
+  db.exec(`CREATE TABLE IF NOT EXISTS account_ban (
+    userId TEXT PRIMARY KEY,
+    reason TEXT NOT NULL,
+    bannedAt INTEGER NOT NULL
+  )`);
+}
+
+export function isBanned(db: DatabaseSync, userId: string): boolean {
+  return db.prepare('SELECT 1 FROM account_ban WHERE userId = ?').get(userId) !== undefined;
+}
+
 function authConfig(db: DatabaseSync, options: AccountOptions) {
   return {
     database: db,
@@ -68,6 +81,16 @@ function authConfig(db: DatabaseSync, options: AccountOptions) {
     session: { expiresIn: 60 * 60 * 24 * 30 },
     plugins: [username(), bearer()],
     telemetry: { enabled: false },
+    // A banned account can't sign in: no new session is ever created for it.
+    databaseHooks: {
+      session: {
+        create: {
+          async before(session: { userId: string }) {
+            return isBanned(db, session.userId) ? false : undefined;
+          },
+        },
+      },
+    },
   } satisfies BetterAuthOptions;
 }
 
@@ -99,6 +122,7 @@ export interface Accounts {
 export async function createAccounts(options: AccountOptions): Promise<Accounts> {
   const db = new DatabaseSync(options.dbPath);
   db.exec('PRAGMA journal_mode = WAL');
+  createBanTable(db);
   // Create or update Better Auth's tables (user, session, account, ...)
   // before it starts, or it logs a schema mismatch on every fresh volume.
   const { runMigrations } = await getMigrations(authConfig(db, options));

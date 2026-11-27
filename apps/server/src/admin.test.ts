@@ -12,6 +12,14 @@ export const ADMIN_ENDPOINTS: { method: 'GET' | 'POST'; path: string; body?: unk
   { method: 'GET', path: '/api/admin/overview' },
   { method: 'GET', path: '/api/admin/stats' },
   { method: 'GET', path: '/api/admin/surveys' },
+  { method: 'GET', path: '/api/admin/accounts?q=a' },
+  { method: 'GET', path: '/api/admin/accounts/someid' },
+  { method: 'POST', path: '/api/admin/accounts/someid/ban', body: { reason: 'x' } },
+  { method: 'POST', path: '/api/admin/accounts/someid/unban', body: { reason: 'x' } },
+  { method: 'POST', path: '/api/admin/accounts/someid/rename', body: { displayName: 'x' } },
+  { method: 'GET', path: '/api/admin/rooms' },
+  { method: 'POST', path: '/api/admin/rooms/ABCDEF/end', body: { reason: 'x' } },
+  { method: 'GET', path: '/api/admin/audit' },
   { method: 'GET', path: '/api/admin/no-such-page' },
 ];
 
@@ -130,5 +138,58 @@ describe('admin access', () => {
     expect(stats.accounts.active1).toBe(2);
     expect(stats.accounts.newPerDay.at(-1)!.count).toBe(2);
     expect(stats.daily.at(-1)).toMatchObject({ pageLoads: 1, phone: 1 });
+  });
+
+  it('finds, bans, unbans and renames an account, and logs every action', async () => {
+    const owner = await register('theowner');
+    const rude = await register('rudebird');
+    adminIds.add(owner.id);
+    const admin = (path: string, body?: unknown) => call(`/api/admin${path}`, { token: owner.token, body });
+
+    const found = (await (await admin('/accounts?q=RUDE')).json()) as { accounts: { id: string; username: string; banned: unknown }[] };
+    expect(found.accounts).toEqual([expect.objectContaining({ id: rude.id, username: 'rudebird', banned: null })]);
+    expect((await (await admin('/accounts?q=%25')).json()) as { accounts: unknown[] }).toEqual({ accounts: [] });
+
+    expect((await admin(`/accounts/${rude.id}/ban`, { reason: '  ' })).status).toBe(400);
+    expect((await admin(`/accounts/${owner.id}/ban`, { reason: 'oops' })).status).toBe(400);
+    expect((await admin(`/accounts/${rude.id}/ban`, { reason: 'spam in chat' })).status).toBe(200);
+    // Signed out everywhere, and can't sign back in.
+    expect((await call('/api/profile', { token: rude.token })).status).toBe(401);
+    const signIn = await call('/api/auth/sign-in/username', { body: { username: 'rudebird', password: 'hunter2hunter2' } });
+    expect(signIn.ok).toBe(false);
+    const detail = (await (await admin(`/accounts/${rude.id}`)).json()) as { account: { banned: { reason: string } } };
+    expect(detail.account.banned.reason).toBe('spam in chat');
+
+    expect((await admin(`/accounts/${rude.id}/unban`, { reason: 'appeal' })).status).toBe(200);
+    const again = await call('/api/auth/sign-in/username', { body: { username: 'rudebird', password: 'hunter2hunter2' } });
+    expect(again.status).toBe(200);
+    const token = ((await again.json()) as { token: string }).token;
+    await call('/api/profile', { method: 'PUT', token, body: { profile: { displayName: 'Bad Word', elo: 900 } } });
+
+    expect((await admin(`/accounts/${rude.id}/rename`, { displayName: 'x'.repeat(31) })).status).toBe(400);
+    expect((await admin(`/accounts/${rude.id}/rename`, { displayName: 'Polite Pigeon' })).status).toBe(200);
+    expect((await call('/api/profile', { token })).status).toBe(401);
+    const renamed = (await (await admin(`/accounts/${rude.id}`)).json()) as { account: { displayName: string } };
+    expect(renamed.account.displayName).toBe('Polite Pigeon');
+
+    expect((await admin('/rooms/NOPE00/end', { reason: 'stuck' })).status).toBe(404);
+    const audit = (await (await admin('/audit')).json()) as { entries: { admin: string; action: string; target: string; detail: string }[] };
+    expect(audit.entries.map(e => [e.admin, e.action, e.target, e.detail])).toEqual([
+      ['theowner', 'rename', 'rudebird', 'Bad Word -> Polite Pigeon'],
+      ['theowner', 'unban', 'rudebird', 'appeal'],
+      ['theowner', 'ban', 'rudebird', 'spam in chat'],
+    ]);
+  });
+
+  it('ends a stuck online room', async () => {
+    const owner = await register('theowner');
+    adminIds.add(owner.id);
+    const room = server.rooms.create();
+    if (!room.ok) throw new Error('no room');
+    const rooms = (await (await call('/api/admin/rooms', { token: owner.token })).json()) as { rooms: { id: string; whiteId?: string }[] };
+    expect(rooms.rooms.map(r => r.id)).toEqual([room.roomId]);
+    expect(rooms.rooms[0]).not.toHaveProperty('whiteId');
+    expect((await call(`/api/admin/rooms/${room.roomId}/end`, { token: owner.token, body: { reason: 'stuck' } })).status).toBe(200);
+    expect(server.rooms.snapshot(room.roomId)).toBeNull();
   });
 });
