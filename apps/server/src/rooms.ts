@@ -61,14 +61,16 @@ export interface Room {
   chat: ChatMessage[];
   /** The modifier draft, or null for a standard game. */
   draft: OnlineDraft | null;
+  /** Per seat: whether each event was in sight when it happened. Memory only. */
+  eventShown?: Partial<Record<Color, Map<string, boolean>>>;
 }
 
 /** Chat kept per room. Older lines drop off. */
 export const CHAT_HISTORY = 100;
-/** Key for decoy id aliases. A new key after a restart only changes those ids. */
+/** Key for enemy piece id aliases. A new key after a restart only changes those ids. */
 const ALIAS_KEY = randomBytes(32);
 
-/** A uuid-shaped stand-in for a decoy's id, stable for the room. */
+/** A uuid-shaped stand-in for an enemy piece id, stable for the room. */
 function aliasId(roomId: string, id: string): string {
   const hex = createHmac('sha256', ALIAS_KEY).update(`${roomId}:${id}`).digest('hex');
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-${'89ab'[parseInt(hex[16], 16) % 4]}${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
@@ -84,9 +86,18 @@ function drafting(room: Room): boolean {
   return room.draft !== null && !isDraftComplete(room.draft);
 }
 
+/**
+ * A start position with a seed nobody can guess. The engine seeds from the
+ * clock, which a player could find by trying times near the game's start.
+ */
+function seededInitialState(): GameState {
+  const seed = randomInt(1, 2 ** 31 - 1);
+  return { ...chessEngine.getInitialState(), prngSeed: seed, prngState: seed };
+}
+
 /** Same start as a local drafted match: each pick belongs to the side that drafted it. */
 function startDraftedGame(draft: OnlineDraft): GameState {
-  const state = chessEngine.activateDraftModifiers(chessEngine.getInitialState(), [
+  const state = chessEngine.activateDraftModifiers(seededInitialState(), [
     ...draft.picks.white.map(id => ({ id, sourceColor: 'white' as const })),
     ...draft.picks.black.map(id => ({ id, sourceColor: 'black' as const })),
   ]);
@@ -169,7 +180,7 @@ export class RoomManager {
     const token = randomUUID();
     const room: Room = {
       id,
-      state: chessEngine.beginTurn(chessEngine.getInitialState()),
+      state: chessEngine.beginTurn(seededInitialState()),
       seats: { white: { token, connected: true, ...(player ? { player } : {}) } },
       drawOffer: null,
       updatedAt: this.now(),
@@ -447,7 +458,12 @@ export class RoomManager {
   snapshot(roomId: string, viewer?: Color): RoomSnapshot | null {
     const room = this.rooms.get(roomId);
     if (!room) return null;
-    const state = viewer ? redactForViewer(room.state, viewer, { aliasId: id => aliasId(room.id, id) }) : room.state;
+    let state = room.state;
+    if (viewer) {
+      room.eventShown ??= {};
+      const eventShown = (room.eventShown[viewer] ??= new Map());
+      state = redactForViewer(room.state, viewer, { aliasId: id => aliasId(room.id, id), eventShown });
+    }
     const seatStatus = (seat?: Seat): SeatStatus =>
       !seat ? 'empty' : seat.connected ? 'connected' : 'disconnected';
     return {

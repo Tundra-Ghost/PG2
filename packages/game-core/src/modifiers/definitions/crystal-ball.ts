@@ -59,6 +59,9 @@ const cache = new WeakMap<GameState, Map<Color, Map<Square, ForecastMark>>>();
 export function getForecast(state: GameState, viewer: Color): Map<Square, ForecastMark> {
   const marks = new Map<Square, ForecastMark>();
   if (!affectsColor(state, ID, viewer) || state.status !== 'active') return marks;
+  // Online: the server works the forecast out (the client has no seed) and sends it.
+  const sent = (state.modifierState[ID] as { forecast?: Array<[Square, ForecastMark]> } | undefined)?.forecast;
+  if (sent) return new Map(sent);
   const known = cache.get(state)?.get(viewer);
   if (known) return known;
   const timed = new Set(TIMED_EVENT_CARDS.filter(id => state.activeModifiers.some(mod => mod.id === id)));
@@ -101,4 +104,10 @@ export const crystalBallDef: ModifierDefinition = {
   curseRating: 0,
   activeFor: 'both',
   draftScope: 'owned',
+
+  // Online: the view has no seed, so the forecast is worked out here and sent.
+  redactState(state, viewer) {
+    const forecast = [...getForecast(state, viewer)];
+    return forecast.length ? { forecast } : undefined;
+  },
 };

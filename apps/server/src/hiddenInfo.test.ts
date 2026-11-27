@@ -3,6 +3,7 @@ import { io as connect, type Socket } from 'socket.io-client';
 import {
   chessEngine,
   fromWire,
+  getForecast,
   getHiddenPieceIds,
   getShownType,
   getVisibleSquares,
@@ -42,14 +43,19 @@ function expectNoWhiteSecrets(full: GameState, snapshot: RoomSnapshot) {
   expect(hidden.size).toBeGreaterThan(0);
   expect(visible).not.toBeNull();
 
-  // No hidden piece and no piece in fog, by id or by square.
+  // No real white id at all: every enemy id is an alias.
   for (const piece of full.pieces.values()) {
-    if (piece.color !== 'white') continue;
-    if (hidden.has(piece.id) || !visible!.has(piece.square)) {
-      expect(json).not.toContain(piece.id);
+    if (piece.color === 'white') expect(json).not.toContain(piece.id);
+  }
+  // No hidden piece and no piece in fog.
+  for (const piece of full.pieces.values()) {
+    if (piece.color === 'white' && (hidden.has(piece.id) || !visible!.has(piece.square))) {
       expect(seen.pieces.get(piece.square)?.color).not.toBe('white');
     }
   }
+  // No seed: it would replay every random pick.
+  expect(seen.prngSeed).toBe(0);
+  expect(seen.prngState).toBe(0);
   // Fog: every white piece sent stands on a square black can see.
   for (const [square, piece] of seen.pieces) {
     if (piece.color === 'white') expect(visible!.has(square)).toBe(true);
@@ -125,6 +131,91 @@ describe('per-seat state', () => {
     setState(rooms, created.roomId, full);
     rooms.resign(created.roomId, 'white');
     expect(fromWire(rooms.snapshot(created.roomId, 'black')!.state).pieces.size).toBe(full.pieces.size);
+  });
+});
+
+function plainRoom(state: GameState) {
+  const rooms = new RoomManager();
+  const created = rooms.create();
+  if (!created.ok) throw new Error(created.reason);
+  rooms.join(created.roomId);
+  setState(rooms, created.roomId, state);
+  return { rooms, id: created.roomId };
+}
+
+describe('per-seat state details', () => {
+  it('hides ability timers without Tells, unused vents and decoy ids', () => {
+    const state = chessEngine.beginTurn(chessEngine.activateDraftModifiers(chessEngine.getInitialState(), [
+      { id: MODIFIER_IDS.ghosts, sourceColor: 'white' },
+    ]));
+    const knight = state.pieces.get('g1')!;
+    state.pieces.set('g1', { ...knight, cooldowns: { 'MOD-C020': 2 }, abilityCooldowns: { 'MOD-C020': 2 } });
+    state.tiles.set('d4', { square: 'd4', effects: [], isVent: true });
+    const { rooms, id } = plainRoom(state);
+    const json = JSON.stringify(rooms.snapshot(id, 'black'));
+    const seen = fromWire(rooms.snapshot(id, 'black')!.state);
+    expect(seen.pieces.get('g1')).toMatchObject({ type: 'knight', cooldowns: {} });
+    expect(seen.pieces.get('g1')!.abilityCooldowns).toBeUndefined();
+    expect(seen.tiles.get('d4')?.isVent).toBeUndefined();
+    expect(json).not.toContain('ghost-');
+    expect(json).not.toContain('isGhost');
+    // Ghosts look like any other piece: same fields, uuid-shaped id.
+    const ghosts = [...state.pieces.values()].filter(p => p.isGhost);
+    expect(ghosts.length).toBeGreaterThan(0);
+    for (const ghost of ghosts) {
+      const shown = seen.pieces.get(ghost.square)!;
+      expect(Object.keys(shown).sort()).toEqual(Object.keys(seen.pieces.get('a2')!).sort());
+      expect(shown.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+    }
+    // The server still has everything.
+    expect(rooms.snapshot(id)!.state.pieces.find(([sq]) => sq === 'g1')![1].abilityCooldowns).toEqual({ 'MOD-C020': 2 });
+  });
+
+  it('blanks events in fog and keeps them blank, and hides clock and castling changes', () => {
+    const state = chessEngine.beginTurn(chessEngine.activateDraftModifiers(chessEngine.getInitialState(), [
+      { id: MODIFIER_IDS.darkAndScared, sourceColor: 'black' },
+    ]));
+    state.eventHistory.push({ id: 'ev-1', ply: 0, type: 'modifier', modifierId: MODIFIER_IDS.darkAndScared, title: 'Test', message: 'Secret thing on e2.', squares: ['e2'] });
+    state.flags.halfMoveClock = 7;
+    state.flags.castlingRights.white = { kingSide: false, queenSide: false };
+    const { rooms, id } = plainRoom(state);
+    const seen = fromWire(rooms.snapshot(id, 'black')!.state);
+    expect(seen.eventHistory[0].message).not.toContain('e2');
+    expect(seen.eventHistory[0].squares).toBeUndefined();
+    expect(seen.flags.halfMoveClock).toBe(0);
+    expect(seen.flags.castlingRights.white).toEqual({ kingSide: true, queenSide: true });
+    expect(fromWire(rooms.snapshot(id, 'white')!.state).eventHistory[0].message).toContain('e2');
+  });
+
+  it('sends Shell Game cups only where the viewer can see them, with matching ids', () => {
+    const state = chessEngine.beginTurn(chessEngine.activateDraftModifiers(chessEngine.getInitialState(), [
+      { id: MODIFIER_IDS.shellGame, sourceColor: 'white' },
+    ]));
+    const { rooms, id } = plainRoom(state);
+    const seen = fromWire(rooms.snapshot(id, 'black')!.state);
+    const cups = (seen.modifierState[MODIFIER_IDS.shellGame] as Record<string, Array<{ pieceId: string; square: string }>>).white;
+    expect(cups.length).toBe(3);
+    for (const cup of cups) {
+      const piece = seen.pieces.get(cup.square as never)!;
+      expect(piece.id).toBe(cup.pieceId);
+      expect(piece.type).toBe('pawn');
+    }
+  });
+});
+
+describe('Crystal Ball online', () => {
+  it('sends the owner the forecast worked out on the full state', () => {
+    let state = chessEngine.beginTurn(chessEngine.activateDraftModifiers(chessEngine.getInitialState(), [
+      { id: MODIFIER_IDS.crystalBall, sourceColor: 'white' },
+      { id: MODIFIER_IDS.theBirds, sourceColor: 'black' },
+    ]));
+    const { rooms, id } = plainRoom(state);
+    state = fromWire(rooms.snapshot(id)!.state);
+    const expected = getForecast(state, 'white');
+    const seen = fromWire(rooms.snapshot(id, 'white')!.state);
+    expect(seen.prngState).toBe(0);
+    expect(getForecast(seen, 'white')).toEqual(expected);
+    expect(fromWire(rooms.snapshot(id, 'black')!.state).modifierState[MODIFIER_IDS.crystalBall]).toBeUndefined();
   });
 });
 
