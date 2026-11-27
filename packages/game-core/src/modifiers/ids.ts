@@ -82,6 +82,7 @@ export const MODIFIER_IDS = {
   magicRoundabout: 'MOD-A013',
   theRoomba: 'MOD-A015',
   letItGo: 'MOD-A012',
+  shakeItOff: 'MOD-A018',
   oneWayStreet: 'MOD-A020',
   blessYou: 'MOD-B012',
   footprints: 'MOD-D011',

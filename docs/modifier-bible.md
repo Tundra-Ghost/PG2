@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 89 built, 11 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 90 built, 10 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -17,6 +17,7 @@
 
 **Batch 13 (2026-11-27)**
 - Let It Go built. Conflicts: This Is My Swamp, Thinking With Portals, Tide Goes In.
+- Shake It Off built. Conflict: Gravitational Anomaly.
 
 **Batch 12 (2026-11-27)**
 - Board-moving cards share one rule set (engine/conveyor.ts): they move pieces once per round, after Black moves; never capture; never put a King in check or add a second checker; reveal a hidden piece that blocks them, and never point at a hidden piece's new square; and turn off en passant for that turn when a pawn slides.
@@ -185,6 +186,7 @@ Every 12 rounds gravity pulls sideways, east then west, back and forth. Every pi
 - Synergy: The Storm Closes In. Gravity can push pieces into the storm.
 - Conflict: Winter Is Coming. Frozen pieces do not slide (when both are built together, test this).
 - Changed from v0.2: sideways only. No flip to a new "bottom". Pawns do not re-orient. Kings do not slide.
+- Conflict: Shake It Off. Both shove the whole board on a timer; only one may be in a match, whoever drafts it.
 
 ### MOD-A008 · Bandersnatch Protocol
 *Ref: Black Mirror* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: Casual, Story · **Built**
@@ -332,7 +334,7 @@ Every 8 rounds the tide comes in and ranks 4 and 5 become water for 4 rounds. Pi
 - Conflict: Let It Go. It sits on the ice; only one may be in a match, whoever drafts it.
 
 ### MOD-A018 · Shake It Off
-*Ref: Taylor Swift* · **Tier S** · Cost 4 · Curse 2 · Scope: Shared · Modes: All · **Design**
+*Ref: Taylor Swift* · **Tier S** · Cost 4 · Curse 2 · Scope: Shared · Modes: All · **Built**
 
 Every 10 rounds an earthquake moves every non-King piece one square in a random direction, if that square is empty. Each piece shows its arrow one round ahead, so both players can prepare.
 
@@ -340,6 +342,8 @@ Every 10 rounds an earthquake moves every non-King piece one square in a random 
 
 - Ruling: no piece is ever shaken off the board, onto another piece, or into a square that leaves its King in check.
 - Skill: the one-round warning is the point. A prepared player gains from the quake.
+- Built: the arrows are picked with the game seed at the start of round 10 (20, 30 and so on), one per non-King piece, never pointing off the board. The quake comes once Black has moved in that round. It uses the shared slide rules (Batch 12): never a capture, no King is put in check or gains a checker, and a hidden piece that blocks a shake is revealed. A piece whose square is freed by another shake in the same quake follows it. A pawn never lands on rank 1 or 8. Pieces that reach the board after the arrows are picked stay put. Arrows on hidden or fogged enemy pieces are not shown, and online they are not sent.
+- Conflict: Gravitational Anomaly. Both shove the whole board on a timer; only one may be in a match, whoever drafts it.
 
 ### MOD-A019 · Crop Circles
 *Ref: Signs / The X-Files* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
@@ -1485,7 +1489,7 @@ Values the game uses today. "Built" cards match the build.
 | A015 | The Roomba | A | B | 2 | 0 | Shared | Built |
 | A016 | Monument To Gerald | A | B | 1 | 0 | Shared | Built |
 | A017 | Tide Goes In, Tide Goes Out | A | A | 3 | 1 | Shared | Built |
-| A018 | Shake It Off | A | S | 4 | 2 | Shared | Design |
+| A018 | Shake It Off | A | S | 4 | 2 | Shared | Built |
 | A019 | Crop Circles | A | B | 2 | 0 | Shared | Built |
 | A020 | One Way Street | A | B | 2 | 1 | Shared | Built |
 | B009 | Speedrun Any% | B | A | -2 | 2 | Owner | Design |
@@ -1537,7 +1541,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-89 of 100 built. The other 11 are designs (v0.4).
+90 of 100 built. The other 10 are designs (v0.4).
 
 ### Balance test plan
 
