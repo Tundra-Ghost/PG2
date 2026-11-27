@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { chessEngine } from '../engine/ChessEngine';
 import { getChickBotMove } from '../engine/bot';
 import { getValidPromotionTypes } from '../engine/gameLoop';
-import type { GameState } from '../engine/types';
+import type { GameState, Square } from '../engine/types';
 import './index';
 import { MODIFIER_IDS } from './ids';
 import { TRAITOR_EARLIEST_TURN } from './definitions/traitor';
@@ -82,13 +82,11 @@ describe('MOD-B006 They Were The Traitor', () => {
     return state;
   }
 
-  /** Runs white turn starts until a traitor is warned. */
-  function warnTraitor(state: GameState): GameState {
-    let next = state;
-    for (let seed = 1; seed < 200; seed++) {
-      next = { ...state, prngState: seed };
-      next = chessEngine.beginTurn(next);
-      if (Array.from(next.pieces.values()).some(p => p.isTraitor)) return next;
+  /** Tries seeds until the piece on `square` is warned as the traitor. */
+  function warnTraitor(state: GameState, square = 'd2'): GameState {
+    for (let seed = 1; seed < 400; seed++) {
+      const next = chessEngine.beginTurn({ ...state, prngState: seed });
+      if (next.pieces.get(square as Square)?.isTraitor) return next;
     }
     throw new Error('no traitor warned');
   }
@@ -101,7 +99,24 @@ describe('MOD-B006 They Were The Traitor', () => {
     }
   });
 
-  it('warns on the highest-value piece, then it defects on the owner next turn', () => {
+  it('warns on a random non-king piece, not always the most valuable', () => {
+    const base = traitorState();
+    base.turnNumber = TRAITOR_EARLIEST_TURN;
+    const picked = new Set<string>();
+    for (let seed = 1; seed < 200; seed++) {
+      const next = chessEngine.beginTurn({ ...base, prngState: seed });
+      const marked = Array.from(next.pieces.values()).filter(p => p.isTraitor);
+      expect(marked.length).toBeLessThanOrEqual(1);
+      for (const p of marked) {
+        expect(p.color).toBe('white');
+        expect(p.type).not.toBe('king');
+        picked.add(p.type);
+      }
+    }
+    expect([...picked].sort()).toEqual(['queen', 'rook']);
+  });
+
+  it('the warned piece defects on the owner next turn', () => {
     const base = traitorState();
     base.turnNumber = TRAITOR_EARLIEST_TURN;
     let state = warnTraitor(base);
@@ -148,7 +163,7 @@ describe('MOD-B006 They Were The Traitor', () => {
     base.turnNumber = TRAITOR_EARLIEST_TURN;
     base.pieces.delete('d2');
     base.pieces.set('a2', makePiece('pawn', 'white', 'a2'));
-    let state = warnTraitor(base);
+    let state = warnTraitor(base, 'h1');
     expect(state.pieces.get('h1')?.isTraitor).toBe(true);
     state = chessEngine.applyMove(state, move('a2', 'a3', 'white'));
     expect(state.flags.castlingRights.white.kingSide).toBe(true);

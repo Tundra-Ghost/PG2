@@ -442,10 +442,10 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     curseLevel: 3,
     tier: 'S',
     description:
-      'After turn 10, at a random point, one of your non-King pieces defects to the opponent — weighted toward your highest-value piece. You are warned 1 turn in advance. The ejection screen appears briefly.',
+      'After turn 10, at a random point, one random non-King piece of yours defects to the opponent. You are warned 1 turn in advance. The ejection screen appears briefly.',
     flavor: '"Queen was The Traitor. 7 pieces remain. Viktor stares at the screen. Viktor voted wrong."',
     prototypeRules:
-      'From move 11 on, each of your turns has a 1 in 4 chance to pick a traitor: your most valuable non-king piece. It is marked with ! and defects at the start of your next turn. Trade it off first and the search starts again. Happens once per match.',
+      'From move 11 on, each of your turns has a 1 in 4 chance to pick a traitor: a random non-king piece of yours. It is marked with ! and defects at the start of your next turn. Trade it off first and the search starts again. Happens once per match.',
   },
   {
     id: 'MOD-B007',
@@ -657,16 +657,16 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     name: 'Roll For Initiative',
     category: 'B',
     categoryName: 'Cursed',
-    typeLine: 'Curse · Dice · Every 3rd Move',
+    typeLine: 'Curse · Dice · Every 4th Move',
     cost: -3,
     curseLevel: 3,
     tier: 'A',
     scope: 'owned',
     description:
-      'On every 3rd move you make, a die picks a piece type. You must move a piece of that type if you can. If you cannot, you choose freely.',
+      'On every 4th move you make, a die picks a piece type. You must move a piece of that type if you can. If you cannot, you choose freely.',
     flavor: '"The die says knight. Viktor wanted the queen. The die does not care what Viktor wanted."',
     prototypeRules:
-      'On your 3rd, 6th, 9th move and so on, a seeded die picks one piece type you still have (the King counts). That move must be made by a piece of that type, or its ability (sacrificing it with The Snap does not count). If none can move, or you are in check, any legal move is allowed. While the die binds you, you cannot shoo Gerald.',
+      'On your 4th, 8th, 12th move and so on, a seeded die picks one piece type you still have (the King counts). That move must be made by a piece of that type, or its ability (sacrificing it with The Snap does not count). If none can move, or you are in check, any legal move is allowed. While the die binds you, you cannot shoo Gerald.',
   },
 
   // ── CATEGORY C — ACTIVE ABILITIES ──────────────────────────────────────────
@@ -1587,9 +1587,9 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     tier: 'B',
     scope: 'owned',
     description:
-      'Your bishops become Elephants. An Elephant moves exactly two squares diagonally, jumping over the square between.',
+      'Your bishops become Elephants. An Elephant moves one or two squares diagonally, jumping over the square between.',
     flavor: '"Nobody is talking about the elephants. The elephants are fine with this."',
     prototypeRules:
-      'Your starting bishops become Elephants. An Elephant moves exactly 2 squares diagonally and jumps the square between. A bishop you promote to later is a normal bishop. Cannot be drafted with Holy Knight, The Small Council or Forgive Me.',
+      'Your starting bishops become Elephants. An Elephant moves 1 or 2 squares diagonally; the 2-square move jumps the square between. A bishop you promote to later is a normal bishop. Cannot be drafted with Holy Knight, The Small Council or Forgive Me.',
   },
 ];

@@ -410,12 +410,13 @@ From move 6, and every 6 moves after, the owner's move history is hidden for 3 m
 ### MOD-B006 · They Were The Traitor (1 Impostor Remains)
 *Ref: Among Us ejection screen* · **Tier S** · Cost -3 · Curse 3 · Scope: Owner · Modes: No Ranked · **Built**
 
-From move 11 on, each of the owner's moves has a 1 in 4 chance to pick a traitor: their most valuable non-king piece. It is marked with "!" and defects at the start of the owner's next move. If the marked piece is traded off first, the search starts again. Happens once per match.
+From move 11 on, each of the owner's moves has a 1 in 4 chance to pick a traitor: a random non-king piece of theirs. It is marked with "!" and defects at the start of the owner's next move. If the marked piece is traded off first, the search starts again. Happens once per match.
 
 *It does not say sorry.*
 
 - Moneyball ruling: a defected piece that is later captured can be bought back.
 - Changed from v0.2: the 1 in 4 roll replaces "a random turn after turn 10".
+- Changed in balance round 3: the traitor is a random non-king piece, not the most valuable one. Cost stays -3.
 
 ### MOD-B007 · Conscientious Objector
 *Ref: pacifist protest memes* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -610,18 +611,19 @@ If one of your pawns can capture, you must make a pawn capture. Your opponent ca
 ### MOD-B020 · Roll For Initiative
 *Ref: Dungeons & Dragons* · **Tier A** · Cost -3 · Curse 3 · Scope: Owner · Modes: All · **Built**
 
-On every 3rd move you make, a die picks a piece type. You must move a piece of that type if you can. If you cannot, you choose freely.
+On every 4th move you make, a die picks a piece type. You must move a piece of that type if you can. If you cannot, you choose freely.
 
 *The die says knight. Viktor wanted the queen. The die does not care what Viktor wanted.*
 
 - Ruling: in check, any legal move is allowed.
 - Ruling: the die only rolls types you still have. If none of that type can move, you choose freely.
-- Built: the die rolls at the start of your 3rd, 6th, 9th move and so on, using the seeded generator. The feed says what it rolled. Selecting another piece says why it cannot move.
+- Built: the die rolls at the start of your 4th, 8th, 12th move and so on, using the seeded generator. The feed says what it rolled. Selecting another piece says why it cannot move.
 - Built: the faces are every type you still have, the King included (eggs cannot move, so they are not a face). Each type has the same chance.
 - Built: a piece of that type may move or use its ability. Sacrificing it with The Snap does not count.
 - Ruling: if no piece of that type has a legal move, any move is allowed. While the die binds you, you cannot shoo Gerald.
 - Ruling: never a softlock. The die only binds when a piece of that type has a legal move.
 - Note: the die rolls at the start of the turn. If every move is blocked and the turn is skipped (Core rule 4), the roll is used up and the feed still shows it.
+- Changed in balance round 3: the die rolls every 4th move (was every 3rd). Cost stays -3.
 - Conflict: Peer Pressure and Main Character Syndrome. Each demands a piece on the same move, so one side cannot draft the die with either.
 - Interaction: Commitment Issues. While the die binds you, only a piece of that type can be touched.
 - Interaction: Lunch Break wins. A rook or Queen roll at lunch leaves you free.
@@ -1335,11 +1337,12 @@ Your knights may repeat the same L-jump in a straight line, as long as each land
 ### MOD-E020 · Elephant In The Room
 *Ref: Xiangqi elephants* · **Tier B** · Cost -3 · Curse 1 · Scope: Owner · Modes: All · **Built**
 
-Your bishops become Elephants. An Elephant moves exactly two squares diagonally, jumping over the square between.
+Your bishops become Elephants. An Elephant moves one or two squares diagonally. The two-square move jumps over the square between.
 
 *Nobody is talking about the elephants. The elephants are fine with this.*
 
 - Pricing: a weaker piece, so the card pays back points, like a curse.
+- Changed in balance round 3: an Elephant may also step one square diagonally (was exactly two). It can now reach every square of its colour and step in to block checks. Cost stays -3.
 - Built: Elephants have their own piece art (an elephant head) and write E in the move list. Unlike a xiangqi elephant, nothing on the square between can block the jump.
 - Ruling: only your starting bishops become Elephants. A bishop you promote to later is a normal bishop. A captured Elephant bought back with Moneyball is still an Elephant.
 - Ruling: an Elephant is not a bishop for other cards. Twin Telepathy does not move it and it does not clear infection. Infection does not slow it.

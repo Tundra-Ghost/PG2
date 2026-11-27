@@ -8,7 +8,7 @@ import { getBindingMoveRule, moveRuleHooks, registerMoveRule } from '../move-rul
 
 const ID = MODIFIER_IDS.rollForInitiative;
 /** The die is rolled on every this many of your moves. */
-export const ROLL_EVERY = 3;
+export const ROLL_EVERY = 4;
 
 /** Die faces, in a fixed order so a replay rolls the same face. */
 const FACES: PieceType[] = [
@@ -80,7 +80,7 @@ function facesFor(state: GameState, color: Color): PieceType[] {
   return FACES.filter(type => have.has(type));
 }
 
-/** MOD-B020 Roll For Initiative: every 3rd move, a die picks which kind of piece you must move. */
+/** MOD-B020 Roll For Initiative: every 4th move, a die picks which kind of piece you must move. */
 export const rollForInitiativeDef: ModifierDefinition = {
   id: ID,
   name: 'Roll For Initiative',

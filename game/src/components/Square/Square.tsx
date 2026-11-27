@@ -66,7 +66,7 @@ function getPieceTooltipLines(
     lines.push('Archbishop: Moves like a bishop or a knight.');
   }
   if (piece.type === 'elephant') {
-    lines.push('Elephant: Jumps exactly 2 squares diagonally.');
+    lines.push('Elephant: Moves 1 or 2 squares diagonally, jumping on 2.');
   }
   if (piece.type === 'camel') {
     lines.push('Camel: Leaps 3 squares one way and 1 the other.');

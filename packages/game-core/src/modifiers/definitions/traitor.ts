@@ -12,10 +12,6 @@ export const TRAITOR_EARLIEST_TURN = 21;
 /** Chance per owner turn, once eligible, that a traitor is chosen. */
 export const TRAITOR_CHANCE = 0.25;
 
-const VALUE: Partial<Record<Piece['type'], number>> = {
-  queen: 9, chancellor: 8, archbishop: 7, rook: 5, elephant: 2, camel: 3, nightrider: 4, cannon: 4, grasshopper: 2, bodyguard: 3, bishop: 3, knight: 3, pawn: 1,
-};
-
 type TraitorPhase = 'waiting' | 'warned' | 'done';
 type TraitorState = Partial<Record<Color, { phase: TraitorPhase; pieceId?: string }>>;
 
@@ -31,14 +27,14 @@ function label(color: Color): string {
   return color === 'white' ? 'White' : 'Black';
 }
 
-/** Highest-value non-king pieces of `color`; one is picked at random. */
+/**
+ * A random non-king piece of `color` (balance round 3: was the most valuable).
+ */
 function pickTraitor(state: GameState, color: Color, prngState: number): [Piece | null, number] {
   const candidates = Array.from(state.pieces.values()).filter(p => p.color === color && p.type !== 'king' && p.type !== 'egg');
   if (candidates.length === 0) return [null, prngState];
-  const top = Math.max(...candidates.map(p => VALUE[p.type] ?? 0));
-  const best = candidates.filter(p => (VALUE[p.type] ?? 0) === top);
-  const [idx, next] = prngPickIndex(prngState, best.length);
-  return [best[idx], next];
+  const [idx, next] = prngPickIndex(prngState, candidates.length);
+  return [candidates[idx], next];
 }
 
 function warn(state: GameState, color: Color): GameState {

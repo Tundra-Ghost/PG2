@@ -17,7 +17,7 @@ export const MODIFIER_SUMMARIES: Record<string, string> = {
   'MOD-B003': 'For your first 5 moves, your clicks are flipped across the board.',
   'MOD-B004': 'Your King must announce its move a turn before making it.',
   'MOD-B005': 'Your move history goes dark for a few moves at a time.',
-  'MOD-B006': 'Late in the game, your best piece switches sides.',
+  'MOD-B006': 'Late in the game, a random piece of yours switches sides.',
   'MOD-B007': 'One of your pawns refuses to capture.',
   'MOD-B008': 'A pigeon critic reviews every move. No effect on play.',
   'MOD-C001': 'Your King closes a row or column to enemy pieces for 3 turns.',
@@ -69,7 +69,7 @@ export const MODIFIER_SUMMARIES: Record<string, string> = {
   'MOD-B017': 'Every 8 moves, a seagull drags your most advanced pawn one square back.',
   'MOD-B018': 'Every 7th move lags and your piece snaps back to where it started.',
   'MOD-B019': 'When one of your pawns can capture, you must capture with a pawn.',
-  'MOD-B020': 'Every 3rd move, a die picks which kind of piece you must move.',
+  'MOD-B020': 'Every 4th move, a die picks which kind of piece you must move.',
   'MOD-C009': 'A rook shoves an adjacent enemy piece one square away.',
   'MOD-C010': 'A bishop jumps over a piece on its diagonal to the square behind.',
   'MOD-C011': 'Your Queen yanks the first enemy piece on her line next to her.',
@@ -105,7 +105,7 @@ export const MODIFIER_SUMMARIES: Record<string, string> = {
   'MOD-E017': 'A Bodyguard that moves like a King can swap places with your King.',
   'MOD-E018': 'Your pawns can always move two squares forward, if both are empty.',
   'MOD-E019': 'Your knights can repeat the same L-jump across the board.',
-  'MOD-E020': 'Your bishops become Elephants that only jump two squares diagonally.',
+  'MOD-E020': 'Your bishops become Elephants that move one or two squares diagonally.',
 };
 
 export function getModifierSummary(id: string): string | undefined {
