@@ -280,6 +280,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'shared',
     description:
       'A robot vacuum travels clockwise around the outer ring of the board, one square per round. When it reaches a piece, it pushes that piece one square inward if that square is empty. Otherwise it waits.',
+    prototypeRules:
+      'The Roomba starts on a4 or h5 (picked with the game seed) and goes clockwise round the outer ring as White sees it, one square after every round (once Black has moved). It never blocks a piece and cannot be taken. When the next square holds a piece, it pushes that piece one square towards the centre (diagonally from a corner) and moves on. If that square is not empty and real, or the push would put a King in check or add a checker, it waits. It also waits before a wall, flock, statue or storm square, so it parks once the storm takes the edge. A hidden piece it bumps is revealed. Whenever a pawn is pushed, en passant is off for that turn.',
     flavor: '"It has bumped into Viktor\'s rook four times. It will bump into it again. It has no other plans."',
   },
   {

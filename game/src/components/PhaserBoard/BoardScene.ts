@@ -239,8 +239,9 @@ export class BoardScene extends Phaser.Scene {
       if (view.flock) this.drawFlock(view.flock, x, y);
       if (view.confession) this.drawConfession(view.confession, cx, cy);
       if (view.mirrorEdge) this.drawMirrorEdge(view.mirrorEdge === 'right' ? x + CELL : x, y);
-      // Drawn over the fog: both players always see the eye.
+      // Drawn over the fog: both players always see the eye and the Roomba.
       if (view.surveillance) this.drawEye(cx, cy);
+      if (view.roomba) this.drawRoomba(view.roomba, cx, cy);
       if (view.burst) this.playBurst(view, cx, cy);
 
       if (view.isLegalTarget) {
@@ -715,6 +716,17 @@ export class BoardScene extends Phaser.Scene {
     for (const side of [-1, 1]) {
       g.lineBetween(tx, ty, tx - dx * len * 1.6 + dy * side * len * 1.4, ty - dy * len * 1.6 + dx * side * len * 1.4);
     }
+  }
+
+  /** The Roomba: a grey disc with a light rim and a bumper on the side it is heading. */
+  private drawRoomba(heading: 'up' | 'down' | 'left' | 'right', cx: number, cy: number) {
+    const g = this.fogLayer;
+    const r = CELL * 0.4;
+    g.fillStyle(0x3b4252, 0.55).fillCircle(cx, cy, r);
+    g.lineStyle(3, 0xe5e9f0, 0.8).strokeCircle(cx, cy, r);
+    const [dx, dy] = heading === 'up' ? [0, -1] : heading === 'down' ? [0, 1] : heading === 'left' ? [-1, 0] : [1, 0];
+    g.lineStyle(5, 0x88c0d0, 0.95);
+    g.lineBetween(cx + dx * r * 0.8 - dy * r * 0.55, cy + dy * r * 0.8 - dx * r * 0.55, cx + dx * r * 0.8 + dy * r * 0.55, cy + dy * r * 0.8 + dx * r * 0.55);
   }
 
   /** Crop Circles: wheat-gold square with flattened rings; just the rings, dashed-looking, as a warning. */
