@@ -198,7 +198,9 @@ export async function currentAccount(): Promise<Account | null> {
 export async function checkAdmin(): Promise<boolean> {
   if (!readToken()) return false;
   try {
-    return (await apiCall('/api/admin/check')).ok;
+    const res = await apiCall('/api/admin/check');
+    if (!res.ok) return false;
+    return ((await res.json()) as { admin?: unknown }).admin === true;
   } catch {
     return false;
   }

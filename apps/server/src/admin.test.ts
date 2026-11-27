@@ -8,7 +8,7 @@ const BUILD = { version: '0.2026.11.27.1', commit: 'abc1234', builtAt: '2026-11-
 
 /** Every admin endpoint. Each must turn away guests and players with a 403. */
 export const ADMIN_ENDPOINTS: { method: 'GET' | 'POST'; path: string; body?: unknown }[] = [
-  { method: 'GET', path: '/api/admin/check' },
+  { method: 'POST', path: '/api/admin/check' },
   { method: 'GET', path: '/api/admin/overview' },
   { method: 'GET', path: '/api/admin/stats' },
   { method: 'GET', path: '/api/admin/surveys' },
@@ -89,13 +89,28 @@ describe('admin access', () => {
 
   it('lets nobody in when no admin ids are set', async () => {
     const owner = await register('theowner');
-    expect((await call('/api/admin/check', { token: owner.token })).status).toBe(403);
+    const res = await call('/api/admin/check', { token: owner.token });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ admin: false });
+    expect((await call('/api/admin/overview', { token: owner.token })).status).toBe(403);
+  });
+
+  it('the admin check answers quietly for non-admins (#234)', async () => {
+    const owner = await register('theowner');
+    const player = await register('aplayer');
+    adminIds.add(owner.id);
+    for (const token of [undefined, player.token, 'not-a-real-token']) {
+      const res = await call('/api/admin/check', { token });
+      expect(res.status).toBe(200);
+      expect(await res.json()).toEqual({ admin: false });
+    }
+    expect(await (await call('/api/admin/check', { token: owner.token })).json()).toEqual({ admin: true });
   });
 
   it('lets an admin account in and reports the server version', async () => {
     const owner = await register('theowner');
     adminIds.add(owner.id);
-    expect((await call('/api/admin/check', { token: owner.token })).status).toBe(200);
+    expect(await (await call('/api/admin/check', { token: owner.token })).json()).toEqual({ admin: true });
     expect(await (await call('/api/admin/overview', { token: owner.token })).json()).toMatchObject({ server: BUILD });
   });
 
