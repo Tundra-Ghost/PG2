@@ -236,6 +236,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'shared',
     description:
       'The central 4×4 squares are ice. A rook, bishop or queen that moves onto ice keeps sliding the same way until it reaches the edge of the ice or the square before a piece. It may still capture the piece it was moving to.',
+    prototypeRules:
+      'c3 to f6 is ice. A rook, bishop or queen whose move ends on ice without capturing keeps sliding the same way, one square at a time, until the next square is off the ice, holds a piece or anything a piece cannot land on (statue, wall, flock, Lava, storm, used vent), or would leave its own King in check. A capture stops the piece where it captured. Knights, pawns, Kings and other pieces are not affected, nor are abilities, castling or pieces moved by other cards. The slide may give check. A hidden piece of either side that stops a slide is revealed. Under Winter Is Coming only the square the move ends on counts, so a piece that slides into the Frozen zone is not frozen.',
     flavor: '"The queen stepped onto the ice. The queen is now on the other side of the ice. The queen did not plan this."',
   },
   {
