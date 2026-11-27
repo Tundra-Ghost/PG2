@@ -8,7 +8,7 @@ import { MODIFIER_IDS } from '../ids';
 import { affectsColor, ownMoveNumber } from '../owner';
 
 const ID = MODIFIER_IDS.youDied;
-/** Every 7th turn of the owner is played by a piece on its own. */
+/** Every 7th move of the owner is played by a piece on its own. */
 export const YOU_DIED_INTERVAL = 7;
 
 /** Every fully valid normal move for the side to move (no abilities). */

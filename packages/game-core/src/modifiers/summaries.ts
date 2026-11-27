@@ -12,7 +12,7 @@ export const MODIFIER_SUMMARIES: Record<string, string> = {
   'MOD-A006': 'The four centre squares slow pieces to one step and trap knights.',
   'MOD-A007': 'Every 12 turns all pieces slide one square sideways.',
   'MOD-A008': 'Your moves on one side get copied by the mirror piece on the other.',
-  'MOD-B001': 'Every 7th turn, one of your pieces makes a random move for you.',
+  'MOD-B001': 'Every 7th move of yours, one of your pieces makes a random move for you.',
   'MOD-B002': 'Gerald the pigeon sits on your pieces. Shooing him costs a turn.',
   'MOD-B003': 'For your first 5 moves, your clicks are flipped across the board.',
   'MOD-B004': 'Your King must announce its move a turn before making it.',
