@@ -1,4 +1,4 @@
-import type { Color, Piece } from '@pigeon-chess/game-core';
+import type { Color, GameState, Piece } from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 
 const GERALD_ID = MODIFIER_IDS.gerald;
@@ -93,6 +93,13 @@ const MARKER_LEGEND: LegendRow[] = [
   { modifierId: MODIFIER_IDS.forgiveMe, mark: '✝', label: 'Confession and declared square' },
   { modifierId: MODIFIER_IDS.ghosts, mark: '◌', label: 'Your Ghost (faded)' },
 ];
+
+/** Cards that apply to `viewer`: shared cards and the ones `viewer` drafted. */
+export function viewerModifierIds(state: Pick<GameState, 'activeModifiers'>, viewer: Color): string[] {
+  return state.activeModifiers
+    .filter(mod => mod.sourceColor == null || mod.sourceColor === viewer)
+    .map(mod => mod.id);
+}
 
 /** Legend rows for the markers that can appear in this match. */
 export function getMarkerLegend(

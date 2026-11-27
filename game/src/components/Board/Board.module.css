@@ -120,6 +120,8 @@
   justify-content: center;
   gap: 0.25rem 0.85rem;
   padding: 0.3rem 0.5rem 0.4rem;
+  /* One row high even when no row shows this turn, so nothing below the board jumps. */
+  min-height: calc(1.2rem + 0.7rem);
   border-top: 1px solid rgba(45, 108, 179, 0.15);
   font-family: var(--font-body);
   font-size: 0.7rem;

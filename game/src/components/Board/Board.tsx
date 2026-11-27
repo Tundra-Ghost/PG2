@@ -15,7 +15,7 @@ import {
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 import { playCapture, playCastle, playMove } from '../../sound';
 import { SPRITES } from '../../characters';
-import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
+import { getMarkerLegend, shouldForfeitTurnForGerald, viewerModifierIds } from './interaction';
 import SquareComponent from '../Square/Square';
 import { buildSquareViews, type SquareBurst } from './boardView';
 
@@ -468,9 +468,7 @@ export default function Board({
     eggOnBoard: squareViews.some(view => view.piece?.type === 'egg'),
     flippedMovesLeft: flippedMovesLeft(state, controlColor ?? state.turn),
     touchScreen: typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches === true,
-    viewerModifierIds: state.activeModifiers
-      .filter(mod => mod.sourceColor == null || mod.sourceColor === (controlColor ?? state.turn))
-      .map(mod => mod.id),
+    viewerModifierIds: viewerModifierIds(state, controlColor ?? state.turn),
   });
   // The layout follows the cards in play, not the rows showing now, so the
   // board keeps one size for the whole match.
@@ -598,7 +596,7 @@ export default function Board({
           </div>
         )}
 
-        {markerLegend.length > 0 && (
+        {hasLegend && (
           <div className={styles.legend} aria-label="Board markers">
             {markerLegend.map(entry => (
               <span key={entry.label} className={styles.legendItem}>
