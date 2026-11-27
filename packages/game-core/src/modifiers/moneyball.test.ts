@@ -87,6 +87,7 @@ describe('Moneyball', () => {
     const blackTargets = getAbilityOptions(black, 'h8').find(o => o.modifierId === ID)!.targets;
     expect(blackTargets.length).toBeGreaterThan(0);
     expect(blackTargets.every(sq => '678'.includes(sq[1]))).toBe(true);
+    expect(chessEngine.validateMove(black, move('h8', 'd4', 'black', { ability: ID, dropType: 'rook' })).valid).toBe(false);
   });
 
   it('has no targets without a token, and none for the other side', () => {

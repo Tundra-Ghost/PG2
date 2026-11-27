@@ -123,7 +123,7 @@ export const moneyballDef: ModifierDefinition = {
     if (move.ability !== ID) return { blocked: false };
     const choices = dropChoices(state, move.playerColor, move.to);
     if (move.dropType ? choices.includes(move.dropType) : choices.length > 0) return { blocked: false };
-    return { blocked: true, reason: 'That piece cannot be dropped there. A drop may not give check.' };
+    return { blocked: true, reason: 'That piece cannot be dropped there. Drops land in your first three ranks and may not give check.' };
   },
 
   onCapture(state, _move, captured) {
