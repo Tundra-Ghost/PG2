@@ -5,16 +5,11 @@ import { getLegalMovesForPiece } from '../../engine/moveGenerator';
 import { validateMove } from '../../engine/moveValidator';
 import { prngPickIndex } from '../../engine/prng';
 import { MODIFIER_IDS } from '../ids';
-import { affectsColor } from '../owner';
+import { affectsColor, ownMoveNumber } from '../owner';
 
 const ID = MODIFIER_IDS.youDied;
-/** Every 7th turn of the owner is played by a piece on its own. */
+/** Every 7th move of the owner is played by a piece on its own. */
 export const YOU_DIED_INTERVAL = 7;
-
-/** 1 for a side's first turn, 2 for its second, and so on. */
-function ownTurnIndex(state: GameState): number {
-  return Math.ceil(state.turnNumber / 2);
-}
 
 /** Every fully valid normal move for the side to move (no abilities). */
 export function allValidMoves(state: GameState): Move[] {
@@ -49,7 +44,7 @@ export const youDiedDef: ModifierDefinition = {
 
   takeOverTurn(state) {
     if (!affectsColor(state, ID, state.turn)) return null;
-    if (ownTurnIndex(state) % YOU_DIED_INTERVAL !== 0) return null;
+    if (ownMoveNumber(state) % YOU_DIED_INTERVAL !== 0) return null;
 
     const moves = allValidMoves(state);
     if (moves.length === 0) return null;
