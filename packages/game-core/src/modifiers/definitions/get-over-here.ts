@@ -6,6 +6,7 @@ import { getVisibleSquares } from '../../engine/visibility';
 import { MODIFIER_IDS } from '../ids';
 import { isQuietZoneClosedTo } from './quiet-quitting';
 import { getShownType } from './sus';
+import { maskedName } from './masquerade';
 
 const ID = MODIFIER_IDS.getOverHere;
 
@@ -73,7 +74,7 @@ export const getOverHereDef: ModifierDefinition = {
           type: 'modifier',
           modifierId: ID,
           title: 'GET OVER HERE!',
-          message: `The ${queen.color} queen pulls the ${victim.color} ${victim.type} from ${pull.from} to ${pull.to}.`,
+          message: `The ${queen.color} ${maskedName(state, queen)} pulls the ${victim.color} ${maskedName(state, victim)} from ${pull.from} to ${pull.to}.`,
           squares: [pull.from, pull.to],
         }),
       };

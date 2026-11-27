@@ -41,13 +41,20 @@ describe('modifier catalogue', () => {
     }
   });
 
+  it('every card is built (100 of 100)', () => {
+    expect(designs).toEqual([]);
+  });
+
   it('never offers a card that is not built, even in a full random draft', () => {
-    expect(designs.length).toBeGreaterThan(0);
-    const offered = getValidOptions([], [], built, { unlimited: true }).map(card => card.id);
-    for (const card of designs) expect(offered, card.id).not.toContain(card.id);
+    // Every card is built, so stand in a design by leaving one built card out.
+    const design = 'MOD-D020';
+    const partial = new Set([...built].filter(id => id !== design));
+    const offered = getValidOptions([], [], partial, { unlimited: true }).map(card => card.id);
+    expect(offered).not.toContain(design);
+    expect(offered.length).toBeGreaterThan(0);
     for (let seed = 1; seed <= 25; seed++) {
-      const { playerIds, botIds } = runRandomDraft([], [], built, seededRandom(seed));
-      for (const id of [...playerIds, ...botIds]) expect(built.has(id), id).toBe(true);
+      const { playerIds, botIds } = runRandomDraft([], [], partial, seededRandom(seed));
+      for (const id of [...playerIds, ...botIds]) expect(partial.has(id), id).toBe(true);
     }
   });
 });

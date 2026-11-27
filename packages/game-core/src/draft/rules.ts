@@ -114,6 +114,9 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
  * Minesweeper and Vent Tiles both hide squares on ranks 3 to 6. Ice and portals
  * move a piece on after it stops, so the square a mine checks would depend on draft order.
  * Night Shift: It's Dark And I'm Scared is already always night.
+ * Masquerade masks every piece: Sus and Shell Game disguise pieces too, and Main
+ * Character Syndrome, Imposter Syndrome and Berserker mark a piece type in plain sight.
+ * A bribe (Everyone Has A Price) refused by a masked non-pawn would name its type.
  * One Way Street: Bandersnatch mirrors the c-file onto the f-file, so every
  * copied move along them would go against the arrow.
  */
@@ -140,6 +143,12 @@ const MATCH_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.minesweeper, MODIFIER_IDS.letItGo],
   [MODIFIER_IDS.minesweeper, MODIFIER_IDS.thinkingWithPortals],
   [MODIFIER_IDS.nightShift, MODIFIER_IDS.darkAndScared],
+  [MODIFIER_IDS.masquerade, MODIFIER_IDS.sus],
+  [MODIFIER_IDS.masquerade, MODIFIER_IDS.shellGame],
+  [MODIFIER_IDS.masquerade, MODIFIER_IDS.mainCharacterSyndrome],
+  [MODIFIER_IDS.masquerade, MODIFIER_IDS.imposterSyndrome],
+  [MODIFIER_IDS.masquerade, MODIFIER_IDS.berserker],
+  [MODIFIER_IDS.masquerade, MODIFIER_IDS.everyoneHasAPrice],
 ];
 
 /** The card in either draft that rules this one out of the match, if any. */
