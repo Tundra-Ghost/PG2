@@ -6,6 +6,7 @@ import './index';
 import { MODIFIER_IDS } from './ids';
 import { bulletTimePath } from './definitions/bullet-time';
 import { isFlooded } from './definitions/tide';
+import { getHiddenPieceIds } from '../engine/visibility';
 import { getValidOptions } from '../draft/rules';
 import { modifierRegistry } from './registry';
 import { makeEmptyState, makePiece, move } from './testHelpers';
@@ -77,5 +78,26 @@ describe('MOD-C016 Bullet Time', () => {
     state = chessEngine.beginTurn(state);
     expect(isFlooded(state)).toBe(true);
     expect(chessEngine.validateMove(state, bt('b1', 'e4')).valid).toBe(true);
+  });
+  it('never stands on a void square, first jump or last', () => {
+    let state = start([makePiece('king', 'white', 'a1'), makePiece('king', 'black', 'h8'), makePiece('knight', 'white', 'b1')]);
+    state.tiles.set('c3', { square: 'c3', effects: [], isVoid: true });
+    state.tiles.set('f3', { square: 'f3', effects: [], isVoid: true });
+    expect(bulletTimePath(state, 'b1', 'e4')).toBe('d2');
+    expect(targets(state, 'b1')).not.toContain('f3');
+    expect(targets(state, 'b1')).not.toContain('c3');
+  });
+
+  it('a hidden enemy piece on the first jump turns the move into a bump', () => {
+    let state = start([makePiece('king', 'white', 'a1'), makePiece('king', 'black', 'h8'), makePiece('knight', 'white', 'b1'), makePiece('bishop', 'black', 'c3')],
+      [{ id: MODIFIER_IDS.invisibilityCloak, sourceColor: 'black' }]);
+    state = { ...state, modifierState: { ...state.modifierState, [MODIFIER_IDS.invisibilityCloak]: { black: { pieceId: 'black-bishop-c3' } } } };
+    expect(getHiddenPieceIds(state, 'white').has('black-bishop-c3')).toBe(true);
+    // White sees c3 as empty and picks it; on the real board the jump fails.
+    expect(bulletTimePath(state, 'b1', 'e4')).toBeNull();
+    expect(chessEngine.validateMove(state, bt('b1', 'e4')).bump).toBe(true);
+    const next = chessEngine.applyMove(state, bt('b1', 'e4'));
+    expect(next.turn).toBe('white');
+    expect(next.pieces.get('b1')).toMatchObject({ type: 'knight' });
   });
 });
