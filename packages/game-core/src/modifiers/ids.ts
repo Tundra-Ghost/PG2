@@ -11,6 +11,7 @@ export const MODIFIER_IDS = {
   rubberBanding: 'MOD-B018',
   ctrlZ: 'MOD-C015',
   bulletTime: 'MOD-C016',
+  everyoneHasAPrice: 'MOD-C019',
   fiftyFirstMoves: 'MOD-B005',
   gerald: 'MOD-B002',
   heavyIsTheCrown: 'MOD-B004',

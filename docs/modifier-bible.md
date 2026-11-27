@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 96 built, 4 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 97 built, 3 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -14,6 +14,9 @@
 | E | Asymmetric Armies | Non-standard piece configurations |
 
 ## Change log
+
+**Batch 15 (2026-11-27)**
+- Everyone Has A Price built. Conflict (same player): Yeah, There Are Three Of Them.
 
 **Batch 14 (2026-11-27)**
 - Tide Goes In and Crop Circles count rounds, not turns, like Shake It Off and Night Shift.
@@ -935,7 +938,7 @@ Your rook places a wall on an empty square next to it. Nothing can land on or cr
 - Changed from design: the design gave no cooldown; the build uses 6 of your moves.
 
 ### MOD-C019 · Everyone Has A Price
-*Ref: Every heist movie* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Every heist movie* · **Tier S** · Cost 5 · Curse 0 · Queen · Cooldown 12 · Scope: Owner · Modes: All · **Built**
 
 An enemy pawn next to your Queen accepts a bribe and joins your side. It must be on its own half of the board. Uses your move.
 
@@ -943,6 +946,10 @@ An enemy pawn next to your Queen accepts a bribe and joins your side. It must be
 
 - Ruling: a bribed pawn may not give check on the move it changes sides.
 - Balance: on its own half only, so the bribe cannot buy a pawn about to promote.
+- Built: an ability (Queen · Cooldown 12). Select your Queen, press Bribe, then pick an enemy pawn on one of the 8 squares next to her. It changes colour where it stands, keeps its id, and moves as your pawn from then on. The bribe may not put either King in check (discovered checks count), and like any move it may not leave your own King in check. It resets the 50-move clock and clears en passant. A pawn you cannot see (fog, hidden), a Sus piece shown as another type and a Shell Game cup cannot be bribed. Bots may use it.
+- Interaction: Zerg Rush. If the briber has it, a pawn could double-step to promote, so only a pawn on rank 4 (White) or 5 (Black) can be bribed.
+- Changed from design: a pawn on its own second rank (rank 2 for White, 7 for Black) cannot be bribed. A pawn changes direction when it changes sides, so from there it would promote on the next move, which the balance note rules out. The design gave no cooldown; the build uses 12 of your turns.
+- Conflict: Yeah, There Are Three Of Them has no Queen, so one player may not draft both.
 
 ### MOD-C020 · Gotta Go Fast
 *Ref: Sonic the Hedgehog* · **Tier B** · Cost 2 · Curse 0 · Pawn · Cooldown 4 · Scope: Owner · Modes: All · **Built**
@@ -1218,6 +1225,7 @@ The owner's queen becomes a Royal Guard and a second Guard stands on their third
 - Conflict: Slay Queen. One side cannot draft both.
 - Conflict: Main Character Syndrome. There is no Queen to demand, so one side cannot draft both.
 - Conflict: GET OVER HERE!. There is no Queen to pull with, so one side cannot draft both.
+- Conflict: Everyone Has A Price. There is no Queen to bribe with, so one side cannot draft both.
 - Conflict: Imposter Syndrome. There is no Queen to doubt, so one side cannot draft both.
 - Conflict: Shell Game. There is no Queen to hide, so one side cannot draft both.
 
@@ -1545,7 +1553,7 @@ Values the game uses today. "Built" cards match the build.
 | C016 | Bullet Time | C | A | 4 | 0 | Owner | Built |
 | C017 | Get Off My Lawn | C | B | 3 | 0 | Owner | Built |
 | C018 | Dirt Hut | C | A | 3 | 0 | Owner | Built |
-| C019 | Everyone Has A Price | C | S | 5 | 0 | Owner | Design |
+| C019 | Everyone Has A Price | C | S | 5 | 0 | Owner | Built |
 | C020 | Gotta Go Fast | C | B | 2 | 0 | Owner | Built |
 | D009 | Invisibility Cloak | D | A | 3 | 0 | Owner | Built |
 | D010 | Night Shift | D | A | 3 | 1 | Shared | Built |
@@ -1572,7 +1580,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-96 of 100 built. The other 4 are designs (v0.4).
+97 of 100 built. The other 3 are designs (v0.4).
 
 ### Balance test plan
 
