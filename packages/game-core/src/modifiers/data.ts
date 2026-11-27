@@ -1304,7 +1304,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'After each move, the player must mark which piece they will move next. Both players see the mark. In check, the mark is cancelled.',
     flavor: '"Viktor has been told the ending. He is disappointed. He will still play the move."',
     prototypeRules:
-      'After you pick each move, tap the piece you will move next (the board shows it as it will be). Both players see an amber ring on each side\'s marked piece. Your next move must be with that piece (a move or one of its abilities). In check, the mark is cancelled and any legal move goes. If the marked piece has no legal move, or it was captured, any move goes. Free abilities (Flashlight) are not moves and do not need a mark. Bots and moves the game plays for you mark the piece that moved. Under fog you do not see an enemy mark on a square you cannot see.',
+      'After you pick each move, tap the piece you will move next (the preview shows your piece on its new square; a piece the move places cannot be marked). Both players see an amber ring on each side\'s marked piece. Your next move must be with that piece (a move or one of its abilities). In check, the mark is cancelled and any legal move goes. If the marked piece has no legal move, or it was captured, any move goes. Castling counts as a King move. Free abilities (Flashlight) are not moves and do not need a mark. Bots mark their busiest piece; moves the game plays for you mark the piece that moved. Under fog you do not see an enemy mark on a square you cannot see.',
   },
   {
     id: 'MOD-D020',

@@ -64,6 +64,24 @@ export function getSpoilerMarks(state: GameState, viewer: Color | null): { squar
 }
 
 /**
+ * Bots: mark the own piece (one already on the board) with the most moves
+ * after this move, so a bot is not tied to the piece it just moved.
+ */
+export function withBotSpoiler(state: GameState, move: Move | null): Move | null {
+  if (!move || move.spoiler !== undefined || !needsSpoilerMark(state, move)) return move;
+  const after = chessEngine.applyMove(state, move);
+  if (after.moveHistory.length === state.moveHistory.length) return move;
+  const before = new Set([...state.pieces.values()].filter(p => p.color === move.playerColor).map(p => p.id));
+  let best: { id: string; count: number } | null = null;
+  for (const piece of after.pieces.values()) {
+    if (!before.has(piece.id)) continue;
+    const count = chessEngine.getLegalMoves(after, piece.square).length - (piece.type === 'king' ? 8 : 0);
+    if (!best || count > best.count) best = { id: piece.id, count };
+  }
+  return best ? { ...move, spoiler: best.id } : move;
+}
+
+/**
  * MOD-D019: with each move a player marks the piece they will move next
  * (Move.spoiler, a piece id, so saved games and online moves carry it). Both
  * players see the mark. The next move must be that piece, unless the side is

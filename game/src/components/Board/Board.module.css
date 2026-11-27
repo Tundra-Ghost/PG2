@@ -373,11 +373,14 @@
   font-size: 0.9rem;
   line-height: 1.3;
   box-shadow: 0 4px 14px rgba(16, 37, 66, 0.2);
+  /* Taps go through to the pieces under the bar; only Cancel takes them. */
+  pointer-events: none;
 }
 
 .spoilerCancel {
+  pointer-events: auto;
   flex: none;
-  min-height: 36px;
+  min-height: 40px;
   padding: 0.3rem 0.8rem;
   border: 1px solid #1f4f86;
   border-radius: 6px;

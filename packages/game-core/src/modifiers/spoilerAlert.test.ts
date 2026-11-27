@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { chessEngine } from '../engine/ChessEngine';
 import type { GameState, Piece } from '../engine/types';
 import { redactForViewer } from '../net/redact';
-import { listBotMoves } from '../engine/bot';
+import { getChickBotMove, listBotMoves } from '../engine/bot';
 import './index';
 import { MODIFIER_IDS } from './ids';
 import { getSpoilerBinding, getSpoilerMarks } from './definitions/spoiler-alert';
@@ -86,5 +86,29 @@ describe('MOD-D019 Spoiler Alert', () => {
     state.modifierState = { ...state.modifierState, [ID]: { white: 'white-rook-a1' } };
     expect(getSpoilerBinding(state, 'white')).toBeNull();
     expect(chessEngine.validateMove(state, move('d4', 'e5', 'white')).valid).toBe(true);
+  });
+
+  it('online, an enemy move is sent without its mark', () => {
+    let state = start(army());
+    state = chessEngine.applyMove(state, move('b1', 'c3', 'white', { spoiler: 'white-rook-h1' }));
+    expect(redactForViewer(state, 'black').moveHistory[0].move.spoiler).toBeUndefined();
+    expect(redactForViewer(state, 'white').moveHistory[0].move.spoiler).toBe('white-rook-h1');
+  });
+
+  it('bot moves carry a mark of a piece already on the board', () => {
+    const state = start(army());
+    const botMove = getChickBotMove(state, 'white');
+    expect(botMove?.spoiler).toBeDefined();
+    expect([...state.pieces.values()].some(p => p.id === botMove!.spoiler && p.color === 'white')).toBe(true);
+    expect(chessEngine.validateMove(state, botMove!).valid).toBe(true);
+  });
+
+  it('castling counts as a King move', () => {
+    const state = start([makePiece('king', 'white', 'e1'), makePiece('rook', 'white', 'h1'), makePiece('king', 'black', 'e8'), makePiece('pawn', 'white', 'a2')]);
+    state.flags.castlingRights.white.kingSide = true;
+    state.modifierState = { ...state.modifierState, [ID]: { white: 'white-rook-h1' } };
+    expect(chessEngine.validateMove(state, move('e1', 'g1', 'white', { isCastle: 'kingside' })).valid).toBe(false);
+    state.modifierState = { ...state.modifierState, [ID]: { white: 'white-king-e1' } };
+    expect(chessEngine.validateMove(state, move('e1', 'g1', 'white', { isCastle: 'kingside' })).valid).toBe(true);
   });
 });
