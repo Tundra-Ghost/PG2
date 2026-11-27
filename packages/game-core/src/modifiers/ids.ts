@@ -47,6 +47,7 @@ export const MODIFIER_IDS = {
   invisibilityCloak: 'MOD-D009',
   camouflage: 'MOD-D015',
   shellGame: 'MOD-D014',
+  pokerFace: 'MOD-D013',
   ghosts: 'MOD-D002',
   forgiveMe: 'MOD-C002',
   noIDontThinkIWill: 'MOD-B003',

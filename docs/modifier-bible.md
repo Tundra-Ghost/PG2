@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 83 built, 17 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 84 built, 16 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -19,6 +19,7 @@
 - Hidden pieces (shared code in engine/visibility.ts): a hidden piece looks like an empty square to its opponent. A move it blocks is a bump: it reveals the piece and the player moves again. A hidden piece that gives check is always revealed.
 - Invisibility Cloak built.
 - Camouflage built. Conflict (same player): Invisibility Cloak.
+- Poker Face built (display only). No conflicts: it hides no pieces.
 - Shell Game built. Conflicts (same player): Sus, Yeah, There Are Three Of Them, Main Character Syndrome, Imposter Syndrome, BOY. (The Berserker). Death And Taxes never taxes a cup.
 
 **Batch 10 (2026-11-25)**
@@ -1017,7 +1018,7 @@ Once every 4 of your moves, shine a light on any 3×3 area. You see through fog,
 - Ruling: it does not use your move. It is not a move for stalemate, for Commitment Issues, for Roll For Initiative or other must-move cards, or for the move list, and no every-N-moves card counts it. It may be used in check. Bots do not use it.
 
 ### MOD-D013 · Poker Face
-*Ref: Lady Gaga* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Lady Gaga* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Your opponent's move log shows only the squares your pieces moved to, not which piece moved. Your captured-pieces tray is hidden from them.
 
@@ -1025,6 +1026,8 @@ Your opponent's move log shows only the squares your pieces moved to, not which 
 
 - Ruling: the board itself is unchanged. This only hides the bookkeeping.
 - Why: punishes players who read the log instead of the board.
+- Built: display only, in game-core (getShownNotation), so online play and bots read the same text. The opponent's move list and match feed show only the square, such as "e5", or "e5+" with check (the board shows check anyway). No "x", no piece letter. Your own view of your moves is unchanged.
+- Changed from design: there is no captured-pieces tray in this build, so there is nothing else to hide. If a tray is added, it must hide the owner's captures from the opponent.
 
 ### MOD-D014 · Shell Game
 *Ref: The cups and ball trick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1481,7 +1484,7 @@ Values the game uses today. "Built" cards match the build.
 | D010 | Night Shift | D | A | 3 | 1 | Shared | Design |
 | D011 | Footprints | D | B | 1 | 0 | Owner | Built |
 | D012 | Flashlight | D | B | 2 | 0 | Owner | Built |
-| D013 | Poker Face | D | B | 1 | 0 | Owner | Design |
+| D013 | Poker Face | D | B | 1 | 0 | Owner | Built |
 | D014 | Shell Game | D | A | 3 | 0 | Owner | Built |
 | D015 | Camouflage | D | A | 3 | 0 | Owner | Built |
 | D016 | Jump Scare | D | B | 2 | 1 | Shared | Design |
@@ -1502,7 +1505,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-83 of 100 built. The other 17 are designs (v0.4).
+84 of 100 built. The other 16 are designs (v0.4).
 
 ### Balance test plan
 
