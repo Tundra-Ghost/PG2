@@ -13,6 +13,8 @@ export function isPokerFaced(state: GameState, record: MoveRecord, viewer: Color
 
 /** The opponent's log line for a Poker Face move: the square only, plus a check mark the board shows anyway. */
 export function pokerFaceNotation(record: MoveRecord): string {
+  // An ability may not end on move.to (a cannon shot, a swap): keep its squares, drop the piece letters.
+  if (record.move.ability) return record.notation.replace(/^[A-Z]+(?=[a-h][1-8])/, '');
   const suffix = record.notation.match(/[+#]+$/)?.[0] ?? '';
   return `${record.move.to}${suffix}`;
 }
