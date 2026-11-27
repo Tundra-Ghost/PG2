@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import type { GameState } from '@pigeon-chess/game-core';
+import { getSky, type GameState } from '@pigeon-chess/game-core';
 import { getStatusMessage, type ResultSides } from './resultText';
 import { playClick } from '../../sound';
 import styles from './GameStatus.module.css';
@@ -29,6 +29,8 @@ export default function GameStatus({
 }: GameStatusProps) {
   const msg = getStatusMessage(state, sides);
   const isOver = msg !== null;
+  // Night Shift (MOD-D010): the sky shows the time of day.
+  const sky = getSky(state);
   // "See board" tucks the result card away so the final position is visible.
   const [seeBoard, setSeeBoard] = useState(false);
   useEffect(() => setSeeBoard(false), [state.id]);
@@ -47,6 +49,11 @@ export default function GameStatus({
             {(state.status === 'active') && state.moveHistory.length > 0 && (
               <span className={styles.moveNum}>
                 Move {state.flags.fullMoveNumber}
+              </span>
+            )}
+            {sky && state.status === 'active' && (
+              <span className={`${styles.sky} ${sky.night ? styles.skyNight : styles.skyDay}`} aria-label={sky.text}>
+                <span aria-hidden="true">{sky.night ? '☾' : '☀'}</span> {sky.text}
               </span>
             )}
           </>

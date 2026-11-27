@@ -1148,6 +1148,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'shared',
     description:
       'Every 8 rounds night falls for 4 rounds. At night, each player sees only within 2 squares of their own pieces. The sky in the header shows the time of day.',
+    prototypeRules:
+      'Night falls on rounds 9 to 12, 17 to 20 and so on (once Black has moved in round 8, 16, ...), with dusk shown the round before. At night each side sees only within 2 squares of its own pieces, exactly like It\'s Dark And I\'m Scared: Pigeons stay visible, moves into the dark are hidden, bots play with the same fog, and online the server does not send pieces in the dark. Cat Mode sees 3 squares. The header shows the time of day.',
     flavor: '"It is night. The pigeons have gone to sleep. Viktor has not. Viktor cannot sleep during a match."',
   },
   {

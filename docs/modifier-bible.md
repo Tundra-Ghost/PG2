@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 91 built, 9 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 92 built, 8 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -19,6 +19,7 @@
 - Let It Go built. Conflicts: This Is My Swamp, Thinking With Portals, Tide Goes In.
 - Shake It Off built. Conflict: Gravitational Anomaly.
 - Minesweeper built. Conflicts: Vent Tiles, Let It Go, Thinking With Portals.
+- Night Shift built. Conflict: It's Dark And I'm Scared. Cat Mode, Footprints and Flashlight are offered with it too.
 
 **Batch 12 (2026-11-27)**
 - Board-moving cards share one rule set (engine/conveyor.ts): they move pieces once per round, after Black moves; never capture; never put a King in check or add a second checker; reveal a hidden piece that blocks them, and never point at a hidden piece's new square; and turn off en passant for that turn when a pawn slides.
@@ -53,7 +54,7 @@
 - 60 new design cards, 12 per category (A009 to E020), for 100 in all. None were built at the time; cards built since are marked **Built**. Design cards show in the Collection and under "Show upcoming" in the draft, and the draft never offers them until they are built.
 - Each new card was checked against the design rules: legible at a glance (Rule 03), skill still decides (Pillar 2), the King is never removed or hidden (Rule 04), no softlocks (Rule 06), curses priced by moves lost (Rule 08). The rulings under each card record how.
 - Three new support cards (Footprints, Flashlight, Crystal Ball) and Tells are gated in the draft like Cat Mode, so they are never dead picks.
-- New conflicts to enforce when built: The Magic Roundabout with This Is My Swamp, and Night Shift with It's Dark And I'm Scared (one of each pair per match).
+- New conflicts to enforce when built: The Magic Roundabout with This Is My Swamp, and Night Shift with It's Dark And I'm Scared (one of each pair per match). Both are now enforced.
 
 **v0.3 (2026-10-30)**
 - Converted from HTML to Markdown.
@@ -955,6 +956,7 @@ Both players see only within 2 squares of their own pieces. The rest is dark. Pi
 - Synergy: Forgive Me, For I Have Moved. Reveals the target through fog.
 - Synergy: Vent Tiles. Vents are invisible in fog.
 - Interaction: Footprints and Flashlight. Footprints show in this fog, and a Flashlight sees through it.
+- Conflict: Night Shift. This card is already always night; only one may be in a match, whoever drafts it.
 
 ### MOD-D002 · I'm Literally Right Here
 *Ref: invisible man memes* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -996,7 +998,7 @@ One of the owner's pieces looks like a different type to the opponent. It moves 
 Adds 1 square to the owner's view range in any fog card. Cat Mode is only offered in the draft once a fog card is already picked, so it is never a dead pick. It cannot see into a Blind Spot.
 
 - Changed from v0.2: draft gating added.
-- Built: only It's Dark And I'm Scared has a view range, so the draft waits for that card (picked by either side). The owner sees 3 squares instead of 2. Blind Spots and smoke still hide.
+- Built: It's Dark And I'm Scared and Night Shift (at night) have a view range, so the draft waits for one of them (picked by either side). The owner sees 3 squares instead of 2. Blind Spots and smoke still hide.
 
 ### MOD-D007 · Recalculating… (Move Hints Corrupted)
 *Ref: GPS rerouting* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: No Ranked · **Built**
@@ -1029,7 +1031,7 @@ At match start, pick one of your non-King pieces. It is invisible to your oppone
 - Interaction: Big Beak Is Watching. The eye spots a hidden piece and reveals it. Tells never shows a tell on a hidden piece.
 
 ### MOD-D010 · Night Shift
-*Ref: Minecraft day and night* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
+*Ref: Minecraft day and night* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
 Every 8 rounds night falls for 4 rounds. At night, each player sees only within 2 squares of their own pieces. The sky in the header shows the time of day.
 
@@ -1037,6 +1039,8 @@ Every 8 rounds night falls for 4 rounds. At night, each player sees only within 
 
 - Conflict: It's Dark And I'm Scared. Already always night. Only one may be in a match.
 - Synergy: Cat Mode. Works at night too.
+- Built: night on rounds 9 to 12, 17 to 20, and so on, with dusk the round before. It counts rounds, so night falls once Black has moved and an extra turn never moves it. At night each side sees exactly what It's Dark And I'm Scared shows (Pigeons too), with the same fogged moves, bot fog and online rules. The header shows the time of day and how many rounds are left.
+- Interaction: Footprints, Flashlight and Cat Mode count it as a fog card, so the draft offers them with it.
 
 ### MOD-D011 · Footprints
 *Ref: CSI* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1525,7 +1529,7 @@ Values the game uses today. "Built" cards match the build.
 | C019 | Everyone Has A Price | C | S | 5 | 0 | Owner | Design |
 | C020 | Gotta Go Fast | C | B | 2 | 0 | Owner | Built |
 | D009 | Invisibility Cloak | D | A | 3 | 0 | Owner | Built |
-| D010 | Night Shift | D | A | 3 | 1 | Shared | Design |
+| D010 | Night Shift | D | A | 3 | 1 | Shared | Built |
 | D011 | Footprints | D | B | 1 | 0 | Owner | Built |
 | D012 | Flashlight | D | B | 2 | 0 | Owner | Built |
 | D013 | Poker Face | D | B | 1 | 0 | Owner | Built |
@@ -1549,7 +1553,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-91 of 100 built. The other 9 are designs (v0.4).
+92 of 100 built. The other 8 are designs (v0.4).
 
 ### Balance test plan
 

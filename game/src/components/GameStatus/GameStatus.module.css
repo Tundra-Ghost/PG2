@@ -274,3 +274,23 @@
     font-size: 2rem;
   }
 }
+
+/* Night Shift: the time of day, next to the move number. */
+.sky {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.skyDay {
+  background: #fff4cc;
+  color: #5c4300;
+}
+
+.skyNight {
+  background: #0c1f3a;
+  color: #e5ecf7;
+}

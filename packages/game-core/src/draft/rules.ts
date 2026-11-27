@@ -4,15 +4,16 @@ import { MODIFIER_IDS } from '../modifiers/ids';
 import { modifierRegistry } from '../modifiers/registry';
 import { TIMED_EVENT_CARDS } from '../modifiers/definitions/crystal-ball';
 
-/** Cat Mode only does something with It's Dark And I'm Scared, so it waits for that card. */
+/** Cards with a view range. Cat Mode only does something with one of them, so it waits for one. */
+const DARK_CARDS: readonly string[] = [MODIFIER_IDS.darkAndScared, MODIFIER_IDS.nightShift];
+
 function needsDarkFirst(cardId: string, ownIds: string[], otherIds: string[]): boolean {
   return cardId === MODIFIER_IDS.catMode
-    && !ownIds.includes(MODIFIER_IDS.darkAndScared)
-    && !otherIds.includes(MODIFIER_IDS.darkAndScared);
+    && ![...ownIds, ...otherIds].some(id => DARK_CARDS.includes(id));
 }
 
 /** Cards that hide squares. Footprints and Flashlight wait for one of them. */
-export const FOG_CARDS: readonly string[] = [MODIFIER_IDS.darkAndScared, MODIFIER_IDS.knownUnknowns, MODIFIER_IDS.smokeCloud];
+export const FOG_CARDS: readonly string[] = [MODIFIER_IDS.darkAndScared, MODIFIER_IDS.knownUnknowns, MODIFIER_IDS.smokeCloud, MODIFIER_IDS.nightShift];
 
 /**
  * Support cards that do nothing alone, like Cat Mode: why one is not offered
@@ -105,6 +106,7 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
  * Shake It Off and Gravitational Anomaly both shove the whole board on a timer.
  * Minesweeper and Vent Tiles both hide squares on ranks 3 to 6. Ice and portals
  * move a piece on after it stops, so the square a mine checks would depend on draft order.
+ * Night Shift: It's Dark And I'm Scared is already always night.
  * One Way Street: Bandersnatch mirrors the c-file onto the f-file, so every
  * copied move along them would go against the arrow.
  */
@@ -130,6 +132,7 @@ const MATCH_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.minesweeper, MODIFIER_IDS.ventTiles],
   [MODIFIER_IDS.minesweeper, MODIFIER_IDS.letItGo],
   [MODIFIER_IDS.minesweeper, MODIFIER_IDS.thinkingWithPortals],
+  [MODIFIER_IDS.nightShift, MODIFIER_IDS.darkAndScared],
 ];
 
 /** The card in either draft that rules this one out of the match, if any. */
@@ -243,7 +246,7 @@ export function pickBlocker(
   if (!implementedIds.has(card.id)) return 'Not in this build yet.';
   if (ownIds.includes(card.id)) return 'Already in your draft.';
   if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return `${otherName} already claimed this shared modifier.`;
-  if (needsDarkFirst(card.id, ownIds, otherIds)) return 'Needs It\'s Dark And I\'m Scared in the match first.';
+  if (needsDarkFirst(card.id, ownIds, otherIds)) return 'Needs It\'s Dark And I\'m Scared or Night Shift in the match first.';
   const partner = needsPartner(card.id, ownIds, otherIds);
   if (partner) return partner;
   const conflict = ownConflict(card.id, ownIds);
