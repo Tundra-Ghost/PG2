@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 90 built, 10 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 91 built, 9 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -18,6 +18,7 @@
 **Batch 13 (2026-11-27)**
 - Let It Go built. Conflicts: This Is My Swamp, Thinking With Portals, Tide Goes In.
 - Shake It Off built. Conflict: Gravitational Anomaly.
+- Minesweeper built. Conflicts: Vent Tiles, Let It Go, Thinking With Portals.
 
 **Batch 12 (2026-11-27)**
 - Board-moving cards share one rule set (engine/conveyor.ts): they move pieces once per round, after Black moves; never capture; never put a King in check or add a second checker; reveal a hidden piece that blocks them, and never point at a hidden piece's new square; and turn off en passant for that turn when a pawn slides.
@@ -135,6 +136,7 @@ Three hidden Vents spawn on ranks 3 to 6. The first non-king piece to land on a 
 - Synergy: It's Dark And I'm Scared. Nobody can track Vents in fog.
 - Changed from v0.2: Vents only spawn on ranks 3 to 6. Kings never trigger them. Jam rule added.
 - Conflict: Thinking With Portals. Only one of the two may be in a match, whoever drafts it.
+- Conflict: Minesweeper. Only one may be in a match, whoever drafts it.
 
 ### MOD-A004 · Winter Is Coming (To Your Pieces)
 *Ref: Game of Thrones* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
@@ -247,6 +249,7 @@ A blue portal sits on c4 and an orange portal on f5. A non-King piece that ends 
 - Conflict: Vent Tiles and The Birds. A vent or a flock could land on a portal, so only one of the three may be in a match, whoever drafts it.
 - Conflict: Tide Goes In, Tide Goes Out. Both use ranks 4 and 5; only one may be in a match, whoever drafts it.
 - Conflict: Let It Go. It sits on the ice; only one may be in a match, whoever drafts it.
+- Conflict: Minesweeper. Only one may be in a match, whoever drafts it.
 
 ### MOD-A012 · Let It Go
 *Ref: Frozen* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Built**
@@ -262,6 +265,7 @@ The central 4×4 squares are ice. A rook, bishop or queen that moves onto ice ke
 - Conflict: This Is My Swamp, Thinking With Portals and Tide Goes In, Tide Goes Out. The Swamp, both portals and the water sit on the ice and change how far a piece may go there. Only one of each pair may be in a match, whoever drafts it.
 - Interaction: One Way Street. c3 to c6 and f3 to f6 are both ice and one-way. A slide goes the way the piece moved, so it follows the arrow whenever the move did.
 - Interaction: Winter Is Coming. Only the square the move ends on counts, so a piece that slides into the Frozen zone is not frozen.
+- Conflict: Minesweeper. Only one may be in a match, whoever drafts it.
 
 ### MOD-A013 · The Magic Roundabout
 *Ref: Swindon's Magic Roundabout* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
@@ -279,7 +283,7 @@ The four centre squares are a roundabout. At the end of each round, pieces on d4
 - Built: clockwise as White sees it: d5 to e5 to e4 to d4. A piece whose next square empties during the turn follows, so a queue of three turns together; with all four squares full nothing moves. It uses the shared slide rules (Batch 12): no King is put in check or gains a checker, and a hidden piece that blocks a turn is revealed.
 
 ### MOD-A014 · Minesweeper
-*Ref: Minesweeper* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
+*Ref: Minesweeper* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
 Four hidden mines sit on ranks 3 to 6, two on each half of the board. When a piece stops next to a mine, its square shows how many mines touch it, like the classic game. The first non-King piece to land on a mine is lost and the mine is used up.
 
@@ -288,6 +292,10 @@ Four hidden mines sit on ranks 3 to 6, two on each half of the board. When a pie
 - Ruling: Kings never trigger mines and mines are never placed next to a starting King.
 - Skill: the numbers turn a random loss into a deduction puzzle.
 - Not Vent Tiles: vents relocate pieces, mines remove them, and mines give clues.
+- Built: the mines are placed with the game seed, two on ranks 3 and 4 and two on ranks 5 and 6, never under a piece and never next to a King. Only the piece that makes a move sets one off, where it stops; pieces moved by other cards do not. A clue counts live mines touching the square (0 to 8), stays after the piece leaves, and updates when a mine is used. A King on a mine leaves a clue too, so the mine is not given away.
+- Ruling: a mine that would leave its own side's King in check (the piece was blocking a line) stays hidden, and the piece stays.
+- Hidden information: online, the mines are never sent. A clue left by a hidden piece (Invisibility Cloak, Camouflage) or on a square in fog is not shown to the opponent.
+- Conflict: Vent Tiles. Both hide squares on ranks 3 to 6. Conflict: Let It Go and Thinking With Portals. Ice and portals move a piece on after it stops, so which square a mine checks would depend on draft order. Only one of each pair may be in a match, whoever drafts it.
 
 ### MOD-A015 · The Roomba
 *Ref: Robot vacuum videos* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
@@ -1485,7 +1493,7 @@ Values the game uses today. "Built" cards match the build.
 | A011 | Thinking With Portals | A | B | 2 | 0 | Shared | Built |
 | A012 | Let It Go | A | A | 3 | 1 | Shared | Built |
 | A013 | The Magic Roundabout | A | B | 2 | 0 | Shared | Built |
-| A014 | Minesweeper | A | A | 3 | 1 | Shared | Design |
+| A014 | Minesweeper | A | A | 3 | 1 | Shared | Built |
 | A015 | The Roomba | A | B | 2 | 0 | Shared | Built |
 | A016 | Monument To Gerald | A | B | 1 | 0 | Shared | Built |
 | A017 | Tide Goes In, Tide Goes Out | A | A | 3 | 1 | Shared | Built |
@@ -1541,7 +1549,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-90 of 100 built. The other 10 are designs (v0.4).
+91 of 100 built. The other 9 are designs (v0.4).
 
 ### Balance test plan
 
