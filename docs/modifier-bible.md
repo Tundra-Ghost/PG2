@@ -292,9 +292,9 @@ Four hidden mines sit on ranks 3 to 6, two on each half of the board. When a pie
 - Ruling: Kings never trigger mines and mines are never placed next to a starting King.
 - Skill: the numbers turn a random loss into a deduction puzzle.
 - Not Vent Tiles: vents relocate pieces, mines remove them, and mines give clues.
-- Built: the mines are placed with the game seed, two on ranks 3 and 4 and two on ranks 5 and 6, never under a piece and never next to a King. Only the piece that makes a move sets one off, where it stops; pieces moved by other cards do not. A clue counts live mines touching the square (0 to 8), stays after the piece leaves, and updates when a mine is used. A King on a mine leaves a clue too, so the mine is not given away.
+- Built: the mines are placed with the game seed, two on ranks 3 and 4 and two on ranks 5 and 6, never under a piece and never next to a King. Only the piece that makes a normal move sets one off, on the square its move ends on; abilities and pieces moved by other cards (or moved on by another card after the move) do not. A clue counts live mines touching the square (0 to 8), stays after the piece leaves, and updates when a mine is used. A King on a mine leaves a clue too, so the mine is not given away.
 - Ruling: a mine that would leave its own side's King in check (the piece was blocking a line) stays hidden, and the piece stays.
-- Hidden information: online, the mines are never sent. A clue left by a hidden piece (Invisibility Cloak, Camouflage) or on a square in fog is not shown to the opponent.
+- Hidden information: online, the mines are never sent. A clue left by a hidden piece (Invisibility Cloak, Camouflage) or on a square in fog is not shown to the opponent; they keep seeing the older number on that square. Clues a piece left while hidden appear when it is revealed. A hidden piece that steps on a mine is not named.
 - Conflict: Vent Tiles. Both hide squares on ranks 3 to 6. Conflict: Let It Go and Thinking With Portals. Ice and portals move a piece on after it stops, so which square a mine checks would depend on draft order. Only one of each pair may be in a match, whoever drafts it.
 
 ### MOD-A015 · The Roomba

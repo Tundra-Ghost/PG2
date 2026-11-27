@@ -3,7 +3,7 @@ import { chessEngine } from '../engine/ChessEngine';
 import type { GameState, Piece, Square } from '../engine/types';
 import './index';
 import { MODIFIER_IDS } from './ids';
-import { getMineClues } from './definitions/minesweeper';
+import { getMineClues, minesweeperDef } from './definitions/minesweeper';
 import { invisibilityCloakDef, getCloakedPiece } from './definitions/invisibility-cloak';
 import { getValidOptions } from '../draft/rules';
 import { redactForViewer } from '../net/redact';
@@ -112,5 +112,46 @@ describe('MOD-A014 Minesweeper', () => {
       expect(getValidOptions([], [other], built).map(c => c.id)).not.toContain(ID);
       expect(getValidOptions([ID], [], built).map(c => c.id)).not.toContain(other);
     }
+  });
+
+  it('a hidden piece that stops on a clue square never makes the old number vanish for its opponent', () => {
+    let state = start([...KINGS(), makePiece('bishop', 'white', 'c1'), makePiece('rook', 'black', 'h3'), makePiece('pawn', 'black', 'a7')]);
+    state.activeModifiers = [...state.activeModifiers, { id: MODIFIER_IDS.invisibilityCloak, name: 'Invisibility Cloak', activeFor: 'both', sourceColor: 'white' }];
+    state = setMines(invisibilityCloakDef.onActivate!(state), ['f4', 'c6', 'b4', 'g6']);
+    state = chessEngine.applyMove(state, move('a1', 'b1', 'white'));
+    state = chessEngine.applyMove(state, move('h3', 'e3', 'black'));
+    state = chessEngine.applyMove(state, move('b1', 'a1', 'white'));
+    state = chessEngine.applyMove(state, move('e3', 'e5', 'black'));
+    const before = getMineClues(state, 'black').find(c => c.square === 'e3');
+    expect(before?.pieceId).toBe('black-rook-h3');
+    state = chessEngine.applyMove(state, move('c1', 'e3', 'white'));
+    expect(getCloakedPiece(state, 'white')).toBe('white-bishop-c1');
+    expect(getMineClues(state, 'black').find(c => c.square === 'e3')).toEqual(before);
+    expect(getMineClues(state, 'white').find(c => c.square === 'e3')?.pieceId).toBe('white-bishop-c1');
+  });
+
+  it('a hidden piece that steps on a mine is not named', () => {
+    let state = start([...KINGS(), makePiece('bishop', 'white', 'c1'), makePiece('pawn', 'black', 'a7')]);
+    state.activeModifiers = [...state.activeModifiers, { id: MODIFIER_IDS.invisibilityCloak, name: 'Invisibility Cloak', activeFor: 'both', sourceColor: 'white' }];
+    state = setMines(invisibilityCloakDef.onActivate!(state), ['e3', 'c6', 'b4', 'g6']);
+    state = chessEngine.applyMove(state, move('c1', 'e3', 'white'));
+    expect(state.pieces.get('e3')).toBeUndefined();
+    const event = state.eventHistory[state.eventHistory.length - 1];
+    expect(event.message).toMatch(/hidden piece/);
+    expect(event.message).not.toMatch(/bishop/);
+  });
+
+  it('a piece another hook already moved on does nothing, whatever the draft order', () => {
+    let state = setMines(start([...KINGS(), makePiece('knight', 'white', 'g1'), makePiece('pawn', 'black', 'a7')]), ['f3', 'c6', 'b4', 'g6']);
+    // As if another card slid the knight from e2 onto the mine on f3 after its move.
+    state = { ...state, modifierState: { ...state.modifierState, [ID]: { ...(state.modifierState[ID] as object), mover: 'white-knight-g1' } } };
+    const knight = state.pieces.get('g1')!;
+    state.pieces = new Map(state.pieces);
+    state.pieces.delete('g1');
+    state.pieces.set('f3', { ...knight, square: 'f3' });
+    const after = minesweeperDef.onPostMove!(state, move('g1', 'e2', 'white'));
+    expect(after.pieces.get('f3')).toMatchObject({ type: 'knight' });
+    expect(mines(after)).toContain('f3');
+    expect(getMineClues(after, null)).toEqual([]);
   });
 });

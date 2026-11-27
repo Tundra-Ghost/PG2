@@ -23,8 +23,9 @@ interface MineState {
   /** Secret: never sent to online clients (redactState). */
   mines?: Square[];
   clues?: MineClue[];
-  /** The piece making this move, set before the move. */
+  /** The piece making this move, and whether its opponent could not see it, set before the move. */
   mover?: string;
+  moverHidden?: boolean;
 }
 
 function mineState(state: GameState): MineState {
@@ -51,15 +52,21 @@ function pick(prng: number, squares: Square[], count: number): [Square[], number
 }
 
 /**
- * MOD-A014: the clues `viewer` may see. A clue left by a piece hidden from
- * `viewer`, or on a square in fog, is left out. Null viewer sees all.
+ * MOD-A014: the clue on each square that `viewer` may see: the newest one
+ * not left by a piece hidden from `viewer`, and none on a square in fog.
+ * Older clues are kept, so a hidden piece stopping on a clue square never
+ * makes its number vanish. Null viewer sees the newest on each square.
  */
 export function getMineClues(state: GameState, viewer: Color | null): MineClue[] {
   const clues = mineState(state).clues ?? [];
-  if (!viewer) return clues;
-  const hidden = getHiddenPieceIds(state, viewer);
-  const visible = getVisibleSquares(state, viewer);
-  return clues.filter(clue => !hidden.has(clue.pieceId) && (!visible || visible.has(clue.square)));
+  const hidden = viewer ? getHiddenPieceIds(state, viewer) : new Set<string>();
+  const visible = viewer ? getVisibleSquares(state, viewer) : null;
+  const newest = new Map<Square, MineClue>();
+  for (const clue of clues) {
+    if (hidden.has(clue.pieceId) || (visible && !visible.has(clue.square))) continue;
+    newest.set(clue.square, clue);
+  }
+  return [...newest.values()];
 }
 
 function side(color: Color): string {
@@ -96,19 +103,21 @@ export const minesweeperDef: ModifierDefinition = {
   onPreMoveApply(state, move) {
     const mover = state.pieces.get(move.from);
     if (!mover) return { state, move };
-    return { state: { ...state, modifierState: { ...state.modifierState, [ID]: { ...mineState(state), mover: mover.id } } }, move };
+    const moverHidden = getHiddenPieceIds(state, mover.color === 'white' ? 'black' : 'white').has(mover.id);
+    return { state: { ...state, modifierState: { ...state.modifierState, [ID]: { ...mineState(state), mover: mover.id, moverHidden } } }, move };
   },
 
   onPostMove(state, move) {
-    const { mover, ...memo } = mineState(state);
+    const { mover, moverHidden, ...memo } = mineState(state);
     state = { ...state, modifierState: { ...state.modifierState, [ID]: memo } };
-    // Where the moving piece stopped. Gone (a chain or another card took it): nothing.
-    const piece = mover ? [...state.pieces.values()].find(p => p.id === mover) : undefined;
-    // A piece that acted from where it stands (an ability) has not stopped anywhere new.
-    if (!piece || piece.square === move.from) return state;
+    // Only the moving piece, on the square its move ended on. Abilities never set
+    // mover. A piece another card has already moved on (whatever the draft order) does nothing.
+    const at = move.to;
+    const piece = state.pieces.get(at);
+    if (!piece || piece.id !== mover) return state;
     const mines = memo.mines ?? [];
-    const at = piece.square;
-    let clues = (memo.clues ?? []).filter(c => c.square !== at);
+    // Older clues on this square stay (see getMineClues); only this piece's own old one goes.
+    let clues = (memo.clues ?? []).filter(c => !(c.square === at && c.pieceId === piece.id));
 
     if (piece.type !== 'king' && mines.includes(at)) {
       const next = cloneState(state);
@@ -123,7 +132,10 @@ export const minesweeperDef: ModifierDefinition = {
           type: 'modifier',
           modifierId: ID,
           title: 'Mine!',
-          message: `${side(piece.color)}'s ${getShownType(state, piece, piece.color === 'white' ? 'black' : 'white')} steps on a mine on ${at} and is lost.`,
+          // A piece its opponent could not see is not named (Sus: the type they see).
+          message: moverHidden
+            ? `${side(piece.color)}'s hidden piece steps on a mine on ${at} and is lost.`
+            : `${side(piece.color)}'s ${getShownType(state, piece, piece.color === 'white' ? 'black' : 'white')} steps on a mine on ${at} and is lost.`,
           squares: [at],
         });
       }

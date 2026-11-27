@@ -269,7 +269,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Four hidden mines sit on ranks 3 to 6, two on each half of the board. When a piece stops next to a mine, its square shows how many mines touch it, like the classic game. The first non-King piece to land on a mine is lost and the mine is used up.',
     prototypeRules:
-      'Four hidden mines are placed with the game seed: two on ranks 3 and 4, two on ranks 5 and 6, never under a piece and never next to a King. When a piece makes a move and stops on a mine, it is lost and the mine is used up. Kings never set one off. A mine that would leave its own side\'s King in check stays hidden instead. A piece that stops anywhere else leaves a number on its square: how many live mines touch it (0 to 8). Numbers update when a mine is used. Pieces moved by other cards do not set off mines. Online, the mines are never sent, and a clue left by a hidden piece or on a square in fog is not shown.',
+      'Four hidden mines are placed with the game seed: two on ranks 3 and 4, two on ranks 5 and 6, never under a piece and never next to a King. When a piece makes a normal move that ends on a mine, it is lost and the mine is used up. Kings never set one off. A mine that would leave its own side\'s King in check stays hidden instead. A piece that stops anywhere else leaves a number on its square: how many live mines touch it (0 to 8). Numbers update when a mine is used. Abilities and pieces moved by other cards do not set off mines. Online, the mines are never sent, and a clue left by a hidden piece or on a square in fog is not shown (the older number stays).',
     flavor: '"Viktor has studied the numbers. Viktor believes the mine is on f5. Viktor sends a pawn to check."',
   },
   {

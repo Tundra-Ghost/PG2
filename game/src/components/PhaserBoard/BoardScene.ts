@@ -419,9 +419,9 @@ export class BoardScene extends Phaser.Scene {
       );
     }
     if (view.mineClue !== undefined) {
-      // Minesweeper: a dark pill in the top-right corner with the number of mines touching this square.
+      // Minesweeper: a dark pill in the top-left corner (piece badges use the top-right) with the number of mines touching this square.
       const r = CELL * 0.15;
-      const px = x + CELL - r - 3, py = y + r + 3;
+      const px = x + r + 3, py = y + r + 3;
       tiles.fillStyle(0x0c1f3a, 0.85).fillCircle(px, py, r);
       this.labels.push(
         this.add.text(px, py, String(view.mineClue), { fontFamily: MONO, fontSize: '14px', fontStyle: 'bold', color: MINE_COLORS[view.mineClue] ?? '#ffffff' })
