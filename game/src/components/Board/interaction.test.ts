@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Piece } from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
-import { getMarkerLegend, shouldForfeitTurnForGerald } from './interaction';
+import { getMarkerLegend, shouldForfeitTurnForGerald, viewerModifierIds } from './interaction';
 
 function makePiece(
   color: Piece['color'],
@@ -29,6 +29,23 @@ describe('board Gerald interaction', () => {
 });
 
 describe('board marker legend', () => {
+  it('shows the Sus row only to the side that owns Sus (MOD-D005)', () => {
+    const sus = MODIFIER_IDS.sus;
+    expect(getMarkerLegend([sus], { viewerModifierIds: [sus] })).toEqual([{ mark: '?', label: 'Your Sus piece' }]);
+    expect(getMarkerLegend([sus], { viewerModifierIds: [] })).toEqual([]);
+    // With no viewer given (board layout), the row still counts.
+    expect(getMarkerLegend([sus])).toHaveLength(1);
+  });
+
+  it('counts a card as the viewer\'s only when that side drafted it, or nobody did', () => {
+    const sus = MODIFIER_IDS.sus;
+    const whiteOwns = { activeModifiers: [{ id: sus, sourceColor: 'white' as const }] };
+    expect(getMarkerLegend([sus], { viewerModifierIds: viewerModifierIds(whiteOwns as never, 'black') })).toEqual([]);
+    expect(getMarkerLegend([sus], { viewerModifierIds: viewerModifierIds(whiteOwns as never, 'white') })).toHaveLength(1);
+    const shared = { activeModifiers: [{ id: sus, sourceColor: null }] };
+    expect(viewerModifierIds(shared as never, 'black')).toEqual([sus]);
+  });
+
   it('is empty in a standard game', () => {
     expect(getMarkerLegend([])).toEqual([]);
   });

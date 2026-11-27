@@ -1,4 +1,4 @@
-import type { Color, Piece } from '@pigeon-chess/game-core';
+import type { Color, GameState, Piece } from '@pigeon-chess/game-core';
 import { MODIFIER_IDS } from '@pigeon-chess/game-core';
 
 const GERALD_ID = MODIFIER_IDS.gerald;
@@ -25,10 +25,14 @@ export interface MarkerLegendContext {
   flippedMovesLeft?: number;
   /** A touch screen, so the legend says "tap" instead of "click". */
   touchScreen?: boolean;
+  /** Cards that apply to the viewer's side. Owner-only rows need the card here. */
+  viewerModifierIds?: readonly string[];
 }
 
 type LegendRow = {
   modifierId: string;
+  /** Only the side that owns the card sees this marker, so only that side gets the row. */
+  ownerOnly?: boolean;
   showIf?: (ctx: MarkerLegendContext) => boolean;
   /** A label that depends on the match, in place of `label`. */
   labelFor?: (ctx: MarkerLegendContext) => string;
@@ -71,7 +75,7 @@ const MARKER_LEGEND: LegendRow[] = [
   { modifierId: MODIFIER_IDS.knownUnknowns, mark: '⬚', label: 'Blind Spot' },
   { modifierId: MODIFIER_IDS.bigBeak, mark: '◉', label: 'Surveillance Square' },
   { modifierId: MODIFIER_IDS.smokeCloud, mark: '☁', label: 'Smoke' },
-  { modifierId: MODIFIER_IDS.sus, mark: '?', label: 'Your Sus piece' },
+  { modifierId: MODIFIER_IDS.sus, mark: '?', label: 'Your Sus piece', ownerOnly: true },
   { modifierId: MODIFIER_IDS.bandersnatch, mark: '┃', label: 'Mirror line (twins copy moves)' },
   {
     modifierId: MODIFIER_IDS.noIDontThinkIWill,
@@ -90,6 +94,13 @@ const MARKER_LEGEND: LegendRow[] = [
   { modifierId: MODIFIER_IDS.ghosts, mark: '◌', label: 'Your Ghost (faded)' },
 ];
 
+/** Cards that apply to `viewer`: shared cards and the ones `viewer` drafted. */
+export function viewerModifierIds(state: Pick<GameState, 'activeModifiers'>, viewer: Color): string[] {
+  return state.activeModifiers
+    .filter(mod => mod.sourceColor == null || mod.sourceColor === viewer)
+    .map(mod => mod.id);
+}
+
 /** Legend rows for the markers that can appear in this match. */
 export function getMarkerLegend(
   activeModifierIds: readonly string[],
@@ -97,6 +108,7 @@ export function getMarkerLegend(
 ): MarkerLegendEntry[] {
   return MARKER_LEGEND
     .filter(entry => activeModifierIds.includes(entry.modifierId))
+    .filter(entry => !entry.ownerOnly || !ctx.viewerModifierIds || ctx.viewerModifierIds.includes(entry.modifierId))
     .filter(entry => !entry.showIf || entry.showIf(ctx))
     .map(({ mark, label, labelFor }) => ({ mark, label: labelFor ? labelFor(ctx) : label }));
 }
