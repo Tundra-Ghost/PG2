@@ -78,6 +78,7 @@ export const MODIFIER_IDS = {
   thinkingWithPortals: 'MOD-A011',
   tideGoesIn: 'MOD-A017',
   cropCircles: 'MOD-A019',
+  factoryMustGrow: 'MOD-A010',
   blessYou: 'MOD-B012',
   footprints: 'MOD-D011',
   flashlight: 'MOD-D012',
