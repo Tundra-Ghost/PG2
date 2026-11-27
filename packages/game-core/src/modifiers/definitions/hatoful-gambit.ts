@@ -1,4 +1,5 @@
 import type { ModifierDefinition } from '../types';
+import { getHiddenPieceIds } from '../../engine/visibility';
 import type { Color, GameState, Piece, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { getLegalMovesForPiece, isInCheck } from '../../engine/moveGenerator';
@@ -27,10 +28,13 @@ function withPlans(state: GameState, next: Record<string, Square>): GameState {
 }
 
 /** The announced hop squares, for the board to show. */
-export function getPigeonHops(state: GameState): Map<Square, Color> {
+export function getPigeonHops(state: GameState, viewer?: Color): Map<Square, Color> {
   const result = new Map<Square, Color>();
   const planned = plans(state);
+  // A Pigeon hidden from the viewer (MOD-D009, MOD-D015) shows no planned hop.
+  const hidden = viewer ? getHiddenPieceIds(state, viewer) : new Set<string>();
   for (const piece of state.pieces.values()) {
+    if (hidden.has(piece.id)) continue;
     const to = planned[piece.id];
     if (to && piece.type === 'pigeon') result.set(to, piece.color);
   }

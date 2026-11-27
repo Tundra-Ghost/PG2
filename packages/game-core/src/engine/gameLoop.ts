@@ -464,9 +464,12 @@ function buildNotation(
   // more correct but is expensive; in practice pseudo-legal is good enough for SAN).
   let disambig = '';
   if (piece.type !== 'pawn' && piece.type !== 'king') {
+    // A piece hidden from the opponent never shows through the notation.
+    const unseen = getHiddenPieceIds(stateBefore, piece.color === 'white' ? 'black' : 'white');
     const siblings = Array.from(stateBefore.pieces.values()).filter(
       p =>
         p.id !== piece.id &&
+        !unseen.has(p.id) &&
         p.type === piece.type &&
         p.color === piece.color &&
         getLegalMovesForPiece(stateBefore, p).includes(move.to),
@@ -521,7 +524,7 @@ export function applyMove(state: GameState, move: Move): GameState {
  * least one piece, and bumping can never loop.
  */
 export function bumpedPieces(state: GameState, move: Move): string[] | null {
-  if (move.ability || state.status !== 'active' || state.turn !== move.playerColor) return null;
+  if (state.status !== 'active' || state.turn !== move.playerColor) return null;
   const color = move.playerColor;
   const hidden = getHiddenPieceIds(state, color);
   if (hidden.size === 0) return null;
@@ -721,10 +724,24 @@ export function beginTurn(state: GameState): GameState {
  */
 function revealIfStuck(state: GameState): GameState {
   if (state.status !== 'active') return state;
-  const hidden = getHiddenPieceIds(state, state.turn);
-  if (hidden.size === 0) return state;
-  if (hasAnyValidMove(withoutHiddenPieces(state, state.turn, hidden))) return state;
-  return revealHiddenPieces(state, [...hidden], 'Nothing else could move.');
+  // A piece moved at turn start (a hop, a slide) may give check: that always reveals.
+  let next = revealHiddenPieces(state, [...hiddenCheckers(state, 'white'), ...hiddenCheckers(state, 'black')], 'It gives check.');
+  const color = next.turn;
+  let hidden = getHiddenPieceIds(next, color);
+  if (hidden.size === 0) return next;
+  // A hidden piece that blocks a check would make the player see a check that is not there.
+  if (isInCheck(withoutHiddenPieces(next, color, hidden), color) && !isInCheck(next, color)) {
+    const blockers = [...hidden].filter(id => {
+      const rest = new Set(hidden);
+      rest.delete(id);
+      return !isInCheck(withoutHiddenPieces(next, color, rest), color);
+    });
+    next = revealHiddenPieces(next, blockers.length > 0 ? blockers : [...hidden], 'It was blocking a check.');
+    hidden = getHiddenPieceIds(next, color);
+    if (hidden.size === 0) return next;
+  }
+  if (hasAnyValidMove(withoutHiddenPieces(next, color, hidden))) return next;
+  return revealHiddenPieces(next, [...hidden], 'Nothing else could move.');
 }
 
 /**
@@ -845,10 +862,13 @@ export const PROMOTION_TYPES: readonly PieceType[] = ['queen', 'rook', 'bishop',
  * first. Modifiers can forbid some (Reject Queen forbids the queen).
  */
 export function getValidPromotionTypes(state: GameState, from: Square, to: Square): PieceType[] {
+  // Hidden pieces: judged on the board the mover sees, so a blocked push is a bump, not a missing dot.
+  const mover = state.pieces.get(from);
+  const board = mover ? withoutHiddenPieces(state, mover.color) : state;
   return PROMOTION_TYPES.filter(type => {
     const move = buildMove(state, from, to);
     move.promotion = type;
-    return validateMove(state, move).valid;
+    return validateMove(board, move).valid;
   });
 }
 

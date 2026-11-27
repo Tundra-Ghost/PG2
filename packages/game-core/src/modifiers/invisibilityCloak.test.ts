@@ -4,10 +4,15 @@ import { MODIFIER_IDS } from './ids';
 import { invisibilityCloakDef, getCloakedPiece } from './definitions/invisibility-cloak';
 import { makeEmptyState, makePiece, move } from './testHelpers';
 import { chessEngine } from '../engine/ChessEngine';
+import { getValidPromotionTypes } from '../engine/gameLoop';
 import { getHiddenPieceIds, isMoveHidden } from '../engine/visibility';
 import { botView, getChickBotMove } from '../engine/bot';
 import { getTells } from './definitions/tells';
 import type { GameState } from '../engine/types';
+
+function last<T>(list: T[]): T | undefined {
+  return list[list.length - 1];
+}
 
 const card = { id: MODIFIER_IDS.invisibilityCloak, name: 'Invisibility Cloak', activeFor: 'both' as const, sourceColor: 'white' as const };
 
@@ -53,7 +58,7 @@ describe('Invisibility Cloak', () => {
     expect(next.moveHistory).toHaveLength(0);
     expect(next.pieces.get('a4')?.type).toBe('rook');
     expect(getCloakedPiece(next, 'white')).toBeNull();
-    expect(next.eventHistory.at(-1)).toMatchObject({ title: 'Bump!', squares: ['d4'] });
+    expect(last(next.eventHistory)).toMatchObject({ title: 'Bump!', squares: ['d4'] });
     // Now the rook can only go up to the bishop.
     expect(chessEngine.getLegalMoves(next, 'a4')).not.toContain('f4');
   });
@@ -63,7 +68,7 @@ describe('Invisibility Cloak', () => {
     state.turn = 'black';
     const next = chessEngine.applyMove(state, move('a4', 'd4', 'black'));
     expect(next.pieces.get('d4')?.color).toBe('black');
-    expect(next.moveHistory.at(-1)?.pieceCaptured?.id).toBe('white-bishop-d4');
+    expect(last(next.moveHistory)?.pieceCaptured?.id).toBe('white-bishop-d4');
     expect(getCloakedPiece(next, 'white')).toBeNull();
   });
 
@@ -71,15 +76,15 @@ describe('Invisibility Cloak', () => {
     const state = setup();
     const next = chessEngine.applyMove(state, move('d4', 'c3', 'white'));
     expect(getCloakedPiece(next, 'white')).toBe('white-bishop-d4');
-    expect(isMoveHidden(next, next.moveHistory.at(-1)!, 'black')).toBe(true);
-    expect(isMoveHidden(next, next.moveHistory.at(-1)!, 'white')).toBe(false);
+    expect(isMoveHidden(next, last(next.moveHistory)!, 'black')).toBe(true);
+    expect(isMoveHidden(next, last(next.moveHistory)!, 'white')).toBe(false);
   });
 
   it('shows when it captures', () => {
     const state = setup([makePiece('pawn', 'black', 'c5')]);
     const next = chessEngine.applyMove(state, move('d4', 'c5', 'white'));
     expect(getCloakedPiece(next, 'white')).toBeNull();
-    expect(next.eventHistory.at(-1)?.message).toContain('It captures.');
+    expect(last(next.eventHistory)?.message).toContain('It captures.');
   });
 
   it('shows when it gives check', () => {
@@ -87,7 +92,7 @@ describe('Invisibility Cloak', () => {
     const next = chessEngine.applyMove(state, move('d4', 'c4', 'white'));
     expect(chessEngine.isInCheck(next, 'black')).toBe(true);
     expect(getCloakedPiece(next, 'white')).toBeNull();
-    expect(next.eventHistory.at(-1)?.message).toContain('It gives check.');
+    expect(last(next.eventHistory)?.message).toContain('It gives check.');
   });
 
   it('wears off after 10 rounds', () => {
@@ -101,7 +106,7 @@ describe('Invisibility Cloak', () => {
       expect(state.status).toBe('active');
     }
     expect(getCloakedPiece(state, 'white')).toBeNull();
-    expect(state.eventHistory.at(-1)?.message).toContain('The cloak wears off.');
+    expect(last(state.eventHistory)?.message).toContain('The cloak wears off.');
   });
 
   it('a pin by a hidden piece is a bump, never a self-check', () => {
@@ -146,6 +151,63 @@ describe('Invisibility Cloak', () => {
     const next = chessEngine.applyMove(s, move('c7', 'c8', 'white', { promotion: 'knight' }));
     expect(getCloakedPiece(next, 'white')).toBeNull();
     expect(next.eventHistory.some(e => e.message.includes('It promotes.'))).toBe(true);
+  });
+
+  it('a move the player cannot see is refused, not tried for free', () => {
+    const state = setup([makePiece('pawn', 'black', 'e5')]);
+    state.turn = 'black';
+    expect(chessEngine.validateMove(state, move('e5', 'd4', 'black')).valid).toBe(false);
+  });
+
+  it('a hidden piece blocking a check is revealed at turn start', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'h1'),
+      makePiece('rook', 'white', 'a1'),
+      makePiece('bishop', 'white', 'a4'),
+      makePiece('king', 'black', 'a8'),
+      makePiece('knight', 'black', 'h8'),
+    ]);
+    state.activeModifiers = [card];
+    let s = invisibilityCloakDef.onActivate!(state);
+    expect(getCloakedPiece(s, 'white')).toBe('white-bishop-a4');
+    s.turn = 'black';
+    s = chessEngine.beginTurn(s);
+    expect(getCloakedPiece(s, 'white')).toBeNull();
+    expect(chessEngine.validateMove(s, move('h8', 'g6', 'black')).valid).toBe(true);
+  });
+
+  it('a promotion push into it keeps its dot and bumps', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'h8'),
+      makePiece('rook', 'white', 'a1'),
+      makePiece('king', 'black', 'e5'),
+      makePiece('pawn', 'black', 'a2'),
+    ]);
+    state.activeModifiers = [card];
+    const s = invisibilityCloakDef.onActivate!(state);
+    s.turn = 'black';
+    expect(chessEngine.getLegalMoves(s, 'a2')).toContain('a1');
+    expect(getValidPromotionTypes(s, 'a2', 'a1')).toContain('queen');
+    expect(chessEngine.validateMove(s, move('a2', 'a1', 'black', { promotion: 'queen' })).bump).toBe(true);
+  });
+
+  it('the notation never names a hidden twin', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'h1'),
+      makePiece('rook', 'white', 'd4'),
+      makePiece('rook', 'white', 'a1'),
+      makePiece('king', 'black', 'h8'),
+    ]);
+    state.activeModifiers = [card];
+    state.modifierState = { [card.id]: { white: { pieceId: 'white-rook-d4', until: 99 } } };
+    const next = chessEngine.applyMove(state, move('a1', 'd1', 'white'));
+    expect(last(next.moveHistory)!.notation).toBe('Rd1');
+  });
+
+  it('nothing is hidden once the game is over', () => {
+    const state = setup();
+    state.status = 'checkmate';
+    expect(getHiddenPieceIds(state, 'black').size).toBe(0);
   });
 
   it('bots play with the same blindness and bump into it', () => {

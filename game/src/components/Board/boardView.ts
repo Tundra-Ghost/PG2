@@ -117,7 +117,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const quietZones = getQuietZoneSquares(state);
   const noFlySquares = getNoFlySquares(state);
   const crownOrders = getCrownOrders(state);
-  const pigeonHops = getPigeonHops(state);
+  const pigeonHops = getPigeonHops(state, viewer ?? undefined);
   // Hatoful Gambit only moves the Pigeons of the side it belongs to (or both, if shared).
   const pigeonsHopFor = (color: Color) =>
     state.activeModifiers.some(
@@ -136,8 +136,10 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const ownSus = viewer ? getSusPiece(state, viewer) : null;
   // Hidden pieces: enemy pieces the viewer cannot see, and the viewer's own the opponent cannot.
   const hiddenEnemies = viewer ? getHiddenPieceIds(state, viewer) : new Set<string>();
+  const rawConfession = getConfession(state);
+  // A confessing piece the viewer cannot see shows no confession.
+  const confession = rawConfession && viewer && [...state.pieces.values()].some(p => p.square === rawConfession.square && hiddenEnemies.has(p.id)) ? null : rawConfession;
   const ownUnseen = viewer ? getHiddenPieceIds(state, viewer === 'white' ? 'black' : 'white') : new Set<string>();
-  const confession = getConfession(state);
   const mirrorEdge = isBandersnatchActive(state) ? (orientation === 'white' ? 'right' : 'left') : null;
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
   const fileOrder = orientation === 'white' ? [...FILES] : [...FILES].reverse();

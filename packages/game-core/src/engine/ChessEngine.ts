@@ -102,6 +102,12 @@ class ChessEngineImpl implements IChessEngine {
 
   /** Like the rules' validateMove, but a bump into a hidden piece is also a valid action (bumpedPieces). */
   validateMove(state: GameState, move: Move): ValidationResult {
+    // Hidden pieces: a move must be legal on the board its player sees first,
+    // so a hidden piece can never be found by trying moves.
+    const view = withoutHiddenPieces(state, move.playerColor);
+    if (view === state) return validateMove(state, move);
+    const seen = validateMove(view, move);
+    if (!seen.valid) return seen;
     const result = validateMove(state, move);
     if (result.valid || !bumpedPieces(state, move)) return result;
     return { valid: true, bump: true };

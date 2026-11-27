@@ -52,6 +52,8 @@ export function isMoveHidden(state: GameState, record: MoveRecord, viewer: Color
 /** Ids of enemy pieces `viewer` cannot see. */
 export function getHiddenPieceIds(state: GameState, viewer: Color): Set<string> {
   const ids = new Set<string>();
+  // Once the game is over, everything is shown.
+  if (state.status !== 'active') return ids;
   const seen = new Set<string>();
   for (const inst of state.activeModifiers) {
     if (seen.has(inst.id)) continue;
