@@ -5,6 +5,7 @@ import { getAbilityOptions } from '../engine/abilities';
 import './index';
 import { MODIFIER_IDS } from './ids';
 import { BRIBE_COOLDOWN } from './definitions/everyone-has-a-price';
+import { getHiddenPieceIds } from '../engine/visibility';
 import { makeEmptyState, makePiece, move } from './testHelpers';
 
 const ID = MODIFIER_IDS.everyoneHasAPrice;
@@ -100,5 +101,26 @@ describe('MOD-C019 Everyone Has A Price', () => {
     state.positionHistory = {};
     state = chessEngine.applyMove(state, move('h8', 'g8', 'black'));
     expect(options(state)).toEqual({ cooldownLeft: 0, status: 'active' });
+  });
+
+  it('a Sus piece shown as a pawn is offered, turns the bribe down and is unmasked', () => {
+    let state = start([makePiece('king', 'white', 'a1'), makePiece('king', 'black', 'h8'), makePiece('queen', 'white', 'd5'), makePiece('knight', 'black', 'e6')]);
+    state.activeModifiers = [...state.activeModifiers, { id: MODIFIER_IDS.sus, name: 'Sus', activeFor: 'black', sourceColor: 'black' }];
+    state.modifierState = { ...state.modifierState, [MODIFIER_IDS.sus]: { black: { pieceId: 'black-knight-e6', shownAs: 'pawn' } } };
+    expect(targets(state, 'd5')).toEqual(['e6']);
+    state = chessEngine.applyMove(state, bribe('d5', 'e6'));
+    expect(state.pieces.get('e6')).toMatchObject({ type: 'knight', color: 'black' });
+    expect((state.modifierState[MODIFIER_IDS.sus] as Record<string, unknown>).black).toBeUndefined();
+    expect(state.turn).toBe('black');
+    expect(state.pieces.get('d5')?.abilityCooldowns?.[ID]).toBe(BRIBE_COOLDOWN);
+  });
+
+  it('Camouflage still-time does not carry over to the new owner', () => {
+    let state = start([makePiece('king', 'white', 'a1'), makePiece('king', 'black', 'h8'), makePiece('queen', 'white', 'd5'), makePiece('pawn', 'black', 'e6')],
+      [{ id: MODIFIER_IDS.camouflage, sourceColor: null }]);
+    state.modifierState = { ...state.modifierState, [MODIFIER_IDS.camouflage]: { 'black-pawn-e6': { square: 'e6', count: 3 } } };
+    state = chessEngine.applyMove(state, bribe('d5', 'e6'));
+    expect(getHiddenPieceIds(state, 'black').has('black-pawn-e6')).toBe(false);
+    expect((state.modifierState[MODIFIER_IDS.camouflage] as Record<string, { count: number }>)['black-pawn-e6'].count).toBe(0);
   });
 });

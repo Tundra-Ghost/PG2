@@ -31,15 +31,43 @@ function onBribableRank(state: GameState, color: Color, square: Square): boolean
 function withBribe(state: GameState, square: Square, color: Color): GameState {
   const next = cloneState(state);
   const pawn = next.pieces.get(square)!;
-  next.pieces.set(square, { ...pawn, color, cooldowns: {}, abilityCooldowns: {}, isTouched: false, isShielded: false, isTraitor: false });
+  // Judged as a pawn even when Sus hides another type, so the check rule gives no disguise away.
+  next.pieces.set(square, { ...pawn, type: 'pawn', color, cooldowns: {}, abilityCooldowns: {}, isTouched: false, isShielded: false, isTraitor: false });
   next.flags.enPassantSquare = null;
+  // Camouflage: still-time does not carry over to the new owner.
+  const camo = next.modifierState[MODIFIER_IDS.camouflage] as Record<string, unknown> | undefined;
+  if (camo && camo[pawn.id]) {
+    const rest = { ...camo };
+    delete rest[pawn.id];
+    next.modifierState = { ...next.modifierState, [MODIFIER_IDS.camouflage]: rest };
+  }
   return next;
 }
 
+/** A Sus piece shown as a pawn turns the bribe down: the disguise drops and the move is spent. */
+function refuseBribe(state: GameState, square: Square, queen: Piece): GameState {
+  const piece = state.pieces.get(square)!;
+  const next = cloneState(state);
+  const sus = { ...((next.modifierState[MODIFIER_IDS.sus] as Record<string, unknown> | undefined) ?? {}) };
+  delete sus[piece.color];
+  next.modifierState = { ...next.modifierState, [MODIFIER_IDS.sus]: sus };
+  next.flags.enPassantSquare = null;
+  next.flags.halfMoveClock++;
+  return appendGameEvent(next, {
+    ply: state.moveHistory.length + 1,
+    type: 'modifier',
+    modifierId: MODIFIER_IDS.sus,
+    title: 'Sus',
+    message: `The ${queen.color} queen tries to bribe the pawn on ${square}. It was Sus: really a ${piece.color} ${piece.type.replace('_', ' ')}. It refuses.`,
+    squares: [square],
+  });
+}
+
 /**
- * Enemy pawns next to the Queen that would take the bribe: a real pawn that
- * also looks like one (not a Sus disguise or a Shell Game cup), in sight, on
- * its own half, and whose switch puts no King in check.
+ * Enemy pieces next to the Queen that look like pawns to her side (not a
+ * Shell Game cup), in sight, on their own half, and whose switch puts no
+ * King in check. A Sus piece shown as a pawn is offered too; the bribe then
+ * fails and unmasks it (see refuseBribe), so the list gives nothing away.
  */
 export function getBribes(state: GameState, queen: Piece): Square[] {
   const enemy: Color = queen.color === 'white' ? 'black' : 'white';
@@ -50,7 +78,7 @@ export function getBribes(state: GameState, queen: Piece): Square[] {
     const sq = offset(queen.square, df, dr);
     if (!sq) continue;
     const pawn = state.pieces.get(sq);
-    if (!pawn || pawn.color !== enemy || pawn.type !== 'pawn') continue;
+    if (!pawn || pawn.color !== enemy || pawn.type === 'king' || pawn.isRealKing) continue;
     if ((visible && !visible.has(sq)) || hidden.has(pawn.id)) continue;
     if (getShownType(state, pawn, queen.color) !== 'pawn' || isCup(state, pawn, queen.color)) continue;
     if (!onBribableRank(state, enemy, sq)) continue;
@@ -80,6 +108,7 @@ export const everyoneHasAPriceDef: ModifierDefinition = {
     getTargets: (state, queen) => getBribes(state, queen),
     apply(state, move) {
       const queen = state.pieces.get(move.from)!;
+      if (state.pieces.get(move.to)!.type !== 'pawn') return { state: refuseBribe(state, move.to, queen) };
       const next = withBribe(state, move.to, queen.color);
       next.flags.halfMoveClock = 0;
       const was = queen.color === 'white' ? 'black' : 'white';
