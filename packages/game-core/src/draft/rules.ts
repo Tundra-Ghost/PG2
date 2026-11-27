@@ -48,6 +48,7 @@ function needsPartner(cardId: string, ownIds: string[], otherIds: string[]): str
  * Overseas Hire, Hopscotch and The Chancellor could each pick the same rook.
  * The Bodyguard replaces the g-pawn, which The Small Council moves, and its
  * swap would let a Heavy Is The Crown King skip its order.
+ * Everyone Has A Price needs a Queen, which Yeah, There Are Three Of Them does not have.
  * Bullet Time needs knights: Lawrence Of Arabia, Knight Rider and Hatoful Gambit replace them, and The Small Council has none.
  * Leap Of Faith needs a bishop: The Small Council has none, and Elephant In The Room turns them into Elephants.
  * MINE! and Death And Taxes are priced for 8 pawns; The Small Council's 12 would make them cheap curses.
@@ -85,6 +86,7 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.theBodyguard, MODIFIER_IDS.smallCouncil],
   [MODIFIER_IDS.theBodyguard, MODIFIER_IDS.heavyIsTheCrown],
   [MODIFIER_IDS.getOverHere, MODIFIER_IDS.threeKings],
+  [MODIFIER_IDS.everyoneHasAPrice, MODIFIER_IDS.threeKings],
   [MODIFIER_IDS.imposterSyndrome, MODIFIER_IDS.threeKings],
   [MODIFIER_IDS.mine, MODIFIER_IDS.smallCouncil],
   [MODIFIER_IDS.deathAndTaxes, MODIFIER_IDS.smallCouncil],

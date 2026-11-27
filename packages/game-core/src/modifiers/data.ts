@@ -985,6 +985,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'An enemy pawn next to your Queen accepts a bribe and joins your side. It must be on its own half of the board. Uses your move.',
     flavor: '"Viktor offered bread. The pawn accepted bread. Loyalty is a matter of bread."',
+    prototypeRules:
+      'Select your Queen and press Bribe, then pick an enemy pawn on one of the 8 squares next to her. It must be on its own half and not one step from promoting for you (ranks 3 to 4 for a white pawn, 5 to 6 for a black one; only rank 4 or 5 if you have Zerg Rush). It joins your side where it stands and moves as your pawn from then on. The bribe may not put either King in check. It uses your move. Then the Queen waits 12 of your turns. A Sus piece shown as a pawn refuses: its disguise drops and the move is spent. A Sus pawn shown as another type or a cup (Shell Game) cannot be bribed, and neither can a pawn you cannot see. One side cannot draft it with Yeah, There Are Three Of Them, which has no Queen.',
   },
   {
     id: 'MOD-C020',
