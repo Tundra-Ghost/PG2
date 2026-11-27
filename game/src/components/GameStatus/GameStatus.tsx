@@ -62,7 +62,9 @@ export default function GameStatus({
             )}
             {state.status === 'active' && pings.map(({ color, left }) => {
               const who = color === 'white' ? 'White' : 'Black';
-              const text = left === 0 ? `${who} ping: lag this move` : `${who} ping: lag in ${left + 1} moves`;
+              const text = left === 0
+                ? `${who} ping: lag ${state.turn === color ? 'this' : 'next'} move`
+                : `${who} ping: lag in ${left + 1} moves`;
               return (
                 <span key={color} className={`${styles.sky} ${left === 0 ? styles.pingDue : styles.ping}`}>
                   {text}

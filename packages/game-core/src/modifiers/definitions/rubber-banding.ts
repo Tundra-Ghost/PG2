@@ -5,6 +5,7 @@ import { isInCheck } from '../../engine/moveGenerator';
 import { MODIFIER_IDS } from '../ids';
 import { affectsColor, ownMoveNumber } from '../owner';
 import { capturedIds } from '../captures';
+import { getShownType } from './sus';
 
 const ID = MODIFIER_IDS.rubberBanding;
 /** Every this many of your moves, one lags. */
@@ -13,7 +14,8 @@ export const LAG_EVERY = 7;
 interface PendingLag {
   pieceId: string;
   from: Square;
-  castlingRights: Record<Color, CastlingRights>;
+  castlingRights: CastlingRights;
+  halfMoveClock: number;
 }
 
 interface LagState {
@@ -64,6 +66,8 @@ export const rubberBandingDef: ModifierDefinition = {
   curseRating: 2,
   activeFor: 'both',
   draftScope: 'owned',
+  // Snap after every other card has seen the move land (mines, vents, portals).
+  postMoveLast: true,
 
   // Abilities skip onPreMoveApply, so they never lag.
   onPreMoveApply(state, move) {
@@ -76,7 +80,8 @@ export const rubberBandingDef: ModifierDefinition = {
     const pending: PendingLag = {
       pieceId: piece.id,
       from: move.from,
-      castlingRights: state.flags.castlingRights,
+      castlingRights: state.flags.castlingRights[color],
+      halfMoveClock: state.flags.halfMoveClock,
     };
     return { state: { ...state, modifierState: { ...state.modifierState, [ID]: { ...read(state), pending } } }, move };
   },
@@ -96,14 +101,22 @@ export const rubberBandingDef: ModifierDefinition = {
     snapped.pieces.set(pending.from, { ...piece, square: pending.from });
     if (isInCheck(snapped, color)) return next;
     // The piece never really left: castling rights come back and a double step gives no en passant.
-    snapped.flags = { ...snapped.flags, castlingRights: pending.castlingRights, enPassantSquare: null };
-    snapped.modifierState = { ...snapped.modifierState, [ID]: { lagged: { ...mine.lagged, [color]: Math.floor(ownMoveNumber(state, color) / LAG_EVERY) } } satisfies LagState };
+    // Only the mover's rights: another card may have changed the other side's this move.
+    snapped.flags = {
+      ...snapped.flags,
+      castlingRights: { ...snapped.flags.castlingRights, [color]: pending.castlingRights },
+      enPassantSquare: null,
+      halfMoveClock: pending.halfMoveClock + 1,
+    };
+    snapped.modifierState = { ...snapped.modifierState, [ID]: { lagged: { ...mine.lagged, [color]: (mine.lagged?.[color] ?? 0) + 1 } } satisfies LagState };
+    // Named as the opponent sees it (Sus, Shell Game), so the feed never gives a disguise away.
+    const shownAs = getShownType(state, piece, color === 'white' ? 'black' : 'white');
     next = appendGameEvent(snapped, {
       ply: state.moveHistory.length + 1,
       type: 'modifier',
       modifierId: ID,
       title: 'LAG',
-      message: `${side(color)}'s ${piece.type} went to ${move.to}, then snapped back to ${pending.from}. The turn still passes.`,
+      message: `${side(color)}'s ${shownAs} went to ${move.to}, then snapped back to ${pending.from}. The turn still passes.`,
       squares: [pending.from, move.to],
     });
     return next;

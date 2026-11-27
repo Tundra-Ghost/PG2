@@ -630,7 +630,8 @@ function applyMoveOnce(state: GameState, move: Move): GameState {
   }
 
   // ── Modifier hooks: onPostMove ──────────────────────────────────────────────
-  for (const def of getActiveDefinitions(preparedState)) {
+  const postMoveDefs = getActiveDefinitions(preparedState);
+  for (const def of [...postMoveDefs.filter(d => !d.postMoveLast), ...postMoveDefs.filter(d => d.postMoveLast)]) {
     if (def.onPostMove) {
       next = def.onPostMove(next, preparedMove);
     }

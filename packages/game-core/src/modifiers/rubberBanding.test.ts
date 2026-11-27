@@ -104,4 +104,42 @@ describe('MOD-B018 Rubber Banding', () => {
     expect(lagged.pieces.get('d1')).toMatchObject({ type: 'rook' });
     expect(lagged.turn).toBe('black');
   });
+
+  it('a lagged pawn move does not reset the 50-move clock', () => {
+    let state = start([...KINGS(), makePiece('pawn', 'white', 'b2')]);
+    state = { ...state, ownMoves: { white: LAG_EVERY - 1, black: LAG_EVERY - 1 }, flags: { ...state.flags, halfMoveClock: 20 } };
+    const next = chessEngine.applyMove(state, move('b2', 'b3', 'white'));
+    expect(next.pieces.get('b2')).toMatchObject({ type: 'pawn' });
+    expect(next.flags.halfMoveClock).toBe(21);
+  });
+
+  it('the feed names a disguised piece as the opponent sees it (Sus)', () => {
+    let state = start([...KINGS(), makePiece('pawn', 'white', 'b2')], [{ id: MODIFIER_IDS.sus, sourceColor: 'white' }]);
+    state = {
+      ...state,
+      ownMoves: { white: LAG_EVERY - 1, black: LAG_EVERY - 1 },
+      modifierState: { ...state.modifierState, [MODIFIER_IDS.sus]: { white: { pieceId: 'white-pawn-b2', shownAs: 'knight' } } },
+    };
+    const next = chessEngine.applyMove(state, move('b2', 'b3', 'white'));
+    expect(next.eventHistory[next.eventHistory.length - 1].message).toMatch(/White's knight went to b3/);
+  });
+
+  it('other cards see the move land first, whatever the draft order (a mine goes off: no snap)', () => {
+    for (const order of ['before', 'after'] as const) {
+      const mine = { id: MODIFIER_IDS.minesweeper, sourceColor: 'black' as const };
+      const picks = order === 'before'
+        ? [{ id: ID, sourceColor: 'white' as const }, mine]
+        : [mine, { id: ID, sourceColor: 'white' as const }];
+      let state = chessEngine.beginTurn(chessEngine.activateDraftModifiers(makeEmptyState([...KINGS(), makePiece('rook', 'white', 'd1')]), picks));
+      state = {
+        ...state,
+        ownMoves: { white: LAG_EVERY - 1, black: LAG_EVERY - 1 },
+        modifierState: { ...state.modifierState, [MODIFIER_IDS.minesweeper]: { mines: ['d4'], clues: [] } },
+      };
+      const next = chessEngine.applyMove(state, move('d1', 'd4', 'white'));
+      expect(next.pieces.get('d1')).toBeUndefined();
+      expect(next.pieces.get('d4')).toBeUndefined();
+      expect(isLagDue(next, 'white')).toBe(true);
+    }
+  });
 });
