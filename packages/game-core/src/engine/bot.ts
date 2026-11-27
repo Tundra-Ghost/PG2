@@ -54,6 +54,8 @@ export function listBotMoves(state: GameState, color: Color): Move[] {
   for (const piece of state.pieces.values()) {
     if (piece.color !== color) continue;
     for (const option of getAbilityOptions(state, piece.square)) {
+      // A free ability keeps the turn, so it is not a move to search.
+      if (option.free) continue;
       for (const to of option.targets) {
         moves.push({ from: piece.square, to, playerColor: color, ability: option.modifierId });
       }

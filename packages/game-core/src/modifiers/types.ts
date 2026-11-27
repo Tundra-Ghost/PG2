@@ -45,6 +45,12 @@ export interface AbilitySpec {
   getChoices?: (state: GameState, piece: Piece, to: Square) => PieceType[];
   /** Replaces "ready" on the button, such as a token count. */
   status?: (state: GameState, piece: Piece) => string;
+  /**
+   * True when using it does not cost the move (MOD-D012 Flashlight): the turn
+   * stays, nothing is added to the move list and no move counter ticks. It
+   * never counts as a move for stalemate, bots or Commitment Issues.
+   */
+  free?: boolean;
 }
 
 /**

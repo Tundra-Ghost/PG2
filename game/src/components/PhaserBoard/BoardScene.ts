@@ -228,6 +228,10 @@ export class BoardScene extends Phaser.Scene {
       if (view.cropCircle) this.drawCrop(view.cropCircle, x, y);
       if (view.portal) this.drawPortal(view.portal, cx, cy);
       if (view.lavaNext) this.drawLavaNext(x, y);
+      if (view.lit) this.drawLit(x, y);
+      // Drawn over the fog: they are about squares you cannot see.
+      if (view.footprint) this.drawFootprints(x, y);
+      if (view.forecast) this.drawForecast(x, y);
       if (view.taxed) this.drawTaxed(x, y);
       if (view.wall) this.drawWall(x, y);
       // Drawn over the fog: both players always see the flock (like the eye).
@@ -274,6 +278,7 @@ export class BoardScene extends Phaser.Scene {
       // A red glow under Traitors and Berserkers. Drawn as shapes, not WebGL
       // effects: some phone browsers render those effects as solid boxes.
       if (worn.traitor) glow(tiles, cx, cy, CELL * 0.46, 0xff2828, 0.75);
+      else if (view.tell === 0) glow(tiles, cx, cy, CELL * 0.44, 0x3ad0ff, 0.7);
       else if (worn.berserker) glow(tiles, cx, cy, CELL * 0.42, 0xd64a2c, 0.6);
 
       if (worn.gerald) {
@@ -296,7 +301,7 @@ export class BoardScene extends Phaser.Scene {
       }
 
       // Sus: a ? badge so the owner knows which piece is disguised.
-      const badgeMarks = view.susAs ? [...worn.marks, '?'] : worn.marks;
+      const badgeMarks = [...worn.marks, ...(view.susAs ? ['?'] : []), ...(view.tell ? [String(view.tell)] : [])];
       badgeMarks.forEach((mark, i) => {
         // Two-character marks (an Egg's count) get a wider badge.
         const bw = mark.length > 1 ? 26 : 18;
@@ -607,6 +612,30 @@ export class BoardScene extends Phaser.Scene {
   }
 
   /** The Floor Is Lava: a dashed amber square where lava goes next. */
+  /** Flashlight: a warm wash on the lit squares. */
+  private drawLit(x: number, y: number) {
+    this.tileLayer.fillStyle(0xffe27a, 0.16).fillRect(x, y, CELL, CELL);
+  }
+
+  /** Footprints: two small pale prints, readable over the fog. */
+  private drawFootprints(x: number, y: number) {
+    const g = this.fogLayer;
+    for (const [px, py] of [[0.38, 0.62], [0.6, 0.38]] as const) {
+      g.fillStyle(0x14213d, 0.9).fillEllipse(x + CELL * px, y + CELL * py, CELL * 0.16, CELL * 0.24);
+      g.fillStyle(0xe8e2f4, 0.95).fillEllipse(x + CELL * px, y + CELL * py, CELL * 0.11, CELL * 0.19);
+    }
+  }
+
+  /** Crystal Ball: a small violet ball in the bottom-left corner. */
+  private drawForecast(x: number, y: number) {
+    const g = this.fogLayer;
+    const bx = x + CELL * 0.18;
+    const by = y + CELL * 0.8;
+    g.fillStyle(0x14213d, 0.9).fillCircle(bx, by, CELL * 0.12);
+    g.fillStyle(0xb48cff, 1).fillCircle(bx, by, CELL * 0.09);
+    g.fillStyle(0xffffff, 0.85).fillCircle(bx - CELL * 0.03, by - CELL * 0.03, CELL * 0.025);
+  }
+
   private drawLavaNext(x: number, y: number) {
     const g = this.tileLayer;
     const inset = CELL * 0.12;

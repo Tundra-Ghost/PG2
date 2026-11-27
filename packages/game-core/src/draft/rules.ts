@@ -1,12 +1,36 @@
 import { ALL_MODIFIERS, type ModifierCard } from '../modifiers/data';
 import { isSharedDraftModifier } from '../modifiers/scope';
 import { MODIFIER_IDS } from '../modifiers/ids';
+import { modifierRegistry } from '../modifiers/registry';
+import { TIMED_EVENT_CARDS } from '../modifiers/definitions/crystal-ball';
 
 /** Cat Mode only does something with It's Dark And I'm Scared, so it waits for that card. */
 function needsDarkFirst(cardId: string, ownIds: string[], otherIds: string[]): boolean {
   return cardId === MODIFIER_IDS.catMode
     && !ownIds.includes(MODIFIER_IDS.darkAndScared)
     && !otherIds.includes(MODIFIER_IDS.darkAndScared);
+}
+
+/** Cards that hide squares. Footprints and Flashlight wait for one of them. */
+export const FOG_CARDS: readonly string[] = [MODIFIER_IDS.darkAndScared, MODIFIER_IDS.knownUnknowns, MODIFIER_IDS.smokeCloud];
+
+/**
+ * Support cards that do nothing alone, like Cat Mode: why one is not offered
+ * yet, in player words, or null when it is. Tells waits for an ability card
+ * on the other side.
+ */
+function needsPartner(cardId: string, ownIds: string[], otherIds: string[]): string | null {
+  const all = [...ownIds, ...otherIds];
+  if (cardId === MODIFIER_IDS.footprints || cardId === MODIFIER_IDS.flashlight) {
+    return all.some(id => FOG_CARDS.includes(id)) ? null : 'Needs a fog card in the match first.';
+  }
+  if (cardId === MODIFIER_IDS.crystalBall) {
+    return all.some(id => TIMED_EVENT_CARDS.includes(id)) ? null : 'Needs a card with timed board events in the match first.';
+  }
+  if (cardId === MODIFIER_IDS.tells) {
+    return otherIds.some(id => modifierRegistry.get(id)?.ability) ? null : 'Needs an ability card on the other side first.';
+  }
+  return null;
 }
 
 /**
@@ -134,6 +158,7 @@ export function getValidOptions(
     if (ownIds.includes(card.id)) return false;
     if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return false;
     if (needsDarkFirst(card.id, ownIds, otherIds)) return false;
+    if (needsPartner(card.id, ownIds, otherIds)) return false;
     if (ownConflict(card.id, ownIds)) return false;
     if (matchConflict(card.id, ownIds, otherIds)) return false;
     if (unlimited) return true;
@@ -190,6 +215,8 @@ export function pickBlocker(
   if (ownIds.includes(card.id)) return 'Already in your draft.';
   if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return `${otherName} already claimed this shared modifier.`;
   if (needsDarkFirst(card.id, ownIds, otherIds)) return 'Needs It\'s Dark And I\'m Scared in the match first.';
+  const partner = needsPartner(card.id, ownIds, otherIds);
+  if (partner) return partner;
   const conflict = ownConflict(card.id, ownIds);
   if (conflict) {
     const name = ALL_MODIFIERS.find(c => c.id === conflict)?.name ?? conflict;

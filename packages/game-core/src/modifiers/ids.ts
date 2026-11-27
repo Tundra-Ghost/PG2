@@ -75,6 +75,10 @@ export const MODIFIER_IDS = {
   tideGoesIn: 'MOD-A017',
   cropCircles: 'MOD-A019',
   blessYou: 'MOD-B012',
+  footprints: 'MOD-D011',
+  flashlight: 'MOD-D012',
+  crystalBall: 'MOD-D017',
+  tells: 'MOD-D018',
 } as const;
 
 export type ModifierId = (typeof MODIFIER_IDS)[keyof typeof MODIFIER_IDS];
