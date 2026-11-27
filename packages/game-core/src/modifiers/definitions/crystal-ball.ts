@@ -20,7 +20,6 @@ export const TIMED_EVENT_CARDS: readonly string[] = [
   MODIFIER_IDS.theBirds,
   MODIFIER_IDS.tideGoesIn,
   MODIFIER_IDS.cropCircles,
-  MODIFIER_IDS.smokeCloud,
 ];
 
 export interface ForecastMark {
@@ -36,13 +35,17 @@ function standInMove(state: GameState): Move | null {
   return moves.find(m => !state.pieces.has(m.to) && !m.isEnPassant) ?? moves[0] ?? null;
 }
 
-/** The parts of a tile that timed events change (never a hidden vent). */
-function tileKey(state: GameState, sq: Square): string {
-  const tile = state.tiles.get(sq);
-  if (!tile) return '';
-  const flock = tile.barrier?.kind === 'flock';
-  return JSON.stringify([tile.effects, tile.storm, flock, tile.flockWarning, tile.tide, tile.cropCircle]);
-}
+/**
+ * The parts of a tile that timed events change, each with the event's name.
+ * Counters, infection, frost and hidden vents are left out on purpose.
+ */
+const TILE_EVENTS: ReadonlyArray<[string, (state: GameState, sq: Square) => unknown]> = [
+  ['Lava', (s, sq) => s.tiles.get(sq)?.effects.some(e => e.type === 'lava') ?? false],
+  ['Storm', (s, sq) => s.tiles.get(sq)?.storm],
+  ['The Birds', (s, sq) => s.tiles.get(sq)?.barrier?.kind === 'flock' || s.tiles.get(sq)?.flockWarning === true],
+  ['Tide', (s, sq) => s.tiles.get(sq)?.tide],
+  ['Crop Circles', (s, sq) => s.tiles.get(sq)?.cropCircle],
+];
 
 const cache = new WeakMap<GameState, Map<Color, Map<Square, ForecastMark>>>();
 
@@ -69,9 +72,10 @@ export function getForecast(state: GameState, viewer: Color): Map<Square, Foreca
     const rounds = Math.ceil(ply / 2);
     const events = sim.eventHistory.slice(before.eventHistory.length).filter(e => timed.has(e.modifierId));
     if (events.length === 0) continue;
-    const title = events[0].title;
     for (const sq of new Set([...before.tiles.keys(), ...sim.tiles.keys()])) {
-      if (!marks.has(sq) && tileKey(before, sq) !== tileKey(sim, sq)) marks.set(sq, { title, rounds });
+      if (marks.has(sq) || (visible && !visible.has(sq))) continue;
+      const changed = TILE_EVENTS.find(([, read]) => read(before, sq) !== read(sim, sq));
+      if (changed) marks.set(sq, { title: changed[0], rounds });
     }
     for (const event of events) {
       for (const sq of event.squares ?? []) {

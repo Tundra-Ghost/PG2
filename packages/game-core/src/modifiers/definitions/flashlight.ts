@@ -72,7 +72,8 @@ export const flashlightDef: ModifierDefinition = {
       const area = lightArea(move.to);
       return {
         state: appendGameEvent(next, {
-          ply: state.moveHistory.length + 1,
+          // No move is added, so the event belongs to the last move played.
+          ply: state.moveHistory.length,
           type: 'modifier',
           modifierId: ID,
           title: 'Flashlight',

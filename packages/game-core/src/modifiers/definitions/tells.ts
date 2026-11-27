@@ -24,14 +24,14 @@ export function getTells(state: GameState, viewer: Color): Map<Square, number> {
     .filter(a => a.spec);
   for (const piece of state.pieces.values()) {
     if (piece.color !== enemy || (visible && !visible.has(piece.square))) continue;
-    // A Sus piece shows no tell, so the tell never gives the disguise away.
-    if (getShownType(state, piece, viewer) !== piece.type) continue;
+    // A Sus piece is judged as the type the viewer sees, so the tell never gives the disguise away.
+    const seen = { ...piece, type: getShownType(state, piece, viewer) };
     let best: number | null = null;
     for (const { id, spec } of abilities) {
-      if (!spec!.pieceTypes.includes(piece.type)) continue;
-      const left = abilityCooldownLeft(piece, id);
+      if (!spec!.pieceTypes.includes(seen.type)) continue;
+      const left = abilityCooldownLeft(seen, id);
       // Ready means off cooldown with something to aim at (a Moneyball King with no token is not).
-      if (left === 0 && spec!.getTargets(state, piece).length === 0) continue;
+      if (left === 0 && spec!.getTargets(state, seen).length === 0) continue;
       best = best === null ? left : Math.min(best, left);
     }
     if (best !== null) tells.set(piece.square, best);

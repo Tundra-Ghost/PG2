@@ -1164,7 +1164,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'Once every 4 of your moves, shine a light on any 3×3 area. You see through fog, smoke and blind spots there for 1 round. It does not use your move. Only offered once a fog card is in the draft.',
     flavor: '"Viktor shone the light. Something was there. It was a knight. It was so much worse than a knight."',
     prototypeRules:
-      'Select your King and press Flashlight, then tap the middle of a 3×3 area. You see through every fog card there until your next move. It does not use your move: you still move after. Then it waits 4 of your moves. Bots do not use it. Only offered once a fog card is in the match.',
+      'Select your King and press Flashlight, then tap the middle of a 3×3 area. You see through every fog card there through your move and the opponent\'s reply. It does not use your move: you still move after. Then it waits 4 of your moves. Bots do not use it. Only offered once a fog card is in the match.',
   },
   {
     id: 'MOD-D013',
@@ -1236,7 +1236,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'You see every timed event two rounds earlier than normal: lava moves, storm waves, gravity shifts, pigeon hops, earthquakes, tides and the like.',
     flavor: '"The ball shows lava. The ball always shows lava. This time it is right."',
     prototypeRules:
-      'Squares where a timed board event (lava, storm, gravity, Pigeon hops, flocks, tide, crop circles, timed smoke) lands within the next 2 rounds wear a crystal ball mark for you. Hold a square to see which event and when. It shows what happens if nothing changes, so a move can change it. Only offered once a timed-event card is in the match.',
+      'Squares where a timed board event (lava, storm, gravity, Pigeon hops, flocks, tide, crop circles) lands within the next 2 rounds wear a crystal ball mark for you. Hold a square to see which event and when. It shows what happens if nothing changes, so a move can change it. Only offered once a timed-event card is in the match.',
   },
   {
     id: 'MOD-D018',
@@ -1252,7 +1252,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'You see a glow on every enemy piece whose ability is ready to use, and the number of turns left on the rest.',
     flavor: '"The rook twitched. Viktor knows what a twitching rook means."',
     prototypeRules:
-      'Enemy pieces you can see that have an ability glow when it is ready, or show the turns left. A Sus piece shows nothing. Only offered once your opponent has a card with an ability.',
+      'Enemy pieces you can see that have an ability glow when it is ready, or show the turns left. A Sus piece shows the tell of the type you see. Only offered once your opponent has a card with an ability.',
   },
   {
     id: 'MOD-D019',

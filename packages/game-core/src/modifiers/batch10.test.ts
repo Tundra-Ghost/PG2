@@ -136,6 +136,25 @@ describe('MOD-D012 Flashlight', () => {
     }
   });
 
+  it('never switches on a move rule, and works in check', () => {
+    // The die says King, but the King cannot move: Flashlight must not count as a King move.
+    let state = chessEngine.activateDraftModifiers(chessEngine.getInitialState(), [
+      { id: MODIFIER_IDS.darkAndScared, sourceColor: null },
+      { id: MODIFIER_IDS.flashlight, sourceColor: 'white' },
+      { id: MODIFIER_IDS.rollForInitiative, sourceColor: 'white' },
+    ]);
+    state.turnNumber = 7;
+    state.modifierState = { ...state.modifierState, [MODIFIER_IDS.rollForInitiative]: { roll: { color: 'white', turnNumber: 7, type: 'king' } } };
+    expect(chessEngine.hasAnyValidMove(state)).toBe(true);
+    expect(chessEngine.validateMove(state, move('e2', 'e4', 'white')).valid).toBe(true);
+
+    const check = fogState(MODIFIER_IDS.flashlight);
+    check.pieces.delete('e4');
+    check.pieces.set('a5', makePiece('rook', 'black', 'a5'));
+    expect(chessEngine.isInCheck(check, 'white')).toBe(true);
+    expect(chessEngine.validateMove(check, flash('c3')).valid).toBe(true);
+  });
+
   it('is only offered once a fog card is in the match', () => {
     expect(offered([], [])).not.toContain(MODIFIER_IDS.flashlight);
     expect(offered([MODIFIER_IDS.knownUnknowns], [])).toContain(MODIFIER_IDS.flashlight);
@@ -202,6 +221,15 @@ describe('MOD-D018 Tells', () => {
     state.pieces.set('h1', { ...cooling, abilityCooldowns: { [MODIFIER_IDS.yeet]: 3 } });
     expect(getTells(state, 'white').get('h1')).toBe(3);
     expect(getTells(state, 'black').size).toBe(0);
+  });
+
+  it('judges a Sus piece by the type you see', () => {
+    const state = tellsState();
+    // A knight next to the d4 pawn, shown as a rook, gets the rook tell like a real rook.
+    state.pieces.set('d5', makePiece('knight', 'black', 'd5'));
+    state.activeModifiers.push(own(MODIFIER_IDS.sus, 'black'));
+    state.modifierState[MODIFIER_IDS.sus] = { black: { pieceId: state.pieces.get('d5')!.id, shownAs: 'rook' } };
+    expect(getTells(state, 'white').get('d5')).toBe(0);
   });
 
   it('shows nothing in the fog', () => {

@@ -4,6 +4,7 @@ import {
   touchPiece,
   buildMove,
   chessEngine,
+  modifierRegistry,
   createOnlineDraft,
   draftFinish,
   draftPick,
@@ -178,7 +179,8 @@ export class RoomManager {
       const checked = chessEngine.validateMove(state, ability);
       if (!checked.valid) return { ok: false, reason: checked.reason ?? 'Illegal move.' };
       room.state = chessEngine.applyMove(state, ability);
-      room.drawOffer = null;
+      // A free ability (Flashlight) is not a move, so a draw offer stands.
+      if (!modifierRegistry.get(req.ability)?.ability?.free) room.drawOffer = null;
       this.touch(room);
       return { ok: true };
     }

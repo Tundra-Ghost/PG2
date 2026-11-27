@@ -611,7 +611,6 @@ export class BoardScene extends Phaser.Scene {
     g.lineStyle(3, 0x2e1c0c, 1).strokeRect(x + inset, y + inset, size, size);
   }
 
-  /** The Floor Is Lava: a dashed amber square where lava goes next. */
   /** Flashlight: a warm wash on the lit squares. */
   private drawLit(x: number, y: number) {
     this.tileLayer.fillStyle(0xffe27a, 0.16).fillRect(x, y, CELL, CELL);
@@ -636,6 +635,7 @@ export class BoardScene extends Phaser.Scene {
     g.fillStyle(0xffffff, 0.85).fillCircle(bx - CELL * 0.03, by - CELL * 0.03, CELL * 0.025);
   }
 
+  /** The Floor Is Lava: a dashed amber square where lava goes next. */
   private drawLavaNext(x: number, y: number) {
     const g = this.tileLayer;
     const inset = CELL * 0.12;
