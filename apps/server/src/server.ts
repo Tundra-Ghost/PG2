@@ -14,6 +14,7 @@ import { registerAccountRoutes, type Accounts } from './accounts';
 import { registerAdminRoutes } from './admin';
 import { createFeedbackStore, registerFeedbackRoutes } from './feedback';
 import { createSurveyStore, registerSurveyRoutes } from './survey';
+import { createUsageStore, registerUsageRoutes, type UsageStore } from './usage';
 import { attachSocial, type Presence } from './social';
 import { RoomManager, type Player } from './rooms';
 import type { RoomStore } from './store';
@@ -70,6 +71,7 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
   // A signed-in client sends its session token on connect. A missing or
   // dead token just means a guest: guests can still play by room code.
   const accounts = options.accounts;
+  const usage: UsageStore | null = accounts ? createUsageStore(accounts.db) : null;
   const presence: Presence | null = accounts ? attachSocial(io, accounts, rooms) : null;
   if (accounts) {
     io.use((socket, next) => {
@@ -99,15 +101,30 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
     registerAccountRoutes(app, options.accounts);
     registerFeedbackRoutes(app, createFeedbackStore(options.accounts.db), options.accounts);
     registerSurveyRoutes(app, createSurveyStore(options.accounts.db), options.accounts);
+    registerUsageRoutes(app, usage!, options.accounts);
     registerAdminRoutes(app, options.accounts, {
       adminIds: options.adminIds ?? new Set(),
       build: options.build ?? readBuildInfo(),
+      usage: usage!,
     });
   }
 
+  // Online games for the usage stats: started once both seats fill, finished once the game ends.
+  const countedStart = new Set<string>();
+  const countedEnd = new Set<string>();
   const broadcast = (roomId: string) => {
     const snapshot = rooms.snapshot(roomId);
-    if (snapshot) io.to(roomId).emit('game:state', snapshot);
+    if (!snapshot) return;
+    io.to(roomId).emit('game:state', snapshot);
+    if (!usage) return;
+    if (snapshot.seats.white !== 'empty' && snapshot.seats.black !== 'empty' && !countedStart.has(roomId)) {
+      countedStart.add(roomId);
+      usage.count('online_start');
+    }
+    if (snapshot.state.status !== 'active' && !countedEnd.has(roomId)) {
+      countedEnd.add(roomId);
+      usage.count('online_end');
+    }
   };
 
   io.on('connection', socket => {

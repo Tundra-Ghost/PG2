@@ -3,10 +3,14 @@ import { playClick } from '../../sound';
 import { GAME_BUILD, describeBuild, type BuildInfo } from '../../version';
 import { adminGet } from './adminApi';
 import styles from './Admin.module.css';
+import StatsPanel from './StatsPanel';
 
-type Tab = 'overview';
+type Tab = 'overview' | 'stats';
 
-const TABS: { id: Tab; label: string }[] = [{ id: 'overview', label: 'Overview' }];
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'stats', label: 'Stats' },
+];
 
 function Overview() {
   const [server, setServer] = useState<BuildInfo | null>(null);
@@ -95,7 +99,10 @@ export default function AdminScreen({ onBack }: { onBack: () => void }) {
                 </button>
               ))}
             </div>
-            <div role="tabpanel">{tab === 'overview' && <Overview />}</div>
+            <div role="tabpanel">
+              {tab === 'overview' && <Overview />}
+              {tab === 'stats' && <StatsPanel />}
+            </div>
           </>
         )}
       </div>

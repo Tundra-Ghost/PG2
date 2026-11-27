@@ -1,4 +1,5 @@
 import AdminScreen from './components/Admin/AdminScreen';
+import { reportUsage } from './online/usage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { GameState } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
@@ -342,15 +343,20 @@ export default function App() {
     };
   }, [screen, vsBot, selectedBot, gameState, act]);
 
+  // Anonymous usage stats: one page load per visit.
+  useEffect(() => reportUsage('visit'), []);
+
   // Save the bot match after every action, so a reload or a closed tab can pick it up.
   // A finished match is removed from the saves.
   useEffect(() => {
     if (screen !== 'game' || !vsBot || !selectedBot || !saveId) return;
     if (match.state.id !== saveId) return;
     if (match.state.status !== 'active') {
+      reportUsage('bot_end', saveId);
       removeSavedGame(saveId);
       return;
     }
+    if (match.state.moveHistory.length === 0) reportUsage('bot_start', saveId);
     recordEvicted(saveGame({
       v: SAVE_VERSION,
       id: saveId,
