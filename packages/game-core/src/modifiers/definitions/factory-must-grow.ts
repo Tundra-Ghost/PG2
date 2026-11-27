@@ -1,7 +1,7 @@
 import type { ModifierDefinition } from '../types';
 import type { GameState, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
-import { isNewRound, revealBumped, slidePieceSafely, type Bumped } from '../../engine/conveyor';
+import { isNewRound, revealBumped, shownSlideSquares, slidePieceSafely, type Bumped } from '../../engine/conveyor';
 import { offset } from '../../engine/push';
 import { MODIFIER_IDS } from '../ids';
 import { timedPhase } from '../timed';
@@ -71,7 +71,7 @@ export const factoryMustGrowDef: ModifierDefinition = {
       modifierId: ID,
       title: 'Factory',
       message: 'The belts move. Rank 4 runs towards the h-file, rank 5 towards the a-file.',
-      squares: moved,
+      squares: shownSlideSquares(next, moved),
     });
   },
 };

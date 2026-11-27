@@ -205,7 +205,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Ranks 4 and 5 are conveyor belts. At the end of each round, every piece on rank 4 slides one square right and every piece on rank 5 slides one square left. A piece stops at the board edge or behind another piece. Arrows show the belt direction.',
     prototypeRules:
-      'After every round (once Black has moved) each piece on rank 4 slides one square right and each piece on rank 5 one square left. The front piece moves first, so a line of pieces moves together. A piece stays put at the board edge, behind a piece that cannot move, or before a wall, flock, statue, storm or Lava square. Belts never capture. No slide may put a King in check, so a King rides only to a safe square, and a piece shielding a King from check stays. Belts stop while Tide Goes In floods ranks 4 and 5. A belt never uses a portal. A pawn that stepped two squares and then rides can no longer be taken en passant. A hidden piece that blocks the belt is revealed. A piece carried out of the Swamp is no longer stuck.',
+      'After every round (once Black has moved) each piece on rank 4 slides one square right and each piece on rank 5 one square left. The front piece moves first, so a line of pieces moves together. A piece stays put at the board edge, behind a piece that cannot move, or before a wall, flock, statue, storm or Lava square. Belts never capture. No slide may put a King in check, so a King rides only to a safe square, and a piece shielding a King from check stays. Belts stop while Tide Goes In floods ranks 4 and 5. A belt never uses a portal. Whenever a pawn slides, en passant is off for that turn. A hidden piece that blocks the belt is revealed. A piece carried out of the Swamp is no longer stuck.',
     flavor: '"Viktor placed his knight on the belt. The knight is now somewhere else. The factory is pleased."',
   },
   {
@@ -250,6 +250,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'shared',
     description:
       'The four centre squares are a roundabout. At the end of each round, pieces on d4, e4, e5 and d5 move one step clockwise around it, if the next square is free.',
+    prototypeRules:
+      'After every round (once Black has moved) each piece on d4, e4, e5 and d5 moves one step clockwise as White sees it (d5 to e5 to e4 to d4 to d5), if the next square is free. A piece whose next square empties follows, so a queue of three turns together; with all four squares full nothing moves. Each piece moves once per round at most. It never captures. No turn may put a King in check or add a checker against it, so a King turns only to a safe square. A hidden piece that blocks a turn is revealed. Not in a match with This Is My Swamp, Tide Goes In, Crop Circles, The Factory Must Grow or Monument To Gerald.',
     flavor: '"Viktor entered the roundabout in round 6. He is still deciding where to exit."',
   },
   {

@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 85 built, 15 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 86 built, 14 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -16,8 +16,9 @@
 ## Change log
 
 **Batch 12 (2026-11-27)**
-- Board-moving cards share one rule set (engine/conveyor.ts): they move pieces once per round, after Black moves; never capture; never put a King in check or add a second checker; and reveal a hidden piece that blocks them.
+- Board-moving cards share one rule set (engine/conveyor.ts): they move pieces once per round, after Black moves; never capture; never put a King in check or add a second checker; reveal a hidden piece that blocks them, and never point at a hidden piece's new square; and turn off en passant for that turn when a pawn slides.
 - The Factory Must Grow built.
+- The Magic Roundabout built. Conflicts: This Is My Swamp, Tide Goes In, Crop Circles, The Factory Must Grow, Monument To Gerald.
 
 **Batch 11 (2026-11-27)**
 - Hidden pieces (shared code in engine/visibility.ts): a hidden piece looks like an empty square to its opponent. A move it blocks is a bump: it reveals the piece and the player moves again. A hidden piece that gives check is always revealed.
@@ -166,6 +167,7 @@ The four centre squares (d4, d5, e4, e5) are the Swamp. A piece that starts its 
 - Changed from v0.2: pieces can pass through; the limit only applies when starting in the Swamp.
 - Conflict: Tide Goes In, Tide Goes Out. Both use ranks 4 and 5; only one may be in a match, whoever drafts it.
 - Conflict: Crop Circles. Both use the middle ranks; only one may be in a match, whoever drafts it.
+- Conflict: The Magic Roundabout. Both use the centre; only one may be in a match, whoever drafts it.
 
 ### MOD-A007 · Gravitational Anomaly (Don't Think About It)
 *Ref: Interstellar / Gravity Falls* · **Tier S** · Cost 5 · Curse 2 · Scope: Shared · Modes: All except Ranked S1 · **Built**
@@ -217,7 +219,8 @@ Ranks 4 and 5 are conveyor belts. At the end of each round, every piece on rank 
 - Ruling: belts never capture. A blocked piece stays put.
 - Ruling: a King rides the belt only if the new square is safe. Otherwise it stays.
 - Conflict: This Is My Swamp. Pieces may ride into the Swamp. Intended.
-- Built: the belts run once per round, after Black moves. The front piece moves first, so a line of pieces moves together. A piece also stays before a wall, flock, statue, storm or Lava square. No slide may put any King in check: a King rides only to a safe square, and a piece shielding its King stays. Belts stop while Tide Goes In floods ranks 4 and 5. A belt never uses a portal (Thinking With Portals): only normal moves do. A pawn that stepped two squares and then rides the belt can no longer be taken en passant.
+- Conflict: The Magic Roundabout. Only one may be in a match, whoever drafts it.
+- Built: the belts run once per round, after Black moves. The front piece moves first, so a line of pieces moves together. A piece also stays before a wall, flock, statue, storm or Lava square. No slide may put any King in check: a King rides only to a safe square, and a piece shielding its King stays. Belts stop while Tide Goes In floods ranks 4 and 5. A belt never uses a portal (Thinking With Portals): only normal moves do. Whenever a pawn slides, en passant is off for that turn.
 - Built: a hidden piece (Invisibility Cloak, Camouflage) that blocks a belt slide is revealed, like a bump on a normal move.
 - Built: a stuck piece (This Is My Swamp) rides the belt like any other. Once it is carried off the Swamp it is no longer stuck. A piece that rides into the Swamp is not trapped: only a move into it traps.
 
@@ -247,17 +250,19 @@ The central 4×4 squares are ice. A rook, bishop or queen that moves onto ice ke
 - Not Winter Is Coming: winter stops pieces, ice keeps them going.
 
 ### MOD-A013 · The Magic Roundabout
-*Ref: Swindon's Magic Roundabout* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Design**
+*Ref: Swindon's Magic Roundabout* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
 
 The four centre squares are a roundabout. At the end of each round, pieces on d4, e4, e5 and d5 move one step clockwise around it, if the next square is free.
 
 *Viktor entered the roundabout in round 6. He is still deciding where to exit.*
 
-- Conflict: This Is My Swamp. Both use the centre; only one may be in a match.
+- Conflict: This Is My Swamp. Both use the centre; only one may be in a match, whoever drafts it.
 - Ruling: a King rotates only if the new square is safe.
 - Ruling: rotation never captures. A blocked piece waits.
 - Conflict: Tide Goes In, Tide Goes Out. Both use ranks 4 and 5; only one may be in a match, whoever drafts it.
 - Conflict: Crop Circles. Both use the middle ranks; only one may be in a match, whoever drafts it.
+- Conflict: The Factory Must Grow and Monument To Gerald. The belts move the same squares at the same time, and the statue would jam the roundabout. Only one of each pair may be in a match, whoever drafts it.
+- Built: clockwise as White sees it: d5 to e5 to e4 to d4. A piece whose next square empties during the turn follows, so a queue of three turns together; with all four squares full nothing moves. It uses the shared slide rules (Batch 12): no King is put in check or gains a checker, and a hidden piece that blocks a turn is revealed.
 
 ### MOD-A014 · Minesweeper
 *Ref: Minesweeper* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
@@ -297,6 +302,7 @@ A statue of Gerald stands on e4. Nothing can land on it or pass through it. A pi
 - Ruling: Bandersnatch Protocol and Twin Telepathy do not copy a push. Only real piece moves are mirrored.
 - Ruling: a confessing piece (Forgive Me) that picks the statue square only declares it; nothing is pushed that move.
 - Synergy: Distracted Piece. Gerald is now in two places. Nobody can explain this.
+- Conflict: The Magic Roundabout. The statue would jam the roundabout; only one may be in a match, whoever drafts it.
 
 ### MOD-A017 · Tide Goes In, Tide Goes Out
 *Ref: "You can't explain that" meme* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Built**
@@ -1456,7 +1462,7 @@ Values the game uses today. "Built" cards match the build.
 | A010 | The Factory Must Grow | A | A | 3 | 1 | Shared | Built |
 | A011 | Thinking With Portals | A | B | 2 | 0 | Shared | Built |
 | A012 | Let It Go | A | A | 3 | 1 | Shared | Design |
-| A013 | The Magic Roundabout | A | B | 2 | 0 | Shared | Design |
+| A013 | The Magic Roundabout | A | B | 2 | 0 | Shared | Built |
 | A014 | Minesweeper | A | A | 3 | 1 | Shared | Design |
 | A015 | The Roomba | A | B | 2 | 0 | Shared | Design |
 | A016 | Monument To Gerald | A | B | 1 | 0 | Shared | Built |
@@ -1513,7 +1519,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-85 of 100 built. The other 15 are designs (v0.4).
+86 of 100 built. The other 14 are designs (v0.4).
 
 ### Balance test plan
 
