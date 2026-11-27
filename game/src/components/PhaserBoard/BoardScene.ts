@@ -16,7 +16,7 @@ const CHESS_GLYPH = /[\u2654-\u265F]/;
 const DEPTH = { squares: 0, tiles: 1, pulse: 2, tileIcons: 2.5, fog: 2.8, pieces: 3, badges: 4, marks: 5, bursts: 6 };
 const MOVE_MS = 140;
 const REMOVE_MS = 180;
-const BURST_MS = 1100;
+const BURST_MS = 500;
 
 interface Theme {
   frame: number;
