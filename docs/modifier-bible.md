@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 98 built, 2 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 99 built, 1 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -18,6 +18,7 @@
 **Batch 15 (2026-11-27)**
 - Everyone Has A Price built. Conflict (same player): Yeah, There Are Three Of Them.
 - Jump Scare built. No conflicts.
+- Spoiler Alert built. No conflicts.
 
 **Batch 14 (2026-11-27)**
 - Tide Goes In and Crop Circles count rounds, not turns, like Shake It Off and Night Shift.
@@ -1163,7 +1164,7 @@ You see a glow on every enemy piece whose ability is ready to use, and the numbe
 - Ruling: a Sus piece is judged by the type you see, so the tell never gives the disguise away. A ready ability with nothing to aim at (a Moneyball King with no token) shows nothing.
 
 ### MOD-D019 · Spoiler Alert
-*Ref: Spoilers, everywhere* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
+*Ref: Spoilers, everywhere* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
 After each move, the player must mark which piece they will move next. Both players see the mark. In check, the mark is cancelled.
 
@@ -1171,6 +1172,8 @@ After each move, the player must mark which piece they will move next. Both play
 
 - Ruling: if the marked piece has no legal move, any move is allowed.
 - Not Forgive Me: that card targets one enemy piece; this binds both players every move.
+- Built: the mark is part of the move (Move.spoiler, the marked piece's id), so saved games replay it and online it travels with the move. After you pick a move the board shows the position after it and you tap one of your pieces; Cancel takes the move back. Both players see an amber ring on each marked piece. The next move by that side must start from the marked piece (a normal move or one of its abilities). The mark is cancelled while that side is in check, and gives way when the marked piece has no legal move or is gone. Free abilities (Flashlight) need no mark. Bots, takeovers (YOU DIED) and Speedrun timeouts mark the piece that moved. Under fog or hidden pieces, an enemy mark you could not see is not shown, and online it is not sent.
+- Interaction: cards that demand a piece (Peer Pressure, Main Character Syndrome, Roll For Initiative, Commitment Issues, Heavy Is The Crown) are judged first. If the marked piece has no move they allow, the mark gives way, so the two never leave a side with no move. No conflicts.
 
 ### MOD-D020 · Masquerade
 *Ref: The Phantom of the Opera* · **Tier S** · Cost 4 · Curse 2 · Scope: Shared · Modes: All · **Design**
@@ -1568,7 +1571,7 @@ Values the game uses today. "Built" cards match the build.
 | D016 | Jump Scare | D | B | 2 | 1 | Shared | Built |
 | D017 | Crystal Ball | D | B | 1 | 0 | Owner | Built |
 | D018 | Tells | D | B | 1 | 0 | Owner | Built |
-| D019 | Spoiler Alert | D | A | 3 | 1 | Shared | Design |
+| D019 | Spoiler Alert | D | A | 3 | 1 | Shared | Built |
 | D020 | Masquerade | D | S | 4 | 2 | Shared | Design |
 | E009 | Slay Queen (The Amazon) | E | S | 5 | 0 | Owner | Built |
 | E010 | Holy Knight (The Archbishop) | E | A | 4 | 0 | Owner | Built |
@@ -1583,7 +1586,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-98 of 100 built. The other 2 are designs (v0.4).
+99 of 100 built. The other 1 is a design (v0.4).
 
 ### Balance test plan
 

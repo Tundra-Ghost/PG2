@@ -203,7 +203,7 @@ export function useOnlineRoom(account: string | null = null): OnlineRoom {
     sendMove: move =>
       socketRef.current?.emit(
         'game:move',
-        { from: move.from, to: move.to, promotion: move.promotion, ability: move.ability, dropType: move.dropType },
+        { from: move.from, to: move.to, promotion: move.promotion, ability: move.ability, dropType: move.dropType, spoiler: move.spoiler },
         actionAck,
       ),
     shooGerald: () => socketRef.current?.emit('game:shoo_gerald', actionAck),
