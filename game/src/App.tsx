@@ -932,6 +932,9 @@ export default function App() {
   const opponentLevel = botProfile ? getProfileLevel(botProfile) : 1;
   const opponentTitle = botProfile ? getSelectedTitle(botProfile).name : 'Street Pigeon';
 
+  /** MOD-B009: the timer bar shows all match when a side this screen plays has Speedrun. */
+  const speedrunShown = gameState.activeModifiers.some(mod => mod.id === MODIFIER_IDS.speedrun && (!vsBot || mod.sourceColor !== 'black'));
+
   const settingsOverlay =
     screen === 'settings' ? (
       <SettingsScreen
@@ -1272,8 +1275,8 @@ export default function App() {
               />
             </div>
 
-            <div className={styles.boardOnly}>
-              {gameState.activeModifiers.some(mod => mod.id === MODIFIER_IDS.speedrun && (!vsBot || mod.sourceColor !== 'black')) && (
+            <div className={`${styles.boardOnly} ${speedrunShown ? styles.boardOnlyTimed : ''}`}>
+              {speedrunShown && (
                 <SpeedrunTimer
                   state={gameState}
                   active={isOnSpeedrunClock(gameState) && (!vsBot || gameState.turn === 'white')}

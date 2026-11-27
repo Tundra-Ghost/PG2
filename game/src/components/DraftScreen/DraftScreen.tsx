@@ -156,12 +156,12 @@ export default function DraftScreen({
 
   const remaining = BUDGET - playerTotalCost;
   const playerValidOptions = useMemo(
-    () => getValidOptions(playerSelectedIds, botSelectedIds, implementedIds),
-    [playerSelectedIds, botSelectedIds, implementedIds],
+    () => getValidOptions(playerSelectedIds, botSelectedIds, implementedIds, { online: !!online }),
+    [playerSelectedIds, botSelectedIds, implementedIds, !!online],
   );
   const botValidOptions = useMemo(
-    () => getValidOptions(botSelectedIds, playerSelectedIds, implementedIds),
-    [botSelectedIds, playerSelectedIds, implementedIds],
+    () => getValidOptions(botSelectedIds, playerSelectedIds, implementedIds, { online: !!online }),
+    [botSelectedIds, playerSelectedIds, implementedIds, !!online],
   );
   const draftFinished = draftTurn === 'done';
 
