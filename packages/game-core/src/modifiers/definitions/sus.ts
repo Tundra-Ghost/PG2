@@ -6,6 +6,7 @@ import { MODIFIER_IDS } from '../ids';
 import { getModifierOwner } from '../owner';
 import { armyType } from '../army';
 import { isCup } from './shell-game';
+import { isPokerFaced, pokerFaceNotation } from './poker-face';
 
 const ID = MODIFIER_IDS.sus;
 /** Types a disguise can show. Special pieces from other cards are never shown. */
@@ -56,6 +57,8 @@ export function getShownType(state: GameState, piece: Piece, viewer: Color): Pie
 export function getShownNotation(state: GameState, record: MoveRecord, viewer: Color): string {
   const { pieceMoved, move } = record;
   if (pieceMoved.color === viewer) return record.notation;
+  // MOD-D013 Poker Face: the opponent reads only the square.
+  if (isPokerFaced(state, record, viewer)) return pokerFaceNotation(record);
   const disguise = sus(state)[pieceMoved.color];
   if (!disguise || disguise.pieceId !== pieceMoved.id || move.ability || move.promotion) return record.notation;
   const capture = record.pieceCaptured !== undefined || record.notation.includes('x');

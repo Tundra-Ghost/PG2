@@ -1181,6 +1181,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your opponent\'s move log shows only the squares your pieces moved to, not which piece moved. Your captured-pieces tray is hidden from them.',
     flavor: '"Viktor\'s face reveals nothing. It never has. That is not the card. That is just Viktor."',
+    prototypeRules:
+      'Display only. Your opponent\'s move log and match feed show only the square each of your moves went to (and a check mark), never which piece moved or what it took. The board is unchanged.',
   },
   {
     id: 'MOD-D014',
