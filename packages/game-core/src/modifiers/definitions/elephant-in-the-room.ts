@@ -9,7 +9,7 @@ const ID = MODIFIER_IDS.elephantInTheRoom;
 
 /**
  * MOD-E020 Elephant In The Room: the owner's starting bishops become
- * Elephants, which jump exactly two squares diagonally (see moveGenerator).
+ * Elephants, which move one or two squares diagonally (see moveGenerator).
  * Ghost bishops (MOD-D002) become Ghost Elephants and a Sus disguise (MOD-D005)
  * shows an Elephant, not a bishop, so neither gives itself away.
  */

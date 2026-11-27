@@ -154,8 +154,8 @@ function leaperVectors(a: number, b: number): [number, number][] {
 }
 
 export const KNIGHT_VECTORS = leaperVectors(1, 2);
-/** MOD-E020 Elephant: exactly two squares diagonally. */
-export const ELEPHANT_VECTORS = leaperVectors(2, 2);
+/** MOD-E020 Elephant: one or two squares diagonally (the two-step jumps). */
+export const ELEPHANT_VECTORS = [...leaperVectors(1, 1), ...leaperVectors(2, 2)];
 /** MOD-E011 Camel: three squares one way, one the other. */
 export const CAMEL_VECTORS = leaperVectors(3, 1);
 
@@ -261,7 +261,7 @@ function pieceMoves(state: GameState, piece: Piece): Square[] {
     case 'knight':
       return knightMoves(state, piece);
     case 'elephant':
-      // MOD-E020: exactly two squares diagonally, jumping the square between
+      // MOD-E020: one or two squares diagonally, jumping the square between
       return leaperMoves(state, piece, ELEPHANT_VECTORS);
     case 'nightrider':
       // MOD-E019: repeats one knight jump in a line while each landing square is empty

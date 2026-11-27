@@ -32,25 +32,25 @@ function play(state: GameState, moves: Array<[Square, Square]>): GameState {
   return next;
 }
 
-/** A position on white's 3rd move with the die already showing `type`. */
+/** A position on white's 4th move with the die already showing `type`. */
 function rolled(pieces: Piece[], type: PieceType, color: Color = 'white'): GameState {
   const state = chessEngine.activateDraftModifiers(
     makeEmptyState([makePiece('king', 'white', 'e1'), makePiece('king', 'black', 'e8'), ...pieces]),
     [{ id: RFI, sourceColor: color }],
   );
-  state.turnNumber = 5;
-  state.modifierState = { ...state.modifierState, [RFI]: { roll: { color, turnNumber: 5, type } } };
+  state.turnNumber = 7;
+  state.modifierState = { ...state.modifierState, [RFI]: { roll: { color, turnNumber: 7, type } } };
   return state;
 }
 
-const OPENING: Array<[Square, Square]> = [['e2', 'e4'], ['e7', 'e5'], ['g1', 'f3'], ['b8', 'c6']];
+const OPENING: Array<[Square, Square]> = [['e2', 'e4'], ['e7', 'e5'], ['g1', 'f3'], ['b8', 'c6'], ['f1', 'c4'], ['g8', 'f6']];
 
 describe('MOD-B020 Roll For Initiative', () => {
-  it('rolls on your 3rd move only, from the seeded generator', () => {
+  it('rolls on your 4th move only, from the seeded generator', () => {
     let state = startWith(7);
-    state = play(state, [['e2', 'e4'], ['e7', 'e5']]);
+    state = play(state, [['e2', 'e4'], ['e7', 'e5'], ['g1', 'f3'], ['b8', 'c6']]);
     expect(getInitiativeRoll(state, 'white')).toBeNull();
-    state = play(state, [['g1', 'f3'], ['b8', 'c6']]);
+    state = play(state, [['f1', 'c4'], ['g8', 'f6']]);
     const type = getInitiativeRoll(state, 'white');
     expect(type).not.toBeNull();
     expect(state.eventHistory[state.eventHistory.length - 1]?.modifierId).toBe(RFI);
@@ -83,7 +83,7 @@ describe('MOD-B020 Roll For Initiative', () => {
       makeEmptyState([makePiece('king', 'white', 'e1'), makePiece('rook', 'white', 'a1'), makePiece('king', 'black', 'e8')]),
       [{ id: RFI, sourceColor: 'white' }],
     );
-    bare.turnNumber = 5;
+    bare.turnNumber = 7;
     for (let seed = 1; seed <= 20; seed++) {
       const type = getInitiativeRoll(chessEngine.beginTurn({ ...bare, prngState: seed }), 'white');
       expect(['king', 'rook']).toContain(type);
@@ -164,12 +164,12 @@ describe('MOD-B020 Roll For Initiative', () => {
   });
   it('a pass counts as one of your moves, so it shifts the roll', () => {
     let state = startWith(5);
-    state = play(state, [['e2', 'e4'], ['e7', 'e5']]);
+    state = play(state, [['e2', 'e4'], ['e7', 'e5'], ['g1', 'f3'], ['b8', 'c6']]);
     state = chessEngine.passTurn(state);
     expect(state.turn).toBe('black');
-    expect(ownMoveNumber(state, 'white')).toBe(3);
-    state = play(state, [['b8', 'c6']]);
-    expect(ownMoveNumber(state, 'white')).toBe(3);
+    expect(ownMoveNumber(state, 'white')).toBe(4);
+    state = play(state, [['g8', 'f6']]);
+    expect(ownMoveNumber(state, 'white')).toBe(4);
     expect(getInitiativeRoll(state, 'white')).not.toBeNull();
   });
 

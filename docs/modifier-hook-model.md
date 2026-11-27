@@ -268,7 +268,7 @@ Assessment:
 
 ### `MOD-B006` They Were The Traitor
 
-- From turn 21 (move 11), each owner turn start has a 25% chance to warn: the highest-value non-king piece gets `isTraitor`.
+- From turn 21 (move 11), each owner turn start has a 25% chance to warn: a random non-king, non-pawn piece (a pawn only if nothing else is left) gets `isTraitor`.
 - At the owner's next turn start it changes colour. A home-corner rook takes its castling right with it. If the traitor was captured first, the search starts over. Once per match.
 
 ### `MOD-E004` Equivalent Exchange (The Chancellor)

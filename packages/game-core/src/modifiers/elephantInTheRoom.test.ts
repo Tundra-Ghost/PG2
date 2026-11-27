@@ -24,7 +24,7 @@ describe('MOD-E020 Elephant In The Room', () => {
     expect(state.pieces.get('f8')?.type).toBe('bishop');
   });
 
-  it('jumps exactly two squares diagonally, over pieces', () => {
+  it('steps one square or jumps two squares diagonally, over pieces', () => {
     const state = makeEmptyState([
       makePiece('king', 'white', 'a1'),
       makePiece('elephant', 'white', 'd4'),
@@ -34,18 +34,19 @@ describe('MOD-E020 Elephant In The Room', () => {
       makePiece('pawn', 'white', 'f2'),
       makePiece('king', 'black', 'h8'),
     ]);
-    // b6 empty, f6 over own pawn, b2 capture over enemy pawn; f2 own piece.
-    expect(chessEngine.getLegalMoves(state, 'd4').sort()).toEqual(['b2', 'b6', 'f6']);
+    // Steps: c5 and e3 empty, c3 captures, e5 own pawn. Jumps: b6 empty,
+    // f6 over own pawn, b2 capture over enemy pawn; f2 own piece.
+    expect(chessEngine.getLegalMoves(state, 'd4').sort()).toEqual(['b2', 'b6', 'c3', 'c5', 'e3', 'f6']);
   });
 
-  it('cannot move one square or slide further', () => {
+  it('moves one or two squares diagonally, never further', () => {
     const state = makeEmptyState([
       makePiece('king', 'white', 'a1'),
       makePiece('elephant', 'white', 'c1'),
       makePiece('king', 'black', 'h8'),
     ]);
-    expect(chessEngine.getLegalMoves(state, 'c1').sort()).toEqual(['a3', 'e3']);
-    expect(chessEngine.validateMove(state, move('c1', 'd2', 'white')).valid).toBe(false);
+    expect(chessEngine.getLegalMoves(state, 'c1').sort()).toEqual(['a3', 'b2', 'd2', 'e3']);
+    expect(chessEngine.validateMove(state, move('c1', 'd2', 'white')).valid).toBe(true);
     expect(chessEngine.validateMove(state, move('c1', 'f4', 'white')).valid).toBe(false);
   });
 
@@ -78,7 +79,7 @@ describe('MOD-E020 Elephant In The Room', () => {
     expect(chessEngine.validateMove(state, move('d3', 'f5', 'white')).valid).toBe(false);
   });
 
-  it('can be captured, and cannot step in to block a check', () => {
+  it('can be captured, and can step in to block a check', () => {
     const state = makeEmptyState([
       makePiece('king', 'white', 'e1'),
       makePiece('elephant', 'white', 'c3'),
@@ -87,7 +88,7 @@ describe('MOD-E020 Elephant In The Room', () => {
     ]);
     state.turn = 'black';
     expect(chessEngine.getLegalMoves(state, 'a5')).toContain('c3');
-    // The Elephant cannot step to d2 to block a check from a5 to e1.
+    // The Elephant steps to d2 to block a check from a5 to e1 (balance round 3).
     const checked = makeEmptyState([
       makePiece('king', 'white', 'e1'),
       makePiece('elephant', 'white', 'c1'),
@@ -95,7 +96,7 @@ describe('MOD-E020 Elephant In The Room', () => {
       makePiece('king', 'black', 'h8'),
     ]);
     expect(isInCheck(checked, 'white')).toBe(true);
-    expect(chessEngine.getLegalMoves(checked, 'c1')).toEqual([]);
+    expect(chessEngine.getLegalMoves(checked, 'c1')).toEqual(['d2']);
   });
 
   it('bots see and use its jumps', () => {
@@ -123,7 +124,7 @@ describe('MOD-E020 Elephant In The Room', () => {
     expect(next.pieces.get('f1')?.type).toBe('elephant');
   });
 
-  it('is trapped by the Swamp like a knight, then jumps out', () => {
+  it('is not trapped by the Swamp, but moves only 1 square from it', () => {
     let state = makeEmptyState([
       makePiece('king', 'white', 'a1'),
       makePiece('elephant', 'white', 'b2'),
@@ -132,14 +133,10 @@ describe('MOD-E020 Elephant In The Room', () => {
     ]);
     state = chessEngine.activateDraftModifiers(state, [{ id: MODIFIER_IDS.thisIsMySwamp, sourceColor: null }]);
     state = chessEngine.applyMove(state, move('b2', 'd4', 'white'));
-    expect(state.pieces.get('d4')?.cooldowns[MODIFIER_IDS.thisIsMySwamp]).toBeGreaterThan(0);
+    expect(state.pieces.get('d4')?.cooldowns[MODIFIER_IDS.thisIsMySwamp] ?? 0).toBe(0);
     state = chessEngine.applyMove(state, move('a7', 'a6', 'black'));
     expect(chessEngine.validateMove(state, move('d4', 'f6', 'white')).valid).toBe(false);
-    state = chessEngine.applyMove(state, move('a1', 'a2', 'white'));
-    state = chessEngine.applyMove(state, move('a6', 'a5', 'black'));
-    state = chessEngine.applyMove(state, move('a2', 'a1', 'white'));
-    state = chessEngine.applyMove(state, move('a5', 'a4', 'black'));
-    expect(chessEngine.validateMove(state, move('d4', 'f6', 'white')).valid).toBe(true);
+    expect(chessEngine.validateMove(state, move('d4', 'e3', 'white')).valid).toBe(true);
   });
 
   it('turns Ghost bishops into Ghost Elephants, whichever card comes first', () => {
