@@ -84,6 +84,7 @@ export const MODIFIER_IDS = {
   letItGo: 'MOD-A012',
   shakeItOff: 'MOD-A018',
   minesweeper: 'MOD-A014',
+  nightShift: 'MOD-D010',
   oneWayStreet: 'MOD-A020',
   blessYou: 'MOD-B012',
   footprints: 'MOD-D011',
