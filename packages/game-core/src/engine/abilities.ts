@@ -5,6 +5,7 @@ import { affectsColor } from '../modifiers/owner';
 import { applyMoveInternal, cloneState } from './gameLoop';
 import { isInCheck } from './moveGenerator';
 import { validateMove } from './moveValidator';
+import { withoutHiddenPieces } from './visibility';
 
 /** The ability a move uses, if its modifier is active and has one. */
 export function getActiveAbility(state: GameState, id: ModifierID): AbilitySpec | null {
@@ -122,10 +123,12 @@ export function getAbilityOptions(state: GameState, square: Square): AbilityOpti
     if (!ability || !ability.pieceTypes.includes(piece.type)) continue;
     if (!affectsColor(state, inst.id, piece.color)) continue;
     const cooldownLeft = abilityCooldownLeft(piece, inst.id);
+    // Hidden pieces: targets come from the board the player sees.
+    const board = withoutHiddenPieces(state, piece.color);
     const targets = cooldownLeft > 0 || piece.color !== state.turn
       ? []
-      : ability.getTargets(state, piece).filter(to =>
-          validateMove(state, { from: square, to, playerColor: piece.color, ability: inst.id }).valid,
+      : ability.getTargets(board, piece).filter(to =>
+          validateMove(board, { from: square, to, playerColor: piece.color, ability: inst.id }).valid,
         );
     const status = ability.status?.(state, piece);
     options.push({ modifierId: inst.id, label: ability.label, hint: ability.hint, cooldownLeft, targets, ...(status ? { status } : {}), ...(ability.free ? { free: true } : {}) });

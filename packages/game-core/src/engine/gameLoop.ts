@@ -17,6 +17,7 @@ import type { ModifierDefinition } from '../modifiers/types';
 import { getDraftScope } from '../modifiers/scope';
 import { MODIFIER_IDS } from '../modifiers/ids';
 import { validateMove } from './moveValidator';
+import { getHiddenPieceIds, hiddenCheckers, unhidePieces, withoutHiddenPieces } from './visibility';
 import { ownMovesMade } from './ownMoves';
 import { buildAbilityNotation, getAbilityOptions, performAbility, startAbilityCooldown, tickAbilityCooldowns } from './abilities';
 
@@ -463,9 +464,12 @@ function buildNotation(
   // more correct but is expensive; in practice pseudo-legal is good enough for SAN).
   let disambig = '';
   if (piece.type !== 'pawn' && piece.type !== 'king') {
+    // A piece hidden from the opponent never shows through the notation.
+    const unseen = getHiddenPieceIds(stateBefore, piece.color === 'white' ? 'black' : 'white');
     const siblings = Array.from(stateBefore.pieces.values()).filter(
       p =>
         p.id !== piece.id &&
+        !unseen.has(p.id) &&
         p.type === piece.type &&
         p.color === piece.color &&
         getLegalMovesForPiece(stateBefore, p).includes(move.to),
@@ -506,7 +510,62 @@ function buildNotation(
 
 export function applyMove(state: GameState, move: Move): GameState {
   if (move.ability && modifierRegistry.get(move.ability)?.ability?.free) return applyFreeAbility(state, move);
+  const bumped = bumpedPieces(state, move);
+  if (bumped) return revealHiddenPieces(state, bumped, 'Your move bumped into it. Move again.', move.playerColor);
   return playTakenOverTurns(applyMoveOnce(state, move));
+}
+
+/**
+ * Hidden pieces (MOD-D009, MOD-D015): the hidden pieces `move` bumps into, or
+ * null when it is not a bump. A bump is a move that is legal on the board its
+ * player sees (hidden pieces taken off) but not on the real board. It is
+ * blamed on each hidden piece whose return alone makes the move illegal, or
+ * on every hidden piece when no single one does. So a bump always reveals at
+ * least one piece, and bumping can never loop.
+ */
+export function bumpedPieces(state: GameState, move: Move): string[] | null {
+  if (state.status !== 'active' || state.turn !== move.playerColor) return null;
+  const color = move.playerColor;
+  const hidden = getHiddenPieceIds(state, color);
+  if (hidden.size === 0) return null;
+  const mover = state.pieces.get(move.from);
+  if (!mover || hidden.has(mover.id) || validateMove(state, move).valid) return null;
+  if (!validateMove(withoutHiddenPieces(state, color, hidden), move).valid) return null;
+  const culprits = [...hidden].filter(id => {
+    const rest = new Set(hidden);
+    rest.delete(id);
+    return !validateMove(withoutHiddenPieces(state, color, rest), move).valid;
+  });
+  return culprits.length > 0 ? culprits : [...hidden];
+}
+
+/**
+ * Shows hidden pieces again, with one event per piece. A bump (`bumpedBy`
+ * set) keeps the turn: nothing goes in the move list and no counter moves.
+ */
+export function revealHiddenPieces(state: GameState, pieceIds: string[], why: string, bumpedBy?: Color): GameState {
+  const ids = [...new Set(pieceIds)];
+  if (ids.length === 0) return state;
+  const owners = new Map<string, ModifierDefinition>();
+  for (const def of getActiveDefinitions(state)) {
+    for (const id of def.getHiddenPieces?.(state) ?? []) if (!owners.has(id)) owners.set(id, def);
+  }
+  let next = unhidePieces(cloneState(state), ids);
+  for (const id of ids) {
+    const piece = [...state.pieces.values()].find(p => p.id === id);
+    const def = owners.get(id);
+    if (!piece || !def) continue;
+    const side = piece.color === 'white' ? 'White' : 'Black';
+    next = appendGameEvent(next, {
+      ply: state.moveHistory.length + 1,
+      type: 'modifier',
+      modifierId: def.id,
+      title: bumpedBy ? 'Bump!' : def.name,
+      squares: [piece.square],
+      message: `${side}'s hidden ${piece.type.replace('_', ' ')} on ${piece.square} is revealed. ${why}`,
+    });
+  }
+  return next;
 }
 
 /**
@@ -576,6 +635,9 @@ function applyMoveOnce(state: GameState, move: Move): GameState {
       next = def.onPostMove(next, preparedMove);
     }
   }
+
+  // Hidden pieces (MOD-D009, MOD-D015): a hidden piece that gives check is revealed.
+  next = revealHiddenPieces(next, [...hiddenCheckers(next, 'white'), ...hiddenCheckers(next, 'black')], 'It gives check.');
 
   // Switch turn & counters. A spent tempo token (MOD-C007) keeps the turn.
   const opponent: Color = preparedState.turn === 'white' ? 'black' : 'white';
@@ -652,7 +714,34 @@ export function beginTurn(state: GameState): GameState {
       next = def.onTurnStart(next);
     }
   }
-  return next;
+  return revealIfStuck(next);
+}
+
+/**
+ * Hidden pieces: when the side to move has no move on the board it sees (a
+ * pawn could only take a piece it cannot see), every hidden enemy piece is
+ * revealed, so the turn is never stuck (Rule 06).
+ */
+function revealIfStuck(state: GameState): GameState {
+  if (state.status !== 'active') return state;
+  // A piece moved at turn start (a hop, a slide) may give check: that always reveals.
+  let next = revealHiddenPieces(state, [...hiddenCheckers(state, 'white'), ...hiddenCheckers(state, 'black')], 'It gives check.');
+  const color = next.turn;
+  let hidden = getHiddenPieceIds(next, color);
+  if (hidden.size === 0) return next;
+  // A hidden piece that blocks a check would make the player see a check that is not there.
+  if (isInCheck(withoutHiddenPieces(next, color, hidden), color) && !isInCheck(next, color)) {
+    const blockers = [...hidden].filter(id => {
+      const rest = new Set(hidden);
+      rest.delete(id);
+      return !isInCheck(withoutHiddenPieces(next, color, rest), color);
+    });
+    next = revealHiddenPieces(next, blockers.length > 0 ? blockers : [...hidden], 'It was blocking a check.');
+    hidden = getHiddenPieceIds(next, color);
+    if (hidden.size === 0) return next;
+  }
+  if (hasAnyValidMove(withoutHiddenPieces(next, color, hidden))) return next;
+  return revealHiddenPieces(next, [...hidden], 'Nothing else could move.');
 }
 
 /**
@@ -773,10 +862,13 @@ export const PROMOTION_TYPES: readonly PieceType[] = ['queen', 'rook', 'bishop',
  * first. Modifiers can forbid some (Reject Queen forbids the queen).
  */
 export function getValidPromotionTypes(state: GameState, from: Square, to: Square): PieceType[] {
+  // Hidden pieces: judged on the board the mover sees, so a blocked push is a bump, not a missing dot.
+  const mover = state.pieces.get(from);
+  const board = mover ? withoutHiddenPieces(state, mover.color) : state;
   return PROMOTION_TYPES.filter(type => {
     const move = buildMove(state, from, to);
     move.promotion = type;
-    return validateMove(state, move).valid;
+    return validateMove(board, move).valid;
   });
 }
 

@@ -1119,6 +1119,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'At match start, pick one of your non-King pieces. It is invisible to your opponent for the first 10 rounds, or until it captures or gives check.',
     flavor: '"Viktor\'s bishop is wearing a cloak. Viktor\'s opponent is very confused about the missing bishop."',
+    prototypeRules:
+      'At the start, one of your minor pieces (knight, bishop, rook or a fairy piece) is picked at random. Your opponent cannot see it for the first 10 rounds. It shows when it captures, gives check or promotes. An enemy move that runs into it shows it too, and that player moves again. You see a cloak badge on it.',
   },
   {
     id: 'MOD-D010',

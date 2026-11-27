@@ -2,7 +2,7 @@ import type { Color, GameState, Move, Piece } from './types';
 import { chessEngine } from './ChessEngine';
 import { getAbilityOptions, performAbility } from './abilities';
 import { applyMoveInternal, buildMove, cloneState, getValidPromotionTypes } from './gameLoop';
-import { getVisibleSquares } from './visibility';
+import { getHiddenPieceIds, getVisibleSquares } from './visibility';
 import { botRandom } from './prng';
 
 /**
@@ -71,10 +71,13 @@ export function listBotMoves(state: GameState, color: Color): Move[] {
  */
 export function botView(state: GameState, color: Color): GameState {
   const visible = getVisibleSquares(state, color);
-  if (!visible) return state;
+  // Hidden pieces (MOD-D009, MOD-D015) are off the view too.
+  const hidden = getHiddenPieceIds(state, color);
+  if (!visible && hidden.size === 0) return state;
   const view = cloneState(state);
   for (const [square, piece] of view.pieces) {
-    if (piece.color !== color && piece.type !== 'king' && !visible.has(square)) view.pieces.delete(square);
+    if (piece.color === color || piece.type === 'king') continue;
+    if (hidden.has(piece.id) || (visible && !visible.has(square))) view.pieces.delete(square);
   }
   return view;
 }

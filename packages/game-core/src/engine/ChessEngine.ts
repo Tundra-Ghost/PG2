@@ -9,8 +9,9 @@ import type {
   ValidationResult,
 } from './types';
 import { getLegalMovesForPiece, isInCheck as isInCheckGen, isSquareAttacked } from './moveGenerator';
-import { activateDraftModifiers as activateDraftModifiersGL, activateModifiers as activateModifiersGL, applyMove as applyMoveFull, applyMoveInternal, beginTurn as beginTurnGL, buildMove, canShooGerald as canShooGeraldGL, cloneState, hasAnyValidMove as hasAnyValidMoveGL, isCheckmate as isCheckmateGL, isPromotionMove, isStalemate as isStalemateGL, passTurn as passTurnGL, positionKey, shooGerald as shooGeraldGL } from './gameLoop';
+import { activateDraftModifiers as activateDraftModifiersGL, activateModifiers as activateModifiersGL, applyMove as applyMoveFull, applyMoveInternal, beginTurn as beginTurnGL, buildMove, canShooGerald as canShooGeraldGL, cloneState, bumpedPieces, hasAnyValidMove as hasAnyValidMoveGL, isCheckmate as isCheckmateGL, isPromotionMove, isStalemate as isStalemateGL, passTurn as passTurnGL, positionKey, shooGerald as shooGeraldGL } from './gameLoop';
 import { validateMove } from './moveValidator';
+import { withoutHiddenPieces } from './visibility';
 
 export interface IChessEngine {
   getInitialState(): GameState;
@@ -99,8 +100,17 @@ class ChessEngineImpl implements IChessEngine {
     return state;
   }
 
+  /** Like the rules' validateMove, but a bump into a hidden piece is also a valid action (bumpedPieces). */
   validateMove(state: GameState, move: Move): ValidationResult {
-    return validateMove(state, move);
+    // Hidden pieces: a move must be legal on the board its player sees first,
+    // so a hidden piece can never be found by trying moves.
+    const view = withoutHiddenPieces(state, move.playerColor);
+    if (view === state) return validateMove(state, move);
+    const seen = validateMove(view, move);
+    if (!seen.valid) return seen;
+    const result = validateMove(state, move);
+    if (result.valid || !bumpedPieces(state, move)) return result;
+    return { valid: true, bump: true };
   }
 
   applyMove(state: GameState, move: Move): GameState {
@@ -115,6 +125,14 @@ class ChessEngineImpl implements IChessEngine {
   getLegalMoves(state: GameState, square: Square): Square[] {
     const piece = state.pieces.get(square);
     if (!piece) return [];
+    // Hidden pieces: moves are offered on the board the player sees. A move
+    // a hidden piece blocks is a bump (validateMove).
+    const view = withoutHiddenPieces(state, piece.color);
+    return this.legalMovesOn(view, square);
+  }
+
+  private legalMovesOn(state: GameState, square: Square): Square[] {
+    const piece = state.pieces.get(square)!;
 
     const pseudoLegal = getLegalMovesForPiece(state, piece);
     const legal: Square[] = [];

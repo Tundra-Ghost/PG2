@@ -1,5 +1,5 @@
 import type { Color, GameState, Piece, PieceType, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getFootprints, getFlashlightSquares, getForecast, getTells, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
+import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getFootprints, getFlashlightSquares, getForecast, getHiddenPieceIds, getTells, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -53,6 +53,8 @@ export interface SquareView {
   smoke?: 'white' | 'black';
   /** Sus: the viewer's own disguised piece, and what the opponent sees. */
   susAs?: PieceType;
+  /** Invisibility Cloak, Camouflage: the viewer's own piece that the opponent cannot see. */
+  unseen?: boolean;
   /** I'm Literally Right Here: the viewer's own Ghost, drawn faded. */
   ghost?: boolean;
   /** Forgive Me: 'piece' on the confessing piece, 'target' on its declared square. */
@@ -115,7 +117,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const quietZones = getQuietZoneSquares(state);
   const noFlySquares = getNoFlySquares(state);
   const crownOrders = getCrownOrders(state);
-  const pigeonHops = getPigeonHops(state);
+  const pigeonHops = getPigeonHops(state, viewer ?? undefined);
   // Hatoful Gambit only moves the Pigeons of the side it belongs to (or both, if shared).
   const pigeonsHopFor = (color: Color) =>
     state.activeModifiers.some(
@@ -132,7 +134,12 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const taxed = getTaxDayPawn(state);
   const sneezes = { white: sneezeIn(state, 'white'), black: sneezeIn(state, 'black') };
   const ownSus = viewer ? getSusPiece(state, viewer) : null;
-  const confession = getConfession(state);
+  // Hidden pieces: enemy pieces the viewer cannot see, and the viewer's own the opponent cannot.
+  const hiddenEnemies = viewer ? getHiddenPieceIds(state, viewer) : new Set<string>();
+  const rawConfession = getConfession(state);
+  // A confessing piece the viewer cannot see shows no confession.
+  const confession = rawConfession && viewer && [...state.pieces.values()].some(p => p.square === rawConfession.square && hiddenEnemies.has(p.id)) ? null : rawConfession;
+  const ownUnseen = viewer ? getHiddenPieceIds(state, viewer === 'white' ? 'black' : 'white') : new Set<string>();
   const mirrorEdge = isBandersnatchActive(state) ? (orientation === 'white' ? 'right' : 'left') : null;
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
   const fileOrder = orientation === 'white' ? [...FILES] : [...FILES].reverse();
@@ -144,7 +151,8 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
       const tile = state.tiles.get(square);
       const storm = tile?.storm;
       const hidden = visible !== null && !visible.has(square);
-      const real = hidden ? undefined : state.pieces.get(square);
+      const onSquare = state.pieces.get(square);
+      const real = hidden || (onSquare && hiddenEnemies.has(onSquare.id)) ? undefined : onSquare;
       // Sus: the opponent's disguised piece is drawn as its fake type.
       const shownType = real && viewer ? getShownType(state, real, viewer) : real?.type;
       const piece = real && shownType !== real.type
@@ -191,6 +199,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(tells.has(square) ? { tell: tells.get(square) } : {}),
         ...(!hidden && taxed === square ? { taxed: true } : {}),
         ...(ownSus && real?.id === ownSus.pieceId ? { susAs: ownSus.shownAs } : {}),
+        ...(real && ownUnseen.has(real.id) ? { unseen: true } : {}),
         ...(mirrorEdge && file === 'd' ? { mirrorEdge } : {}),
         ...(confession?.square === square ? { confession: 'piece' as const } : confession?.declared === square ? { confession: 'target' as const } : {}),
         // The opponent sees a Ghost as a normal piece.

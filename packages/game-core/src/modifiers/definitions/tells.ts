@@ -1,7 +1,7 @@
 import type { ModifierDefinition } from '../types';
 import type { Color, GameState, Square } from '../../engine/types';
 import { abilityCooldownLeft } from '../../engine/abilities';
-import { getVisibleSquares } from '../../engine/visibility';
+import { getHiddenPieceIds, getVisibleSquares } from '../../engine/visibility';
 import { modifierRegistry } from '../registry';
 import { MODIFIER_IDS } from '../ids';
 import { affectsColor } from '../owner';
@@ -22,8 +22,9 @@ export function getTells(state: GameState, viewer: Color): Map<Square, number> {
     .filter(id => affectsColor(state, id, enemy))
     .map(id => ({ id, spec: modifierRegistry.get(id)?.ability }))
     .filter(a => a.spec);
+  const hidden = getHiddenPieceIds(state, viewer);
   for (const piece of state.pieces.values()) {
-    if (piece.color !== enemy || (visible && !visible.has(piece.square))) continue;
+    if (piece.color !== enemy || (visible && !visible.has(piece.square)) || hidden.has(piece.id)) continue;
     // A Sus piece is judged as the type the viewer sees, so the tell never gives the disguise away.
     const seen = { ...piece, type: getShownType(state, piece, viewer) };
     let best: number | null = null;

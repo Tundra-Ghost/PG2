@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 76 built, 24 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 81 built, 19 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -14,6 +14,13 @@
 | E | Asymmetric Armies | Non-standard piece configurations |
 
 ## Change log
+
+**Batch 11 (2026-11-27)**
+- Hidden pieces (shared code in engine/visibility.ts): a hidden piece looks like an empty square to its opponent. A move it blocks is a bump: it reveals the piece and the player moves again. A hidden piece that gives check is always revealed.
+- Invisibility Cloak built.
+
+**Batch 10 (2026-11-25)**
+- Footprints, Flashlight, Crystal Ball and Tells built.
 
 **Batch 9 (2026-11-22)**
 - Match conflicts: some shared cards use the same squares, so only one of each pair may be in a match, whoever drafts it. The draft hides the second card and says why.
@@ -957,7 +964,7 @@ One tile is the Surveillance Square, a golden eye both players see. Any piece th
 - Built: the eye sits in the middle 4×4 and does not move. Moving onto the eye counts. Each sighting is announced in the log, so the card still does something without a fog card.
 
 ### MOD-D009 · Invisibility Cloak
-*Ref: Harry Potter* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Harry Potter* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 At match start, pick one of your non-King pieces. It is invisible to your opponent for the first 10 rounds, or until it captures or gives check.
 
@@ -965,6 +972,10 @@ At match start, pick one of your non-King pieces. It is invisible to your oppone
 
 - Ruling: enemy pieces still cannot move through it. They bump into it and it is revealed.
 - Bots: bots play with the same blindness, so it works against them too.
+- Changed from design: the piece is picked at random (seeded) from the owner's knights, bishops and rooks (or another minor piece in a changed army, never the Queen; with none of those, any non-King piece but an Egg), not chosen. There is no picker screen yet.
+- Built: the opponent sees an empty square and is offered moves as if it were empty. A move that the hidden piece blocks (a slide through it, a pawn push into it, a move it pins) is a bump: the piece is revealed with a "Bump!" event and the same player moves again, so no move is lost. A move that lands on the hidden piece captures it. The cloak ends when the piece captures, gives check, promotes, or after 10 rounds. Its moves read "moves in the dark" in the opponent's log and leave no last-move highlight. The owner sees a ○ badge on it. If the opponent has no move on the board they see, every hidden piece is revealed, so no turn is ever stuck.
+- Ruling: a move is checked on the board its player sees first, so a pawn cannot "capture" an empty-looking square to find the piece. A hidden piece that blocks a check on the opponent's King is revealed at the start of their turn, so they never see a false check. Ability targets come from the board the player sees too. Everything is shown once the game ends.
+- Interaction: Big Beak Is Watching. The eye spots a hidden piece and reveals it. Tells never shows a tell on a hidden piece.
 
 ### MOD-D010 · Night Shift
 *Ref: Minecraft day and night* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
@@ -1450,7 +1461,7 @@ Values the game uses today. "Built" cards match the build.
 | C018 | Dirt Hut | C | A | 3 | 0 | Owner | Built |
 | C019 | Everyone Has A Price | C | S | 5 | 0 | Owner | Design |
 | C020 | Gotta Go Fast | C | B | 2 | 0 | Owner | Built |
-| D009 | Invisibility Cloak | D | A | 3 | 0 | Owner | Design |
+| D009 | Invisibility Cloak | D | A | 3 | 0 | Owner | Built |
 | D010 | Night Shift | D | A | 3 | 1 | Shared | Design |
 | D011 | Footprints | D | B | 1 | 0 | Owner | Built |
 | D012 | Flashlight | D | B | 2 | 0 | Owner | Built |
@@ -1475,7 +1486,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-80 of 100 built. The other 20 are designs (v0.4).
+81 of 100 built. The other 19 are designs (v0.4).
 
 ### Balance test plan
 

@@ -312,7 +312,8 @@ export class BoardScene extends Phaser.Scene {
       }
 
       // Sus: a ? badge so the owner knows which piece is disguised.
-      const badgeMarks = [...worn.marks, ...(view.susAs ? ['?'] : []), ...(view.tell ? [String(view.tell)] : [])];
+      // Invisibility Cloak, Camouflage: a ○ badge on the owner's piece the opponent cannot see.
+      const badgeMarks = [...worn.marks, ...(view.susAs ? ['?'] : []), ...(view.unseen ? ['○'] : []), ...(view.tell ? [String(view.tell)] : [])];
       badgeMarks.forEach((mark, i) => {
         // Two-character marks (an Egg's count) get a wider badge.
         const bw = mark.length > 1 ? 26 : 18;

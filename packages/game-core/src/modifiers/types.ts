@@ -123,4 +123,13 @@ export interface ModifierDefinition {
    * fog card has limited the view.
    */
   getRevealedSquares?: (state: GameState, color: Color) => Square[];
+
+  /**
+   * Hidden pieces (MOD-D009, MOD-D015): ids of pieces their opponent cannot
+   * see. The square looks empty to that opponent. Kings are never hidden.
+   */
+  getHiddenPieces?: (state: GameState) => string[];
+
+  /** Hidden pieces: show these pieces again (a bump, a capture, a check). */
+  revealPieces?: (state: GameState, pieceIds: string[]) => GameState;
 }

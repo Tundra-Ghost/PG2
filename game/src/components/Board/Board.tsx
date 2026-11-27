@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
-import { buildMove, getShooBlocker, getTouchedPiece, hasTouchMove, touchPiece, touchedReason } from '@pigeon-chess/game-core';
+import { buildMove, getShooBlocker, getTouchedPiece, hasTouchMove, touchPiece, touchedReason, isHiddenPieceMove } from '@pigeon-chess/game-core';
 import {
   flipSquare,
   flippedMovesLeft,
@@ -223,7 +223,9 @@ export default function Board({
 
   // MOD-B005: during a blackout the cursed side does not see the last move either.
   const forgetsLastMove = isHistoryBlackout(state, controlColor ?? state.turn);
-  const lastMove = forgetsLastMove ? undefined : state.moveHistory[state.moveHistory.length - 1];
+  const latest = state.moveHistory[state.moveHistory.length - 1];
+  // Hidden pieces: a move by a piece the viewer cannot see leaves no highlight.
+  const lastMove = forgetsLastMove || (latest && isHiddenPieceMove(state, latest, controlColor ?? state.turn)) ? undefined : latest;
   const lastFrom = lastMove?.move.from;
   const lastTo   = lastMove?.move.to;
 
