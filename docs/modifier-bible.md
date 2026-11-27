@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 95 built, 5 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 96 built, 4 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -19,7 +19,8 @@
 - Tide Goes In and Crop Circles count rounds, not turns, like Shake It Off and Night Shift.
 - Speedrun Any% built, local games only (online rooms have no clock). No conflicts.
 - Rubber Banding built. No conflicts.
-- Ctrl+Z built. No conflicts.
+- Ctrl+Z built. No conflicts. Bots never draft it.
+- Bullet Time built. Conflicts (same player): Lawrence Of Arabia, Knight Rider, Hatoful Gambit, The Small Council.
 
 **Batch 13 (2026-11-27)**
 - Let It Go built. Conflicts: This Is My Swamp, Thinking With Portals, Tide Goes In.
@@ -893,13 +894,15 @@ Once per match, before your move, undo the last round: your last move and your o
 - Built: a Ctrl+Z button sits with the ability buttons; tap it twice (bigger on phones). At the start of each of your turns the game is saved (engine hook onTurnReady, after turn-start effects); Ctrl+Z puts back the save from the start of your previous turn, seed and all, and you move again. So free abilities used that turn (Flashlight) are undone too, and it does not cost your move. A move YOU DIED plays for you is played again the same way (same seed); a Speedrun timeout is undone and you choose the move yourself. An extra turn (tempo token) is part of the same turn: you cannot undo halfway through it, and the undo takes back both moves and gives the token back. A turn the game skipped (no legal move) does not count, so the undo goes back to your last real turn. You cannot undo while you must move a touched piece (Commitment Issues). If both sides have the card, each keeps its own undo. Bots never draft it. Saved games record it as an action and replay it. Online, the server keeps the saves and the players only learn whether the undo is ready.
 
 ### MOD-C016 · Bullet Time
-*Ref: The Matrix* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: The Matrix* · **Tier A** · Cost 4 · Curse 0 · Knight · Cooldown 8 · Scope: Owner · Modes: All · **Built**
 
 Your knight makes two jumps in one move. The first jump cannot capture. The second can.
 
 *Everything slowed down. The knight did not.*
 
 - Ruling: neither jump may leave your King in check, and the knight cannot give check with the first jump.
+- Built: an ability (Knight · Cooldown 8, as on the card's type line). Select a knight, press Bullet Time, then pick where it ends. The first jump lands on an empty square, and with the knight there neither King is in check (discovered checks count). The second jump may capture, may give check, and may not end where the knight started. If several first jumps work, the first one in a fixed order is used and the move list shows it (N b1-c3-e4). Neither jump may stop on a void square or the statue. The first jump must be a square you can see (fog), and it is picked on the board you see: if a hidden piece is really there, the move is a bump. Otherwise only the end square counts for tiles and zone cards (water, swamps, mines), like any ability that moves its piece. Bots may use it.
+- Conflict: Lawrence Of Arabia, Knight Rider, Hatoful Gambit and The Small Council leave no knights, so one player may not draft Bullet Time with any of them.
 
 ### MOD-C017 · Get Off My Lawn
 *Ref: Gran Torino* · **Tier B** · Cost 3 · Curse 0 · King · Cooldown 8 · Scope: Owner · Modes: All · **Built**
@@ -1185,6 +1188,7 @@ Both of the owner's knights become Pigeons. Pigeons move like knights. Every 5 r
 - Conflict: Lawrence Of Arabia. It turns every knight into a Camel, so one side cannot draft both.
 - Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
 - Synergy: Stonks. The extra knight changes too.
+- Conflict: Bullet Time. It needs knights, so one side cannot draft both.
 
 ### MOD-E002 · The Small Council (Do You Hear The Pawns Sing)
 *Ref: Les Misérables* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1203,6 +1207,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 - Conflict: The Bodyguard. This card rebuilds the pawns, so whether the Bodyguard survives would depend on which card goes first. One side cannot draft both.
 - Conflict: MINE!. Its 12 pawns would make the curse cheap, so one side cannot draft both.
 - Conflict: Death And Taxes. Its 12 pawns would make the curse cheap, so one side cannot draft both.
+- Conflict: Bullet Time. It needs knights, so one side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
 *Ref: John Wick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1306,6 +1311,7 @@ Your knights become Camels. A Camel leaps three squares one way and one square t
 - Conflict: Hatoful Gambit and The Small Council. Each one replaces or removes the knights, so one side cannot draft them with this card.
 - Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
 - Synergy: Stonks. The extra knight changes too.
+- Conflict: Bullet Time. It needs knights, so one side cannot draft both.
 
 ### MOD-E012 · Hopscotch
 *Ref: Fairy chess Grasshopper* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1438,6 +1444,7 @@ Your knights may repeat the same L-jump in a straight line, as long as each land
 - Interaction: Did I Do That? A Nightrider can use the rook move, like a knight.
 - Conflict: Hatoful Gambit, The Small Council and Lawrence Of Arabia. Each one replaces or removes the knights, so one side cannot draft them with this card.
 - Synergy: Stonks. The extra knight changes too.
+- Conflict: Bullet Time. It needs knights, so one side cannot draft both.
 
 ### MOD-E020 · Elephant In The Room
 *Ref: Xiangqi elephants* · **Tier B** · Cost -3 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -1535,7 +1542,7 @@ Values the game uses today. "Built" cards match the build.
 | C013 | Hold My Bread | C | B | 2 | 0 | Owner | Built |
 | C014 | Run, Forrest, Run | C | B | 2 | 0 | Owner | Built |
 | C015 | Ctrl+Z | C | S | 4 | 0 | Owner | Built |
-| C016 | Bullet Time | C | A | 4 | 0 | Owner | Design |
+| C016 | Bullet Time | C | A | 4 | 0 | Owner | Built |
 | C017 | Get Off My Lawn | C | B | 3 | 0 | Owner | Built |
 | C018 | Dirt Hut | C | A | 3 | 0 | Owner | Built |
 | C019 | Everyone Has A Price | C | S | 5 | 0 | Owner | Design |
@@ -1565,7 +1572,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-95 of 100 built. The other 5 are designs (v0.4).
+96 of 100 built. The other 4 are designs (v0.4).
 
 ### Balance test plan
 
