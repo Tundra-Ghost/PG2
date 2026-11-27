@@ -1040,7 +1040,8 @@ Any of your non-King pieces that stays still for 4 of your moves blends in and t
 
 - Ruling: enemy moves still bump into hidden pieces, revealing them.
 - Skill: rewards patient, planned ambushes.
-- Built: uses the shared hidden-piece rules of Invisibility Cloak. Pawns count. A piece moved by any card counts as moved. After it shows (a move, a check, a bump, Big Beak) it must stay still for 4 more of your moves. The owner sees a ○ badge on hidden pieces.
+- Built: uses the shared hidden-piece rules of Invisibility Cloak. Pawns count. A piece moved by any card counts as moved. After it shows (a move, a check, a bump, Big Beak, blocking a check on the enemy King, or the enemy having no move it can see) it must stay still for 4 more of your moves.
+- Ruling: a piece that shields its own King from a line attack never hides (for both hiding cards), so the opponent never sees an open line with no check. The owner sees a ○ badge on hidden pieces.
 - Conflict: Invisibility Cloak. Both hide your pieces, so one player may not draft both.
 
 ### MOD-D016 · Jump Scare

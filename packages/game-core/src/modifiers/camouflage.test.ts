@@ -37,7 +37,7 @@ function play(state: GameState, rounds: number): GameState {
 }
 
 describe('Camouflage', () => {
-  it('hides a piece that stays still for 4 of the owner\'s moves, never the King', () => {
+  it('hides a piece that stays still for 4 of the owner\'s moves', () => {
     let s = play(setup(), 3);
     expect(getHiddenPieceIds(s, 'black').size).toBe(0);
     expect(getCamouflageCountdown(s, 'white-rook-a1')).toBe(1);
@@ -83,6 +83,23 @@ describe('Camouflage', () => {
     expect(chessEngine.isInCheck(next, 'black')).toBe(true);
     expect(getHiddenPieceIds(next, 'black').size).toBe(0);
     expect(getCamouflageCountdown(next, 'white-rook-a1')).toBe(4);
+  });
+
+  it('never hides the King, or a piece that shields its King from a line attack', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'a1'),
+      makePiece('knight', 'white', 'a2'),
+      makePiece('pawn', 'white', 'h2'),
+      makePiece('king', 'black', 'h8'),
+      makePiece('rook', 'black', 'a8'),
+    ]);
+    state.activeModifiers = [card];
+    state.modifierState = { [card.id]: {
+      'white-king-a1': { square: 'a1', count: 9 },
+      'white-knight-a2': { square: 'a2', count: 9 },
+      'white-pawn-h2': { square: 'h2', count: 9 },
+    } };
+    expect([...getHiddenPieceIds(state, 'black')]).toEqual(['white-pawn-h2']);
   });
 
   it('bots do not see it', () => {
