@@ -93,6 +93,9 @@ export interface ModifierDefinition {
   /** Called after the move is applied to the board. */
   onPostMove?: (state: GameState, move: Move) => GameState;
 
+  /** Run this card's onPostMove after every other card's, whatever the draft order (MOD-B018). */
+  postMoveLast?: boolean;
+
   /**
    * Return a reason when the side to move may not spend its turn without a
    * move (shooing Gerald), such as a forced capture. Null allows it.

@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 93 built, 7 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 94 built, 6 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -18,6 +18,7 @@
 **Batch 14 (2026-11-27)**
 - Tide Goes In and Crop Circles count rounds, not turns, like Shake It Off and Night Shift.
 - Speedrun Any% built, local games only (online rooms have no clock). No conflicts.
+- Rubber Banding built. No conflicts.
 
 **Batch 13 (2026-11-27)**
 - Let It Go built. Conflicts: This Is My Swamp, Thinking With Portals, Tide Goes In.
@@ -646,7 +647,7 @@ Every 8 of your moves, a seagull swoops in and carries your most advanced pawn o
 - Lore: the seagull is not a pigeon. The pigeons are embarrassed for it.
 
 ### MOD-B018 · Rubber Banding
-*Ref: Online game lag* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
+*Ref: Online game lag* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Built**
 
 Every 7th move you make lags: the piece moves, then snaps back to where it started. The move still counts as your turn. A ping counter shows when the next lag is due.
 
@@ -654,6 +655,7 @@ Every 7th move you make lags: the piece moves, then snaps back to where it start
 
 - Ruling: captures never lag, and a move out of check never lags.
 - Skill: the counter is visible, so you can spend the lag on a move you did not need.
+- Built: your 7th, 14th, 21st ... move lags. It uses the every-N counter of the Batch 5 curses (Death And Taxes): a move that cannot lag (a capture, castling, a promotion, an ability, or any move made while in check) does not use the lag up, so it lands on your next move that can. The piece moves, every other card reacts to it (a mine, a vent, a portal), then it snaps back; the turn passes and it counts as your move. It snaps after the other cards whatever the draft order. Castling rights come back and a snapped double step gives no en passant. A piece moved or removed on the way (vents, lava, a mine) does not snap back, and a snap that would leave your King in check does not happen; the lag then waits. Lags that wait are never merged: each one still comes. The snap gives back your castling rights, gives no en passant and does not reset the 50-move count. The feed names the piece as your opponent sees it (Sus, Shell Game). Passing (shooing Gerald) never uses it. The ping counter sits in the status bar under the board, for each side that has the card.
 
 ### MOD-B019 · Peer Pressure
 *Ref: Checkers* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Built**
@@ -1519,7 +1521,7 @@ Values the game uses today. "Built" cards match the build.
 | B015 | Commitment Issues | B | B | -1 | 1 | Owner | Built |
 | B016 | Lunch Break | B | A | -2 | 2 | Owner | Built |
 | B017 | MINE! | B | A | -2 | 2 | Owner | Built |
-| B018 | Rubber Banding | B | A | -2 | 2 | Owner | Design |
+| B018 | Rubber Banding | B | A | -2 | 2 | Owner | Built |
 | B019 | Peer Pressure | B | A | -2 | 2 | Owner | Built |
 | B020 | Roll For Initiative | B | A | -3 | 3 | Owner | Built |
 | C009 | YEET | C | A | 3 | 0 | Owner | Built |
@@ -1559,7 +1561,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-93 of 100 built. The other 7 are designs (v0.4).
+94 of 100 built. The other 6 are designs (v0.4).
 
 ### Balance test plan
 

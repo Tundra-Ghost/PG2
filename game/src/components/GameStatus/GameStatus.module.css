@@ -296,3 +296,14 @@
   background: #0c1f3a;
   color: #e5ecf7;
 }
+
+/* Rubber Banding: the ping counter. */
+.ping {
+  background: #e5edf7;
+  color: #1f5590;
+}
+
+.pingDue {
+  background: #b83228;
+  color: #ffffff;
+}

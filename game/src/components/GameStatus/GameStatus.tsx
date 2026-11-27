@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { getSky, type GameState } from '@pigeon-chess/game-core';
+import { getSky, movesUntilLag, type Color, type GameState } from '@pigeon-chess/game-core';
 import { getStatusMessage, type ResultSides } from './resultText';
 import { playClick } from '../../sound';
 import styles from './GameStatus.module.css';
@@ -31,6 +31,10 @@ export default function GameStatus({
   const isOver = msg !== null;
   // Night Shift (MOD-D010): the sky shows the time of day.
   const sky = getSky(state);
+  // Rubber Banding (MOD-B018): each owner's ping counter.
+  const pings = (['white', 'black'] as Color[])
+    .map(color => ({ color, left: movesUntilLag(state, color) }))
+    .filter((ping): ping is { color: Color; left: number } => ping.left !== null);
   // "See board" tucks the result card away so the final position is visible.
   const [seeBoard, setSeeBoard] = useState(false);
   useEffect(() => setSeeBoard(false), [state.id]);
@@ -56,6 +60,17 @@ export default function GameStatus({
                 <span aria-hidden="true">{sky.night ? '☾' : '☀'}</span> {sky.text}
               </span>
             )}
+            {state.status === 'active' && pings.map(({ color, left }) => {
+              const who = color === 'white' ? 'White' : 'Black';
+              const text = left === 0
+                ? `${who} ping: lag ${state.turn === color ? 'this' : 'next'} move`
+                : `${who} ping: lag in ${left + 1} moves`;
+              return (
+                <span key={color} className={`${styles.sky} ${left === 0 ? styles.pingDue : styles.ping}`}>
+                  {text}
+                </span>
+              );
+            })}
           </>
         )}
         {isOver && seeBoard && (
