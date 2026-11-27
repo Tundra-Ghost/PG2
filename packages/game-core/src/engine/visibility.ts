@@ -38,6 +38,7 @@ export function getVisibleSquares(state: GameState, viewer: Color): Set<Square> 
 /** True when `viewer` should not read this move: the opponent moved into fog. */
 export function isMoveHidden(state: GameState, record: MoveRecord, viewer: Color, visible = getVisibleSquares(state, viewer)): boolean {
   if (record.pieceMoved.color === viewer) return false;
+  if (record.hidden) return true;
   if (isHiddenPieceMove(state, record, viewer)) return true;
   if (!visible) return false;
   return !visible.has(record.move.to);
@@ -87,6 +88,7 @@ export function isPieceHidden(state: GameState, piece: Piece, viewer: Color): bo
 /** True when the piece that made this move is hidden from `viewer` now. */
 export function isHiddenPieceMove(state: GameState, record: MoveRecord, viewer: Color): boolean {
   if (record.pieceMoved.color === viewer) return false;
+  if (record.hidden) return true;
   const hidden = getHiddenPieceIds(state, viewer);
   return hidden.size > 0 && hidden.has(record.pieceMoved.id);
 }

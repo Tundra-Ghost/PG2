@@ -151,10 +151,15 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
   const prune = setInterval(() => syncCounted(false), 60 * 60 * 1000);
   prune.unref();
   app.addHook('onClose', async () => clearInterval(prune));
+  const seatRoom = (roomId: string, color: Color) => `${roomId}#${color}`;
   const broadcast = (roomId: string) => {
     const snapshot = rooms.snapshot(roomId);
     if (!snapshot) return;
-    io.to(roomId).emit('game:state', snapshot);
+    // Each seat gets only what its player may see (fog, hidden pieces).
+    for (const color of ['white', 'black'] as const) {
+      const view = rooms.snapshot(roomId, color);
+      if (view) io.to(seatRoom(roomId, color)).emit('game:state', view);
+    }
     if (!usage) return;
     if (snapshot.seats.white !== 'empty' && snapshot.seats.black !== 'empty' && !countedStart.has(roomId)) {
       countedStart.add(roomId);
@@ -172,7 +177,7 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
     const takeSeat = (roomId: string, color: Color) => {
       seat = { roomId, color };
       if (socket.data.player) presence?.seatChanged(socket.data.player.id, 1);
-      void socket.join(roomId);
+      void socket.join([roomId, seatRoom(roomId, color)]);
       socket.emit('chat:history', rooms.chatHistory(roomId));
       broadcast(roomId);
     };

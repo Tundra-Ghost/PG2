@@ -89,6 +89,7 @@ export { createOnlineDraft, draftFinish, draftPick, isDraftComplete } from './dr
 export type { DraftResult, OnlineDraft } from './draft/online';
 
 export { fromWire, toWire } from './net/wire';
+export { redactForViewer, type RedactOptions } from './net/redact';
 export type { WireGameState } from './net/wire';
 export { MAX_CHAT_CHARS } from './net/protocol';
 export type {

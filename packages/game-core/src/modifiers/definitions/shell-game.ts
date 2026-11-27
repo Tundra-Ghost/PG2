@@ -2,7 +2,7 @@ import type { ModifierDefinition } from '../types';
 import type { Color, GameState, Piece, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { isSquareAttacked, pieceAttackSquares } from '../../engine/moveGenerator';
-import { getVisibleSquares, withoutHiddenPieces } from '../../engine/visibility';
+import { getHiddenPieceIds, getVisibleSquares, withoutHiddenPieces } from '../../engine/visibility';
 import { prngPickIndex } from '../../engine/prng';
 import { MODIFIER_IDS } from '../ids';
 import { getModifierOwner } from '../owner';
@@ -135,6 +135,16 @@ export const shellGameDef: ModifierDefinition = {
       next.modifierState = { ...next.modifierState, [ID]: { ...shells(next), [color]: picked.map(p => ({ pieceId: p.id, square: p.square })) } };
     }
     return next;
+  },
+
+  // Online: enemy cups are sent only where the viewer can see them.
+  redactState(state, viewer) {
+    const all = shells(state);
+    const enemy: Color = viewer === 'white' ? 'black' : 'white';
+    const visible = getVisibleSquares(state, viewer);
+    const hidden = getHiddenPieceIds(state, viewer);
+    const seen = (all[enemy] ?? []).filter(cup => !hidden.has(cup.pieceId) && (!visible || visible.has(cup.square)));
+    return { ...(all[viewer] ? { [viewer]: all[viewer] } : {}), ...(seen.length ? { [enemy]: seen } : {}) };
   },
 
   onPostMove(state) {

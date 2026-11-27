@@ -98,6 +98,12 @@ export const susDef: ModifierDefinition = {
   activeFor: 'both',
   draftScope: 'owned',
 
+  // Online: the opponent never learns which piece is lying.
+  redactState(state, viewer) {
+    const own = sus(state)[viewer];
+    return own ? { [viewer]: own } : undefined;
+  },
+
   onActivate(state) {
     const owners: Color[] = [];
     const owner = getModifierOwner(state, ID);

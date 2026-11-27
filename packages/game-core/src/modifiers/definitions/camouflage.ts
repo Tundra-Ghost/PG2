@@ -80,6 +80,13 @@ export const camouflageDef: ModifierDefinition = {
     return next;
   },
 
+  // Online: only the viewer's own pieces are listed, so no hidden square is sent.
+  redactState(state, viewer) {
+    const own = new Set([...state.pieces.values()].filter(p => p.color === viewer).map(p => p.id));
+    const table = camo(state);
+    return Object.fromEntries(Object.entries(table).filter(([id]) => own.has(id)));
+  },
+
   getHiddenPieces(state) {
     const table = camo(state);
     const ids: string[] = [];

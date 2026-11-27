@@ -68,6 +68,12 @@ export const invisibilityCloakDef: ModifierDefinition = {
     return next;
   },
 
+  // Online: the opponent never learns which piece wears the cloak.
+  redactState(state, viewer) {
+    const own = cloaks(state)[viewer];
+    return own ? { [viewer]: own } : undefined;
+  },
+
   getHiddenPieces(state) {
     return (['white', 'black'] as const).map(color => getCloakedPiece(state, color)).filter((id): id is string => id !== null);
   },
