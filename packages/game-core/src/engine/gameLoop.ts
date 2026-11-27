@@ -711,7 +711,20 @@ export function beginTurn(state: GameState): GameState {
       next = def.onTurnStart(next);
     }
   }
-  return next;
+  return revealIfStuck(next);
+}
+
+/**
+ * Hidden pieces: when the side to move has no move on the board it sees (a
+ * pawn could only take a piece it cannot see), every hidden enemy piece is
+ * revealed, so the turn is never stuck (Rule 06).
+ */
+function revealIfStuck(state: GameState): GameState {
+  if (state.status !== 'active') return state;
+  const hidden = getHiddenPieceIds(state, state.turn);
+  if (hidden.size === 0) return state;
+  if (hasAnyValidMove(withoutHiddenPieces(state, state.turn, hidden))) return state;
+  return revealHiddenPieces(state, [...hidden], 'Nothing else could move.');
 }
 
 /**

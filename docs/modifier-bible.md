@@ -19,6 +19,9 @@
 - Hidden pieces (shared code in engine/visibility.ts): a hidden piece looks like an empty square to its opponent. A move it blocks is a bump: it reveals the piece and the player moves again. A hidden piece that gives check is always revealed.
 - Invisibility Cloak built.
 
+**Batch 10 (2026-11-25)**
+- Footprints, Flashlight, Crystal Ball and Tells built.
+
 **Batch 9 (2026-11-22)**
 - Match conflicts: some shared cards use the same squares, so only one of each pair may be in a match, whoever drafts it. The draft hides the second card and says why.
 - Thinking With Portals built. Conflicts: Vent Tiles, The Birds.
@@ -969,8 +972,8 @@ At match start, pick one of your non-King pieces. It is invisible to your oppone
 
 - Ruling: enemy pieces still cannot move through it. They bump into it and it is revealed.
 - Bots: bots play with the same blindness, so it works against them too.
-- Changed from design: the piece is picked at random (seeded) from the owner's knights, bishops and rooks (or other non-pawn pieces in a changed army), not chosen. There is no picker screen yet.
-- Built: the opponent sees an empty square and is offered moves as if it were empty. A move that the hidden piece blocks (a slide through it, a pawn push into it, a move it pins) is a bump: the piece is revealed with a "Bump!" event and the same player moves again, so no move is lost. A move that lands on the hidden piece captures it. The cloak ends when the piece captures, gives check, promotes, or after 10 rounds. Its moves read "moves in the dark" in the opponent's log and leave no last-move highlight. The owner sees a ○ badge on it.
+- Changed from design: the piece is picked at random (seeded) from the owner's knights, bishops and rooks (or another minor piece in a changed army, never the Queen; with none of those, any non-King piece but an Egg), not chosen. There is no picker screen yet.
+- Built: the opponent sees an empty square and is offered moves as if it were empty. A move that the hidden piece blocks (a slide through it, a pawn push into it, a move it pins) is a bump: the piece is revealed with a "Bump!" event and the same player moves again, so no move is lost. A move that lands on the hidden piece captures it. The cloak ends when the piece captures, gives check, promotes, or after 10 rounds. Its moves read "moves in the dark" in the opponent's log and leave no last-move highlight. The owner sees a ○ badge on it. If the opponent has no move on the board they see, every hidden piece is revealed, so no turn is ever stuck.
 - Interaction: Big Beak Is Watching. The eye spots a hidden piece and reveals it. Tells never shows a tell on a hidden piece.
 
 ### MOD-D010 · Night Shift

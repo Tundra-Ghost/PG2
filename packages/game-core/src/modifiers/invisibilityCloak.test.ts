@@ -117,6 +117,37 @@ describe('Invisibility Cloak', () => {
     expect(chessEngine.getLegalMoves(next, 'f6')).not.toContain('f1');
   });
 
+  it('reveals every hidden piece when the opponent has no move it can see (no softlock)', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'black', 'h8'),
+      makePiece('pawn', 'black', 'h7'),
+      makePiece('king', 'white', 'f7'),
+      makePiece('pawn', 'white', 'h6'),
+      makePiece('bishop', 'white', 'g6'),
+    ]);
+    state.activeModifiers = [card];
+    let s = invisibilityCloakDef.onActivate!(state);
+    expect(getCloakedPiece(s, 'white')).toBe('white-bishop-g6');
+    s.turn = 'black';
+    s = chessEngine.beginTurn(s);
+    expect(getCloakedPiece(s, 'white')).toBeNull();
+    expect(chessEngine.getLegalMoves(s, 'h7')).toContain('g6');
+  });
+
+  it('shows when it promotes', () => {
+    const state = makeEmptyState([
+      makePiece('king', 'white', 'a1'),
+      makePiece('pawn', 'white', 'c7'),
+      makePiece('king', 'black', 'h5'),
+    ]);
+    state.activeModifiers = [card];
+    const s = invisibilityCloakDef.onActivate!(state);
+    expect(getCloakedPiece(s, 'white')).toBe('white-pawn-c7');
+    const next = chessEngine.applyMove(s, move('c7', 'c8', 'white', { promotion: 'knight' }));
+    expect(getCloakedPiece(next, 'white')).toBeNull();
+    expect(next.eventHistory.some(e => e.message.includes('It promotes.'))).toBe(true);
+  });
+
   it('bots play with the same blindness and bump into it', () => {
     const state = setup([makePiece('rook', 'black', 'a4'), makePiece('pawn', 'white', 'g4')]);
     state.turn = 'black';
