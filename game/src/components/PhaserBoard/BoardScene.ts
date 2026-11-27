@@ -266,10 +266,8 @@ export class BoardScene extends Phaser.Scene {
         if (!sprite) {
           sprite = this.add.image(0, 0, texture).setDepth(DEPTH.pieces).setDisplaySize(PIECE_PX, PIECE_PX);
           this.pieceSprites.set(piece.id, sprite);
-        } else if (sprite.texture.key !== texture) {
-          sprite.setTexture(texture).setDisplaySize(PIECE_PX, PIECE_PX);
         }
-        this.placeSprite(sprite, cx, cy);
+        this.placeSprite(sprite, cx, cy, texture);
         // Your own Ghosts are faded; the opponent sees them solid.
         sprite.setAlpha(view.ghost ? 0.55 : 1);
       }
@@ -463,12 +461,19 @@ export class BoardScene extends Phaser.Scene {
     }
   }
 
-  /** Pieces glide to their new square instead of jumping. */
-  private placeSprite(sprite: Phaser.GameObjects.Image, x: number, y: number) {
+  /**
+   * Pieces glide to their new square instead of jumping. A new look (a pawn
+   * promoting) shows when the piece lands, not before it sets off.
+   */
+  private placeSprite(sprite: Phaser.GameObjects.Image, x: number, y: number, texture: string) {
     this.tweens.killTweensOf(sprite);
+    const restyle = () => {
+      if (sprite.texture.key !== texture) sprite.setTexture(texture).setDisplaySize(PIECE_PX, PIECE_PX);
+    };
     const fresh = sprite.x === 0 && sprite.y === 0;
     if (this.calm || fresh || (sprite.x === x && sprite.y === y)) {
-      sprite.setPosition(x, y);
+      sprite.setPosition(x, y).setDepth(DEPTH.pieces);
+      restyle();
       return;
     }
     sprite.setDepth(DEPTH.pieces + 0.5);
@@ -478,7 +483,10 @@ export class BoardScene extends Phaser.Scene {
       y,
       duration: MOVE_MS,
       ease: 'Quad.easeOut',
-      onComplete: () => sprite.setDepth(DEPTH.pieces),
+      onComplete: () => {
+        sprite.setDepth(DEPTH.pieces);
+        restyle();
+      },
     });
   }
 
