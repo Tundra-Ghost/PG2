@@ -423,6 +423,7 @@ Every 7th move of the owner is played for them: a random legal move, never one t
 - Conflict: Active Abilities. Autonomous moves never use abilities.
 - Future: +2 Feathers per match in runs. A "A PIECE MOVED" banner.
 - Changed from v0.2: counts the owner's moves, not rounds.
+- Ruling: Ctrl+Z can undo a move this card played for you, but the same move is played again (the seed is kept).
 
 ### MOD-B002 · Distracted Piece
 *Ref: "Distracted Boyfriend" meme* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Built**
@@ -511,6 +512,7 @@ You have 15 seconds for each move. If the timer runs out, a random legal move is
 - Pricing: a fast player loses almost nothing, a slow one a lot. Skill matters.
 - Built: a bar above the board counts 15 seconds on each of the owner's moves and starts again at 15 for the next move. It pauses while a popup is open (promotion or drop choice, bot dialogue, Settings, leave dialog, profile, survey, tutorial) and while the tab is hidden. On a timeout the move is picked with the game seed from every legal normal move (never an ability, never an extra turn, never one that leaves the King in check) and logged as "ran out of time". The engine only accepts a timed-out move that is exactly the seeded pick, so saved games replay it the same. Leaving, resuming or reloading keeps the time left on that move. A bot that drafts it is not timed.
 - Changed from design: online rooms are all correspondence-style (no clock, played over days), so the card is not offered in online drafts at all; the server's draft rules refuse it. When live timed rooms exist, the server should run this clock.
+- Ruling: Ctrl+Z can undo a timed-out move; you then choose the move yourself.
 
 ### MOD-B010 · Main Character Syndrome
 *Ref: Social media* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -888,7 +890,7 @@ Once per match, before your move, undo the last round: your last move and your o
 
 - Ruling: random events of that round (lava, storm, gravity) are not rerolled. The seed is kept, so the world repeats.
 - Ruling: cannot undo a round that ended the game.
-- Built: a Ctrl+Z button sits with the ability buttons; tap it twice. Each move, ability or pass you make while you still have the undo saves the game as it stood (engine hook onTurnAction). Ctrl+Z puts that back, seed and all, and you move again; it does not cost your move. A move a card made for you (YOU DIED, a Speedrun timeout) is undone too, and you choose the move yourself. An extra turn (tempo token) counts as your last move, so only that move goes back. If both sides have the card, the other side keeps its own undo. Saved games record it as an action and replay it. Online, the server keeps the saved game and the players only learn whether the undo is ready.
+- Built: a Ctrl+Z button sits with the ability buttons; tap it twice (bigger on phones). At the start of each of your turns the game is saved (engine hook onTurnReady, after turn-start effects); Ctrl+Z puts back the save from the start of your previous turn, seed and all, and you move again. So free abilities used that turn (Flashlight) are undone too, and it does not cost your move. A move YOU DIED plays for you is played again the same way (same seed); a Speedrun timeout is undone and you choose the move yourself. An extra turn (tempo token) is part of the same turn: you cannot undo halfway through it, and the undo takes back both moves and gives the token back. A turn the game skipped (no legal move) does not count, so the undo goes back to your last real turn. You cannot undo while you must move a touched piece (Commitment Issues). If both sides have the card, each keeps its own undo. Bots never draft it. Saved games record it as an action and replay it. Online, the server keeps the saves and the players only learn whether the undo is ready.
 
 ### MOD-C016 · Bullet Time
 *Ref: The Matrix* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**

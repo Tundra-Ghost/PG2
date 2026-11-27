@@ -82,10 +82,11 @@ export interface ModifierDefinition {
   onPreMoveValidate?: (state: GameState, move: Move) => PreMoveResult;
 
   /**
-   * Called when the side to move acts (a move, an ability that costs the turn,
-   * or a pass), before anything changes (MOD-C015 saves the game here).
+   * Called once a turn is ready for input: after onTurnStart and any skipped
+   * turns, before a takeover plays (MOD-C015 saves the game here). It can run
+   * twice for one turn (a reload), so it must not change anything the second time.
    */
-  onTurnAction?: (state: GameState) => GameState;
+  onTurnReady?: (state: GameState) => GameState;
 
   /** Called after validation, before board update — can mutate the move. */
   onPreMoveApply?: (state: GameState, move: Move) => PreMoveApplyResult;

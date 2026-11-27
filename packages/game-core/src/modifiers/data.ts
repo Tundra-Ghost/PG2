@@ -922,7 +922,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'Once per match, before your move, undo the last round: your last move and your opponent\'s reply both go back. Then you move again.',
     flavor: '"Viktor pressed undo. The universe complied. The pigeons noticed."',
     prototypeRules:
-      'Once per match, on your turn before you move, press Ctrl+Z (tap twice) to undo the last round: the game goes back to just before your last move, with the random seed as it was, so the same moves bring the same random events. Then you move again. A move a card made for you is undone too. It does not cost your move. It cannot be used before you have moved, or after the game has ended. Works online and in saved games.',
+      'Once per match, on your turn before you move, press Ctrl+Z (tap twice) to undo the last round: the game goes back to the start of your previous turn, with the random seed as it was, so the same moves bring the same random events. Then you move again. It does not cost your move. A move YOU DIED played for you is played again the same way. An extra turn counts as one turn: no undo halfway through it. A turn the game skipped for you does not count. It cannot be used before you have moved, while you must move a touched piece, or after the game has ended. Bots never draft it. Works online and in saved games.',
   },
   {
     id: 'MOD-C016',

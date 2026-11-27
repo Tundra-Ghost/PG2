@@ -160,7 +160,7 @@ export default function DraftScreen({
     [playerSelectedIds, botSelectedIds, implementedIds, !!online],
   );
   const botValidOptions = useMemo(
-    () => getValidOptions(botSelectedIds, playerSelectedIds, implementedIds, { online: !!online }),
+    () => getValidOptions(botSelectedIds, playerSelectedIds, implementedIds, { online: !!online, forBot: !online }),
     [botSelectedIds, playerSelectedIds, implementedIds, !!online],
   );
   const draftFinished = draftTurn === 'done';
@@ -176,7 +176,7 @@ export default function DraftScreen({
       }
 
       const nextPlayerOptions = getValidOptions(playerSelectedIds, nextBotIds, implementedIds);
-      const nextBotOptions = getValidOptions(nextBotIds, playerSelectedIds, implementedIds);
+      const nextBotOptions = getValidOptions(nextBotIds, playerSelectedIds, implementedIds, { forBot: true });
 
       if (nextPlayerOptions.length === 0 && nextBotOptions.length === 0) {
         setDraftTurn('done');
@@ -240,7 +240,7 @@ export default function DraftScreen({
     }
 
     const nextPlayerIds = [...playerSelectedIds, card.id];
-    const nextBotOptions = getValidOptions(botSelectedIds, nextPlayerIds, implementedIds);
+    const nextBotOptions = getValidOptions(botSelectedIds, nextPlayerIds, implementedIds, { forBot: true });
     setPlayerSelectedIds(nextPlayerIds);
 
     if (nextBotOptions.length === 0) {

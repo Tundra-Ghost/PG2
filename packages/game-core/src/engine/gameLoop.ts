@@ -581,17 +581,20 @@ function applyFreeAbility(state: GameState, move: Move): GameState {
   return startAbilityCooldown(next, piece.id, move.ability!);
 }
 
-/** The side to move acts: each card may note the game as it stands (onTurnAction). */
-function runTurnActionHooks(state: GameState): GameState {
+/**
+ * A turn is ready for input: turn-start effects and skips are done, takeovers
+ * not yet played. Each card may note the game as it stands (onTurnReady).
+ */
+export function runTurnReadyHooks(state: GameState): GameState {
+  if (state.status !== 'active') return state;
   let next = state;
   for (const def of getActiveDefinitions(state)) {
-    if (def.onTurnAction) next = def.onTurnAction(next);
+    if (def.onTurnReady) next = def.onTurnReady(next);
   }
   return next;
 }
 
 function applyMoveOnce(state: GameState, move: Move): GameState {
-  state = runTurnActionHooks(state);
   // Abilities skip onPreMoveApply: they already are a rule-bending move.
   const prepared = move.ability ? { state: cloneState(state), move: { ...move } } : runPreMoveApplyHooks(state, move);
   const preparedState = prepared.state;
@@ -699,7 +702,7 @@ function applyMoveOnce(state: GameState, move: Move): GameState {
 
   // ── Modifier hooks: onTurnStart (next player) — only if game still active ──
   if (next.status === 'active') {
-    next = resolveBlockedTurn(beginTurn(next), 0);
+    next = runTurnReadyHooks(resolveBlockedTurn(beginTurn(next), 0));
   } else {
     runMatchEndHooks(next);
   }
@@ -771,7 +774,7 @@ export function passTurn(state: GameState): GameState {
  * Each played move can hand over to the next turn, so this recurses through
  * applyMove until a human (or bot) has to act.
  */
-function playTakenOverTurns(state: GameState): GameState {
+export function playTakenOverTurns(state: GameState): GameState {
   if (state.status !== 'active') return state;
   for (const def of getActiveDefinitions(state)) {
     const takeover = def.takeOverTurn?.(state);
@@ -826,7 +829,7 @@ function passTurnWithSkips(state: GameState, skipsInARow: number): GameState {
   }
 
   if (next.status === 'active') {
-    next = resolveBlockedTurn(beginTurn(next), skipsInARow);
+    next = runTurnReadyHooks(resolveBlockedTurn(beginTurn(next), skipsInARow));
   } else {
     runMatchEndHooks(next);
   }
@@ -911,7 +914,7 @@ export function canShooGerald(state: GameState): boolean {
 export function shooGerald(state: GameState): GameState {
   if (!canShooGerald(state)) return state;
 
-  const next = cloneState(runTurnActionHooks(state));
+  const next = cloneState(state);
   for (const [sq, piece] of next.pieces) {
     if (piece.color !== state.turn || (piece.cooldowns[GERALD_ID] ?? 0) <= 0) continue;
     const cooldowns = { ...piece.cooldowns };
