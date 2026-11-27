@@ -3,7 +3,7 @@ import type { GameState, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { isInCheck } from '../../engine/moveGenerator';
 import { canMovePieceTo, offset, shiftPiece } from '../../engine/push';
-import { revealBumped, shownSlideSquares, type Bumped } from '../../engine/conveyor';
+import { revealBumped, type Bumped } from '../../engine/conveyor';
 import { getHiddenPieceIds } from '../../engine/visibility';
 import { MODIFIER_IDS } from '../ids';
 import { getShownType } from './sus';
@@ -81,9 +81,10 @@ export const letItGoDef: ModifierDefinition = {
       const to = offset(at, df, dr);
       if (!to || !ICE.has(to)) break;
       if (!canMovePieceTo(next, piece, to)) {
-        // A hidden enemy piece stops the slide and is revealed, like a bump.
+        // A hidden piece of either side stops the slide and is revealed, like a bump:
+        // a slide stalled before an empty-looking square shows the opponent something is there.
         const blocker = next.pieces.get(to);
-        if (blocker && blocker.color === enemy && getHiddenPieceIds(next, piece.color).has(blocker.id)) bumped.add(blocker.id);
+        if (blocker && getHiddenPieceIds(next, blocker.color === 'white' ? 'black' : 'white').has(blocker.id)) bumped.add(blocker.id);
         break;
       }
       const flags = next.flags;
@@ -105,7 +106,8 @@ export const letItGoDef: ModifierDefinition = {
       title: 'Ice',
       // Sus: name the piece as the opponent sees it.
       message: `${side(piece.color)}'s ${getShownType(state, piece, enemy)} slides on the ice to ${at}.`,
-      squares: shownSlideSquares(next, [move.to, at]),
+      // Both squares, so the event is blanked online while the slider is hidden (the text names where it went).
+      squares: [move.to, at],
     });
   },
 };

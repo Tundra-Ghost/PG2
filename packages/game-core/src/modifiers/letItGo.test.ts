@@ -6,6 +6,15 @@ import { MODIFIER_IDS } from './ids';
 import { getValidOptions } from '../draft/rules';
 import { ALL_MODIFIERS } from './data';
 import { makeEmptyState, makePiece, move } from './testHelpers';
+import { invisibilityCloakDef, getCloakedPiece } from './definitions/invisibility-cloak';
+import { redactForViewer } from '../net/redact';
+
+/** Ice plus White's Invisibility Cloak (it hides White's only bishop). */
+function withCloak(pieces: Piece[]): GameState {
+  const state = start(pieces);
+  state.activeModifiers = [...state.activeModifiers, { id: MODIFIER_IDS.invisibilityCloak, name: 'Invisibility Cloak', activeFor: 'both', sourceColor: 'white' }];
+  return invisibilityCloakDef.onActivate!(state);
+}
 
 const ID = MODIFIER_IDS.letItGo;
 const KINGS = () => [makePiece('king', 'white', 'a1'), makePiece('king', 'black', 'h8')];
@@ -90,5 +99,24 @@ describe('MOD-A012 Let It Go', () => {
       expect(getValidOptions([], [other], built).map(c => c.id)).not.toContain(ID);
       expect(getValidOptions([ID], [], built).map(c => c.id)).not.toContain(other);
     }
+  });
+
+  it('a hidden piece of the mover\'s own side that stops a slide is revealed', () => {
+    let state = withCloak([...KINGS(), makePiece('bishop', 'white', 'e5'), makePiece('queen', 'white', 'a5')]);
+    expect(getCloakedPiece(state, 'white')).toBe('white-bishop-e5');
+    state = chessEngine.applyMove(state, move('a5', 'c5', 'white'));
+    expect(state.pieces.get('d5')).toMatchObject({ type: 'queen' });
+    expect(getCloakedPiece(state, 'white')).toBeNull();
+  });
+
+  it('a hidden slider\'s ice event is blanked for the opponent online', () => {
+    let state = withCloak([makePiece('king', 'white', 'h1'), makePiece('king', 'black', 'a8'), makePiece('pawn', 'black', 'h7'), makePiece('bishop', 'white', 'b2')]);
+    state = chessEngine.applyMove(state, move('b2', 'c3', 'white'));
+    expect(state.pieces.get('f6')).toMatchObject({ type: 'bishop' });
+    expect(getCloakedPiece(state, 'white')).toBe('white-bishop-b2');
+    const seen = redactForViewer(state, 'black');
+    const event = seen.eventHistory[seen.eventHistory.length - 1];
+    expect(event.modifierId).toBe(ID);
+    expect(event.message).not.toMatch(/f6|bishop/);
   });
 });

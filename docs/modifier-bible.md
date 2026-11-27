@@ -256,9 +256,10 @@ The central 4×4 squares are ice. A rook, bishop or queen that moves onto ice ke
 - Ruling: knights, pawns and kings are not affected. They have good shoes.
 - Ruling: a slide that would leave its own King in check stops on the first legal square.
 - Not Winter Is Coming: winter stops pieces, ice keeps them going.
-- Built: the ice is c3 to f6. Only a normal move that ends on ice without capturing slides; abilities, castling and pieces moved by other cards do not. The piece slides one square at a time and stops before a square that is off the ice, holds a piece (or a statue, wall or flock), or would leave its own King in check. The slide is part of the move, so it may give check. A hidden enemy piece that stops a slide is revealed.
+- Built: the ice is c3 to f6. Only a normal move that ends on ice without capturing slides; abilities, castling and pieces moved by other cards do not. The piece slides one square at a time and stops before a square that is off the ice, holds a piece or anything a piece cannot land on (statue, wall, flock, Lava, storm, used vent), or would leave its own King in check. The slide is part of the move, so it may give check. A hidden piece of either side that stops a slide is revealed.
 - Conflict: This Is My Swamp, Thinking With Portals and Tide Goes In, Tide Goes Out. The Swamp, both portals and the water sit on the ice and change how far a piece may go there. Only one of each pair may be in a match, whoever drafts it.
-- Interaction: One Way Street. c3 to c6 and f3 to f6 are both ice and one-way. A slide goes the way the piece moved, so it always follows the arrow.
+- Interaction: One Way Street. c3 to c6 and f3 to f6 are both ice and one-way. A slide goes the way the piece moved, so it follows the arrow whenever the move did.
+- Interaction: Winter Is Coming. Only the square the move ends on counts, so a piece that slides into the Frozen zone is not frozen.
 
 ### MOD-A013 · The Magic Roundabout
 *Ref: Swindon's Magic Roundabout* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
