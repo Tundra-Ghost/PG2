@@ -39,7 +39,7 @@ export default function DialogueBox({ entry, onDismiss }: DialogueBoxProps) {
   const dismiss = useCallback(() => {
     clearTimers();
     setExiting(true);
-    exitRef.current = setTimeout(onDismiss, 300);
+    exitRef.current = setTimeout(onDismiss, 200);
   }, [clearTimers, onDismiss]);
 
   // Reset on new entry

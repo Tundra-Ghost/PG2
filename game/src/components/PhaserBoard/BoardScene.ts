@@ -287,6 +287,7 @@ export class BoardScene extends Phaser.Scene {
         if (!bird) {
           bird = this.add.image(0, 0, 'gerald').setDepth(DEPTH.badges);
           bird.setScale((CELL * 0.62) / bird.width);
+          bird.setData('to', `${x + CELL * 0.19},${y + CELL * 0.16}`);
           this.geraldSprites.set(piece.id, bird);
           // He lands from above, like the DOM version.
           if (this.calm) {
@@ -296,7 +297,17 @@ export class BoardScene extends Phaser.Scene {
             this.tweens.add({ targets: bird, y: y + CELL * 0.16, alpha: 1, duration: 280, ease: 'Cubic.easeOut' });
           }
         } else {
-          bird.setPosition(x + CELL * 0.19, y + CELL * 0.16);
+          // He rides along with his piece instead of jumping ahead of it.
+          const bx = x + CELL * 0.19;
+          const by = y + CELL * 0.16;
+          const to = `${bx},${by}`;
+          if (bird.getData('to') !== to) {
+            bird.setData('to', to);
+            this.tweens.killTweensOf(bird);
+            bird.setAlpha(1);
+            if (this.calm) bird.setPosition(bx, by);
+            else this.tweens.add({ targets: bird, x: bx, y: by, duration: MOVE_MS, ease: 'Quad.easeOut' });
+          }
         }
       }
 
@@ -330,14 +341,31 @@ export class BoardScene extends Phaser.Scene {
     }
     for (const [id, bird] of this.geraldSprites) {
       if (!seenGerald.has(id)) {
-        bird.destroy();
         this.geraldSprites.delete(id);
+        this.removeGerald(bird);
       }
     }
     if (!seenStatue && this.statueSprite) {
       this.statueSprite.destroy();
       this.statueSprite = null;
     }
+  }
+
+  /** Gerald flies off: he rises and fades, the reverse of his landing. */
+  private removeGerald(bird: Phaser.GameObjects.Image) {
+    this.tweens.killTweensOf(bird);
+    if (this.calm) {
+      bird.destroy();
+      return;
+    }
+    this.tweens.add({
+      targets: bird,
+      y: bird.y - CELL * 0.14,
+      alpha: 0,
+      duration: 200,
+      ease: 'Cubic.easeIn',
+      onComplete: () => bird.destroy(),
+    });
   }
 
   /** MOD-A016: a stone plinth with a grey Gerald on top. */
