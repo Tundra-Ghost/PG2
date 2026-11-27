@@ -337,7 +337,7 @@ Every 8 rounds the tide comes in and ranks 4 and 5 become water for 4 rounds. Pi
 
 - Ruling: a King caught by the tide may still move normally. The King is sacred.
 - Conflict: The Factory Must Grow. Belts stop while flooded.
-- Built: water on rounds 9 to 12, 17 to 20, and so on. Kings ignore the water: they may stop on it too. A pawn whose every step lands on water (a white pawn on rank 3 or 4, a black pawn on rank 6 or 5) waits for the tide to go out. Water is not a wall, so lines of check cross it. Abilities that act from a distance are not affected.
+- Built: water on rounds 9 to 12, 17 to 20, and so on. It counts rounds, so an extra turn never brings the tide before Black has moved. Kings ignore the water: they may stop on it too. A pawn whose every step lands on water (a white pawn on rank 3 or 4, a black pawn on rank 6 or 5) waits for the tide to go out. Water is not a wall, so lines of check cross it. Abilities that act from a distance are not affected.
 - Conflict: This Is My Swamp, The Magic Roundabout, Thinking With Portals and The Birds all use ranks 4 and 5. Only one of each pair may be in a match, whoever drafts it.
 - Conflict: Crop Circles. Both use the middle ranks; only one may be in a match, whoever drafts it.
 - Conflict: Let It Go. It sits on the ice; only one may be in a match, whoever drafts it.
@@ -363,7 +363,7 @@ Every 8 rounds a 3×3 crop circle appears on the middle ranks for 3 rounds. Piec
 
 - Ruling: a King in the circle is still in check normally. Safe zones never break check.
 - Synergy: FOR THE EMPEROR. The cannonball passes over circle pieces.
-- Built: circles appear on rounds 9 to 11, 17 to 19, and so on, on a 3×3 block inside ranks 3 to 6 picked with the game seed. The spot is marked one round ahead, so both players can plan. Berserker chains cannot take a circle piece either.
+- Built: circles appear on rounds 9 to 11, 17 to 19, and so on (counted in rounds, so an extra turn never brings one early), on a 3×3 block inside ranks 3 to 6 picked with the game seed. The spot is marked one round ahead, so both players can plan. Berserker chains cannot take a circle piece either.
 - Conflict: This Is My Swamp, The Magic Roundabout, The Birds and Tide Goes In, Tide Goes Out all use the middle ranks. Only one of each pair may be in a match, whoever drafts it.
 
 ### MOD-A020 · One Way Street

@@ -28,15 +28,26 @@ function playTo(state: GameState, target: number): GameState {
 const BASE = () => [makePiece('king', 'white', 'a1'), makePiece('king', 'black', 'h8'), makePiece('pawn', 'white', 'a2'), makePiece('pawn', 'black', 'h7')];
 
 describe('MOD-A017 Tide Goes In, Tide Goes Out', () => {
-  it('schedule: warning on turns 15-16, water on 17-24, then every 16 turns', () => {
-    expect(timedPhase(14, TIDE)).toBeNull();
-    expect(timedPhase(15, TIDE)).toBe('warning');
+  it('schedule in rounds: warning in round 8, water in rounds 9-12, then every 8 rounds', () => {
+    expect(timedPhase(7, TIDE)).toBeNull();
+    expect(timedPhase(8, TIDE)).toBe('warning');
+    expect(timedPhase(9, TIDE)).toBe('active');
+    expect(timedPhase(12, TIDE)).toBe('active');
+    expect(timedPhase(13, TIDE)).toBeNull();
     expect(timedPhase(16, TIDE)).toBe('warning');
     expect(timedPhase(17, TIDE)).toBe('active');
-    expect(timedPhase(24, TIDE)).toBe('active');
-    expect(timedPhase(25, TIDE)).toBeNull();
-    expect(timedPhase(31, TIDE)).toBe('warning');
-    expect(timedPhase(33, TIDE)).toBe('active');
+  });
+
+  it('an extra turn never brings the water before Black has moved in round 8', () => {
+    let state = playTo(withTide(BASE()), 15);
+    expect(state.tiles.get('d4')?.tide).toBe('warning');
+    // White spends an extra turn: turnNumber reaches 17 while it is still round 8.
+    state = chessEngine.applyMove({ ...state, positionHistory: {}, tempoTokens: { ...state.tempoTokens, white: 1 } }, move('b1', 'a1', 'white', { extraTurn: true }));
+    state = chessEngine.applyMove({ ...state, positionHistory: {} }, move('a1', 'b1', 'white'));
+    expect(state.turn).toBe('black');
+    expect(isFlooded(state)).toBe(false);
+    state = chessEngine.applyMove({ ...state, positionHistory: {} }, move('h8', 'g8', 'black'));
+    expect(isFlooded(state)).toBe(true);
   });
 
   it('warns the round before, floods, then ebbs', () => {
