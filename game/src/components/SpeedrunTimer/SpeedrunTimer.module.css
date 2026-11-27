@@ -1,0 +1,49 @@
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.3rem 0.6rem;
+  margin-bottom: 0.35rem;
+  background: var(--ui-bg-dark);
+  border: 2px solid var(--ui-gold);
+  color: var(--ui-gold);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+
+.label {
+  white-space: nowrap;
+}
+
+.track {
+  flex: 1;
+  height: 8px;
+  min-width: 40px;
+  background: rgba(31, 85, 144, 0.18);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: var(--ui-gold);
+  transition: width 100ms linear;
+}
+
+.seconds {
+  white-space: nowrap;
+  min-width: 2.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.urgent {
+  border-color: var(--ui-chaos);
+  color: var(--ui-chaos);
+}
+
+.urgent .fill {
+  background: var(--ui-chaos);
+}

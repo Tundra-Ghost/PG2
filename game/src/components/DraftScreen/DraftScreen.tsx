@@ -122,7 +122,7 @@ export default function DraftScreen({
   const forBot = practice && practiceSide === 'opponent';
   const sideIds = forBot ? botSelectedIds : playerSelectedIds;
   const otherSideIds = forBot ? playerSelectedIds : botSelectedIds;
-  const ruleOptions = { unlimited: practice };
+  const ruleOptions = { unlimited: practice, online: !!online };
 
   /** Why this side can't take this card, ignoring whose turn it is. */
   const blockerFor = (card: ModifierCard) =>

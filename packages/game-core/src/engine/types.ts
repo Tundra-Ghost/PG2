@@ -178,6 +178,8 @@ export interface Move {
   extraTurn?: boolean;
   /** MOD-E008: the piece an ability places on the board (a Moneyball drop). */
   dropType?: PieceType;
+  /** MOD-B009: the clock ran out and this is the seeded random move played instead. */
+  timedOut?: boolean;
 }
 
 export interface ValidationResult {

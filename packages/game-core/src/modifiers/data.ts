@@ -507,6 +507,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'You have 15 seconds for each move. If the timer runs out, a random legal move is played for you. The timer pauses while any popup is open.',
     flavor: '"Viktor has never been rushed. Viktor is being rushed. Viktor finds it invigorating and upsetting."',
+    prototypeRules:
+      'You have 15 seconds for each move. A bar under the board counts down. If it runs out, a random legal move is played for you, picked with the game seed: never an ability and never one that leaves your King in check. The timer pauses while a popup is open and starts again from 15 at your next move. Not offered online, because online games have no clock.',
   },
   {
     id: 'MOD-B010',

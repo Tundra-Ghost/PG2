@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 92 built, 8 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 93 built, 7 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -14,6 +14,10 @@
 | E | Asymmetric Armies | Non-standard piece configurations |
 
 ## Change log
+
+**Batch 14 (2026-11-27)**
+- Tide Goes In and Crop Circles count rounds, not turns, like Shake It Off and Night Shift.
+- Speedrun Any% built, local games only (online rooms have no clock). No conflicts.
 
 **Batch 13 (2026-11-27)**
 - Let It Go built. Conflicts: This Is My Swamp, Thinking With Portals, Tide Goes In.
@@ -494,7 +498,7 @@ After each of the owner's moves, the pigeon critic Reginald Beak reviews it in t
 - Changed from v0.2: cost 0 and curse 0 (was -1 / 1). A curse with no downside was free points. If Reginald ever gets a small gameplay effect, re-price it.
 
 ### MOD-B009 · Speedrun Any%
-*Ref: Speedrunning* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Design**
+*Ref: Speedrunning* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: Local · **Built**
 
 You have 15 seconds for each move. If the timer runs out, a random legal move is played for you. The timer pauses while any popup is open.
 
@@ -503,6 +507,8 @@ You have 15 seconds for each move. If the timer runs out, a random legal move is
 - Modes: not in correspondence-style online games.
 - Ruling: the random move never leaves your King in check.
 - Pricing: a fast player loses almost nothing, a slow one a lot. Skill matters.
+- Built: a bar above the board counts 15 seconds on each of the owner's moves and starts again at 15 for the next move. It pauses while a popup is open (promotion or drop choice, bot dialogue, Settings, leave dialog, profile, survey, tutorial) and while the tab is hidden. On a timeout the move is picked with the game seed from every legal normal move (never an ability, never an extra turn, never one that leaves the King in check) and logged as "ran out of time". The engine only accepts a timed-out move that is exactly the seeded pick, so saved games replay it the same. Leaving and resuming a saved game starts the clock again at 15. A bot that drafts it is not timed.
+- Changed from design: online rooms are all correspondence-style (no clock, played over days), so the card is not offered in online drafts at all; the server's draft rules refuse it. When live timed rooms exist, the server should run this clock.
 
 ### MOD-B010 · Main Character Syndrome
 *Ref: Social media* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -1504,7 +1510,7 @@ Values the game uses today. "Built" cards match the build.
 | A018 | Shake It Off | A | S | 4 | 2 | Shared | Built |
 | A019 | Crop Circles | A | B | 2 | 0 | Shared | Built |
 | A020 | One Way Street | A | B | 2 | 1 | Shared | Built |
-| B009 | Speedrun Any% | B | A | -2 | 2 | Owner | Design |
+| B009 | Speedrun Any% | B | A | -2 | 2 | Owner | Built |
 | B010 | Main Character Syndrome | B | B | -1 | 1 | Owner | Built |
 | B011 | Case Of The Mondays | B | B | -1 | 1 | Owner | Built |
 | B012 | Bless You | B | B | -1 | 1 | Owner | Built |
@@ -1553,7 +1559,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-92 of 100 built. The other 8 are designs (v0.4).
+93 of 100 built. The other 7 are designs (v0.4).
 
 ### Balance test plan
 
