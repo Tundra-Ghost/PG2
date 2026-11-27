@@ -1142,12 +1142,13 @@ The owner's pawns promote to knight, bishop or rook only. The promoted piece cha
 ### MOD-E008 · Moneyball (We'll Buy Them Back)
 *Ref: Moneyball* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**
 
-Each piece the owner loses gives a Mercenary Token (max 3). Spend a Token (costs your move) to drop a captured piece onto any empty square as your own. No drop may give check. No pawn drops on rank 1 or 8.
+Each piece the owner loses gives a Mercenary Token (max 1). Spend the Token (costs your move) to drop a captured piece onto an empty square in your first three ranks, as your own. No drop may give check. No pawn drops on rank 1 or 8.
 
 - Built: select your King and press Buy back, pick a square, then pick the piece. Drops show as N@d3 in the move list.
 - Ruling: only captures earn tokens. Pieces lost to lava, storm or gravity do not.
 - Ruling: a defected Traitor piece that is captured can be bought back. (Not built yet: the build counts the piece's colour when it is captured.)
 - Balance flag: the drop-check guard is critical.
+- Changed in balance round 3: max 1 token (was 3), and drops land only on the owner's first three ranks (was any empty square). Cost stays 4.
 
 ### MOD-E009 · Slay Queen (The Amazon)
 *Ref: Fairy chess Amazon* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**
