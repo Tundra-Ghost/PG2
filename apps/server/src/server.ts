@@ -100,12 +100,14 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
     });
     registerAccountRoutes(app, options.accounts);
     registerFeedbackRoutes(app, createFeedbackStore(options.accounts.db), options.accounts);
-    registerSurveyRoutes(app, createSurveyStore(options.accounts.db), options.accounts);
+    const surveys = createSurveyStore(options.accounts.db);
+    registerSurveyRoutes(app, surveys, options.accounts);
     registerUsageRoutes(app, usage!, options.accounts);
     registerAdminRoutes(app, options.accounts, {
       adminIds: options.adminIds ?? new Set(),
       build: options.build ?? readBuildInfo(),
       usage: usage!,
+      surveys,
     });
   }
 
