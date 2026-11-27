@@ -16,7 +16,7 @@ const CHESS_GLYPH = /[\u2654-\u265F]/;
 const DEPTH = { squares: 0, tiles: 1, pulse: 2, tileIcons: 2.5, fog: 2.8, pieces: 3, badges: 4, marks: 5, bursts: 6 };
 const MOVE_MS = 140;
 const REMOVE_MS = 180;
-const BURST_MS = 1100;
+const BURST_MS = 500;
 
 interface Theme {
   frame: number;
@@ -542,7 +542,7 @@ export class BoardScene extends Phaser.Scene {
       targets: g,
       tweens: [
         { scale: 1.15, alpha: 1, duration: BURST_MS * 0.18, ease: 'Quad.easeOut' },
-        { scale: 1.35, alpha: 0, duration: BURST_MS * 0.82, ease: 'Quad.easeOut' },
+        { scale: 1.35, alpha: 0, duration: BURST_MS * 0.82, ease: 'Quad.easeIn' },
       ],
       onComplete: () => g.destroy(),
     });
