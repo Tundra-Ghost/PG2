@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 87 built, 13 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 88 built, 12 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -20,6 +20,7 @@
 - The Factory Must Grow built.
 - The Magic Roundabout built. Conflicts: This Is My Swamp, Tide Goes In, Crop Circles, The Factory Must Grow, Monument To Gerald.
 - The Roomba built. No conflicts.
+- One Way Street built, as a move rule. No conflicts.
 
 **Batch 11 (2026-11-27)**
 - Hidden pieces (shared code in engine/visibility.ts): a hidden piece looks like an empty square to its opponent. A move it blocks is a bump: it reveals the piece and the player moves again. A hidden piece that gives check is always revealed.
@@ -342,7 +343,7 @@ Every 8 rounds a 3×3 crop circle appears on the middle ranks for 3 rounds. Piec
 - Conflict: This Is My Swamp, The Magic Roundabout, The Birds and Tide Goes In, Tide Goes Out all use the middle ranks. Only one of each pair may be in a match, whoever drafts it.
 
 ### MOD-A020 · One Way Street
-*Ref: Every city centre* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Design**
+*Ref: Every city centre* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
 The c-file runs north only and the f-file runs south only. A piece moving along one of those files may only move in its arrow's direction. Crossing the file sideways is allowed.
 
@@ -350,6 +351,8 @@ The c-file runs north only and the f-file runs south only. A piece moving along 
 
 - Ruling: Kings ignore the signs. They have a motorcade.
 - Ruling: arrows only limit movement along the file, never captures that happen to cross it.
+- Built: a move that starts and ends on the c-file must go north; on the f-file, south. Pawns follow the signs too, so a black pawn on the c-file and a white pawn on the f-file cannot step forward, though they can still capture. It is a move rule (see Move rules under Category B): it never takes away the last legal move and does not apply in check. Abilities and Freaky Friday swaps are not limited.
+- Interaction: The Factory Must Grow. c4, c5, f4 and f5 show both arrows. Belts move pieces sideways, which the signs allow.
 
 ## Category B: Cursed
 
@@ -1471,7 +1474,7 @@ Values the game uses today. "Built" cards match the build.
 | A017 | Tide Goes In, Tide Goes Out | A | A | 3 | 1 | Shared | Built |
 | A018 | Shake It Off | A | S | 4 | 2 | Shared | Design |
 | A019 | Crop Circles | A | B | 2 | 0 | Shared | Built |
-| A020 | One Way Street | A | B | 2 | 1 | Shared | Design |
+| A020 | One Way Street | A | B | 2 | 1 | Shared | Built |
 | B009 | Speedrun Any% | B | A | -2 | 2 | Owner | Design |
 | B010 | Main Character Syndrome | B | B | -1 | 1 | Owner | Built |
 | B011 | Case Of The Mondays | B | B | -1 | 1 | Owner | Built |
@@ -1521,7 +1524,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-87 of 100 built. The other 13 are designs (v0.4).
+88 of 100 built. The other 12 are designs (v0.4).
 
 ### Balance test plan
 

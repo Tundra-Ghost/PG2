@@ -3,6 +3,7 @@ import { MODIFIER_IDS } from './ids';
 import { beltDirection } from './definitions/factory-must-grow';
 import { ROUNDABOUT_NEXT } from './definitions/magic-roundabout';
 import { getRoombaSquare, nextOnRing } from './definitions/the-roomba';
+import { oneWayDirection } from './definitions/one-way-street';
 
 /** A direction drawn on a square, as seen from White's side. */
 export type Flow = 'north' | 'south' | 'east' | 'west';
@@ -22,7 +23,7 @@ export function getRoomba(state: GameState): { square: Square; heading: Flow } |
 
 /**
  * The arrows the board draws for cards that move pieces one way: the
- * conveyor belts (MOD-A010) and the roundabout (MOD-A013). Empty without such a card.
+ * conveyor belts (MOD-A010), the roundabout (MOD-A013) and the one-way files (MOD-A020). Empty without such a card.
  */
 export function getFlowArrows(state: GameState): Map<Square, Flow[]> {
   const arrows = new Map<Square, Flow[]>();
@@ -38,6 +39,9 @@ export function getFlowArrows(state: GameState): Map<Square, Flow[]> {
     for (const [from, to] of Object.entries(ROUNDABOUT_NEXT)) {
       add(from as Square, stepFlow(from as Square, to));
     }
+  }
+  if (active.has(MODIFIER_IDS.oneWayStreet)) {
+    for (const f of ['c', 'f']) for (let r = 1; r <= 8; r++) add(`${f}${r}` as Square, oneWayDirection(f)!);
   }
   return arrows;
 }
