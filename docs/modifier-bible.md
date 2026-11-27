@@ -19,7 +19,7 @@
 - Hidden pieces (shared code in engine/visibility.ts): a hidden piece looks like an empty square to its opponent. A move it blocks is a bump: it reveals the piece and the player moves again. A hidden piece that gives check is always revealed.
 - Invisibility Cloak built.
 - Camouflage built. Conflict (same player): Invisibility Cloak.
-- Shell Game built. Conflicts (same player): Sus, Three Kings, Main Character Syndrome, Imposter Syndrome.
+- Shell Game built. Conflicts (same player): Sus, Yeah, There Are Three Of Them, Main Character Syndrome, Imposter Syndrome. Death And Taxes never taxes a cup.
 
 **Batch 10 (2026-11-25)**
 - Footprints, Flashlight, Crystal Ball and Tells built.
@@ -478,6 +478,7 @@ Your Queen must move at least once every 4 of your moves. If you skip her too lo
 - Conflict: Yeah, There Are Three Of Them. No Queen, so the curse would be free points.
 - Interaction: Commitment Issues. While she is owed and has a move, only a Queen can be touched.
 - Interaction: Lunch Break wins. At lunch she cannot move, so the demand waits (see Move rules below).
+- Conflict: Shell Game. Her forced moves would give the cup away, so one side cannot draft both.
 
 ### MOD-B011 · Case Of The Mondays
 *Ref: Office Space / Garfield* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -523,6 +524,7 @@ Every 10 of your moves, the tax office collects one of your pawns: the one furth
 - Built: the tax is removal, not a capture, so it never feeds capture cards such as Moneyball.
 - Interaction: MINE!. Both may hit on your 40th move: the seagull moves first, then the tax is taken.
 - Conflict: The Small Council (one side). Its 12 pawns would make the curse cheap.
+- Ruling: under Shell Game, a cup is never taxed while it is a cup.
 
 ### MOD-B014 · Imposter Syndrome
 *Ref: Every new job* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -539,6 +541,7 @@ After your Queen captures, she doubts herself. Her next move can only be one squ
 - Ruling: only a Queen that was a Queen when she captured. A pawn that captures and promotes to a Queen does not doubt.
 - Ruling: under Sus, a disguised Queen never shows the badge to the opponent, and her doubt is not announced in the feed.
 - Conflict: Yeah, There Are Three Of Them (one side). There is no Queen to doubt.
+- Conflict: Shell Game (one side). Her doubt would mark the cup.
 
 ### MOD-B015 · Commitment Issues
 *Ref: The touch-move rule* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -1032,7 +1035,8 @@ Your Queen and two of your pawns look like cups to your opponent. Each cup shows
 
 - Ruling: the King is never disguised. Core rule 1.
 - Not Sus: Sus fakes one piece forever; the shell game hides three until they move.
-- Built: the two pawns are picked at random (seeded). A cup is lifted, with an event naming the piece, when its piece moves or is moved by any card, or when an enemy piece attacks its square (checked after every move and at every turn start). Captures and checks follow the real piece. Bots read a cup as a pawn. The owner sees a "U" badge on their cups. Built on the Sus disguise code (getShownType reads a cup as a pawn), so Tells and Big Beak never give a cup away.
+- Built: the two pawns are picked at random (seeded). A cup is lifted, with an event naming the piece, when its piece moves or is moved by any card, or when an enemy piece attacks its square (checked after every move and at every turn start). Captures and checks follow the real piece. Bots read a cup as a pawn. The owner sees a "U" badge on their cups. Built on the Sus disguise code (getShownType reads a cup as a pawn). Tells and Big Beak never give a cup away; a few other cards' feed lines may call a cup a pawn just before it is lifted.
+- Interaction: Death And Taxes. A cup is never taxed while it is a cup.
 - Conflict: Sus (it could disguise the same piece), Yeah, There Are Three Of Them (no Queen), Main Character Syndrome and Imposter Syndrome (they mark the Queen in plain sight). One player may not draft Shell Game with any of them.
 
 ### MOD-D015 · Camouflage
@@ -1146,6 +1150,7 @@ The owner's queen becomes a Royal Guard and a second Guard stands on their third
 - Conflict: Main Character Syndrome. There is no Queen to demand, so one side cannot draft both.
 - Conflict: GET OVER HERE!. There is no Queen to pull with, so one side cannot draft both.
 - Conflict: Imposter Syndrome. There is no Queen to doubt, so one side cannot draft both.
+- Conflict: Shell Game. There is no Queen to hide, so one side cannot draft both.
 
 ### MOD-E004 · Equivalent Exchange (The Chancellor)
 *Ref: Fullmetal Alchemist* · **Tier S** · Cost 5 · Curse 0 · Scope: Owner · Modes: All except Ranked S1 · **Built**

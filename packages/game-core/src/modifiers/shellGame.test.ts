@@ -3,6 +3,7 @@ import './index';
 import { MODIFIER_IDS } from './ids';
 import { getOwnCups, isCup } from './definitions/shell-game';
 import { getShownType } from './definitions/sus';
+import { getTaxedPawn } from './definitions/death-and-taxes';
 import { makeEmptyState, makePiece, move } from './testHelpers';
 import { chessEngine } from '../engine/ChessEngine';
 import { botView } from '../engine/bot';
@@ -78,6 +79,13 @@ describe('Shell Game', () => {
     expect(getOwnCups(begun, 'white')).not.toContain('d1');
     const next = chessEngine.applyMove(begun, move('d8', 'd1', 'black'));
     expect(next.moveHistory[0].pieceCaptured?.type).toBe('queen');
+  });
+
+  it('Death And Taxes never taxes a cup', () => {
+    const s = small();
+    s.pieces.set('e3', makePiece('pawn', 'white', 'e3'));
+    // a2 and b2 are cups, and the Queen on d1 too: the free pawn on e3 is the one taxed.
+    expect(getTaxedPawn(s, 'white')).toBe('e3');
   });
 
   it('cannot be drafted with Sus, Three Kings, Main Character Syndrome or Imposter Syndrome', () => {
