@@ -69,12 +69,24 @@ export function slidePieceSafely(next: GameState, from: Square, to: Square | nul
     const { [SWAMP_ID]: _stuck, ...cooldowns } = moved.cooldowns;
     next.pieces.set(to, { ...moved, cooldowns });
   }
-  // A pawn that just stepped two squares and then slid can no longer be taken en passant.
-  const ep = next.flags.enPassantSquare;
-  if (ep && piece.type === 'pawn' && from === `${ep[0]}${ep[1] === '3' ? 4 : 5}`) {
+  // Any pawn that slides ends en passant for this turn: the pawn that stepped
+  // two squares may have moved, or another pawn may have slid next to it.
+  if (piece.type === 'pawn' && next.flags.enPassantSquare) {
     next.flags = { ...next.flags, enPassantSquare: null };
   }
   return true;
+}
+
+/**
+ * The squares an event may point at after slides: a hidden piece's new
+ * square is left out, so the flash never shows where it went.
+ */
+export function shownSlideSquares(state: GameState, squares: Square[]): Square[] {
+  return squares.filter(sq => {
+    const piece = state.pieces.get(sq);
+    if (!piece) return true;
+    return !getHiddenPieceIds(state, piece.color === 'white' ? 'black' : 'white').has(piece.id);
+  });
 }
 
 /** Reveals the hidden pieces that blocked a slide. */

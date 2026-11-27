@@ -16,7 +16,7 @@
 ## Change log
 
 **Batch 12 (2026-11-27)**
-- Board-moving cards share one rule set (engine/conveyor.ts): they move pieces once per round, after Black moves; never capture; never put a King in check or add a second checker; and reveal a hidden piece that blocks them.
+- Board-moving cards share one rule set (engine/conveyor.ts): they move pieces once per round, after Black moves; never capture; never put a King in check or add a second checker; reveal a hidden piece that blocks them, and never point at a hidden piece's new square; and turn off en passant for that turn when a pawn slides.
 - The Factory Must Grow built.
 - The Magic Roundabout built. Conflicts: This Is My Swamp, Tide Goes In, Crop Circles, The Factory Must Grow, Monument To Gerald.
 
@@ -220,7 +220,7 @@ Ranks 4 and 5 are conveyor belts. At the end of each round, every piece on rank 
 - Ruling: a King rides the belt only if the new square is safe. Otherwise it stays.
 - Conflict: This Is My Swamp. Pieces may ride into the Swamp. Intended.
 - Conflict: The Magic Roundabout. Only one may be in a match, whoever drafts it.
-- Built: the belts run once per round, after Black moves. The front piece moves first, so a line of pieces moves together. A piece also stays before a wall, flock, statue, storm or Lava square. No slide may put any King in check: a King rides only to a safe square, and a piece shielding its King stays. Belts stop while Tide Goes In floods ranks 4 and 5. A belt never uses a portal (Thinking With Portals): only normal moves do. A pawn that stepped two squares and then rides the belt can no longer be taken en passant.
+- Built: the belts run once per round, after Black moves. The front piece moves first, so a line of pieces moves together. A piece also stays before a wall, flock, statue, storm or Lava square. No slide may put any King in check: a King rides only to a safe square, and a piece shielding its King stays. Belts stop while Tide Goes In floods ranks 4 and 5. A belt never uses a portal (Thinking With Portals): only normal moves do. Whenever a pawn slides, en passant is off for that turn.
 - Built: a hidden piece (Invisibility Cloak, Camouflage) that blocks a belt slide is revealed, like a bump on a normal move.
 - Built: a stuck piece (This Is My Swamp) rides the belt like any other. Once it is carried off the Swamp it is no longer stuck. A piece that rides into the Swamp is not trapped: only a move into it traps.
 

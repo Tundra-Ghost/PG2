@@ -1,7 +1,7 @@
 import type { ModifierDefinition } from '../types';
 import type { Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
-import { isNewRound, revealBumped, slidePieceSafely, type Bumped } from '../../engine/conveyor';
+import { isNewRound, revealBumped, shownSlideSquares, slidePieceSafely, type Bumped } from '../../engine/conveyor';
 import { MODIFIER_IDS } from '../ids';
 
 const ID = MODIFIER_IDS.magicRoundabout;
@@ -68,7 +68,7 @@ export const magicRoundaboutDef: ModifierDefinition = {
       modifierId: ID,
       title: 'Roundabout',
       message: 'The roundabout turns one step clockwise.',
-      squares: moved,
+      squares: shownSlideSquares(next, moved),
     });
   },
 };
