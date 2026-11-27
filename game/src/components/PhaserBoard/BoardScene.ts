@@ -85,6 +85,9 @@ function glow(g: Phaser.GameObjects.Graphics, cx: number, cy: number, radius: nu
  * The board as a Phaser scene. It draws whatever SquareViews React hands it;
  * clicks, rules and tooltips stay in React and game-core.
  */
+/** Minesweeper clue colours, light enough to read on the dark pill. */
+const MINE_COLORS: Record<number, string> = { 0: '#c8d2e6', 1: '#8ec5ff', 2: '#8fe08f', 3: '#ff9a8a', 4: '#d7a8ff' };
+
 export class BoardScene extends Phaser.Scene {
   private views: SquareView[] = [];
   private ready = false;
@@ -413,6 +416,16 @@ export class BoardScene extends Phaser.Scene {
       this.labels.push(
         this.add.text(x + 5, y + CELL - 4, '≈', { fontFamily: MONO, fontSize: '15px', color: 'rgba(196,230,150,0.85)' })
           .setOrigin(0, 1).setDepth(DEPTH.tileIcons),
+      );
+    }
+    if (view.mineClue !== undefined) {
+      // Minesweeper: a dark pill in the top-left corner (piece badges use the top-right) with the number of mines touching this square.
+      const r = CELL * 0.15;
+      const px = x + r + 3, py = y + r + 3;
+      tiles.fillStyle(0x0c1f3a, 0.85).fillCircle(px, py, r);
+      this.labels.push(
+        this.add.text(px, py, String(view.mineClue), { fontFamily: MONO, fontSize: '14px', fontStyle: 'bold', color: MINE_COLORS[view.mineClue] ?? '#ffffff' })
+          .setOrigin(0.5, 0.5).setDepth(DEPTH.tileIcons),
       );
     }
     if (view.noFlyZone) {

@@ -66,6 +66,7 @@ export { getBarrier, getBarriers } from './engine/barriers';
 export { getFlockPreview } from './modifiers/definitions/the-birds';
 export { getFlowArrows, getRoomba, type Flow } from './modifiers/flow';
 export { getQuakeArrows } from './modifiers/definitions/shake-it-off';
+export { getMineClues } from './modifiers/definitions/minesweeper';
 export { getHiddenPieceIds, getVisibleSquares, isHiddenPieceMove, isHopHidden, isMoveHidden, isPieceHidden } from './engine/visibility';
 export { getCloakedPiece } from './modifiers/definitions/invisibility-cloak';
 export { getOwnCups, isCup } from './modifiers/definitions/shell-game';

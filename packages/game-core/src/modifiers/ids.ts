@@ -83,6 +83,7 @@ export const MODIFIER_IDS = {
   theRoomba: 'MOD-A015',
   letItGo: 'MOD-A012',
   shakeItOff: 'MOD-A018',
+  minesweeper: 'MOD-A014',
   oneWayStreet: 'MOD-A020',
   blessYou: 'MOD-B012',
   footprints: 'MOD-D011',

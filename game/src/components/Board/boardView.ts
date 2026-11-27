@@ -1,5 +1,5 @@
 import type { Color, GameState, Piece, PieceType, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getFootprints, getFlashlightSquares, getForecast, getHiddenPieceIds, getOwnCups, isCup, getTells, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, getFlowArrows, getRoomba, getQuakeArrows, MODIFIER_IDS, type Flow } from '@pigeon-chess/game-core';
+import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getFootprints, getFlashlightSquares, getForecast, getHiddenPieceIds, getOwnCups, isCup, getTells, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, getFlowArrows, getRoomba, getQuakeArrows, getMineClues, MODIFIER_IDS, type Flow } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -85,6 +85,8 @@ export interface SquareView {
   cropCircle?: 'warning' | 'active';
   /** Shake It Off: the next quake moves this piece this way, on screen (dx right, dy down). */
   quake?: { dx: number; dy: number };
+  /** Minesweeper: how many mines touch this square. */
+  mineClue?: number;
   /** Let It Go: ice. */
   ice?: boolean;
   /** Dirt Hut: a wall built by this side stands here. */
@@ -133,6 +135,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const flows = getFlowArrows(state);
   const toScreen = (flow: Flow): ScreenFlow => SCREEN_FLOW[orientation][flow];
   const roomba = getRoomba(state);
+  const mineClues = new Map(getMineClues(state, viewer ?? null).map(c => [c.square, c.count]));
   const sign = orientation === 'white' ? 1 : -1;
   const quakes = new Map(getQuakeArrows(state, viewer ?? null).map(a => [a.square, { dx: a.df * sign, dy: -a.dr * sign }]));
   const winterActive = state.activeModifiers.some(mod => mod.id === MODIFIER_IDS.winterIsComing);
@@ -204,6 +207,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(tile?.tide ? { tide: tile.tide } : {}),
         ...(tile?.cropCircle ? { cropCircle: tile.cropCircle } : {}),
         ...(tile?.ice ? { ice: true } : {}),
+        ...(mineClues.has(square) ? { mineClue: mineClues.get(square)! } : {}),
         ...(quakes.has(square) ? { quake: quakes.get(square)! } : {}),
         ...(roomba?.square === square ? { roomba: toScreen(roomba.heading) } : {}),
         ...(flows.has(square) ? { flow: flows.get(square)!.map(toScreen) } : {}),
