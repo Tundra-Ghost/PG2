@@ -5,6 +5,7 @@ import { prngPickIndex } from '../../engine/prng';
 import { MODIFIER_IDS } from '../ids';
 import { getModifierOwner } from '../owner';
 import { armyType } from '../army';
+import { isCup } from './shell-game';
 
 const ID = MODIFIER_IDS.sus;
 /** Types a disguise can show. Special pieces from other cards are never shown. */
@@ -45,6 +46,8 @@ export function getSusPiece(state: GameState, color: Color): Disguise | null {
  */
 export function getShownType(state: GameState, piece: Piece, viewer: Color): PieceType {
   if (piece.color === viewer) return piece.type;
+  // MOD-D014 Shell Game: a cup could be anything; rules and bots that need a type read it as a pawn.
+  if (isCup(state, piece, viewer)) return 'pawn';
   const disguise = sus(state)[piece.color];
   return disguise && disguise.pieceId === piece.id ? disguise.shownAs : piece.type;
 }

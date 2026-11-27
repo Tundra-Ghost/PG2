@@ -1195,6 +1195,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your Queen and two of your pawns look like cups to your opponent. Each cup shows its true piece the first time it moves or is attacked.',
     flavor: '"Three cups. One queen. Viktor\'s opponent is watching very carefully. It will not help."',
+    prototypeRules:
+      'Your Queen and two random pieces from her rank look like cups to your opponent. A cup is lifted, with an event, the first time its piece moves (or is moved), gives check, or an enemy piece you can see attacks its square. You see a U badge on yours.',
   },
   {
     id: 'MOD-D015',

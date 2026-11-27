@@ -2,6 +2,8 @@ import type { ModifierDefinition } from '../types';
 import type { GameState, Square } from '../../engine/types';
 import { appendGameEvent, cloneState, revealHiddenPieces } from '../../engine/gameLoop';
 import { isPieceHidden } from '../../engine/visibility';
+import { getShownType } from './sus';
+import { isCup } from './shell-game';
 import { prngPickIndex } from '../../engine/prng';
 import { MODIFIER_IDS } from '../ids';
 
@@ -79,7 +81,8 @@ export const bigBeakDef: ModifierDefinition = {
       modifierId: ID,
       title: 'Big Beak Is Watching',
       squares: [move.to],
-      message: `Big Beak spots the ${piece.color} ${piece.type.replace('_', ' ')} on ${move.to}.`,
+      // Named as the opponent sees it, so a disguise or a cup is never given away.
+      message: `Big Beak spots the ${piece.color} ${isCup(state, piece, opponent) ? 'cup' : getShownType(state, piece, opponent).replace('_', ' ')} on ${move.to}.`,
     });
   },
 

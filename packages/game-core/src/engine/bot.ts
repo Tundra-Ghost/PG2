@@ -3,6 +3,7 @@ import { chessEngine } from './ChessEngine';
 import { getAbilityOptions, performAbility } from './abilities';
 import { applyMoveInternal, buildMove, cloneState, getValidPromotionTypes } from './gameLoop';
 import { getHiddenPieceIds, getVisibleSquares } from './visibility';
+import { isCup } from '../modifiers/definitions/shell-game';
 import { botRandom } from './prng';
 
 /**
@@ -73,11 +74,14 @@ export function botView(state: GameState, color: Color): GameState {
   const visible = getVisibleSquares(state, color);
   // Hidden pieces (MOD-D009, MOD-D015) are off the view too.
   const hidden = getHiddenPieceIds(state, color);
-  if (!visible && hidden.size === 0) return state;
+  // Shell Game (MOD-D014): a cup is read as a pawn.
+  const cups = [...state.pieces.values()].filter(piece => isCup(state, piece, color));
+  if (!visible && hidden.size === 0 && cups.length === 0) return state;
   const view = cloneState(state);
   for (const [square, piece] of view.pieces) {
     if (piece.color === color || piece.type === 'king') continue;
     if (hidden.has(piece.id) || (visible && !visible.has(square))) view.pieces.delete(square);
+    else if (cups.some(cup => cup.id === piece.id)) view.pieces.set(square, { ...piece, type: 'pawn', isAmazon: false });
   }
   return view;
 }

@@ -5,6 +5,7 @@ import { isInCheck } from '../../engine/moveGenerator';
 import { MODIFIER_IDS } from '../ids';
 import { affectsColor, ownMoveNumber } from '../owner';
 import { getShownType } from './sus';
+import { isCup } from './shell-game';
 
 const ID = MODIFIER_IDS.deathAndTaxes;
 /** The tax is collected after every this many of your moves. */
@@ -21,11 +22,12 @@ function progress(pawn: Piece): number {
  * on a tie, skipping any whose removal would leave its King in check.
  * "Pawn" is what the opponent sees (Sus): a piece disguised as a pawn is
  * taxed like one, and a disguised pawn is never taken, so no disguise leaks.
+ * A Shell Game cup (MOD-D014) is never taxed while it is a cup.
  */
 export function getTaxedPawn(state: GameState, color: Color): Square | null {
   const opponent: Color = color === 'white' ? 'black' : 'white';
   const pawns = Array.from(state.pieces.values())
-    .filter(p => p.color === color && getShownType(state, p, opponent) === 'pawn')
+    .filter(p => p.color === color && getShownType(state, p, opponent) === 'pawn' && !isCup(state, p, opponent))
     .sort((a, b) => progress(a) - progress(b) || a.square.localeCompare(b.square));
   for (const pawn of pawns) {
     const after = cloneState(state);
@@ -90,7 +92,7 @@ export const deathAndTaxesDef: ModifierDefinition = {
     // still be taken from the board as it stands after the move.
     // Once you have no pawns (as the opponent sees them) the curse is over.
     const opponent: Color = color === 'white' ? 'black' : 'white';
-    const hasPawns = Array.from(state.pieces.values()).some(p => p.color === color && getShownType(state, p, opponent) === 'pawn');
+    const hasPawns = Array.from(state.pieces.values()).some(p => p.color === color && getShownType(state, p, opponent) === 'pawn' && !isCup(state, p, opponent));
     if (!hasPawns) return state;
     const pawn = getTaxedPawn(state, color);
     const next = cloneState(state);
