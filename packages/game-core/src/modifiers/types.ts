@@ -81,6 +81,13 @@ export interface ModifierDefinition {
   /** Called during move validation — can block a move. */
   onPreMoveValidate?: (state: GameState, move: Move) => PreMoveResult;
 
+  /**
+   * Called once a turn is ready for input: after onTurnStart and any skipped
+   * turns, before a takeover plays (MOD-C015 saves the game here). It can run
+   * twice for one turn (a reload), so it must not change anything the second time.
+   */
+  onTurnReady?: (state: GameState) => GameState;
+
   /** Called after validation, before board update — can mutate the move. */
   onPreMoveApply?: (state: GameState, move: Move) => PreMoveApplyResult;
 

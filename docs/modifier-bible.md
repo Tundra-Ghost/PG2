@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 94 built, 6 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 95 built, 5 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -19,6 +19,7 @@
 - Tide Goes In and Crop Circles count rounds, not turns, like Shake It Off and Night Shift.
 - Speedrun Any% built, local games only (online rooms have no clock). No conflicts.
 - Rubber Banding built. No conflicts.
+- Ctrl+Z built. No conflicts.
 
 **Batch 13 (2026-11-27)**
 - Let It Go built. Conflicts: This Is My Swamp, Thinking With Portals, Tide Goes In.
@@ -422,6 +423,7 @@ Every 7th move of the owner is played for them: a random legal move, never one t
 - Conflict: Active Abilities. Autonomous moves never use abilities.
 - Future: +2 Feathers per match in runs. A "A PIECE MOVED" banner.
 - Changed from v0.2: counts the owner's moves, not rounds.
+- Ruling: Ctrl+Z can undo a move this card played for you, but the same move is played again (the seed is kept).
 
 ### MOD-B002 · Distracted Piece
 *Ref: "Distracted Boyfriend" meme* · **Tier A** · Cost -2 · Curse 2 · Scope: Owner · Modes: All · **Built**
@@ -510,6 +512,7 @@ You have 15 seconds for each move. If the timer runs out, a random legal move is
 - Pricing: a fast player loses almost nothing, a slow one a lot. Skill matters.
 - Built: a bar above the board counts 15 seconds on each of the owner's moves and starts again at 15 for the next move. It pauses while a popup is open (promotion or drop choice, bot dialogue, Settings, leave dialog, profile, survey, tutorial) and while the tab is hidden. On a timeout the move is picked with the game seed from every legal normal move (never an ability, never an extra turn, never one that leaves the King in check) and logged as "ran out of time". The engine only accepts a timed-out move that is exactly the seeded pick, so saved games replay it the same. Leaving, resuming or reloading keeps the time left on that move. A bot that drafts it is not timed.
 - Changed from design: online rooms are all correspondence-style (no clock, played over days), so the card is not offered in online drafts at all; the server's draft rules refuse it. When live timed rooms exist, the server should run this clock.
+- Ruling: Ctrl+Z can undo a timed-out move; you then choose the move yourself.
 
 ### MOD-B010 · Main Character Syndrome
 *Ref: Social media* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -879,7 +882,7 @@ Select your King and press Run. It runs two squares in a straight line, if both 
 - Changed from design: the design gave no cooldown; the build uses 10 of your moves.
 
 ### MOD-C015 · Ctrl+Z
-*Ref: Every computer ever* · **Tier S** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Every computer ever* · **Tier S** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Once per match, before your move, undo the last round: your last move and your opponent's reply both go back. Then you move again.
 
@@ -887,6 +890,7 @@ Once per match, before your move, undo the last round: your last move and your o
 
 - Ruling: random events of that round (lava, storm, gravity) are not rerolled. The seed is kept, so the world repeats.
 - Ruling: cannot undo a round that ended the game.
+- Built: a Ctrl+Z button sits with the ability buttons; tap it twice (bigger on phones). At the start of each of your turns the game is saved (engine hook onTurnReady, after turn-start effects); Ctrl+Z puts back the save from the start of your previous turn, seed and all, and you move again. So free abilities used that turn (Flashlight) are undone too, and it does not cost your move. A move YOU DIED plays for you is played again the same way (same seed); a Speedrun timeout is undone and you choose the move yourself. An extra turn (tempo token) is part of the same turn: you cannot undo halfway through it, and the undo takes back both moves and gives the token back. A turn the game skipped (no legal move) does not count, so the undo goes back to your last real turn. You cannot undo while you must move a touched piece (Commitment Issues). If both sides have the card, each keeps its own undo. Bots never draft it. Saved games record it as an action and replay it. Online, the server keeps the saves and the players only learn whether the undo is ready.
 
 ### MOD-C016 · Bullet Time
 *Ref: The Matrix* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1530,7 +1534,7 @@ Values the game uses today. "Built" cards match the build.
 | C012 | Freaky Friday | C | B | 2 | 0 | Owner | Built |
 | C013 | Hold My Bread | C | B | 2 | 0 | Owner | Built |
 | C014 | Run, Forrest, Run | C | B | 2 | 0 | Owner | Built |
-| C015 | Ctrl+Z | C | S | 4 | 0 | Owner | Design |
+| C015 | Ctrl+Z | C | S | 4 | 0 | Owner | Built |
 | C016 | Bullet Time | C | A | 4 | 0 | Owner | Design |
 | C017 | Get Off My Lawn | C | B | 3 | 0 | Owner | Built |
 | C018 | Dirt Hut | C | A | 3 | 0 | Owner | Built |
@@ -1561,7 +1565,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-94 of 100 built. The other 6 are designs (v0.4).
+95 of 100 built. The other 5 are designs (v0.4).
 
 ### Balance test plan
 

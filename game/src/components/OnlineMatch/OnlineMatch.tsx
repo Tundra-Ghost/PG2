@@ -306,6 +306,7 @@ export default function OnlineMatch({
                   onMove={room.sendMove}
                   onShooGerald={room.shooGerald}
                   onTouchPiece={room.touchPiece}
+                  onUndo={room.undo}
                   controlColor={myColor}
                   orientation={myColor}
                   onInfo={setInfoMessage}

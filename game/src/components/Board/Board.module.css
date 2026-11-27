@@ -344,3 +344,11 @@
     animation: none !important;
   }
 }
+
+/* Phones: ability buttons (and the two-tap Ctrl+Z) need a full-size tap target. */
+@media (max-width: 720px) {
+  .abilityButton {
+    min-height: 40px;
+    align-items: center;
+  }
+}

@@ -2,6 +2,8 @@ import { createHmac, randomBytes, randomInt, randomUUID } from 'node:crypto';
 import {
   getShooBlocker,
   touchPiece,
+  ctrlZ,
+  ctrlZBlocker,
   buildMove,
   chessEngine,
   modifierRegistry,
@@ -266,6 +268,20 @@ export class RoomManager {
       return { ok: false, reason: getShooBlocker(room.state) ?? 'Gerald cannot be shooed right now.' };
     }
     room.state = chessEngine.shooGerald(room.state);
+    room.drawOffer = null;
+    this.touch(room);
+    return { ok: true };
+  }
+
+  /** MOD-C015: the side to move undoes the last round. The undo itself is checked by game-core. */
+  undo(roomId: string, color: Color): ActionAck {
+    const found = this.activeRoom(roomId);
+    if (!found.ok) return found;
+    const { room } = found;
+    if (room.state.turn !== color) return { ok: false, reason: 'not your turn' };
+    const blocker = ctrlZBlocker(room.state);
+    if (blocker) return { ok: false, reason: blocker };
+    room.state = ctrlZ(room.state);
     room.drawOffer = null;
     this.touch(room);
     return { ok: true };

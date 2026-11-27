@@ -9,7 +9,7 @@ import type {
   ValidationResult,
 } from './types';
 import { getLegalMovesForPiece, isInCheck as isInCheckGen, isSquareAttacked } from './moveGenerator';
-import { activateDraftModifiers as activateDraftModifiersGL, activateModifiers as activateModifiersGL, applyMove as applyMoveFull, applyMoveInternal, beginTurn as beginTurnGL, buildMove, canShooGerald as canShooGeraldGL, cloneState, bumpedPieces, hasAnyValidMove as hasAnyValidMoveGL, isCheckmate as isCheckmateGL, isPromotionMove, isStalemate as isStalemateGL, passTurn as passTurnGL, positionKey, shooGerald as shooGeraldGL } from './gameLoop';
+import { activateDraftModifiers as activateDraftModifiersGL, activateModifiers as activateModifiersGL, applyMove as applyMoveFull, applyMoveInternal, beginTurn as beginTurnGL, buildMove, canShooGerald as canShooGeraldGL, cloneState, bumpedPieces, hasAnyValidMove as hasAnyValidMoveGL, isCheckmate as isCheckmateGL, isPromotionMove, isStalemate as isStalemateGL, passTurn as passTurnGL, positionKey, runTurnReadyHooks, shooGerald as shooGeraldGL } from './gameLoop';
 import { validateMove } from './moveValidator';
 import { withoutHiddenPieces } from './visibility';
 
@@ -176,7 +176,7 @@ class ChessEngineImpl implements IChessEngine {
   }
 
   beginTurn(state: GameState): GameState {
-    return beginTurnGL(state);
+    return runTurnReadyHooks(beginTurnGL(state));
   }
 
   activateModifiers(state: GameState, ids: string[]): GameState {

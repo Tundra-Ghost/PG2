@@ -483,6 +483,9 @@ export default function App() {
     if (!latestMove) return;
     const moveKey = `${gameState.id}:${gameState.moveHistory.length}`;
     if (lastReactedMoveId.current === moveKey) return;
+    // After Ctrl+Z (MOD-C015) the move list is shorter: those moves were already reacted to.
+    const [reactedId, reactedLen] = (lastReactedMoveId.current ?? '').split(':');
+    if (reactedId === gameState.id && gameState.moveHistory.length < Number(reactedLen)) return;
 
     const currentSpeaker = getBotSpeaker(selectedBot);
     const currentOpponentName = currentSpeaker?.name ?? 'Opponent';
@@ -1294,6 +1297,7 @@ export default function App() {
                   onMove={move => act({ t: 'move', move })}
                   onShooGerald={() => act({ t: 'shoo' })}
                   onTouchPiece={square => act({ t: 'touch', square })}
+                  onUndo={() => act({ t: 'undo' })}
                   controlColor={vsBot ? 'white' : undefined}
                   onInfo={setInfoMessage}
                   notice={infoMessage}

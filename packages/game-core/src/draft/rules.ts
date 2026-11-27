@@ -163,7 +163,12 @@ export interface DraftRuleOptions {
   unlimited?: boolean;
   /** An online room. Online games have no clock, so timed cards are left out. */
   online?: boolean;
+  /** The bot's own picks: cards bots never use are left out. */
+  forBot?: boolean;
 }
+
+/** Cards only a person can use: the bot never presses Ctrl+Z, so it does not draft it. */
+export const HUMAN_ONLY: readonly string[] = [MODIFIER_IDS.ctrlZ];
 
 /** Cards that need a live clock: not offered in online rooms, which are played over days. */
 export const OFFLINE_ONLY: readonly string[] = [MODIFIER_IDS.speedrun];
@@ -184,7 +189,7 @@ export function getValidOptions(
   ownIds: string[],
   otherIds: string[],
   implementedIds: Set<string>,
-  { unlimited = false, online = false }: DraftRuleOptions = {},
+  { unlimited = false, online = false, forBot = false }: DraftRuleOptions = {},
 ): ModifierCard[] {
   const ownCards = getSelectedCards(ownIds);
   const ownCounts = getCategoryCounts(ownCards);
@@ -193,6 +198,7 @@ export function getValidOptions(
   return ALL_MODIFIERS.filter(card => {
     if (!implementedIds.has(card.id)) return false;
     if (online && OFFLINE_ONLY.includes(card.id)) return false;
+    if (forBot && HUMAN_ONLY.includes(card.id)) return false;
     if (ownIds.includes(card.id)) return false;
     if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return false;
     if (needsDarkFirst(card.id, ownIds, otherIds)) return false;
@@ -229,7 +235,7 @@ export function runRandomDraft(
   for (;;) {
     const playerOptions = getValidOptions(player, bot, implementedIds);
     if (playerOptions.length > 0) player = [...player, pick(playerOptions).id];
-    const botOptions = getValidOptions(bot, player, implementedIds);
+    const botOptions = getValidOptions(bot, player, implementedIds, { forBot: true });
     if (botOptions.length > 0) bot = [...bot, pick(botOptions).id];
     if (playerOptions.length === 0 && botOptions.length === 0) return { playerIds: player, botIds: bot };
   }

@@ -1,5 +1,5 @@
 import type { GameState, Move, Square } from '@pigeon-chess/game-core';
-import { chessEngine, modifierRegistry, touchPiece } from '@pigeon-chess/game-core';
+import { canCtrlZ, chessEngine, ctrlZ, modifierRegistry, touchPiece } from '@pigeon-chess/game-core';
 import type { BotId } from './opponents';
 import type { MatchMode } from './profile';
 
@@ -22,7 +22,9 @@ export type BotSelectMode = 'run' | 'quick' | 'practice';
 export type SavedAction =
   | { t: 'move'; move: Move }
   | { t: 'shoo' }
-  | { t: 'touch'; square: Square };
+  | { t: 'touch'; square: Square }
+  /** MOD-C015 Ctrl+Z: undo the last round. */
+  | { t: 'undo' };
 
 export type DraftTurn = 'player' | 'opponent' | 'done';
 
@@ -82,7 +84,7 @@ const isStringList = (value: unknown): value is string[] =>
 function isAction(value: unknown): value is SavedAction {
   const action = value as SavedAction | null;
   if (!action || typeof action !== 'object') return false;
-  if (action.t === 'shoo') return true;
+  if (action.t === 'shoo' || action.t === 'undo') return true;
   if (action.t === 'touch') return typeof action.square === 'string';
   if (action.t === 'move') {
     const move = action.move as Move | undefined;
@@ -208,6 +210,7 @@ export function applyAction(state: GameState, action: SavedAction): GameState | 
   if (action.t === 'shoo') {
     return chessEngine.canShooGerald(state) ? chessEngine.shooGerald(state) : null;
   }
+  if (action.t === 'undo') return canCtrlZ(state) ? ctrlZ(state) : null;
   const next = touchPiece(state, action.square);
   return next === state ? null : next;
 }
