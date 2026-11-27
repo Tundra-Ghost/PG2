@@ -1,12 +1,12 @@
 import { createHash, randomBytes } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { Accounts } from './accounts';
 
 /**
  * Anonymous usage stats for the admin dashboard.
  *
- * Privacy: no IP address is stored. A visitor is a hash of the IP and browser
+ * Privacy: no IP address is stored. A visitor is a hash of the IP
  * with a salt that changes every UTC day, so the same person counts once a day
  * and cannot be followed from one day to the next. Past salts are deleted.
  * Raw events are kept 30 days; after that only the daily totals remain.
@@ -44,7 +44,8 @@ export interface AccountStats {
 }
 
 export interface UsageStore {
-  record(entry: { kind: EventKind; ip: string; userAgent: string; signedIn: boolean; device: Device | null }): void;
+  /** The visitor is a hash of the IP with today's salt; the IP itself is never stored. */
+  record(entry: { kind: EventKind; ip: string; signedIn: boolean; device: Device | null }): void;
   /** An event the server sees itself (online games), with no visitor behind it. */
   count(kind: EventKind): void;
   /** Moves events older than the retention window into daily totals and drops old salts. */
@@ -61,7 +62,15 @@ function lastDays(now: number, days: number): string[] {
   return Array.from({ length: days }, (_, i) => dayOf(now - (days - 1 - i) * DAY_MS));
 }
 
+/** The visitor's address. Behind Fly's proxy request.ip is the proxy; Fly passes the real one in this header. */
+export function clientIp(request: FastifyRequest): string {
+  const flyIp = request.headers['fly-client-ip'];
+  return typeof flyIp === 'string' && flyIp ? flyIp : request.ip;
+}
+
 export function createUsageStore(db: DatabaseSync, now: () => number = Date.now): UsageStore {
+  // Deleted salts are overwritten on disk, so a copied database can't recover them.
+  db.exec('PRAGMA secure_delete = ON');
   db.exec(`CREATE TABLE IF NOT EXISTS usage_salt (day TEXT PRIMARY KEY, salt TEXT NOT NULL)`);
   db.exec(`CREATE TABLE IF NOT EXISTS usage_event (
     day TEXT NOT NULL,
@@ -140,9 +149,9 @@ export function createUsageStore(db: DatabaseSync, now: () => number = Date.now)
     OR EXISTS (SELECT 1 FROM profile WHERE profile.userId = user.id AND profile.updatedAt >= ?)`);
 
   return {
-    record({ kind, ip, userAgent, signedIn, device }) {
+    record({ kind, ip, signedIn, device }) {
       const day = dayOf(now());
-      const visitor = createHash('sha256').update(`${saltFor(day)}|${ip}|${userAgent}`).digest('hex').slice(0, 32);
+      const visitor = createHash('sha256').update(`${saltFor(day)}|${ip}`).digest('hex').slice(0, 32);
       insert.run(day, kind, visitor, signedIn ? 1 : 0, device);
     },
     count(kind) {
@@ -195,17 +204,15 @@ export function registerUsageRoutes(app: FastifyInstance, store: UsageStore, acc
     // Online games are counted on the server, so clients can only send these.
     const kind = (['visit', 'bot_start', 'bot_end'] as const).find(k => k === body.kind);
     if (!kind) return reply.status(400).send({ error: 'Unknown event.' });
+    const ip = clientIp(request);
     const now = Date.now();
-    const sent = (recent.get(request.ip) ?? []).filter(at => now - at < WINDOW_MS);
+    const sent = (recent.get(ip) ?? []).filter(at => now - at < WINDOW_MS);
     if (sent.length >= EVENTS_PER_WINDOW) return reply.status(429).send({ error: 'Too many events.' });
     sent.push(now);
-    recent.set(request.ip, sent);
+    recent.set(ip, sent);
     const device = body.device === 'phone' || body.device === 'desktop' ? body.device : null;
     const signedIn = accounts ? Boolean(await accounts.userIdFor(request.headers).catch(() => null)) : false;
-    // Behind Fly's proxy request.ip is the proxy; Fly passes the visitor's address in this header.
-    const flyIp = request.headers['fly-client-ip'];
-    const ip = typeof flyIp === 'string' && flyIp ? flyIp : request.ip;
-    store.record({ kind, ip, userAgent: String(request.headers['user-agent'] ?? '').slice(0, 200), signedIn, device });
+    store.record({ kind, ip, signedIn, device });
     return { ok: true };
   });
 }

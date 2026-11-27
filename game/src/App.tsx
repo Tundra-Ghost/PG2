@@ -356,7 +356,6 @@ export default function App() {
       removeSavedGame(saveId);
       return;
     }
-    if (match.state.moveHistory.length === 0) reportUsage('bot_start', saveId);
     recordEvicted(saveGame({
       v: SAVE_VERSION,
       id: saveId,
@@ -749,6 +748,7 @@ export default function App() {
 
     const id = newSaveId();
     const state = startMatchState(id, Date.now() | 0, [], []);
+    reportUsage('bot_start', id);
     setSaveId(id);
     setActivePlayerModifierIds([]);
     setPendingBotModifierIds([]);
@@ -765,6 +765,7 @@ export default function App() {
   function handleStartMatch(playerModifierIds: string[], opponentModifierIds: string[]) {
     const id = saveId ?? newSaveId();
     const state = startMatchState(id, Date.now() | 0, playerModifierIds, opponentModifierIds);
+    reportUsage('bot_start', id);
     setSaveId(id);
     setDraftResume(null);
     setPendingBotModifierIds(opponentModifierIds);
@@ -796,6 +797,7 @@ export default function App() {
     }
     const id = newSaveId();
     const state = startMatchState(id, Date.now() | 0, [], []);
+    if (vsBot) reportUsage('bot_start', id);
     setSaveId(id);
     setActivePlayerModifierIds([]);
     setPendingBotModifierIds([]);

@@ -110,8 +110,23 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
   }
 
   // Online games for the usage stats: started once both seats fill, finished once the game ends.
+  // Rooms restored after a restart were counted before it.
   const countedStart = new Set<string>();
   const countedEnd = new Set<string>();
+  const syncCounted = (seed: boolean) => {
+    const open = rooms.roomStates();
+    const ids = new Set(open.map(room => room.id));
+    for (const set of [countedStart, countedEnd]) for (const id of set) if (!ids.has(id)) set.delete(id);
+    if (!seed) return;
+    for (const room of open) {
+      if (room.full) countedStart.add(room.id);
+      if (room.over) countedEnd.add(room.id);
+    }
+  };
+  syncCounted(true);
+  const prune = setInterval(() => syncCounted(false), 60 * 60 * 1000);
+  prune.unref();
+  app.addHook('onClose', async () => clearInterval(prune));
   const broadcast = (roomId: string) => {
     const snapshot = rooms.snapshot(roomId);
     if (!snapshot) return;

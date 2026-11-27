@@ -51,7 +51,7 @@ export default function StatsPanel() {
         <h2 id="admin-accounts" className={styles.heading}>Accounts</h2>
         <div className={styles.tiles}>
           <Tile label="Total" value={accounts.total} />
-          <Tile label="Active today" value={accounts.active1} />
+          <Tile label="Active 24 h" value={accounts.active1} />
           <Tile label="Active 7 days" value={accounts.active7} />
           <Tile label="Active 30 days" value={accounts.active30} />
           <Tile label="New, 30 days" value={accounts.newPerDay.reduce((n, row) => n + row.count, 0)} />
