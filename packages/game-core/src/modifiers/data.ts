@@ -937,6 +937,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Your knight makes two jumps in one move. The first jump cannot capture. The second can.',
     flavor: '"Everything slowed down. The knight did not."',
+    prototypeRules:
+      'Select a knight and press Bullet Time, then pick where it ends. It makes two knight jumps in one move. The first lands on an empty square and may not give check or leave your King in check. The second may capture. It cannot end where it started. Squares are only stopped on at the end. The move list shows both jumps. Then that knight waits 8 of your turns. One side cannot draft it with Lawrence Of Arabia, Knight Rider, Hatoful Gambit or The Small Council, which leave no knights.',
   },
   {
     id: 'MOD-C017',

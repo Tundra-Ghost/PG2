@@ -10,6 +10,7 @@ export const MODIFIER_IDS = {
   speedrun: 'MOD-B009',
   rubberBanding: 'MOD-B018',
   ctrlZ: 'MOD-C015',
+  bulletTime: 'MOD-C016',
   fiftyFirstMoves: 'MOD-B005',
   gerald: 'MOD-B002',
   heavyIsTheCrown: 'MOD-B004',
