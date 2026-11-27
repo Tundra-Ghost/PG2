@@ -3,6 +3,7 @@ import type { Color, GameState, Piece, Square } from '../../engine/types';
 import { applyMoveInternal } from '../../engine/gameLoop';
 import { isInCheck } from '../../engine/moveGenerator';
 import { offset } from '../../engine/push';
+import { isStatueSquare } from '../../engine/statue';
 import { MODIFIER_IDS } from '../ids';
 
 const ID = MODIFIER_IDS.bulletTime;
@@ -22,7 +23,8 @@ function jumps(from: Square): Square[] {
  */
 function firstJumps(state: GameState, piece: Piece): Square[] {
   return jumps(piece.square).filter(mid => {
-    if (state.pieces.has(mid)) return false;
+    // The statue (Monument To Gerald) is solid: the knight cannot stand on it between jumps.
+    if (state.pieces.has(mid) || isStatueSquare(state, mid)) return false;
     const after = applyMoveInternal(state, { from: piece.square, to: mid, playerColor: piece.color });
     return !isInCheck(after, piece.color) && !isInCheck(after, other(piece.color));
   });

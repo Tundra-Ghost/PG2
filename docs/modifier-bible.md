@@ -894,7 +894,7 @@ Once per match, before your move, undo the last round: your last move and your o
 - Built: a Ctrl+Z button sits with the ability buttons; tap it twice (bigger on phones). At the start of each of your turns the game is saved (engine hook onTurnReady, after turn-start effects); Ctrl+Z puts back the save from the start of your previous turn, seed and all, and you move again. So free abilities used that turn (Flashlight) are undone too, and it does not cost your move. A move YOU DIED plays for you is played again the same way (same seed); a Speedrun timeout is undone and you choose the move yourself. An extra turn (tempo token) is part of the same turn: you cannot undo halfway through it, and the undo takes back both moves and gives the token back. A turn the game skipped (no legal move) does not count, so the undo goes back to your last real turn. You cannot undo while you must move a touched piece (Commitment Issues). If both sides have the card, each keeps its own undo. Bots never draft it. Saved games record it as an action and replay it. Online, the server keeps the saves and the players only learn whether the undo is ready.
 
 ### MOD-C016 · Bullet Time
-*Ref: The Matrix* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Built**
+*Ref: The Matrix* · **Tier A** · Cost 4 · Curse 0 · Knight · Cooldown 8 · Scope: Owner · Modes: All · **Built**
 
 Your knight makes two jumps in one move. The first jump cannot capture. The second can.
 
@@ -1188,6 +1188,7 @@ Both of the owner's knights become Pigeons. Pigeons move like knights. Every 5 r
 - Conflict: Lawrence Of Arabia. It turns every knight into a Camel, so one side cannot draft both.
 - Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
 - Synergy: Stonks. The extra knight changes too.
+- Conflict: Bullet Time. It needs knights, so one side cannot draft both.
 
 ### MOD-E002 · The Small Council (Do You Hear The Pawns Sing)
 *Ref: Les Misérables* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1206,6 +1207,7 @@ The owner has no knights or bishops. They start with 8 pawns on their third rank
 - Conflict: The Bodyguard. This card rebuilds the pawns, so whether the Bodyguard survives would depend on which card goes first. One side cannot draft both.
 - Conflict: MINE!. Its 12 pawns would make the curse cheap, so one side cannot draft both.
 - Conflict: Death And Taxes. Its 12 pawns would make the curse cheap, so one side cannot draft both.
+- Conflict: Bullet Time. It needs knights, so one side cannot draft both.
 
 ### MOD-E003 · Yeah, There Are Three Of Them (Royal Guard)
 *Ref: John Wick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1309,6 +1311,7 @@ Your knights become Camels. A Camel leaps three squares one way and one square t
 - Conflict: Hatoful Gambit and The Small Council. Each one replaces or removes the knights, so one side cannot draft them with this card.
 - Conflict: Knight Rider. It turns every knight into a Nightrider, so one side cannot draft both.
 - Synergy: Stonks. The extra knight changes too.
+- Conflict: Bullet Time. It needs knights, so one side cannot draft both.
 
 ### MOD-E012 · Hopscotch
 *Ref: Fairy chess Grasshopper* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1441,6 +1444,7 @@ Your knights may repeat the same L-jump in a straight line, as long as each land
 - Interaction: Did I Do That? A Nightrider can use the rook move, like a knight.
 - Conflict: Hatoful Gambit, The Small Council and Lawrence Of Arabia. Each one replaces or removes the knights, so one side cannot draft them with this card.
 - Synergy: Stonks. The extra knight changes too.
+- Conflict: Bullet Time. It needs knights, so one side cannot draft both.
 
 ### MOD-E020 · Elephant In The Room
 *Ref: Xiangqi elephants* · **Tier B** · Cost -3 · Curse 1 · Scope: Owner · Modes: All · **Built**
