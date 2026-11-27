@@ -360,11 +360,11 @@ Negative effects that grant extra point budget. Curses fill the Madness Meter. A
 
 ### Move rules
 
-Some curses limit which move you may make this turn: Peer Pressure, Main Character Syndrome, Roll For Initiative, Case Of The Mondays, Lunch Break and Imposter Syndrome. They share one set of rulings:
+Some cards limit which move you may make this turn: One Way Street (A020), Peer Pressure, Main Character Syndrome, Roll For Initiative, Case Of The Mondays, Lunch Break and Imposter Syndrome. They share one set of rulings:
 
 - In check, none of them apply. Any legal move is allowed.
 - A move rule only applies when at least one legal move keeps it. It never takes away your last move.
-- When two apply to one side, they are checked in this order: Lunch Break, Case Of The Mondays, Imposter Syndrome, Peer Pressure, Main Character Syndrome, Roll For Initiative. A later rule only applies if some legal move keeps every earlier one too.
+- When two apply to one side, they are checked in this order: One Way Street, Lunch Break, Case Of The Mondays, Imposter Syndrome, Peer Pressure, Main Character Syndrome, Roll For Initiative. A later rule only applies if some legal move keeps every earlier one too.
 - Rules that demand a move ("you must move X") also forbid shooing Gerald. Rules that only forbid some moves do not.
 - Two rules that demand different pieces on the same move cannot be drafted by one side (see each card's conflicts).
 
