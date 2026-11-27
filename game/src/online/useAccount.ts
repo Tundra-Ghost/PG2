@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { adoptProfile, isGeneratedName, updateProfile, type LocalProfile } from '../profile';
 import {
+  checkAdmin,
   currentAccount,
   fetchProfile,
   onWaking,
@@ -24,6 +25,8 @@ export interface AccountControls {
   /** The sleeping game server is starting up. Requests wait for it. */
   waking: boolean;
   sync: SyncState;
+  /** The server lets this account open the admin area. Only hides the menu entry; the server guards the data. */
+  isAdmin: boolean;
   register(username: string, password: string): Promise<AccountResult>;
   signIn(username: string, password: string): Promise<AccountResult>;
   signOut(): Promise<void>;
@@ -49,13 +52,21 @@ export function useAccount(
   const [waking, setWaking] = useState(false);
   const [sync, setSync] = useState<SyncState>('syncing');
   const [recoveryCode, setRecoveryCode] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const profileRef = useRef(profile);
+  /** The account the latest admin check is for, so a late answer can't outlive a sign-out. */
+  const adminCheckFor = useRef<Account | null>(null);
   profileRef.current = profile;
 
   const start = useCallback(
     async (next: Account) => {
       setAccount(next);
       setSync('syncing');
+      setIsAdmin(false);
+      adminCheckFor.current = next;
+      void checkAdmin().then(yes => {
+        if (adminCheckFor.current === next) setIsAdmin(yes);
+      });
       try {
         const adopted = adoptProfile(await fetchProfile());
         let current = adopted ?? profileRef.current;
@@ -115,6 +126,7 @@ export function useAccount(
     ready,
     waking,
     sync,
+    isAdmin,
     async register(username, password) {
       const result = await withSync(registerAccount(username, password));
       if (result.ok) setRecoveryCode(await requestRecoveryCode());
@@ -124,6 +136,8 @@ export function useAccount(
     async signOut() {
       await signOutAccount();
       setAccount(null);
+      adminCheckFor.current = null;
+      setIsAdmin(false);
       setRecoveryCode(null);
     },
     async resetPassword(username, code, password) {

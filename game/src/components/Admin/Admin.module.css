@@ -1,0 +1,221 @@
+/* Admin area: the same light card as Ongoing games and Friends, wider for tables. */
+.root {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background-color: #e5edf7;
+}
+
+.card {
+  width: 100%;
+  max-width: 960px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid rgb(var(--gold-rgb) / 0.25);
+  box-shadow: 0 24px 52px rgba(16, 37, 66, 0.12);
+}
+
+@media (max-width: 480px) {
+  .root { padding: 1rem 0.5rem; }
+  .card { padding: 1rem; }
+}
+
+.back {
+  align-self: flex-start;
+  min-height: 44px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: rgb(var(--gold-rgb));
+  cursor: pointer;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--ui-gold);
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tab {
+  min-height: 44px;
+  padding: 0 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: #1d3d63;
+  background: #eef3fa;
+  border: 1px solid rgb(var(--gold-rgb) / 0.3);
+  cursor: pointer;
+}
+
+.tabActive {
+  color: #ffffff;
+  background: var(--ui-gold);
+  border-color: var(--ui-gold);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.heading {
+  margin: 0.4rem 0 0;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #102542;
+}
+
+.text {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: #3d5470;
+}
+
+.warn {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: #7a1d14;
+  background: #fdecea;
+  border: 1px solid #e3a59e;
+}
+
+.error {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  color: #a12a20;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.5rem;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.7rem 0.8rem;
+  background: #f4f7fb;
+  border: 1px solid rgb(var(--gold-rgb) / 0.2);
+}
+
+.tileLabel {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: #3d5470;
+}
+
+.tileValue {
+  font-family: var(--font-body);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #102542;
+  overflow-wrap: anywhere;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: #102542;
+}
+
+.table th,
+.table td {
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid #d9e2ee;
+}
+
+.table th {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: #3d5470;
+  white-space: nowrap;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: #3d5470;
+}
+
+.input {
+  min-height: 44px;
+  padding: 0 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: #102542;
+  background: #ffffff;
+  border: 1px solid #9fb2c9;
+}
+
+.button {
+  min-height: 44px;
+  padding: 0 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+  background: var(--ui-gold);
+  border: 1px solid var(--ui-gold);
+  cursor: pointer;
+}
+
+.buttonQuiet {
+  composes: button;
+  color: #1d3d63;
+  background: #eef3fa;
+  border-color: rgb(var(--gold-rgb) / 0.3);
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}

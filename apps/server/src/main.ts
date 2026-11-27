@@ -1,4 +1,5 @@
 import { createAccounts } from './accounts';
+import { parseAdminIds } from './admin';
 import { createGameServer } from './server';
 import { FileStore } from './store';
 
@@ -18,6 +19,8 @@ const accounts = await createAccounts({
   trustedOrigins: corsOrigin,
 });
 
-const { app } = createGameServer({ corsOrigin, logger: true, store, accounts });
+// ADMIN_ACCOUNT_IDS is a Fly secret: account ids allowed into the admin area, comma separated.
+const adminIds = parseAdminIds(process.env.ADMIN_ACCOUNT_IDS);
+const { app } = createGameServer({ corsOrigin, logger: true, store, accounts, adminIds });
 app.addHook('onClose', async () => accounts.close());
 await app.listen({ port, host: process.env.HOST ?? '127.0.0.1' });

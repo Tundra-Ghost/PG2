@@ -4,3 +4,4 @@ node_modules/
 
 # Built by the Publish site workflow, never committed.
 game/dist/
+apps/server/build-info.json

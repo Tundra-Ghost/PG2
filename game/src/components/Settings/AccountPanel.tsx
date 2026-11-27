@@ -70,6 +70,11 @@ export default function AccountPanel({
           <div className={styles.rowBody}>
             <span className={styles.rowLabel}>Signed in as {controls.account.username}</span>
             <span className={styles.rowSub}>{SYNC_TEXT[controls.sync]}</span>
+            {controls.account.id && (
+              <span className={styles.rowSub}>
+                Account id: <span className={styles.selectAll}>{controls.account.id}</span>
+              </span>
+            )}
           </div>
           <button
             type="button"

@@ -413,3 +413,13 @@
   font-size: 0.8rem;
   color: var(--ui-gold-light);
 }
+
+/* Long ids the player may need to copy, e.g. the account id. */
+.selectAll {
+  user-select: all;
+  overflow-wrap: anywhere;
+  /* Ids are case sensitive: show and copy them exactly. */
+  text-transform: none;
+  letter-spacing: normal;
+  font-family: var(--font-mono);
+}
