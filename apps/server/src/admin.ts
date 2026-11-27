@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { Accounts } from './accounts';
 import type { Player } from './rooms';
+import type { UsageStore } from './usage';
 import type { BuildInfo } from './version';
 
 /**
@@ -16,6 +17,7 @@ export function parseAdminIds(raw: string | undefined): Set<string> {
 export interface AdminOptions {
   adminIds: Set<string>;
   build: BuildInfo;
+  usage: UsageStore;
 }
 
 /** The admin a guarded request belongs to. Set by the hook, so always present in admin routes. */
@@ -40,6 +42,8 @@ export function registerAdminRoutes(app: FastifyInstance, accounts: Accounts, op
       scope.get('/check', async () => ({ ok: true }));
 
       scope.get('/overview', async () => ({ server: options.build }));
+
+      scope.get('/stats', async () => ({ accounts: options.usage.accounts(), daily: options.usage.daily() }));
     },
     { prefix: '/api/admin' },
   );

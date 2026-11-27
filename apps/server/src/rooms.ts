@@ -103,6 +103,15 @@ export class RoomManager {
     this.expireOld();
   }
 
+  /** Every open room's id and whether both seats are taken and the game is over. */
+  roomStates(): { id: string; full: boolean; over: boolean }[] {
+    return [...this.rooms.values()].map(room => ({
+      id: room.id,
+      full: Boolean(room.seats.white && room.seats.black),
+      over: room.state.status !== 'active',
+    }));
+  }
+
   /** Deletes rooms idle longer than ROOM_EXPIRY_MS. */
   expireOld(): void {
     const cutoff = this.now() - ROOM_EXPIRY_MS;

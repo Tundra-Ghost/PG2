@@ -10,6 +10,7 @@ const BUILD = { version: '0.2026.11.27.1', commit: 'abc1234', builtAt: '2026-11-
 export const ADMIN_ENDPOINTS: { method: 'GET' | 'POST'; path: string; body?: unknown }[] = [
   { method: 'GET', path: '/api/admin/check' },
   { method: 'GET', path: '/api/admin/overview' },
+  { method: 'GET', path: '/api/admin/stats' },
   { method: 'GET', path: '/api/admin/no-such-page' },
 ];
 
@@ -87,5 +88,21 @@ describe('admin access', () => {
     adminIds.add(owner.id);
     expect((await call('/api/admin/check', { token: owner.token })).status).toBe(200);
     expect(await (await call('/api/admin/overview', { token: owner.token })).json()).toMatchObject({ server: BUILD });
+  });
+
+  it('shows the admin account and visitor stats', async () => {
+    const owner = await register('theowner');
+    await register('someone');
+    adminIds.add(owner.id);
+    expect((await call('/api/usage', { body: { kind: 'visit', device: 'phone' } })).status).toBe(200);
+    expect((await call('/api/usage', { body: { kind: 'online_start' } })).status).toBe(400);
+    const stats = (await (await call('/api/admin/stats', { token: owner.token })).json()) as {
+      accounts: { total: number; active1: number; newPerDay: { count: number }[] };
+      daily: { pageLoads: number; phone: number }[];
+    };
+    expect(stats.accounts.total).toBe(2);
+    expect(stats.accounts.active1).toBe(2);
+    expect(stats.accounts.newPerDay.at(-1)!.count).toBe(2);
+    expect(stats.daily.at(-1)).toMatchObject({ pageLoads: 1, phone: 1 });
   });
 });

@@ -306,6 +306,7 @@ export default function Settings({ settings: initial, onSave, onBack, account, f
             <>
               <FeedbackPanel context={feedbackContext} />
               <StaticRow label="Pigeon Chess"  sub={`Version ${describeBuild(GAME_BUILD)}`} />
+              <StaticRow label="Usage stats"   sub="Anonymous stats (page loads, phone or desktop, games played) help us improve the game. No IP addresses are kept." />
               <StaticRow label="Audio Credits" sub="SFX from pigeon-chess prototype · BGM: Treasure Trove Tango (CC)" />
               <StaticRow label="Engine"        sub="Custom chess engine · Vite + React + TypeScript" />
               <StaticRow label="Modifiers"     sub={`${modifierRegistry.getAll().length} of ${ALL_MODIFIERS.length} playable`} />
