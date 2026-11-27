@@ -472,7 +472,7 @@ export class BoardScene extends Phaser.Scene {
     };
     const fresh = sprite.x === 0 && sprite.y === 0;
     if (this.calm || fresh || (sprite.x === x && sprite.y === y)) {
-      sprite.setPosition(x, y);
+      sprite.setPosition(x, y).setDepth(DEPTH.pieces);
       restyle();
       return;
     }
