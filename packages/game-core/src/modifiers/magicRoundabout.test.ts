@@ -100,7 +100,8 @@ describe('MOD-A013 The Magic Roundabout', () => {
     expect(getCloakedPiece(moving, 'white')).toBe(hiddenId);
     moving = round(moving);
     expect(getCloakedPiece(moving, 'white')).toBe(hiddenId);
-    const event = moving.eventHistory.filter(e => e.modifierId === ID).at(-1)!;
+    const events = moving.eventHistory.filter(e => e.modifierId === ID);
+    const event = events[events.length - 1];
     expect(event.squares).not.toContain('e5');
 
     // Blocked: the cloaked knight on d5 cannot turn (e5 is full), so the bishop on d4 waits and reveals it.
