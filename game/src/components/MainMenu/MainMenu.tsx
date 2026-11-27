@@ -17,6 +17,8 @@ interface MainMenuProps {
   onPuzzles: () => void;
   onOnline: () => void;
   onFriends: () => void;
+  /** Set only for an admin account; shows the Admin entry. */
+  onAdmin?: () => void;
   onLinkAccount: () => void;
   /** Opens the list of bot games in progress. */
   onOngoing: () => void;
@@ -110,6 +112,7 @@ export default function MainMenu({
   onPuzzles,
   onOnline,
   onFriends,
+  onAdmin,
   onLinkAccount,
   onTutorial,
   onOngoing,
@@ -325,6 +328,20 @@ export default function MainMenu({
               <span>How to play</span>
               <span className={styles.linkHint}>Guided match vs Chick</span>
             </button>
+
+            {onAdmin && (
+              <button
+                type="button"
+                className={styles.friendsButton}
+                onClick={() => {
+                  playClick();
+                  onAdmin();
+                }}
+              >
+                <span>Admin</span>
+                <span className={styles.linkHint}>Stats, surveys and moderation</span>
+              </button>
+            )}
 
             <dl className={styles.brandStats}>
               <div>

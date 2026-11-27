@@ -11,11 +11,13 @@ import type {
   Square,
 } from '@pigeon-chess/game-core';
 import { registerAccountRoutes, type Accounts } from './accounts';
+import { registerAdminRoutes } from './admin';
 import { createFeedbackStore, registerFeedbackRoutes } from './feedback';
 import { createSurveyStore, registerSurveyRoutes } from './survey';
 import { attachSocial, type Presence } from './social';
 import { RoomManager, type Player } from './rooms';
 import type { RoomStore } from './store';
+import { readBuildInfo, type BuildInfo } from './version';
 
 export interface ServerOptions {
   /** Origins allowed to open a socket. The Vite dev server by default. */
@@ -25,6 +27,10 @@ export interface ServerOptions {
   store?: RoomStore;
   /** Player accounts and profile sync. Left out, the account routes don't exist. */
   accounts?: Accounts;
+  /** Account ids allowed into /api/admin (ADMIN_ACCOUNT_IDS). Empty: nobody. */
+  adminIds?: Set<string>;
+  /** This server's version. Read from build-info.json or git when left out. */
+  build?: BuildInfo;
 }
 
 export interface GameServer {
@@ -93,6 +99,10 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
     registerAccountRoutes(app, options.accounts);
     registerFeedbackRoutes(app, createFeedbackStore(options.accounts.db), options.accounts);
     registerSurveyRoutes(app, createSurveyStore(options.accounts.db), options.accounts);
+    registerAdminRoutes(app, options.accounts, {
+      adminIds: options.adminIds ?? new Set(),
+      build: options.build ?? readBuildInfo(),
+    });
   }
 
   const broadcast = (roomId: string) => {

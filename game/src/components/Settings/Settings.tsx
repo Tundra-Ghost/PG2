@@ -4,6 +4,7 @@ import type { AccountControls } from '../../online/useAccount';
 import type { AppSettings } from '../../settings';
 import { saveSettings } from '../../settings';
 import { playClick } from '../../sound';
+import { GAME_BUILD, describeBuild } from '../../version';
 import AccountPanel from './AccountPanel';
 import { shouldCloseOnEscape } from './escapeClose';
 import FeedbackPanel from './FeedbackPanel';
@@ -304,7 +305,7 @@ export default function Settings({ settings: initial, onSave, onBack, account, f
           {activeTab === 'feedback' && (
             <>
               <FeedbackPanel context={feedbackContext} />
-              <StaticRow label="Pigeon Chess"  sub="v0.1.0 · Phase 0 · Viktor Crumb's Domain" />
+              <StaticRow label="Pigeon Chess"  sub={`Version ${describeBuild(GAME_BUILD)}`} />
               <StaticRow label="Audio Credits" sub="SFX from pigeon-chess prototype · BGM: Treasure Trove Tango (CC)" />
               <StaticRow label="Engine"        sub="Custom chess engine · Vite + React + TypeScript" />
               <StaticRow label="Modifiers"     sub={`${modifierRegistry.getAll().length} of ${ALL_MODIFIERS.length} playable`} />

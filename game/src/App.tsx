@@ -1,3 +1,4 @@
+import AdminScreen from './components/Admin/AdminScreen';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { GameState } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
@@ -962,6 +963,7 @@ export default function App() {
             setScreen('online');
           }}
           onFriends={() => setScreen('friends')}
+          onAdmin={account.isAdmin ? () => setScreen('admin') : undefined}
           onLinkAccount={goToLinkAccount}
           onTutorial={() => setTutorialStep(0)}
           onOngoing={openOngoing}
@@ -1108,6 +1110,15 @@ export default function App() {
           }}
           onSettings={goToSettings}
         />
+        {settingsOverlay}
+      </div>
+    );
+  }
+
+  if (baseScreen === 'admin') {
+    return (
+      <div onClick={handleUnlock}>
+        <AdminScreen onBack={() => setScreen('menu')} />
         {settingsOverlay}
       </div>
     );

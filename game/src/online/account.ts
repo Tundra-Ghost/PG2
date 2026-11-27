@@ -9,6 +9,8 @@ const TOKEN_KEY = 'pigeon-chess-session';
 
 export interface Account {
   username: string;
+  /** The account id. The owner copies it from Settings to set ADMIN_ACCOUNT_IDS. */
+  id?: string;
 }
 
 export type AccountResult = { ok: true; account: Account } | { ok: false; reason: string };
@@ -141,10 +143,10 @@ async function failure(res: Response): Promise<{ ok: false; reason: string }> {
 
 async function signedIn(res: Response): Promise<AccountResult> {
   if (!res.ok) return failure(res);
-  const body = (await res.json()) as { token?: string; user?: { username?: string } };
+  const body = (await res.json()) as { token?: string; user?: { username?: string; id?: string } };
   if (!body.token || !body.user?.username) return { ok: false, reason: 'Something went wrong.' };
   writeToken(body.token);
-  return { ok: true, account: { username: body.user.username } };
+  return { ok: true, account: { username: body.user.username, id: body.user.id } };
 }
 
 const unreachable = { ok: false, reason: 'The game server did not wake up. Check your connection and try again.' } as const;
@@ -184,12 +186,22 @@ export async function currentAccount(): Promise<Account | null> {
   if (!readToken()) return null;
   const res = await apiCall('/api/auth/get-session');
   if (!res.ok) return null;
-  const body = (await res.json()) as { user?: { username?: string } } | null;
+  const body = (await res.json()) as { user?: { username?: string; id?: string } } | null;
   if (!body?.user?.username) {
     writeToken(null);
     return null;
   }
-  return { username: body.user.username };
+  return { username: body.user.username, id: body.user.id };
+}
+
+/** True only when the server says this account may open the admin area. */
+export async function checkAdmin(): Promise<boolean> {
+  if (!readToken()) return false;
+  try {
+    return (await apiCall('/api/admin/check')).ok;
+  } catch {
+    return false;
+  }
 }
 
 /** The profile saved on the account, or null when it has none yet. */
