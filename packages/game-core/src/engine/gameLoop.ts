@@ -637,6 +637,8 @@ function applyMoveOnce(state: GameState, move: Move): GameState {
   }
 
   // Hidden pieces (MOD-D009, MOD-D015): a hidden piece that gives check is revealed.
+  // A hidden piece that uses an ability acts in plain sight, even if it stays on its square.
+  if (preparedMove.ability) next = revealHiddenPieces(next, [pieceMoved.id], 'It uses an ability.');
   next = revealHiddenPieces(next, [...hiddenCheckers(next, 'white'), ...hiddenCheckers(next, 'black')], 'It gives check.');
 
   // Switch turn & counters. A spent tempo token (MOD-C007) keeps the turn.

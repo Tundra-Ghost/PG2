@@ -49,6 +49,7 @@ function needsPartner(cardId: string, ownIds: string[], otherIds: string[]): str
  * swap would let a Heavy Is The Crown King skip its order.
  * Leap Of Faith needs a bishop: The Small Council has none, and Elephant In The Room turns them into Elephants.
  * MINE! and Death And Taxes are priced for 8 pawns; The Small Council's 12 would make them cheap curses.
+ * Invisibility Cloak and Camouflage both hide your pieces, so one player may not draft both.
  */
 const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.slayQueen, MODIFIER_IDS.threeKings],
@@ -79,6 +80,7 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.imposterSyndrome, MODIFIER_IDS.threeKings],
   [MODIFIER_IDS.mine, MODIFIER_IDS.smallCouncil],
   [MODIFIER_IDS.deathAndTaxes, MODIFIER_IDS.smallCouncil],
+  [MODIFIER_IDS.invisibilityCloak, MODIFIER_IDS.camouflage],
 ];
 
 /**

@@ -1,6 +1,6 @@
 import type { Color, GameState, MoveRecord, Piece, Square } from './types';
 import { lineSquares } from './hops';
-import { pieceAttackSquares } from './moveGenerator';
+import { isInCheck, pieceAttackSquares } from './moveGenerator';
 import { modifierRegistry } from '../modifiers/registry';
 
 /**
@@ -68,6 +68,14 @@ export function getHiddenPieceIds(state: GameState, viewer: Color): Set<string> 
   // Ids of pieces no longer on the board are dropped too.
   const onBoard = new Set([...state.pieces.values()].map(piece => piece.id));
   for (const id of ids) if (!onBoard.has(id)) ids.delete(id);
+  // A piece shielding its own King from a line attack stays in sight: an
+  // open line with no check would give it away anyway.
+  for (const piece of state.pieces.values()) {
+    if (!ids.has(piece.id) || isInCheck(state, piece.color)) continue;
+    const pieces = new Map(state.pieces);
+    pieces.delete(piece.square);
+    if (isInCheck({ ...state, pieces }, piece.color)) ids.delete(piece.id);
+  }
   return ids;
 }
 
