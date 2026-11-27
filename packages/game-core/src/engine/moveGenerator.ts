@@ -311,27 +311,31 @@ export function getAttackSquares(state: GameState, color: Color): Set<Square> {
   const attacked = new Set<Square>();
   for (const piece of state.pieces.values()) {
     if (piece.color !== color) continue;
-    // MOD-D002: Ghost Pieces never give check.
-    if (piece.isGhost) continue;
-    if (piece.type === 'pawn') {
-      const f = fileIndex(piece.square);
-      const r = rankIndex(piece.square);
-      const dir = piece.color === 'white' ? 1 : -1;
-      for (const df of [-1, 1]) {
-        const sq = toSquare(f + df, r + dir);
-        if (sq) attacked.add(sq);
-      }
-    } else if (piece.type === 'cannon') {
-      // MOD-E013: a Cannon's quiet slides threaten nothing; only squares past a screen do.
-      for (const sq of cannonAttacks(state, piece)) attacked.add(sq);
-    } else {
-      // For king/queen/rook/bishop/knight — use their move squares as attacks
-      // (excluding castling moves from attack coverage)
-      const moves = getLegalMovesForPieceNocastle(state, piece);
-      for (const sq of moves) attacked.add(sq);
-    }
+    for (const sq of pieceAttackSquares(state, piece)) attacked.add(sq);
   }
   return attacked;
+}
+
+/** Squares one piece attacks. */
+export function pieceAttackSquares(state: GameState, piece: Piece): Square[] {
+  // MOD-D002: Ghost Pieces never give check.
+  if (piece.isGhost) return [];
+  if (piece.type === 'pawn') {
+    const f = fileIndex(piece.square);
+    const r = rankIndex(piece.square);
+    const dir = piece.color === 'white' ? 1 : -1;
+    const result: Square[] = [];
+    for (const df of [-1, 1]) {
+      const sq = toSquare(f + df, r + dir);
+      if (sq) result.push(sq);
+    }
+    return result;
+  }
+  // MOD-E013: a Cannon's quiet slides threaten nothing; only squares past a screen do.
+  if (piece.type === 'cannon') return [...cannonAttacks(state, piece)];
+  // For king/queen/rook/bishop/knight — use their move squares as attacks
+  // (excluding castling moves from attack coverage)
+  return getLegalMovesForPieceNocastle(state, piece);
 }
 
 /** getLegalMovesForPiece without castling — used purely for attack-square calculation */

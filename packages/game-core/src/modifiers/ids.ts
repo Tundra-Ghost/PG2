@@ -44,6 +44,7 @@ export const MODIFIER_IDS = {
   smokeCloud: 'MOD-D003',
   catMode: 'MOD-D006',
   sus: 'MOD-D005',
+  invisibilityCloak: 'MOD-D009',
   ghosts: 'MOD-D002',
   forgiveMe: 'MOD-C002',
   noIDontThinkIWill: 'MOD-B003',

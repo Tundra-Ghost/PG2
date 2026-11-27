@@ -1,5 +1,6 @@
-import type { Color, GameState, MoveRecord, Square } from './types';
+import type { Color, GameState, MoveRecord, Piece, Square } from './types';
 import { lineSquares } from './hops';
+import { pieceAttackSquares } from './moveGenerator';
 import { modifierRegistry } from '../modifiers/registry';
 
 /**
@@ -36,8 +37,87 @@ export function getVisibleSquares(state: GameState, viewer: Color): Set<Square> 
 
 /** True when `viewer` should not read this move: the opponent moved into fog. */
 export function isMoveHidden(state: GameState, record: MoveRecord, viewer: Color, visible = getVisibleSquares(state, viewer)): boolean {
-  if (!visible || record.pieceMoved.color === viewer) return false;
+  if (record.pieceMoved.color === viewer) return false;
+  if (isHiddenPieceMove(state, record, viewer)) return true;
+  if (!visible) return false;
   return !visible.has(record.move.to);
+}
+
+// ─── Hidden pieces (MOD-D009 Invisibility Cloak, MOD-D015 Camouflage) ───────
+// A hidden piece is on the board for the rules, but its opponent sees an
+// empty square. Moves are offered to that opponent as if the square were
+// empty. A move the hidden piece blocks is a "bump": it reveals the piece and
+// does not use the move (see isBumpMove). Kings are never hidden (Core rule 1).
+
+/** Ids of enemy pieces `viewer` cannot see. */
+export function getHiddenPieceIds(state: GameState, viewer: Color): Set<string> {
+  const ids = new Set<string>();
+  const seen = new Set<string>();
+  for (const inst of state.activeModifiers) {
+    if (seen.has(inst.id)) continue;
+    seen.add(inst.id);
+    for (const id of modifierRegistry.get(inst.id)?.getHiddenPieces?.(state) ?? []) ids.add(id);
+  }
+  if (ids.size === 0) return ids;
+  for (const piece of state.pieces.values()) {
+    if (!ids.has(piece.id)) continue;
+    if (piece.color === viewer || piece.type === 'king' || piece.isRealKing) ids.delete(piece.id);
+  }
+  // Ids of pieces no longer on the board are dropped too.
+  const onBoard = new Set([...state.pieces.values()].map(piece => piece.id));
+  for (const id of ids) if (!onBoard.has(id)) ids.delete(id);
+  return ids;
+}
+
+/** True when `viewer` cannot see this enemy piece. */
+export function isPieceHidden(state: GameState, piece: Piece, viewer: Color): boolean {
+  return piece.color !== viewer && getHiddenPieceIds(state, viewer).has(piece.id);
+}
+
+/** True when the piece that made this move is hidden from `viewer` now. */
+export function isHiddenPieceMove(state: GameState, record: MoveRecord, viewer: Color): boolean {
+  if (record.pieceMoved.color === viewer) return false;
+  const hidden = getHiddenPieceIds(state, viewer);
+  return hidden.size > 0 && hidden.has(record.pieceMoved.id);
+}
+
+/**
+ * The board as `viewer` believes it is: hidden enemy pieces taken off. Only
+ * the piece map is copied. Returns `state` itself when nothing is hidden.
+ */
+export function withoutHiddenPieces(state: GameState, viewer: Color, hidden = getHiddenPieceIds(state, viewer)): GameState {
+  if (hidden.size === 0) return state;
+  const pieces = new Map(state.pieces);
+  for (const [square, piece] of pieces) if (hidden.has(piece.id)) pieces.delete(square);
+  return { ...state, pieces };
+}
+
+/** Ids of hidden pieces of `color` that attack an enemy King. A check always reveals. */
+export function hiddenCheckers(state: GameState, color: Color): string[] {
+  const viewer: Color = color === 'white' ? 'black' : 'white';
+  const hidden = getHiddenPieceIds(state, viewer);
+  if (hidden.size === 0) return [];
+  const kings = [...state.pieces.values()].filter(piece => piece.color === viewer && piece.type === 'king').map(piece => piece.square);
+  const result: string[] = [];
+  for (const piece of state.pieces.values()) {
+    if (!hidden.has(piece.id)) continue;
+    if (pieceAttackSquares(state, piece).some(sq => kings.includes(sq))) result.push(piece.id);
+  }
+  return result;
+}
+
+/** Asks each hiding card to show these pieces again. No event is added. */
+export function unhidePieces(state: GameState, pieceIds: string[]): GameState {
+  if (pieceIds.length === 0) return state;
+  let next = state;
+  const seen = new Set<string>();
+  for (const inst of state.activeModifiers) {
+    if (seen.has(inst.id)) continue;
+    seen.add(inst.id);
+    const def = modifierRegistry.get(inst.id);
+    if (def?.revealPieces) next = def.revealPieces(next, pieceIds);
+  }
+  return next;
 }
 
 /**

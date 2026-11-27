@@ -180,4 +180,6 @@ export interface Move {
 export interface ValidationResult {
   valid: boolean;
   reason?: string;
+  /** Hidden pieces: the move bumps into a piece its player cannot see (MOD-D009, MOD-D015). */
+  bump?: boolean;
 }

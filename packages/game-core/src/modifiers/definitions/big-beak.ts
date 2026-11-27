@@ -1,6 +1,7 @@
 import type { ModifierDefinition } from '../types';
 import type { GameState, Square } from '../../engine/types';
-import { appendGameEvent, cloneState } from '../../engine/gameLoop';
+import { appendGameEvent, cloneState, revealHiddenPieces } from '../../engine/gameLoop';
+import { isPieceHidden } from '../../engine/visibility';
 import { prngPickIndex } from '../../engine/prng';
 import { MODIFIER_IDS } from '../ids';
 
@@ -68,6 +69,9 @@ export const bigBeakDef: ModifierDefinition = {
       ...next.modifierState,
       [ID]: { ...current, seen: { ...current.seen, [piece.id]: plies + REVEAL_PLIES } } satisfies Watch,
     };
+    // A hidden piece (MOD-D009, MOD-D015) that Big Beak spots is shown again.
+    const opponent = piece.color === 'white' ? 'black' : 'white';
+    if (isPieceHidden(state, piece, opponent)) return revealHiddenPieces(next, [piece.id], 'Big Beak spotted it.');
     if (current.seen[piece.id] !== undefined && current.seen[piece.id] >= plies) return next;
     return appendGameEvent(next, {
       ply: plies,
