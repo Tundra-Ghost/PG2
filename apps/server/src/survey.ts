@@ -159,3 +159,95 @@ export function registerSurveyRoutes(app: FastifyInstance, store: SurveyStore, a
     return { ok: true, id };
   });
 }
+
+export interface SurveyFilter {
+  /** UTC days, inclusive: YYYY-MM-DD. */
+  from?: string;
+  to?: string;
+  version?: string;
+  modifier?: string;
+}
+
+const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Reads filters from a query string, ignoring anything malformed. */
+export function parseSurveyFilter(query: unknown): SurveyFilter {
+  const q = (query ?? {}) as Record<string, unknown>;
+  const text = (key: string, max = 100) => (typeof q[key] === 'string' && q[key] && (q[key] as string).length <= max ? (q[key] as string) : undefined);
+  const day = (key: string) => {
+    const value = text(key, 10);
+    return value && DAY_RE.test(value) ? value : undefined;
+  };
+  return { from: day('from'), to: day('to'), version: text('version'), modifier: text('modifier') };
+}
+
+/** Responses with no version came from builds before versions were sent. */
+export const surveyVersion = (response: SurveyResponse) =>
+  typeof response.context.version === 'string' ? response.context.version : 'unknown';
+
+export const surveyModifiers = (response: SurveyResponse): string[] =>
+  Array.isArray(response.context.modifiers) ? response.context.modifiers.filter((m): m is string => typeof m === 'string') : [];
+
+/** Matching responses, newest first. */
+export function filterSurveys(responses: SurveyResponse[], filter: SurveyFilter): SurveyResponse[] {
+  return responses
+    .filter(response => {
+      const day = new Date(response.createdAt).toISOString().slice(0, 10);
+      if (filter.from && day < filter.from) return false;
+      if (filter.to && day > filter.to) return false;
+      if (filter.version && surveyVersion(response) !== filter.version) return false;
+      if (filter.modifier && !surveyModifiers(response).includes(filter.modifier)) return false;
+      return true;
+    })
+    .sort((a, b) => b.createdAt - a.createdAt || b.id - a.id);
+}
+
+export interface QuestionTotals {
+  id: string;
+  question: string;
+  kind: AnswerKind;
+  answered: number;
+  /** Scale questions only. */
+  average?: number;
+  /** Picks for scale (1 to 5), choice and multi questions. */
+  counts?: Record<string, number>;
+}
+
+/** Simple totals per question. */
+export function surveyTotals(responses: SurveyResponse[]): QuestionTotals[] {
+  const byId = new Map<string, QuestionTotals & { sum: number }>();
+  for (const response of responses) {
+    for (const answer of response.answers) {
+      // Grouped by id and kind: a text answer can't be averaged with a scale.
+      const key = `${answer.id}:${answer.kind}`;
+      const t = byId.get(key) ?? { id: answer.id, question: answer.question, kind: answer.kind, answered: 0, sum: 0 };
+      t.answered += 1;
+      if (answer.kind !== 'text') {
+        t.counts ??= {};
+        const picks = Array.isArray(answer.answer) ? answer.answer : [String(answer.answer)];
+        for (const pick of picks) t.counts[pick] = (t.counts[pick] ?? 0) + 1;
+      }
+      if (answer.kind === 'scale') t.sum += answer.answer as number;
+      byId.set(key, t);
+    }
+  }
+  return [...byId.values()].map(({ sum, ...t }) => (t.kind === 'scale' ? { ...t, average: sum / t.answered } : t));
+}
+
+/** Rows the log sends at most; totals still cover every match. */
+export const SURVEY_LOG_LIMIT = 500;
+
+/** The admin survey log: filtered responses, totals, and the values the filters can take. */
+export function surveyLog(responses: SurveyResponse[], filter: SurveyFilter) {
+  const matching = filterSurveys(responses, filter);
+  return {
+    // Context is whatever the client sent: version and modifiers are cleaned so the page can trust them.
+    responses: matching
+      .slice(0, SURVEY_LOG_LIMIT)
+      .map(r => ({ ...r, context: { ...r.context, version: surveyVersion(r), modifiers: surveyModifiers(r) } })),
+    total: matching.length,
+    totals: surveyTotals(matching),
+    versions: [...new Set(responses.map(surveyVersion))].sort().reverse(),
+    modifiers: [...new Set(responses.flatMap(surveyModifiers))].sort(),
+  };
+}

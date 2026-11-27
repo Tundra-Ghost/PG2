@@ -1,3 +1,4 @@
+import { GAME_BUILD } from '../version';
 import { ALL_MODIFIERS, type Color, type GameState } from '@pigeon-chess/game-core';
 import { apiCall } from './account';
 
@@ -32,7 +33,7 @@ export interface GameSurveyContext {
   details: Record<string, unknown>;
 }
 
-const modifierName = (id: string) => ALL_MODIFIERS.find(mod => mod.id === id)?.name ?? id;
+export const modifierName = (id: string) => ALL_MODIFIERS.find(mod => mod.id === id)?.name ?? id;
 
 export function buildPostGameSurvey(context: GameSurveyContext): SurveyQuestion[] {
   const modifiers = [...new Set(context.modifierIds)].map(modifierName);
@@ -95,6 +96,7 @@ export async function sendSurvey(
           result: context.result,
           modifiers: context.modifierIds,
           ...context.details,
+          version: GAME_BUILD.version,
           viewport: `${window.innerWidth}x${window.innerHeight}`,
           userAgent: navigator.userAgent,
         },
