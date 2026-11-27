@@ -1,5 +1,5 @@
 import type { Color, GameState, Piece, PieceType, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getFootprints, getFlashlightSquares, getForecast, getHiddenPieceIds, getOwnCups, isCup, getTells, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, getFlowArrows, getRoomba, getQuakeArrows, getMineClues, MODIFIER_IDS, type Flow } from '@pigeon-chess/game-core';
+import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getFootprints, getFlashlightSquares, getForecast, getHiddenPieceIds, getOwnCups, isCup, getTells, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, getFlowArrows, getRoomba, getQuakeArrows, getMineClues, isLightsOut, MODIFIER_IDS, type Flow } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -166,6 +166,8 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const confession = rawConfession && viewer && [...state.pieces.values()].some(p => p.square === rawConfession.square && hiddenEnemies.has(p.id)) ? null : rawConfession;
   const ownCups = new Set(viewer ? getOwnCups(state, viewer) : []);
   const ownUnseen = viewer ? getHiddenPieceIds(state, viewer === 'white' ? 'black' : 'white') : new Set<string>();
+  // Jump Scare: in the dark round the viewer's own pieces are hidden too, all but the King (tapping still works).
+  const lightsOut = viewer ? isLightsOut(state) : false;
   const mirrorEdge = isBandersnatchActive(state) ? (orientation === 'white' ? 'right' : 'left') : null;
   const rankOrder = orientation === 'white' ? [...RANKS].reverse() : [...RANKS];
   const fileOrder = orientation === 'white' ? [...FILES] : [...FILES].reverse();
@@ -178,7 +180,8 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
       const storm = tile?.storm;
       const hidden = visible !== null && !visible.has(square);
       const onSquare = state.pieces.get(square);
-      const real = hidden || (onSquare && hiddenEnemies.has(onSquare.id)) ? undefined : onSquare;
+      const ownInDark = lightsOut && !!onSquare && onSquare.color === viewer && onSquare.type !== 'king' && !onSquare.isRealKing;
+      const real = hidden || ownInDark || (onSquare && hiddenEnemies.has(onSquare.id)) ? undefined : onSquare;
       // Sus: the opponent's disguised piece is drawn as its fake type.
       const shownType = real && viewer ? getShownType(state, real, viewer) : real?.type;
       const piece = real && shownType !== real.type

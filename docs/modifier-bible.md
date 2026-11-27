@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 97 built, 3 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 98 built, 2 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -17,6 +17,7 @@
 
 **Batch 15 (2026-11-27)**
 - Everyone Has A Price built. Conflict (same player): Yeah, There Are Three Of Them.
+- Jump Scare built. No conflicts.
 
 **Batch 14 (2026-11-27)**
 - Tide Goes In and Crop Circles count rounds, not turns, like Shake It Off and Night Shift.
@@ -1127,7 +1128,7 @@ Any of your non-King pieces that stays still for 4 of your moves blends in and t
 - Conflict: Invisibility Cloak. Both hide your pieces, so one player may not draft both.
 
 ### MOD-D016 · Jump Scare
-*Ref: Five Nights at Freddy's* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Design**
+*Ref: Five Nights at Freddy's* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
 Every 10 rounds the lights go out for one round. Both players make one move with every piece hidden except their own King. A warning flickers the round before.
 
@@ -1135,6 +1136,8 @@ Every 10 rounds the lights go out for one round. Both players make one move with
 
 - Ruling: illegal blind moves are rejected and you pick again. No move is lost.
 - Skill: the warning gives a round to memorise the board.
+- Built: counted in rounds, like Night Shift. The lights flicker in round 10 (event and status chip) and go out for round 11, then 20 and 21, and so on. In the dark round every piece except the two Kings uses the shared hidden-piece rules (engine/visibility.ts): the opponent sees an empty square, a move it blocks is a bump that reveals it and you move again, a hidden piece giving check or shielding its King from a line attack shows, and bots and online play see only what the player sees (online, hidden pieces are never sent). Your own pieces are hidden from you too (the square looks empty); you can still tap one and see its moves. Pieces shown by a bump stay shown for the rest of the round. While the lights are out, the opponent's earlier moves with hidden pieces also read as moves in the dark; the whole move list shows again once the lights come back.
+- Interaction: other hiding cards (Invisibility Cloak, Camouflage, Shell Game) keep their own rules; in the dark round their pieces are simply hidden too. No conflicts.
 
 ### MOD-D017 · Crystal Ball
 *Ref: Fortune tellers* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1562,7 +1565,7 @@ Values the game uses today. "Built" cards match the build.
 | D013 | Poker Face | D | B | 1 | 0 | Owner | Built |
 | D014 | Shell Game | D | A | 3 | 0 | Owner | Built |
 | D015 | Camouflage | D | A | 3 | 0 | Owner | Built |
-| D016 | Jump Scare | D | B | 2 | 1 | Shared | Design |
+| D016 | Jump Scare | D | B | 2 | 1 | Shared | Built |
 | D017 | Crystal Ball | D | B | 1 | 0 | Owner | Built |
 | D018 | Tells | D | B | 1 | 0 | Owner | Built |
 | D019 | Spoiler Alert | D | A | 3 | 1 | Shared | Design |
@@ -1580,7 +1583,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-97 of 100 built. The other 3 are designs (v0.4).
+98 of 100 built. The other 2 are designs (v0.4).
 
 ### Balance test plan
 

@@ -537,7 +537,7 @@ export default function Board({
               <SquareComponent
                 key={view.square}
                 {...view}
-                holdNeverTaps={touchMove && view.piece?.color === state.turn}
+                holdNeverTaps={touchMove && state.pieces.get(view.square)?.color === state.turn}
                 onClick={handleSquareClick}
               />
             ))}

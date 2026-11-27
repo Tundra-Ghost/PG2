@@ -511,7 +511,8 @@ function buildNotation(
 export function applyMove(state: GameState, move: Move): GameState {
   if (move.ability && modifierRegistry.get(move.ability)?.ability?.free) return applyFreeAbility(state, move);
   const bumped = bumpedPieces(state, move);
-  if (bumped) return revealHiddenPieces(state, bumped, 'Your move bumped into it. Move again.', move.playerColor);
+  // After a bump the view may show a false check or no move at all, so the stuck checks run again.
+  if (bumped) return revealIfStuck(revealHiddenPieces(state, bumped, 'Your move bumped into it. Move again.', move.playerColor));
   return playTakenOverTurns(applyMoveOnce(state, move));
 }
 

@@ -1255,6 +1255,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Every 10 rounds the lights go out for one round. Both players make one move with every piece hidden except their own King. A warning flickers the round before.',
     flavor: '"The lights went out. Viktor moved his knight from memory. The knight was not where Viktor remembered."',
+    prototypeRules:
+      'Rounds 11, 21, 31 and so on are dark; the round before, the lights flicker (an event and a chip in the status bar). In a dark round each player sees only the two Kings: enemy pieces are hidden and so are your own (the square looks empty), but you can still tap them and see their moves. Each side makes one move. A move that is not legal on the real board is a bump: it shows the piece in the way and you move again, so no move is lost. A piece that gives check always shows. The lights come back on when round 12 starts.',
   },
   {
     id: 'MOD-D017',

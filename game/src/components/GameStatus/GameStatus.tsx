@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { getSky, movesUntilLag, type Color, type GameState } from '@pigeon-chess/game-core';
+import { getLights, getSky, movesUntilLag, type Color, type GameState } from '@pigeon-chess/game-core';
 import { getStatusMessage, type ResultSides } from './resultText';
 import { playClick } from '../../sound';
 import styles from './GameStatus.module.css';
@@ -31,6 +31,8 @@ export default function GameStatus({
   const isOver = msg !== null;
   // Night Shift (MOD-D010): the sky shows the time of day.
   const sky = getSky(state);
+  // Jump Scare (MOD-D016): the lights.
+  const lights = getLights(state);
   // Rubber Banding (MOD-B018): each owner's ping counter.
   const pings = (['white', 'black'] as Color[])
     .map(color => ({ color, left: movesUntilLag(state, color) }))
@@ -58,6 +60,11 @@ export default function GameStatus({
             {sky && state.status === 'active' && (
               <span className={`${styles.sky} ${sky.night ? styles.skyNight : styles.skyDay}`} aria-label={sky.text}>
                 <span aria-hidden="true">{sky.night ? '☾' : '☀'}</span> {sky.text}
+              </span>
+            )}
+            {lights && state.status === 'active' && (
+              <span className={`${styles.sky} ${lights.dark ? styles.skyNight : styles.skyDay}`} aria-label={lights.text}>
+                <span aria-hidden="true">{lights.dark ? '●' : '○'}</span> {lights.text}
               </span>
             )}
             {state.status === 'active' && pings.map(({ color, left }) => {
