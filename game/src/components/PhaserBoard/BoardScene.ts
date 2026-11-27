@@ -542,7 +542,7 @@ export class BoardScene extends Phaser.Scene {
       targets: g,
       tweens: [
         { scale: 1.15, alpha: 1, duration: BURST_MS * 0.18, ease: 'Quad.easeOut' },
-        { scale: 1.35, alpha: 0, duration: BURST_MS * 0.82, ease: 'Quad.easeOut' },
+        { scale: 1.35, alpha: 0, duration: BURST_MS * 0.82, ease: 'Quad.easeIn' },
       ],
       onComplete: () => g.destroy(),
     });
