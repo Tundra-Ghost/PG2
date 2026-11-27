@@ -68,6 +68,7 @@ export { getFlowArrows, getRoomba, type Flow } from './modifiers/flow';
 export { getQuakeArrows } from './modifiers/definitions/shake-it-off';
 export { getMineClues } from './modifiers/definitions/minesweeper';
 export { getSky, getNightPhase } from './modifiers/definitions/night-shift';
+export { getLights, isLightsOut } from './modifiers/definitions/jump-scare';
 export { SPEEDRUN_SECONDS, isOnSpeedrunClock, speedrunTimeoutMove } from './modifiers/definitions/speedrun';
 export { movesUntilLag } from './modifiers/definitions/rubber-banding';
 export { canCtrlZ, ctrlZ, ctrlZBlocker } from './modifiers/definitions/ctrl-z';
