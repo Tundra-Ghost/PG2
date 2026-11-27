@@ -224,6 +224,7 @@ export class BoardScene extends Phaser.Scene {
       }
       if (view.blindSpot) this.drawBlindSpotEdges(index, x, y);
       if (view.smoke) this.drawSmoke(x, y);
+      if (view.ice) this.drawIce(x, y);
       if (view.tide) this.drawTide(view.tide, x, y);
       if (view.cropCircle) this.drawCrop(view.cropCircle, x, y);
       if (view.portal) this.drawPortal(view.portal, cx, cy);
@@ -687,6 +688,15 @@ export class BoardScene extends Phaser.Scene {
     side(r, t, r, b);
     side(r, b, l, b);
     side(l, b, l, t);
+  }
+
+  /** Let It Go: a pale ice wash with two short glints in the top-left corner. */
+  private drawIce(x: number, y: number) {
+    const g = this.tileLayer;
+    g.fillStyle(0xd8eefa, 0.35).fillRect(x, y, CELL, CELL);
+    g.lineStyle(3, 0x0c3a78, 0.45);
+    g.lineBetween(x + CELL * 0.12, y + CELL * 0.3, x + CELL * 0.3, y + CELL * 0.12);
+    g.lineBetween(x + CELL * 0.12, y + CELL * 0.46, x + CELL * 0.46, y + CELL * 0.12);
   }
 
   /** Tide Goes In: blue water with wave lines, or just the wave lines as a warning. */

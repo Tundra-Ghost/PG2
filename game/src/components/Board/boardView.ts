@@ -83,6 +83,8 @@ export interface SquareView {
   sneezeIn?: number;
   /** Crop Circles: a circle here now, or next round. */
   cropCircle?: 'warning' | 'active';
+  /** Let It Go: ice. */
+  ice?: boolean;
   /** Dirt Hut: a wall built by this side stands here. */
   wall?: 'white' | 'black';
   /** Conveyor belts and other one-way squares: the way pieces go here, on screen. */
@@ -197,6 +199,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(tile?.portal ? { portal: tile.portal } : {}),
         ...(tile?.tide ? { tide: tile.tide } : {}),
         ...(tile?.cropCircle ? { cropCircle: tile.cropCircle } : {}),
+        ...(tile?.ice ? { ice: true } : {}),
         ...(roomba?.square === square ? { roomba: toScreen(roomba.heading) } : {}),
         ...(flows.has(square) ? { flow: flows.get(square)!.map(toScreen) } : {}),
         // Bless You: badges go on the pieces as the viewer sees them (Sus). The count itself follows real

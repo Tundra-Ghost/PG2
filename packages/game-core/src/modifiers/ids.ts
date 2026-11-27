@@ -81,6 +81,7 @@ export const MODIFIER_IDS = {
   factoryMustGrow: 'MOD-A010',
   magicRoundabout: 'MOD-A013',
   theRoomba: 'MOD-A015',
+  letItGo: 'MOD-A012',
   oneWayStreet: 'MOD-A020',
   blessYou: 'MOD-B012',
   footprints: 'MOD-D011',

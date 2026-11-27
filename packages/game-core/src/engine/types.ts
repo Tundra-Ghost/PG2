@@ -67,6 +67,7 @@ export interface TileState {
   portal?: 'blue' | 'orange'; // MOD-A011: a fixed portal
   tide?: 'warning' | 'active'; // MOD-A017: water next round, or water now
   cropCircle?: 'warning' | 'active'; // MOD-A019: a crop circle next round, or now
+  ice?: boolean;          // MOD-A012: sliders keep sliding
 }
 
 /**

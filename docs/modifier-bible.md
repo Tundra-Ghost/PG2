@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 88 built, 12 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 89 built, 11 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -14,6 +14,9 @@
 | E | Asymmetric Armies | Non-standard piece configurations |
 
 ## Change log
+
+**Batch 13 (2026-11-27)**
+- Let It Go built. Conflicts: This Is My Swamp, Thinking With Portals, Tide Goes In.
 
 **Batch 12 (2026-11-27)**
 - Board-moving cards share one rule set (engine/conveyor.ts): they move pieces once per round, after Black moves; never capture; never put a King in check or add a second checker; reveal a hidden piece that blocks them, and never point at a hidden piece's new square; and turn off en passant for that turn when a pawn slides.
@@ -170,6 +173,7 @@ The four centre squares (d4, d5, e4, e5) are the Swamp. A piece that starts its 
 - Conflict: Tide Goes In, Tide Goes Out. Both use ranks 4 and 5; only one may be in a match, whoever drafts it.
 - Conflict: Crop Circles. Both use the middle ranks; only one may be in a match, whoever drafts it.
 - Conflict: The Magic Roundabout. Both use the centre; only one may be in a match, whoever drafts it.
+- Conflict: Let It Go. It sits on the ice; only one may be in a match, whoever drafts it.
 
 ### MOD-A007 · Gravitational Anomaly (Don't Think About It)
 *Ref: Interstellar / Gravity Falls* · **Tier S** · Cost 5 · Curse 2 · Scope: Shared · Modes: All except Ranked S1 · **Built**
@@ -240,9 +244,10 @@ A blue portal sits on c4 and an orange portal on f5. A non-King piece that ends 
 - Built: only a normal move (a capture too) that ends on a portal uses it. Abilities and pieces pushed or slid there by other cards do not. A pawn that double-steps onto a portal and jumps cannot be taken en passant.
 - Conflict: Vent Tiles and The Birds. A vent or a flock could land on a portal, so only one of the three may be in a match, whoever drafts it.
 - Conflict: Tide Goes In, Tide Goes Out. Both use ranks 4 and 5; only one may be in a match, whoever drafts it.
+- Conflict: Let It Go. It sits on the ice; only one may be in a match, whoever drafts it.
 
 ### MOD-A012 · Let It Go
-*Ref: Frozen* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
+*Ref: Frozen* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
 The central 4×4 squares are ice. A rook, bishop or queen that moves onto ice keeps sliding the same way until it reaches the edge of the ice or the square before a piece. It may still capture the piece it was moving to.
 
@@ -251,6 +256,9 @@ The central 4×4 squares are ice. A rook, bishop or queen that moves onto ice ke
 - Ruling: knights, pawns and kings are not affected. They have good shoes.
 - Ruling: a slide that would leave its own King in check stops on the first legal square.
 - Not Winter Is Coming: winter stops pieces, ice keeps them going.
+- Built: the ice is c3 to f6. Only a normal move that ends on ice without capturing slides; abilities, castling and pieces moved by other cards do not. The piece slides one square at a time and stops before a square that is off the ice, holds a piece (or a statue, wall or flock), or would leave its own King in check. The slide is part of the move, so it may give check. A hidden enemy piece that stops a slide is revealed.
+- Conflict: This Is My Swamp, Thinking With Portals and Tide Goes In, Tide Goes Out. The Swamp, both portals and the water sit on the ice and change how far a piece may go there. Only one of each pair may be in a match, whoever drafts it.
+- Interaction: One Way Street. c3 to c6 and f3 to f6 are both ice and one-way. A slide goes the way the piece moved, so it always follows the arrow.
 
 ### MOD-A013 · The Magic Roundabout
 *Ref: Swindon's Magic Roundabout* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
@@ -320,6 +328,7 @@ Every 8 rounds the tide comes in and ranks 4 and 5 become water for 4 rounds. Pi
 - Built: water on rounds 9 to 12, 17 to 20, and so on. Kings ignore the water: they may stop on it too. A pawn whose every step lands on water (a white pawn on rank 3 or 4, a black pawn on rank 6 or 5) waits for the tide to go out. Water is not a wall, so lines of check cross it. Abilities that act from a distance are not affected.
 - Conflict: This Is My Swamp, The Magic Roundabout, Thinking With Portals and The Birds all use ranks 4 and 5. Only one of each pair may be in a match, whoever drafts it.
 - Conflict: Crop Circles. Both use the middle ranks; only one may be in a match, whoever drafts it.
+- Conflict: Let It Go. It sits on the ice; only one may be in a match, whoever drafts it.
 
 ### MOD-A018 · Shake It Off
 *Ref: Taylor Swift* · **Tier S** · Cost 4 · Curse 2 · Scope: Shared · Modes: All · **Design**
@@ -1469,7 +1478,7 @@ Values the game uses today. "Built" cards match the build.
 | A009 | The Birds (Hitchcock Mode) | A | B | 2 | 0 | Shared | Built |
 | A010 | The Factory Must Grow | A | A | 3 | 1 | Shared | Built |
 | A011 | Thinking With Portals | A | B | 2 | 0 | Shared | Built |
-| A012 | Let It Go | A | A | 3 | 1 | Shared | Design |
+| A012 | Let It Go | A | A | 3 | 1 | Shared | Built |
 | A013 | The Magic Roundabout | A | B | 2 | 0 | Shared | Built |
 | A014 | Minesweeper | A | A | 3 | 1 | Shared | Design |
 | A015 | The Roomba | A | B | 2 | 0 | Shared | Built |
@@ -1527,7 +1536,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-88 of 100 built. The other 12 are designs (v0.4).
+89 of 100 built. The other 11 are designs (v0.4).
 
 ### Balance test plan
 
