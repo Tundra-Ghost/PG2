@@ -63,5 +63,5 @@ export function renderPieceCanvas(type: string, color: Color, size: number): Pro
 /** Text stand-ins for when a piece image fails to load. */
 export const PIECE_GLYPHS: Record<string, string> = {
   king: '\u265A', queen: '\u265B', rook: '\u265C', bishop: '\u265D', knight: '\u265E', pawn: '\u265F',
-  chancellor: 'C', archbishop: 'Ab', elephant: 'E', camel: 'L', nightrider: 'NN', egg: 'O', cup: 'U', royal_guard: 'G', pigeon: 'P', cannon: 'Cn', grasshopper: 'Gh', bodyguard: 'Bg',
+  chancellor: 'C', archbishop: 'Ab', elephant: 'E', camel: 'L', nightrider: 'NN', egg: 'O', cup: 'U', mask: 'M', royal_guard: 'G', pigeon: 'P', cannon: 'Cn', grasshopper: 'Gh', bodyguard: 'Bg',
 };

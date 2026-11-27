@@ -42,7 +42,8 @@ describe('modifier catalogue', () => {
   });
 
   it('never offers a card that is not built, even in a full random draft', () => {
-    expect(designs.length).toBeGreaterThan(0);
+    // Since batch 15 every card is built, so `designs` is empty; the draft checks still guard any future design card.
+    expect(designs.length + built.size).toBeGreaterThanOrEqual(ALL_MODIFIERS.length);
     const offered = getValidOptions([], [], built, { unlimited: true }).map(card => card.id);
     for (const card of designs) expect(offered, card.id).not.toContain(card.id);
     for (let seed = 1; seed <= 25; seed++) {

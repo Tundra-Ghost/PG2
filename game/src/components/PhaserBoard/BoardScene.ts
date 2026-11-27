@@ -263,10 +263,11 @@ export class BoardScene extends Phaser.Scene {
       // Keyed by piece id so a piece keeps its sprite as it moves (ready for tweens later).
       seenPieces.add(piece.id);
       // Shell Game: the opponent's cups are drawn as cups.
-      const texture = pieceTextureKey(view.cup === 'enemy' ? 'cup' : piece.type, piece.color);
+      const shown = view.masked ? 'mask' : view.cup === 'enemy' ? 'cup' : piece.type;
+      const texture = pieceTextureKey(shown, piece.color);
       if (!this.textures.exists(texture)) {
         this.labels.push(
-          this.add.text(cx, cy, PIECE_GLYPHS[view.cup === 'enemy' ? 'cup' : piece.type] ?? '?', {
+          this.add.text(cx, cy, PIECE_GLYPHS[shown] ?? '?', {
             fontFamily: 'serif',
             fontSize: '52px',
             color: piece.color === 'white' ? '#f2ead8' : '#2a1c0e',

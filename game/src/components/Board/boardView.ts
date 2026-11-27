@@ -1,5 +1,5 @@
 import type { Color, GameState, Piece, PieceType, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getFootprints, getFlashlightSquares, getForecast, getHiddenPieceIds, getOwnCups, isCup, getTells, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, getFlowArrows, getRoomba, getQuakeArrows, getMineClues, isLightsOut, getSpoilerMarks, MODIFIER_IDS, type Flow } from '@pigeon-chess/game-core';
+import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getFootprints, getFlashlightSquares, getForecast, getHiddenPieceIds, getOwnCups, isCup, getTells, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, getFlowArrows, getRoomba, getQuakeArrows, getMineClues, isLightsOut, getSpoilerMarks, isMasked, MODIFIER_IDS, type Flow } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -53,6 +53,8 @@ export interface SquareView {
   smoke?: 'white' | 'black';
   /** Sus: the viewer's own disguised piece, and what the opponent sees. */
   susAs?: PieceType;
+  /** Masquerade: this piece is drawn as a mask (both sides, all but the Kings). */
+  masked?: boolean;
   /** Shell Game: 'enemy' when the viewer sees this piece as a cup, 'own' on the viewer's own cups. */
   cup?: 'enemy' | 'own';
   /** Invisibility Cloak, Camouflage: the viewer's own piece that the opponent cannot see. */
@@ -239,6 +241,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(real && ownUnseen.has(real.id) ? { unseen: true } : {}),
         ...(real && viewer && isCup(state, real, viewer) ? { cup: 'enemy' as const } : real && ownCups.has(square) ? { cup: 'own' as const } : {}),
         ...(mirrorEdge && file === 'd' ? { mirrorEdge } : {}),
+        ...(real && isMasked(state, real) ? { masked: true } : {}),
         ...(spoilers.has(square) ? { spoiler: spoilers.get(square)! } : {}),
         ...(confession?.square === square ? { confession: 'piece' as const } : confession?.declared === square ? { confession: 'target' as const } : {}),
         // The opponent sees a Ghost as a normal piece.

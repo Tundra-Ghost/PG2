@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 99 built, 1 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 100 built, 0 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -19,6 +19,7 @@
 - Everyone Has A Price built. Conflict (same player): Yeah, There Are Three Of Them.
 - Jump Scare built. No conflicts.
 - Spoiler Alert built. No conflicts.
+- Masquerade built. Conflicts (match): Sus, Shell Game, Main Character Syndrome, Imposter Syndrome, BOY. (The Berserker).
 
 **Batch 14 (2026-11-27)**
 - Tide Goes In and Crop Circles count rounds, not turns, like Shake It Off and Night Shift.
@@ -540,6 +541,7 @@ Your Queen must move at least once every 4 of your moves. If you skip her too lo
 - Interaction: Commitment Issues. While she is owed and has a move, only a Queen can be touched.
 - Interaction: Lunch Break wins. At lunch she cannot move, so the demand waits (see Move rules below).
 - Conflict: Shell Game. Her forced moves would give the cup away, so one side cannot draft both.
+- Conflict: Masquerade masks every piece, so the two may not be in the same match, whoever drafts it.
 
 ### MOD-B011 · Case Of The Mondays
 *Ref: Office Space / Garfield* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -603,6 +605,7 @@ After your Queen captures, she doubts herself. Her next move can only be one squ
 - Ruling: under Sus, a disguised Queen never shows the badge to the opponent, and her doubt is not announced in the feed.
 - Conflict: Yeah, There Are Three Of Them (one side). There is no Queen to doubt.
 - Conflict: Shell Game (one side). Her doubt would mark the cup.
+- Conflict: Masquerade masks every piece, so the two may not be in the same match, whoever drafts it.
 
 ### MOD-B015 · Commitment Issues
 *Ref: The touch-move rule* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -1015,6 +1018,7 @@ One of the owner's pieces looks like a different type to the opponent. It moves 
 - Built: the Sus piece is picked at random from the owner's pieces, and its fake type from pawn, knight, bishop, rook and queen. The opponent's move log shows the fake piece too. The owner sees a "?" badge on it. The disguise ends, with an event, when the piece is captured or promotes.
 - Interaction: Tells. A disguised piece's tell follows the type the opponent sees, so it never gives the disguise away.
 - Conflict: Shell Game. One player may not draft both.
+- Conflict: Masquerade masks every piece, so the two may not be in the same match, whoever drafts it.
 
 ### MOD-D006 · Cat Mode (Night Vision Activated)
 *Ref: cat night vision* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1114,6 +1118,7 @@ Your Queen and two of your pawns look like cups to your opponent. Each cup shows
 - Built: a cup is lifted, with an event naming the piece, when its piece moves or is moved by any card, gives check, or an enemy piece the owner can see attacks its square (checked after every move and at every turn start). The opponent's move dots can still trace the Queen's lines (squares their King may not enter). Captures and checks follow the real piece. Bots read a cup as a pawn. The owner sees a "U" badge on their cups. Built on the Sus disguise code (getShownType reads a cup as a pawn). Tells and Big Beak never give a cup away; a few other cards' feed lines may call a cup a pawn just before it is lifted.
 - Interaction: Death And Taxes. A cup is never taxed while it is a cup.
 - Conflict: Sus (it could disguise the same piece), Yeah, There Are Three Of Them (no Queen), Main Character Syndrome, Imposter Syndrome and BOY. (The Berserker) (they mark the Queen in plain sight). One player may not draft Shell Game with any of them.
+- Conflict: Masquerade masks every piece, so the two may not be in the same match, whoever drafts it.
 
 ### MOD-D015 · Camouflage
 *Ref: Predator* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1176,7 +1181,7 @@ After each move, the player must mark which piece they will move next. Both play
 - Interaction: cards that demand a piece (Peer Pressure, Main Character Syndrome, Roll For Initiative, Commitment Issues, Heavy Is The Crown) are judged first. If the marked piece has no move they allow, the mark gives way, so the two never leave a side with no move. No conflicts.
 
 ### MOD-D020 · Masquerade
-*Ref: The Phantom of the Opera* · **Tier S** · Cost 4 · Curse 2 · Scope: Shared · Modes: All · **Design**
+*Ref: The Phantom of the Opera* · **Tier S** · Cost 4 · Curse 2 · Scope: Shared · Modes: All · **Built**
 
 For the first 6 rounds, every piece except the Kings wears the same mask, for both players. Pieces still move as themselves. Remember your setup.
 
@@ -1184,6 +1189,8 @@ For the first 6 rounds, every piece except the Kings wears the same mask, for bo
 
 - Ruling: moves are legal by true type; selecting a piece still shows its real moves to its owner.
 - Skill: a memory test that the stronger player wins.
+- Built: counted in rounds. While fullMoveNumber is 1 to 6, every piece on the board but the Kings (a real King under Three Of Them too) is drawn as a mask for both players, with a status chip counting down. Rules use true types. Wherever the opponent needs a type, a masked piece is read as a pawn, like a Shell Game cup: bots, Tells, ability targets and online play, where the true type is never sent (the redacted state carries "pawn", and status marks tied to a type are dropped). The move list shows only the squares of a masked enemy move (like Poker Face), for the opponent only. A captured piece shows as itself. A pawn that promotes stays masked. The masks come off when round 7 starts, with an event; from then the whole move list reads normally.
+- Conflict: Sus and Shell Game disguise pieces, and Main Character Syndrome, Imposter Syndrome and BOY. (The Berserker) mark a piece type in plain sight, so none of them may be in a match with Masquerade, whoever drafts it.
 
 ## Category E: Asymmetric Armies
 
@@ -1259,6 +1266,7 @@ The game picks the Berserker, never a King or pawn. After it captures, it takes 
 - Conflict: The Floor Is Lava. A chain cannot land on Lava.
 - Changed from v0.2: one extra capture, not an endless chain.
 - Conflict: Shell Game (one side). The B badge would mark the Queen's cup.
+- Conflict: Masquerade masks every piece, so the two may not be in the same match, whoever drafts it.
 
 ### MOD-E007 · Reject Queen, Embrace Knight (The Underpromoter)
 *Ref: "Reject modernity" meme* · **Tier B** · Cost 2 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -1572,7 +1580,7 @@ Values the game uses today. "Built" cards match the build.
 | D017 | Crystal Ball | D | B | 1 | 0 | Owner | Built |
 | D018 | Tells | D | B | 1 | 0 | Owner | Built |
 | D019 | Spoiler Alert | D | A | 3 | 1 | Shared | Built |
-| D020 | Masquerade | D | S | 4 | 2 | Shared | Design |
+| D020 | Masquerade | D | S | 4 | 2 | Shared | Built |
 | E009 | Slay Queen (The Amazon) | E | S | 5 | 0 | Owner | Built |
 | E010 | Holy Knight (The Archbishop) | E | A | 4 | 0 | Owner | Built |
 | E011 | Lawrence Of Arabia | E | B | 1 | 0 | Owner | Built |
@@ -1586,7 +1594,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-99 of 100 built. The other 1 is a design (v0.4).
+100 of 100 built.
 
 ### Balance test plan
 

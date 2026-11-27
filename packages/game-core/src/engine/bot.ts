@@ -4,6 +4,7 @@ import { getAbilityOptions, performAbility } from './abilities';
 import { applyMoveInternal, buildMove, cloneState, getValidPromotionTypes } from './gameLoop';
 import { getHiddenPieceIds, getVisibleSquares } from './visibility';
 import { isCup } from '../modifiers/definitions/shell-game';
+import { isMasked } from '../modifiers/definitions/masquerade';
 import { botRandom } from './prng';
 
 /**
@@ -75,7 +76,8 @@ export function botView(state: GameState, color: Color): GameState {
   // Hidden pieces (MOD-D009, MOD-D015) are off the view too.
   const hidden = getHiddenPieceIds(state, color);
   // Shell Game (MOD-D014): a cup is read as a pawn.
-  const cups = [...state.pieces.values()].filter(piece => isCup(state, piece, color));
+  // Masquerade (MOD-D020): a masked enemy is read as a pawn too.
+  const cups = [...state.pieces.values()].filter(piece => piece.color !== color && (isCup(state, piece, color) || isMasked(state, piece)));
   if (!visible && hidden.size === 0 && cups.length === 0) return state;
   const view = cloneState(state);
   for (const [square, piece] of view.pieces) {

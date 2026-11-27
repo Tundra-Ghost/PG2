@@ -7,6 +7,7 @@ import { getModifierOwner } from '../owner';
 import { armyType } from '../army';
 import { isCup } from './shell-game';
 import { isPokerFaced, pokerFaceNotation } from './poker-face';
+import { isMasked, isMasqueradeOn } from './masquerade';
 
 const ID = MODIFIER_IDS.sus;
 /** Types a disguise can show. Special pieces from other cards are never shown. */
@@ -49,6 +50,8 @@ export function getShownType(state: GameState, piece: Piece, viewer: Color): Pie
   if (piece.color === viewer) return piece.type;
   // MOD-D014 Shell Game: a cup could be anything; rules and bots that need a type read it as a pawn.
   if (isCup(state, piece, viewer)) return 'pawn';
+  // MOD-D020 Masquerade: a mask could be anything; it is read as a pawn too.
+  if (isMasked(state, piece)) return 'pawn';
   const disguise = sus(state)[piece.color];
   return disguise && disguise.pieceId === piece.id ? disguise.shownAs : piece.type;
 }
@@ -59,6 +62,8 @@ export function getShownNotation(state: GameState, record: MoveRecord, viewer: C
   if (pieceMoved.color === viewer) return record.notation;
   // MOD-D013 Poker Face: the opponent reads only the square.
   if (isPokerFaced(state, record, viewer)) return pokerFaceNotation(record);
+  // MOD-D020 Masquerade: while the masks are on, a masked piece's move shows only its squares.
+  if (isMasqueradeOn(state) && pieceMoved.type !== 'king' && !pieceMoved.isRealKing) return pokerFaceNotation(record);
   const disguise = sus(state)[pieceMoved.color];
   if (!disguise || disguise.pieceId !== pieceMoved.id || move.ability || move.promotion) return record.notation;
   const capture = record.pieceCaptured !== undefined || record.notation.includes('x');
