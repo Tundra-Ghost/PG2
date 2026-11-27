@@ -38,6 +38,20 @@ describe('MOD-B001 YOU DIED (But A Piece Did)', () => {
     expect(state.eventHistory.some(e => e.modifierId === YOU_DIED && e.title === 'A PIECE MOVED')).toBe(true);
   });
 
+  it('counts the owner own moves, so extra turns keep the timing (#187)', () => {
+    let state = cursed('white');
+    // White has made 6 moves (one was an extra turn), black only 4: turn 11.
+    state = { ...state, turnNumber: 11, ownMoves: { white: 6, black: 4 } };
+    const played = chessEngine.applyMove(
+      { ...state, turn: 'black' },
+      move('h8', 'h7', 'black'),
+    );
+    // Black's 5th move hands white its 7th own move, which plays itself.
+    expect(played.moveHistory[played.moveHistory.length - 1].move.playerColor).toBe('white');
+    expect(played.turn).toBe('black');
+    expect(played.eventHistory.some(e => e.modifierId === YOU_DIED && e.title === 'A PIECE MOVED')).toBe(true);
+  });
+
   it('never takes over the opponent', () => {
     let state = cursed('black');
     for (let i = 0; i < 6; i++) {
