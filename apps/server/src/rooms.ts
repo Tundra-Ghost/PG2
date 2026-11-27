@@ -103,6 +103,9 @@ export class RoomManager {
     this.expireOld();
   }
 
+  /** Accounts that may not take a seat back (banned). Set by the server. */
+  isBlocked: (playerId: string) => boolean = () => false;
+
   /** Open rooms for the admin's moderator tools, newest activity first. */
   adminList(): { id: string; white: string | null; black: string | null; whiteId: string | null; blackId: string | null; status: string; moves: number; updatedAt: number }[] {
     return [...this.rooms.values()]
@@ -182,6 +185,7 @@ export class RoomManager {
       const byToken = Boolean(token) && seat.token === token;
       const byAccount = player !== undefined && seat.player?.id === player.id;
       if (!byToken && !byAccount) continue;
+      if (seat.player && this.isBlocked(seat.player.id)) return { ok: false, reason: 'That seat belongs to a suspended account.' };
       seat.connected = true;
       if (player && !seat.player) {
         seat.player = player;

@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { playClick } from '../../sound';
 import { adminGet, adminPost } from './adminApi';
 import styles from './Admin.module.css';
@@ -82,7 +82,16 @@ function AccountCard({ id, onChanged }: { id: string; onChanged: () => void }) {
   const [reason, setReason] = useState('');
   const [name, setName] = useState('');
   const [message, setMessage] = useState<string | null>(null);
-  const load = () => adminGet<AccountDetail>(`/accounts/${encodeURIComponent(id)}`).then(setDetail, () => setMessage('Could not load the account.'));
+  // The id this card shows. A slow answer for an account no longer selected is dropped.
+  const current = useRef(id);
+  current.current = id;
+  const load = () => {
+    const forId = id;
+    return adminGet<AccountDetail>(`/accounts/${encodeURIComponent(forId)}`).then(
+      res => current.current === forId && setDetail(res),
+      () => current.current === forId && setMessage('Could not load the account.'),
+    );
+  };
   useEffect(() => {
     setDetail(null);
     setMessage(null);
@@ -137,18 +146,28 @@ function AccountCard({ id, onChanged }: { id: string; onChanged: () => void }) {
         className={styles.filters}
         onSubmit={(event: FormEvent) => {
           event.preventDefault();
-          void act('/rename', { displayName: name }, 'Renamed. Their devices were signed out so they load the new name.');
+          void act('/rename', { username: name }, 'Renamed and signed out. They sign in with the new username.');
         }}
       >
         <label className={styles.field}>
-          New display name
-          <input className={styles.input} value={name} maxLength={30} onChange={e => setName(e.target.value)} required />
+          New username
+          <input
+            className={styles.input}
+            value={name}
+            minLength={3}
+            maxLength={30}
+            pattern="[A-Za-z0-9_.]+"
+            onChange={e => setName(e.target.value)}
+            required
+          />
         </label>
         <button type="submit" className={styles.buttonQuiet}>
           Rename
         </button>
       </form>
-      <p className={styles.text}>Renaming changes the display name, not the sign-in username.</p>
+      <p className={styles.text}>
+        Renaming changes the name other players see, which is also the name they sign in with. Tell them the new one.
+      </p>
 
       <h3 className={styles.heading}>Open online games</h3>
       <RoomsTable rooms={detail.games} />
@@ -176,7 +195,14 @@ export default function ModerationPanel() {
   const [audit, setAudit] = useState<AuditEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const search = (q: string) =>
+    adminGet<{ accounts: AccountRow[] }>(`/accounts?q=${encodeURIComponent(q)}`).then(
+      res => setResults(res.accounts),
+      () => setError('Search failed.'),
+    );
+
   const refresh = () => {
+    setError(null);
     adminGet<{ rooms: RoomRow[] }>('/rooms').then(res => setRooms(res.rooms), () => setError('Could not load rooms.'));
     adminGet<{ entries: AuditEntry[] }>('/audit').then(res => setAudit(res.entries), () => setError('Could not load the audit log.'));
   };
@@ -184,13 +210,14 @@ export default function ModerationPanel() {
 
   const endRoom = async (id: string) => {
     playClick();
+    setError(null);
     if (!window.confirm(`End room ${id}? Both players are disconnected and the game is deleted.`)) return;
     try {
       await adminPost(`/rooms/${encodeURIComponent(id)}/end`, { reason: 'stuck room' });
+      refresh();
     } catch (err) {
       setError((err as Error).message);
     }
-    refresh();
   };
 
   return (
@@ -202,10 +229,8 @@ export default function ModerationPanel() {
           onSubmit={event => {
             event.preventDefault();
             playClick();
-            adminGet<{ accounts: AccountRow[] }>(`/accounts?q=${encodeURIComponent(query)}`).then(
-              res => setResults(res.accounts),
-              () => setError('Search failed.'),
-            );
+            setError(null);
+            void search(query);
           }}
         >
           <label className={styles.field}>
@@ -237,7 +262,15 @@ export default function ModerationPanel() {
         )}
       </section>
 
-      {selected && <AccountCard id={selected} onChanged={refresh} />}
+      {selected && (
+        <AccountCard
+          id={selected}
+          onChanged={() => {
+            refresh();
+            if (query.trim()) void search(query);
+          }}
+        />
+      )}
 
       <section className={styles.section} aria-labelledby="admin-rooms">
         <h2 id="admin-rooms" className={styles.heading}>Open online rooms</h2>

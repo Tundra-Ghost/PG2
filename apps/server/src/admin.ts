@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { Accounts } from './accounts';
-import { MAX_DISPLAY_NAME, MAX_REASON, type Moderation } from './moderation';
+import { MAX_REASON, USERNAME_RE, type Moderation } from './moderation';
 import type { Player, RoomManager } from './rooms';
 import { parseSurveyFilter, surveyLog, type SurveyStore } from './survey';
 import type { UsageStore } from './usage';
@@ -88,14 +88,20 @@ export function registerAdminRoutes(app: FastifyInstance, accounts: Accounts, op
 
       scope.post<IdParams>('/accounts/:id/unban', async (request, reply) => {
         const reason = cleanText((request.body as { reason?: unknown } | undefined)?.reason, MAX_REASON) ?? 'no reason given';
-        if (!moderation.unban(adminOf(request), request.params.id, reason)) return reply.status(404).send({ error: 'No such account.' });
+        const result = moderation.unban(adminOf(request), request.params.id, reason);
+        if (result === 'missing') return reply.status(404).send({ error: 'No such account.' });
+        if (result === 'not banned') return reply.status(409).send({ error: 'That account is not banned.' });
         return { ok: true };
       });
 
       scope.post<IdParams>('/accounts/:id/rename', async (request, reply) => {
-        const name = cleanText((request.body as { displayName?: unknown } | undefined)?.displayName, MAX_DISPLAY_NAME);
-        if (!name) return reply.status(400).send({ error: `Names need 1 to ${MAX_DISPLAY_NAME} characters.` });
-        if (!(await moderation.rename(adminOf(request), request.params.id, name))) return reply.status(404).send({ error: 'No such account.' });
+        const name = (request.body as { username?: unknown } | undefined)?.username;
+        if (typeof name !== 'string' || !USERNAME_RE.test(name)) {
+          return reply.status(400).send({ error: 'Usernames need 3 to 30 letters, numbers, _ or .' });
+        }
+        const result = await moderation.rename(adminOf(request), request.params.id, name);
+        if (result === 'missing') return reply.status(404).send({ error: 'No such account.' });
+        if (result === 'taken') return reply.status(409).send({ error: 'That username is taken.' });
         options.kick(request.params.id);
         return { ok: true };
       });

@@ -10,7 +10,7 @@ import type {
   ServerToClientEvents,
   Square,
 } from '@pigeon-chess/game-core';
-import { registerAccountRoutes, type Accounts } from './accounts';
+import { isBanned, registerAccountRoutes, type Accounts } from './accounts';
 import { registerAdminRoutes } from './admin';
 import { createFeedbackStore, registerFeedbackRoutes } from './feedback';
 import { createSurveyStore, registerSurveyRoutes } from './survey';
@@ -61,6 +61,11 @@ interface SocketSeat {
 export function createGameServer(options: ServerOptions = {}): GameServer {
   const app = Fastify({ logger: options.logger ?? false });
   const rooms = new RoomManager(options.store);
+  // A banned account can't take back its seats with a saved seat token.
+  if (options.accounts) {
+    const db = options.accounts.db;
+    rooms.isBlocked = playerId => isBanned(db, playerId);
+  }
   // Sweep long-idle rooms once an hour.
   const sweep = setInterval(() => rooms.expireOld(), 60 * 60 * 1000);
   sweep.unref();
@@ -112,10 +117,16 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
       moderation: createModeration(options.accounts.db, options.accounts),
       rooms,
       kick(userId) {
-        for (const socket of io.sockets.sockets.values()) if (socket.data.player?.id === userId) socket.disconnect(true);
+        for (const socket of io.sockets.sockets.values()) {
+          if (socket.data.player?.id !== userId) continue;
+          socket.emit('room:closed', 'You were signed out.');
+          socket.disconnect(true);
+        }
+        io.of('/social').in(`user:${userId}`).disconnectSockets(true);
       },
       endRoom(roomId) {
         if (!rooms.endRoom(roomId)) return false;
+        io.to(roomId).emit('room:closed', 'This game was ended by a moderator.');
         io.in(roomId).disconnectSockets(true);
         return true;
       },

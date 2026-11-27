@@ -16,7 +16,7 @@ export const ADMIN_ENDPOINTS: { method: 'GET' | 'POST'; path: string; body?: unk
   { method: 'GET', path: '/api/admin/accounts/someid' },
   { method: 'POST', path: '/api/admin/accounts/someid/ban', body: { reason: 'x' } },
   { method: 'POST', path: '/api/admin/accounts/someid/unban', body: { reason: 'x' } },
-  { method: 'POST', path: '/api/admin/accounts/someid/rename', body: { displayName: 'x' } },
+  { method: 'POST', path: '/api/admin/accounts/someid/rename', body: { username: 'xyz' } },
   { method: 'GET', path: '/api/admin/rooms' },
   { method: 'POST', path: '/api/admin/rooms/ABCDEF/end', body: { reason: 'x' } },
   { method: 'GET', path: '/api/admin/audit' },
@@ -166,16 +166,23 @@ describe('admin access', () => {
     const token = ((await again.json()) as { token: string }).token;
     await call('/api/profile', { method: 'PUT', token, body: { profile: { displayName: 'Bad Word', elo: 900 } } });
 
-    expect((await admin(`/accounts/${rude.id}/rename`, { displayName: 'x'.repeat(31) })).status).toBe(400);
-    expect((await admin(`/accounts/${rude.id}/rename`, { displayName: 'Polite Pigeon' })).status).toBe(200);
+    expect((await admin(`/accounts/${rude.id}/unban`, { reason: 'again' })).status).toBe(409);
+    expect((await admin(`/accounts/${rude.id}/rename`, { username: 'bad name!' })).status).toBe(400);
+    expect((await admin(`/accounts/${rude.id}/rename`, { username: 'TheOwner' })).status).toBe(409);
+    expect((await admin(`/accounts/${rude.id}/rename`, { username: 'Polite_Pigeon' })).status).toBe(200);
     expect((await call('/api/profile', { token })).status).toBe(401);
-    const renamed = (await (await admin(`/accounts/${rude.id}`)).json()) as { account: { displayName: string } };
-    expect(renamed.account.displayName).toBe('Polite Pigeon');
+    const renamed = (await (await admin(`/accounts/${rude.id}`)).json()) as { account: { username: string; displayName: string } };
+    expect(renamed.account).toMatchObject({ username: 'polite_pigeon', displayName: 'Polite_Pigeon' });
+    // They sign in with the new name; other players see it in games and chat.
+    const newName = await call('/api/auth/sign-in/username', { body: { username: 'polite_pigeon', password: 'hunter2hunter2' } });
+    expect(newName.status).toBe(200);
+    const session = (await (await call('/api/auth/get-session', { token: ((await newName.json()) as { token: string }).token })).json()) as { user: { username: string } };
+    expect(session.user.username).toBe('polite_pigeon');
 
     expect((await admin('/rooms/NOPE00/end', { reason: 'stuck' })).status).toBe(404);
     const audit = (await (await admin('/audit')).json()) as { entries: { admin: string; action: string; target: string; detail: string }[] };
     expect(audit.entries.map(e => [e.admin, e.action, e.target, e.detail])).toEqual([
-      ['theowner', 'rename', 'rudebird', 'Bad Word -> Polite Pigeon'],
+      ['theowner', 'rename', 'rudebird', 'Bad Word -> Polite_Pigeon'],
       ['theowner', 'unban', 'rudebird', 'appeal'],
       ['theowner', 'ban', 'rudebird', 'spam in chat'],
     ]);
@@ -191,5 +198,15 @@ describe('admin access', () => {
     expect(rooms.rooms[0]).not.toHaveProperty('whiteId');
     expect((await call(`/api/admin/rooms/${room.roomId}/end`, { token: owner.token, body: { reason: 'stuck' } })).status).toBe(200);
     expect(server.rooms.snapshot(room.roomId)).toBeNull();
+  });
+
+  it("won't give a banned account its seat back by seat token", async () => {
+    const owner = await register('theowner');
+    const rude = await register('rudebird');
+    adminIds.add(owner.id);
+    const room = server.rooms.create({ id: rude.id, username: 'rudebird' });
+    if (!room.ok) throw new Error('no room');
+    await call(`/api/admin/accounts/${rude.id}/ban`, { token: owner.token, body: { reason: 'cheating' } });
+    expect(server.rooms.join(room.roomId, room.token)).toMatchObject({ ok: false });
   });
 });
