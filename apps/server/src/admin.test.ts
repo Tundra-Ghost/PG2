@@ -10,6 +10,7 @@ const BUILD = { version: '0.2026.11.27.1', commit: 'abc1234', builtAt: '2026-11-
 export const ADMIN_ENDPOINTS: { method: 'GET' | 'POST'; path: string; body?: unknown }[] = [
   { method: 'GET', path: '/api/admin/check' },
   { method: 'GET', path: '/api/admin/overview' },
+  { method: 'GET', path: '/api/admin/no-such-page' },
 ];
 
 let server: GameServer;

@@ -34,6 +34,9 @@ export function registerAdminRoutes(app: FastifyInstance, accounts: Accounts, op
         (request as FastifyRequest & { admin?: Player }).admin = player;
       });
 
+      // Made-up admin paths answer like real ones, so nobody can map the routes.
+      scope.setNotFoundHandler((_request, reply) => reply.status(403).send({ error: 'Forbidden' }));
+
       scope.get('/check', async () => ({ ok: true }));
 
       scope.get('/overview', async () => ({ server: options.build }));

@@ -37,10 +37,18 @@ function Overview() {
 export default function AdminScreen({ onBack }: { onBack: () => void }) {
   const [tab, setTab] = useState<Tab>('overview');
   const [allowed, setAllowed] = useState<boolean | null>(null);
+  const [unreachable, setUnreachable] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
+  const check = () => {
+    setUnreachable(false);
+    adminGet('/check').then(
+      () => setAllowed(true),
+      (err: Error) => (err.message === 'forbidden' ? setAllowed(false) : setUnreachable(true)),
+    );
+  };
   useEffect(() => {
     heading.current?.focus();
-    adminGet('/check').then(() => setAllowed(true), () => setAllowed(false));
+    check();
   }, []);
 
   return (
@@ -60,6 +68,14 @@ export default function AdminScreen({ onBack }: { onBack: () => void }) {
           {allowed === false ? 'Not found' : 'Admin'}
         </h1>
         {allowed === false && <p className={styles.text}>There is nothing here.</p>}
+        {unreachable && (
+          <>
+            <p className={styles.error} role="alert">Could not reach the server.</p>
+            <button type="button" className={styles.buttonQuiet} onClick={check}>
+              Try again
+            </button>
+          </>
+        )}
         {allowed && (
           <>
             <div className={styles.tabs} role="tablist">

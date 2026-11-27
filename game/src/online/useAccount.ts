@@ -54,13 +54,19 @@ export function useAccount(
   const [recoveryCode, setRecoveryCode] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const profileRef = useRef(profile);
+  /** The account the latest admin check is for, so a late answer can't outlive a sign-out. */
+  const adminCheckFor = useRef<Account | null>(null);
   profileRef.current = profile;
 
   const start = useCallback(
     async (next: Account) => {
       setAccount(next);
       setSync('syncing');
-      void checkAdmin().then(setIsAdmin);
+      setIsAdmin(false);
+      adminCheckFor.current = next;
+      void checkAdmin().then(yes => {
+        if (adminCheckFor.current === next) setIsAdmin(yes);
+      });
       try {
         const adopted = adoptProfile(await fetchProfile());
         let current = adopted ?? profileRef.current;
@@ -130,6 +136,7 @@ export function useAccount(
     async signOut() {
       await signOutAccount();
       setAccount(null);
+      adminCheckFor.current = null;
       setIsAdmin(false);
       setRecoveryCode(null);
     },
