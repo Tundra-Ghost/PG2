@@ -38,6 +38,7 @@ export type MoveRuleSource = (state: GameState, color: Color) => MoveRule | null
  * allow (Lunch Break keeps the Queen at lunch even when she is demanded).
  */
 const RULE_ORDER: ModifierID[] = [
+  'MOD-A020', // One Way Street
   'MOD-B016', // Lunch Break
   'MOD-B011', // Case Of The Mondays
   'MOD-B014', // Imposter Syndrome

@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 87 built, 13 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 88 built, 12 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -20,6 +20,7 @@
 - The Factory Must Grow built.
 - The Magic Roundabout built. Conflicts: This Is My Swamp, Tide Goes In, Crop Circles, The Factory Must Grow, Monument To Gerald.
 - The Roomba built. No conflicts.
+- One Way Street built, as a move rule. Conflict: Bandersnatch Protocol.
 
 **Batch 11 (2026-11-27)**
 - Hidden pieces (shared code in engine/visibility.ts): a hidden piece looks like an empty square to its opponent. A move it blocks is a bump: it reveals the piece and the player moves again. A hidden piece that gives check is always revealed.
@@ -192,6 +193,7 @@ The board is split by an invisible axis. A move on one half is mirrored on the o
 - Balance flag: needs edge case tests with castling.
 - Open question: which piece mirrors? The design text says "for that piece", which is unclear. Define before building.
 - Built: the mirror twin moves. When a piece moves, the own piece on the mirror of its start square (across the d/e line, same rank) makes the mirrored move if it is legal for it, and it can capture. Kings, castling and abilities never mirror, and a mirrored pawn that reaches the last rank becomes a Queen. Two pieces can never land on the same square, so the swap rule is not needed. A cyan line marks the axis.
+- Conflict: One Way Street. Mirrored moves along the c- and f-files would go against the arrows; only one may be in a match, whoever drafts it.
 
 ### MOD-A009 · The Birds (Hitchcock Mode)
 *Ref: The Birds (1963)* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
@@ -342,7 +344,7 @@ Every 8 rounds a 3×3 crop circle appears on the middle ranks for 3 rounds. Piec
 - Conflict: This Is My Swamp, The Magic Roundabout, The Birds and Tide Goes In, Tide Goes Out all use the middle ranks. Only one of each pair may be in a match, whoever drafts it.
 
 ### MOD-A020 · One Way Street
-*Ref: Every city centre* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Design**
+*Ref: Every city centre* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
 The c-file runs north only and the f-file runs south only. A piece moving along one of those files may only move in its arrow's direction. Crossing the file sideways is allowed.
 
@@ -350,6 +352,10 @@ The c-file runs north only and the f-file runs south only. A piece moving along 
 
 - Ruling: Kings ignore the signs. They have a motorcade.
 - Ruling: arrows only limit movement along the file, never captures that happen to cross it.
+- Built: a move that starts and ends on the c-file must go north; on the f-file, south. Pawns follow the signs too, so a black pawn on the c-file and a white pawn on the f-file cannot step forward, though they can still capture. It is a move rule (see Move rules under Category B): it never takes away the last legal move and does not apply in check. Abilities and Freaky Friday swaps are not limited.
+- Interaction: The Factory Must Grow. c4, c5, f4 and f5 show both arrows. Belts move pieces sideways, which the signs allow.
+- Conflict: Bandersnatch Protocol. It mirrors the c-file onto the f-file, so every copied move along them would go against the arrow. Only one may be in a match, whoever drafts it.
+- Interaction: BOY. (The Berserker). A chain capture along a one-way file follows the signs too.
 
 ## Category B: Cursed
 
@@ -357,11 +363,11 @@ Negative effects that grant extra point budget. Curses fill the Madness Meter. A
 
 ### Move rules
 
-Some curses limit which move you may make this turn: Peer Pressure, Main Character Syndrome, Roll For Initiative, Case Of The Mondays, Lunch Break and Imposter Syndrome. They share one set of rulings:
+Some cards limit which move you may make this turn: One Way Street (A020), Peer Pressure, Main Character Syndrome, Roll For Initiative, Case Of The Mondays, Lunch Break and Imposter Syndrome. They share one set of rulings:
 
 - In check, none of them apply. Any legal move is allowed.
 - A move rule only applies when at least one legal move keeps it. It never takes away your last move.
-- When two apply to one side, they are checked in this order: Lunch Break, Case Of The Mondays, Imposter Syndrome, Peer Pressure, Main Character Syndrome, Roll For Initiative. A later rule only applies if some legal move keeps every earlier one too.
+- When two apply to one side, they are checked in this order: One Way Street, Lunch Break, Case Of The Mondays, Imposter Syndrome, Peer Pressure, Main Character Syndrome, Roll For Initiative. A later rule only applies if some legal move keeps every earlier one too.
 - Rules that demand a move ("you must move X") also forbid shooing Gerald. Rules that only forbid some moves do not.
 - Two rules that demand different pieces on the same move cannot be drafted by one side (see each card's conflicts).
 
@@ -1471,7 +1477,7 @@ Values the game uses today. "Built" cards match the build.
 | A017 | Tide Goes In, Tide Goes Out | A | A | 3 | 1 | Shared | Built |
 | A018 | Shake It Off | A | S | 4 | 2 | Shared | Design |
 | A019 | Crop Circles | A | B | 2 | 0 | Shared | Built |
-| A020 | One Way Street | A | B | 2 | 1 | Shared | Design |
+| A020 | One Way Street | A | B | 2 | 1 | Shared | Built |
 | B009 | Speedrun Any% | B | A | -2 | 2 | Owner | Design |
 | B010 | Main Character Syndrome | B | B | -1 | 1 | Owner | Built |
 | B011 | Case Of The Mondays | B | B | -1 | 1 | Owner | Built |
@@ -1521,7 +1527,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-87 of 100 built. The other 13 are designs (v0.4).
+88 of 100 built. The other 12 are designs (v0.4).
 
 ### Balance test plan
 

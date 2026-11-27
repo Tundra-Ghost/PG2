@@ -358,6 +358,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'shared',
     description:
       'The c-file runs north only and the f-file runs south only. A piece moving along one of those files may only move in its arrow\'s direction. Crossing the file sideways is allowed.',
+    prototypeRules:
+      'A move that starts and ends on the c-file must go north (towards rank 8); one on the f-file must go south (towards rank 1). This includes pawns, so a black pawn on the c-file and a white pawn on the f-file cannot step forward (they can still capture). Crossing or leaving the file is allowed, and Kings ignore the signs. Like the move-rule curses, it never takes away the last legal move and does not apply in check. Abilities and Freaky Friday swaps are not limited; a Berserker chain capture is. Not in a match with Bandersnatch Protocol.',
     flavor: '"Viktor\'s rook wished to go home. The sign said no."',
   },
 
