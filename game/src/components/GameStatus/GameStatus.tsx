@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { getLights, getSky, movesUntilLag, type Color, type GameState } from '@pigeon-chess/game-core';
+import { getLights, getMasks, getSky, movesUntilLag, type Color, type GameState } from '@pigeon-chess/game-core';
 import { getStatusMessage, type ResultSides } from './resultText';
 import { playClick } from '../../sound';
 import styles from './GameStatus.module.css';
@@ -33,6 +33,8 @@ export default function GameStatus({
   const sky = getSky(state);
   // Jump Scare (MOD-D016): the lights.
   const lights = getLights(state);
+  // Masquerade (MOD-D020): rounds left behind the masks.
+  const masks = getMasks(state);
   // Rubber Banding (MOD-B018): each owner's ping counter.
   const pings = (['white', 'black'] as Color[])
     .map(color => ({ color, left: movesUntilLag(state, color) }))
@@ -65,6 +67,11 @@ export default function GameStatus({
             {lights && state.status === 'active' && (
               <span className={`${styles.sky} ${lights.dark ? styles.skyNight : styles.skyDay}`} aria-label={lights.text}>
                 <span aria-hidden="true">{lights.dark ? '●' : '○'}</span> {lights.text}
+              </span>
+            )}
+            {masks && (
+              <span className={`${styles.sky} ${styles.skyNight}`} aria-label={masks}>
+                {masks}
               </span>
             )}
             {state.status === 'active' && pings.map(({ color, left }) => {
