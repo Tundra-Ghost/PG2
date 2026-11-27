@@ -228,7 +228,6 @@ export class BoardScene extends Phaser.Scene {
       if (view.cropCircle) this.drawCrop(view.cropCircle, x, y);
       if (view.portal) this.drawPortal(view.portal, cx, cy);
       for (const flow of view.flow ?? []) this.drawFlow(flow, cx, cy);
-      if (view.roomba) this.drawRoomba(view.roomba, cx, cy);
       if (view.lavaNext) this.drawLavaNext(x, y);
       if (view.lit) this.drawLit(x, y);
       // Drawn over the fog: they are about squares you cannot see.
@@ -240,8 +239,9 @@ export class BoardScene extends Phaser.Scene {
       if (view.flock) this.drawFlock(view.flock, x, y);
       if (view.confession) this.drawConfession(view.confession, cx, cy);
       if (view.mirrorEdge) this.drawMirrorEdge(view.mirrorEdge === 'right' ? x + CELL : x, y);
-      // Drawn over the fog: both players always see the eye.
+      // Drawn over the fog: both players always see the eye and the Roomba.
       if (view.surveillance) this.drawEye(cx, cy);
+      if (view.roomba) this.drawRoomba(view.roomba, cx, cy);
       if (view.burst) this.playBurst(view, cx, cy);
 
       if (view.isLegalTarget) {
@@ -720,7 +720,7 @@ export class BoardScene extends Phaser.Scene {
 
   /** The Roomba: a grey disc with a light rim and a bumper on the side it is heading. */
   private drawRoomba(heading: 'up' | 'down' | 'left' | 'right', cx: number, cy: number) {
-    const g = this.tileLayer;
+    const g = this.fogLayer;
     const r = CELL * 0.4;
     g.fillStyle(0x3b4252, 0.55).fillCircle(cx, cy, r);
     g.lineStyle(3, 0xe5e9f0, 0.8).strokeCircle(cx, cy, r);

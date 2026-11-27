@@ -47,7 +47,8 @@ export function slidePieceSafely(next: GameState, from: Square, to: Square | nul
   if (!piece) return false;
   if (!canMovePieceTo(next, piece, to)) {
     const blocker = to ? next.pieces.get(to) : undefined;
-    if (blocker && bumped && blocker.color !== piece.color && getHiddenPieceIds(next, piece.color).has(blocker.id)) bumped.add(blocker.id);
+    // Any hidden blocker, of either side: a stalled slide shows its opponent something is there.
+    if (blocker && bumped && getHiddenPieceIds(next, blocker.color === 'white' ? 'black' : 'white').has(blocker.id)) bumped.add(blocker.id);
     return false;
   }
   const before = COLORS.map(color => checkers(next, color));

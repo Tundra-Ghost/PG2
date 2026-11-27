@@ -93,4 +93,14 @@ describe('MOD-A015 The Roomba', () => {
     expect(at(state, 'b5')?.type).toBe('knight');
     expect(getCloakedPiece(state, 'white')).toBeNull();
   });
+
+  it('a hidden piece of the same side that blocks a push is revealed', () => {
+    // White's only non-King piece besides the rook is the cloaked knight on b5; the rook on a5 cannot be pushed into it.
+    let state = start([makePiece('king', 'white', 'c3'), makePiece('king', 'black', 'f6'), makePiece('knight', 'white', 'b5'), makePiece('pawn', 'black', 'h7')], 'a4', [MODIFIER_IDS.invisibilityCloak]);
+    expect(getCloakedPiece(state, 'white')).toBe(at(state, 'b5')!.id);
+    state = { ...state, pieces: new Map(state.pieces).set('a5', makePiece('rook', 'white', 'a5')) };
+    state = round(state);
+    expect(getRoombaSquare(state)).toBe('a4');
+    expect(getCloakedPiece(state, 'white')).toBeNull();
+  });
 });
