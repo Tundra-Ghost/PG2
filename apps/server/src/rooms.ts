@@ -236,7 +236,7 @@ export class RoomManager {
       // Abilities follow their own target rules; validateMove checks them.
       const ability: Move = { from: req.from, to: req.to, playerColor: color, ability: req.ability };
       if (req.dropType) ability.dropType = req.dropType;
-      if (typeof req.spoiler === 'string') ability.spoiler = req.spoiler;
+      if (typeof req.spoiler === 'string') ability.spoiler = req.spoiler as Square;
       const checked = chessEngine.validateMove(state, ability);
       if (!checked.valid) return { ok: false, reason: checked.reason ?? 'Illegal move.' };
       room.state = chessEngine.applyMove(state, ability);
@@ -250,7 +250,7 @@ export class RoomManager {
       if (!req.promotion) return { ok: false, reason: 'Choose a promotion piece.' };
       move.promotion = req.promotion;
     }
-    if (typeof req.spoiler === 'string') move.spoiler = req.spoiler;
+    if (typeof req.spoiler === 'string') move.spoiler = req.spoiler as Square;
 
     const validation = chessEngine.validateMove(state, move);
     if (!validation.valid) return { ok: false, reason: validation.reason ?? 'Illegal move.' };

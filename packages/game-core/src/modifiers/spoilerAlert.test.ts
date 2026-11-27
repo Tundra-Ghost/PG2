@@ -20,10 +20,10 @@ const army = () => [makePiece('king', 'white', 'e1'), makePiece('king', 'black',
 describe('MOD-D019 Spoiler Alert', () => {
   it('the mark binds the next move, and both players see it', () => {
     let state = start(army());
-    state = chessEngine.applyMove(state, move('b1', 'c3', 'white', { spoiler: 'white-rook-h1' }));
+    state = chessEngine.applyMove(state, move('b1', 'c3', 'white', { spoiler: 'h1' }));
     expect(getSpoilerMarks(state, 'black')).toEqual([{ square: 'h1', color: 'white' }]);
     expect(getSpoilerMarks(state, 'white')).toEqual([{ square: 'h1', color: 'white' }]);
-    state = chessEngine.applyMove(state, move('g8', 'f6', 'black', { spoiler: 'black-pawn-a7' }));
+    state = chessEngine.applyMove(state, move('g8', 'f6', 'black', { spoiler: 'a7' }));
     expect(getSpoilerBinding(state, 'white')?.square).toBe('h1');
     const wrong = chessEngine.validateMove(state, move('c3', 'd5', 'white'));
     expect(wrong.valid).toBe(false);
@@ -33,8 +33,8 @@ describe('MOD-D019 Spoiler Alert', () => {
 
   it('a mark must be one of your own pieces', () => {
     const state = start(army());
-    expect(chessEngine.validateMove(state, move('b1', 'c3', 'white', { spoiler: 'black-knight-g8' })).valid).toBe(false);
-    expect(chessEngine.validateMove(state, move('b1', 'c3', 'white', { spoiler: 'nope' })).valid).toBe(false);
+    expect(chessEngine.validateMove(state, move('b1', 'c3', 'white', { spoiler: 'g8' })).valid).toBe(false);
+    expect(chessEngine.validateMove(state, move('b1', 'c3', 'white', { spoiler: 'h8' })).valid).toBe(false);
   });
 
   it('a move with no mark marks the piece that moved', () => {
@@ -55,7 +55,7 @@ describe('MOD-D019 Spoiler Alert', () => {
     let state = start([makePiece('king', 'white', 'e1'), makePiece('king', 'black', 'e8'), makePiece('pawn', 'white', 'a2'),
       makePiece('pawn', 'black', 'a3'), makePiece('knight', 'white', 'g1')]);
     // The a2 pawn is blocked by a3.
-    state = chessEngine.applyMove(state, move('g1', 'f3', 'white', { spoiler: 'white-pawn-a2' }));
+    state = chessEngine.applyMove(state, move('g1', 'f3', 'white', { spoiler: 'a2' }));
     state = chessEngine.applyMove(state, move('e8', 'd8', 'black'));
     expect(getSpoilerBinding(state, 'white')).toBeNull();
     expect(chessEngine.validateMove(state, move('f3', 'g5', 'white')).valid).toBe(true);
@@ -63,8 +63,8 @@ describe('MOD-D019 Spoiler Alert', () => {
 
   it('bots obey the mark', () => {
     let state = start(army());
-    state = chessEngine.applyMove(state, move('b1', 'c3', 'white', { spoiler: 'white-knight-b1' }));
-    state = chessEngine.applyMove(state, move('g8', 'f6', 'black', { spoiler: 'black-pawn-a7' }));
+    state = chessEngine.applyMove(state, move('b1', 'c3', 'white', { spoiler: 'b1' }));
+    state = chessEngine.applyMove(state, move('g8', 'f6', 'black', { spoiler: 'a7' }));
     state = chessEngine.applyMove(state, move('c3', 'd5', 'white'));
     const moves = listBotMoves(state, 'black');
     expect(moves.length).toBeGreaterThan(0);
@@ -73,7 +73,7 @@ describe('MOD-D019 Spoiler Alert', () => {
 
   it('online, an enemy mark on a piece out of sight is not sent', () => {
     let state = start(army(), [{ id: MODIFIER_IDS.darkAndScared, sourceColor: null }]);
-    state = chessEngine.applyMove(state, move('b1', 'c3', 'white', { spoiler: 'white-rook-h1' }));
+    state = chessEngine.applyMove(state, move('b1', 'c3', 'white', { spoiler: 'h1' }));
     const seen = redactForViewer(state, 'black');
     expect(getSpoilerMarks(state, 'black')).toEqual([]);
     expect((seen.modifierState[ID] as Record<string, string>).white).toBeUndefined();
@@ -90,16 +90,16 @@ describe('MOD-D019 Spoiler Alert', () => {
 
   it('online, an enemy move is sent without its mark', () => {
     let state = start(army());
-    state = chessEngine.applyMove(state, move('b1', 'c3', 'white', { spoiler: 'white-rook-h1' }));
+    state = chessEngine.applyMove(state, move('b1', 'c3', 'white', { spoiler: 'h1' }));
     expect(redactForViewer(state, 'black').moveHistory[0].move.spoiler).toBeUndefined();
-    expect(redactForViewer(state, 'white').moveHistory[0].move.spoiler).toBe('white-rook-h1');
+    expect(redactForViewer(state, 'white').moveHistory[0].move.spoiler).toBe('h1');
   });
 
   it('bot moves carry a mark of a piece already on the board', () => {
     const state = start(army());
     const botMove = getChickBotMove(state, 'white');
     expect(botMove?.spoiler).toBeDefined();
-    expect([...state.pieces.values()].some(p => p.id === botMove!.spoiler && p.color === 'white')).toBe(true);
+    expect([...state.pieces.values()].some(p => p.square === botMove!.spoiler && p.color === 'white')).toBe(true);
     expect(chessEngine.validateMove(state, botMove!).valid).toBe(true);
   });
 

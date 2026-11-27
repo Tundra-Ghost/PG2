@@ -98,7 +98,7 @@ export function redactForViewer(state: GameState, viewer: Color, options: Redact
       return record.pieceCaptured ? { ...record, pieceCaptured: project(record.pieceCaptured) } : record;
     }
     if (isMoveHidden(state, record, viewer, visible)) return blankRecord(record, viewer);
-    // MOD-D019: the enemy's mark is a real piece id; the card state carries it when it may be seen.
+    // MOD-D019: the enemy's mark names a square that may be out of sight; the card state carries it when it may be seen.
     const { spoiler: _spoiler, ...sent } = record.move;
     // MOD-D020: while the masks are on, nothing in a masked move may name the piece's type.
     let move = sent;

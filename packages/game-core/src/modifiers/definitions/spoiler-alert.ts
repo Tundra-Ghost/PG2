@@ -78,12 +78,14 @@ export function withBotSpoiler(state: GameState, move: Move | null): Move | null
     const count = chessEngine.getLegalMoves(after, piece.square).length - (piece.type === 'king' ? 8 : 0);
     if (!best || count > best.count) best = { id: piece.id, count };
   }
-  return best ? { ...move, spoiler: best.id } : move;
+  const square = best && [...state.pieces.values()].find(p => p.id === best.id)?.square;
+  return square ? { ...move, spoiler: square } : move;
 }
 
 /**
  * MOD-D019: with each move a player marks the piece they will move next
- * (Move.spoiler, a piece id, so saved games and online moves carry it). Both
+ * (Move.spoiler, the piece's square before the move, so a replayed save or an
+ * online move names the same piece; the card state then holds that piece's id). Both
  * players see the mark. The next move must be that piece, unless the side is
  * in check or the piece has no legal move. A move sent without a mark (bots,
  * a takeover, a timeout) marks the piece that moved.
@@ -100,7 +102,7 @@ export const spoilerAlertDef: ModifierDefinition = {
   onPreMoveValidate(state, move) {
     if (!needsSpoilerMark(state, move)) return { blocked: false };
     if (move.spoiler !== undefined) {
-      const marked = findPiece(state, move.spoiler);
+      const marked = state.pieces.get(move.spoiler as Square);
       if (!marked || marked.color !== move.playerColor) return { blocked: true, reason: 'Spoiler Alert: mark one of your own pieces.' };
     }
     const bound = getSpoilerBinding(state, move.playerColor);
@@ -113,7 +115,7 @@ export const spoilerAlertDef: ModifierDefinition = {
   onPreMoveApply(state, move) {
     if (!needsSpoilerMark(state, move)) return { state, move };
     // Without a mark, the piece that moves is marked.
-    const id = move.spoiler ?? state.pieces.get(move.from)?.id;
+    const id = state.pieces.get((move.spoiler ?? move.from) as Square)?.id;
     if (!id) return { state, move };
     return { state: { ...state, modifierState: { ...state.modifierState, [ID]: { ...marks(state), [move.playerColor]: id } } }, move };
   },

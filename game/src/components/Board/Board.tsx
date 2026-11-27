@@ -367,8 +367,10 @@ export default function Board({
       if (pendingSpoiler) {
         const marked = pendingSpoiler.preview.pieces.get(square);
         if (marked && marked.color === pendingSpoiler.move.playerColor && spoilerIds.has(marked.id)) {
+          // The mark is sent as the piece's square before the move, which a replay can rebuild.
+          const before = [...state.pieces.values()].find(p => p.id === marked.id);
           setPendingSpoiler(null);
-          sendMove({ ...pendingSpoiler.move, spoiler: marked.id });
+          if (before) sendMove({ ...pendingSpoiler.move, spoiler: before.square });
         }
         return;
       }
