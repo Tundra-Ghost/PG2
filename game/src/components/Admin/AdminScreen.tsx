@@ -4,14 +4,16 @@ import { GAME_BUILD, describeBuild, type BuildInfo } from '../../version';
 import { adminGet } from './adminApi';
 import styles from './Admin.module.css';
 import StatsPanel from './StatsPanel';
+import ModerationPanel from './ModerationPanel';
 import SurveysPanel from './SurveysPanel';
 
-type Tab = 'overview' | 'stats' | 'surveys';
+type Tab = 'overview' | 'stats' | 'surveys' | 'moderation';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'stats', label: 'Stats' },
   { id: 'surveys', label: 'Surveys' },
+  { id: 'moderation', label: 'Moderation' },
 ];
 
 function Overview() {
@@ -105,6 +107,7 @@ export default function AdminScreen({ onBack }: { onBack: () => void }) {
               {tab === 'overview' && <Overview />}
               {tab === 'stats' && <StatsPanel />}
               {tab === 'surveys' && <SurveysPanel />}
+              {tab === 'moderation' && <ModerationPanel />}
             </div>
           </>
         )}

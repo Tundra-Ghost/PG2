@@ -149,7 +149,16 @@ export function useOnlineRoom(account: string | null = null): OnlineRoom {
         });
       }
     });
-    socket.on('disconnect', () => setConnection('offline'));
+    socket.on('disconnect', reason => {
+      setConnection('offline');
+      // The server only drops a socket on purpose (an ended room, a sign-out): come back as a fresh connection.
+      if (reason === 'io server disconnect') socket.connect();
+    });
+    socket.on('room:closed', reason => {
+      seatRef.current = null;
+      writeSeat(null);
+      setError(reason);
+    });
     socket.on('connect_error', () => setConnection('offline'));
     socket.on('game:state', next => setSnapshot(next));
     socket.on('chat:history', messages => setChat(messages));

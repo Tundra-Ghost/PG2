@@ -133,4 +133,6 @@ export interface ServerToClientEvents {
   /** The room's chat so far, sent when you take or reclaim a seat. */
   'chat:history': (messages: ChatMessage[]) => void;
   'chat:message': (message: ChatMessage) => void;
+  /** Your seat is gone: an admin ended the room or signed you out. The reason is for the player. */
+  'room:closed': (reason: string) => void;
 }
