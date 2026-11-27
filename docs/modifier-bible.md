@@ -945,7 +945,7 @@ Select a pawn and press Dash. It moves two squares forward from any rank, if bot
 
 ## Category D: Fog of War
 
-Information is power. These cards restrict, corrupt, or weaponise visibility. They apply to both players unless stated. All fog cards need per-player views, so none are built yet. Online, the server must never send hidden pieces to a player (see TDD).
+Information is power. These cards restrict, corrupt, or weaponise visibility. They apply to both players unless stated. All fog cards need per-player views. Online, the server must never send hidden pieces to a player (see TDD).
 
 ### MOD-D001 · It's Dark And I'm Scared
 *Ref: Minecraft night* · **Tier S** · Cost 4 · Curse 1 · Scope: Shared · Modes: All · **Built**
@@ -1050,7 +1050,7 @@ When an enemy piece moves out of your sight, it leaves footprints on the square 
 *Something walked through here. It had small feet. Viktor suspects a pawn.*
 
 - Draft: gated like Cat Mode, so it is never a dead pick.
-- Built: the fog cards are It's Dark And I'm Scared, Known Unknowns and What's In The Cloud, Bro. Footprints mark the square the piece left when it lands on a square you cannot see. They show even in the fog, and both rounds count from that move.
+- Built: the fog cards are It's Dark And I'm Scared, Known Unknowns, What's In The Cloud, Bro and Night Shift (at night). Footprints mark the square the piece left when it lands on a square you cannot see. They show even in the fog, and both rounds count from that move.
 - Ruling: only a piece that leaves its square leaves prints. Drops, shoves and pulls leave none. Your own moves never leave prints for you.
 
 ### MOD-D012 · Flashlight
