@@ -24,7 +24,7 @@ pnpm workspace (TDD §02 layout, web app kept at `game/` so the GitHub Pages URL
 
 - `packages/game-core`: pure TypeScript chess engine and modifier state machine. 94 of the bible's 100 modifier cards are built (`docs/modifier-bible.md` marks each card Built or Design). Also the bots (`Chick` and `Pigeon`), fog of war, the draft rules and the bot-vs-bot balance harness. No framework code.
 - `apps/server`: Fastify + Socket.IO game server. Room codes, the online modifier draft, server-side move validation, seat reconnect, saved games, accounts, friends, feedback and surveys, and an admin dashboard with moderation tools.
-- `game/`: React + Vite client with a Phaser board. Tutorial, bot matches with the modifier draft (Random draft too), online play with a friend, a puzzle editor with share codes, profiles, stats and the card collection.
+- `game/`: React + Vite client with a Phaser board. Tutorial, bot matches with the modifier draft (Random draft too), online play with a friend, a puzzle editor and player with share codes, profiles, stats and the card collection.
 
 ## Running It
 
@@ -60,6 +60,8 @@ The live site (pigeonchess.app, with the game at /play) is built and published b
 - `packages/game-core/src/engine/`: chess rules and game loop
 - `packages/game-core/src/modifiers/`: modifier data, registry, definitions
 - `packages/game-core/src/net/`: wire format and Socket.IO protocol types
+- `packages/game-core/src/draft/`: draft rules (budget, conflicts, bot picks)
+- `packages/game-core/src/puzzle/`: puzzle format and share codes
 - `packages/game-core/src/balance/`: balance harness (`pnpm --filter @pigeon-chess/game-core balance`)
 - `apps/server/src/`: rooms, socket wiring, accounts (`accounts.ts`), admin (`admin.ts`)
 - `game/src/components/`: gameplay and menu UI (`PhaserBoard/` draws the board)
