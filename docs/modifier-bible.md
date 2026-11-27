@@ -19,7 +19,7 @@
 - Board-moving cards share one rule set (engine/conveyor.ts): they move pieces once per round, after Black moves; never capture; never put a King in check or add a second checker; reveal a hidden piece that blocks them, and never point at a hidden piece's new square; and turn off en passant for that turn when a pawn slides.
 - The Factory Must Grow built.
 - The Magic Roundabout built. Conflicts: This Is My Swamp, Tide Goes In, Crop Circles, The Factory Must Grow, Monument To Gerald.
-- The Roomba built.
+- The Roomba built. No conflicts.
 
 **Batch 11 (2026-11-27)**
 - Hidden pieces (shared code in engine/visibility.ts): a hidden piece looks like an empty square to its opponent. A move it blocks is a bump: it reveals the piece and the player moves again. A hidden piece that gives check is always revealed.
