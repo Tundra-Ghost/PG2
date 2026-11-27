@@ -50,6 +50,8 @@ function needsPartner(cardId: string, ownIds: string[], otherIds: string[]): str
  * Leap Of Faith needs a bishop: The Small Council has none, and Elephant In The Room turns them into Elephants.
  * MINE! and Death And Taxes are priced for 8 pawns; The Small Council's 12 would make them cheap curses.
  * Invisibility Cloak and Camouflage both hide your pieces, so one player may not draft both.
+ * Shell Game disguises your Queen: Sus could disguise the same piece, Three Kings has no Queen, and
+ * Main Character Syndrome and Imposter Syndrome mark the Queen in plain sight.
  */
 const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.slayQueen, MODIFIER_IDS.threeKings],
@@ -81,6 +83,10 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.mine, MODIFIER_IDS.smallCouncil],
   [MODIFIER_IDS.deathAndTaxes, MODIFIER_IDS.smallCouncil],
   [MODIFIER_IDS.invisibilityCloak, MODIFIER_IDS.camouflage],
+  [MODIFIER_IDS.shellGame, MODIFIER_IDS.sus],
+  [MODIFIER_IDS.shellGame, MODIFIER_IDS.threeKings],
+  [MODIFIER_IDS.shellGame, MODIFIER_IDS.mainCharacterSyndrome],
+  [MODIFIER_IDS.shellGame, MODIFIER_IDS.imposterSyndrome],
 ];
 
 /**

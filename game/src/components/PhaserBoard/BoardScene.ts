@@ -254,7 +254,8 @@ export class BoardScene extends Phaser.Scene {
       const worn = getPieceMarkers(piece);
       // Keyed by piece id so a piece keeps its sprite as it moves (ready for tweens later).
       seenPieces.add(piece.id);
-      const texture = pieceTextureKey(piece.type, piece.color);
+      // Shell Game: the opponent's cups are drawn as cups.
+      const texture = pieceTextureKey(view.cup === 'enemy' ? 'cup' : piece.type, piece.color);
       if (!this.textures.exists(texture)) {
         this.labels.push(
           this.add.text(cx, cy, PIECE_GLYPHS[piece.type] ?? '?', {
@@ -313,7 +314,7 @@ export class BoardScene extends Phaser.Scene {
 
       // Sus: a ? badge so the owner knows which piece is disguised.
       // Invisibility Cloak, Camouflage: a ○ badge on the owner's piece the opponent cannot see.
-      const badgeMarks = [...worn.marks, ...(view.susAs ? ['?'] : []), ...(view.unseen ? ['○'] : []), ...(view.tell ? [String(view.tell)] : [])];
+      const badgeMarks = [...worn.marks, ...(view.susAs ? ['?'] : []), ...(view.unseen ? ['○'] : []), ...(view.cup === 'own' ? ['U'] : []), ...(view.tell ? [String(view.tell)] : [])];
       badgeMarks.forEach((mark, i) => {
         // Two-character marks (an Egg's count) get a wider badge.
         const bw = mark.length > 1 ? 26 : 18;

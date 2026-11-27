@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 82 built, 18 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 83 built, 17 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -19,6 +19,7 @@
 - Hidden pieces (shared code in engine/visibility.ts): a hidden piece looks like an empty square to its opponent. A move it blocks is a bump: it reveals the piece and the player moves again. A hidden piece that gives check is always revealed.
 - Invisibility Cloak built.
 - Camouflage built. Conflict (same player): Invisibility Cloak.
+- Shell Game built. Conflicts (same player): Sus, Three Kings, Main Character Syndrome, Imposter Syndrome.
 
 **Batch 10 (2026-11-25)**
 - Footprints, Flashlight, Crystal Ball and Tells built.
@@ -940,6 +941,7 @@ One of the owner's pieces looks like a different type to the opponent. It moves 
 
 - Built: the Sus piece is picked at random from the owner's pieces, and its fake type from pawn, knight, bishop, rook and queen. The opponent's move log shows the fake piece too. The owner sees a "?" badge on it. The disguise ends, with an event, when the piece is captured or promotes.
 - Interaction: Tells. A disguised piece's tell follows the type the opponent sees, so it never gives the disguise away.
+- Conflict: Shell Game. One player may not draft both.
 
 ### MOD-D006 · Cat Mode (Night Vision Activated)
 *Ref: cat night vision* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1022,7 +1024,7 @@ Your opponent's move log shows only the squares your pieces moved to, not which 
 - Why: punishes players who read the log instead of the board.
 
 ### MOD-D014 · Shell Game
-*Ref: The cups and ball trick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: The cups and ball trick* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Your Queen and two of your pawns look like cups to your opponent. Each cup shows its true piece the first time it moves or is attacked.
 
@@ -1030,6 +1032,8 @@ Your Queen and two of your pawns look like cups to your opponent. Each cup shows
 
 - Ruling: the King is never disguised. Core rule 1.
 - Not Sus: Sus fakes one piece forever; the shell game hides three until they move.
+- Built: the two pawns are picked at random (seeded). A cup is lifted, with an event naming the piece, when its piece moves or is moved by any card, or when an enemy piece attacks its square (checked after every move and at every turn start). Captures and checks follow the real piece. Bots read a cup as a pawn. The owner sees a "U" badge on their cups. Built on the Sus disguise code (getShownType reads a cup as a pawn), so Tells and Big Beak never give a cup away.
+- Conflict: Sus (it could disguise the same piece), Yeah, There Are Three Of Them (no Queen), Main Character Syndrome and Imposter Syndrome (they mark the Queen in plain sight). One player may not draft Shell Game with any of them.
 
 ### MOD-D015 · Camouflage
 *Ref: Predator* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -1471,7 +1475,7 @@ Values the game uses today. "Built" cards match the build.
 | D011 | Footprints | D | B | 1 | 0 | Owner | Built |
 | D012 | Flashlight | D | B | 2 | 0 | Owner | Built |
 | D013 | Poker Face | D | B | 1 | 0 | Owner | Design |
-| D014 | Shell Game | D | A | 3 | 0 | Owner | Design |
+| D014 | Shell Game | D | A | 3 | 0 | Owner | Built |
 | D015 | Camouflage | D | A | 3 | 0 | Owner | Built |
 | D016 | Jump Scare | D | B | 2 | 1 | Shared | Design |
 | D017 | Crystal Ball | D | B | 1 | 0 | Owner | Built |
@@ -1491,7 +1495,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-82 of 100 built. The other 18 are designs (v0.4).
+83 of 100 built. The other 17 are designs (v0.4).
 
 ### Balance test plan
 

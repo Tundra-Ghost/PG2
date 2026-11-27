@@ -66,6 +66,7 @@ export { getBarrier, getBarriers } from './engine/barriers';
 export { getFlockPreview } from './modifiers/definitions/the-birds';
 export { getHiddenPieceIds, getVisibleSquares, isHiddenPieceMove, isHopHidden, isMoveHidden, isPieceHidden } from './engine/visibility';
 export { getCloakedPiece } from './modifiers/definitions/invisibility-cloak';
+export { getOwnCups, isCup } from './modifiers/definitions/shell-game';
 export { isSwampSquare, SWAMP_SQUARES } from './modifiers/definitions/swamp';
 export { getQuietZoneSquares } from './modifiers/definitions/quiet-quitting';
 export { getBankedEnPassant } from './modifiers/definitions/banked-en-passant';
