@@ -29,6 +29,11 @@ export function isMasked(state: GameState, piece: Piece): boolean {
   return false;
 }
 
+/** A piece's name for event text: masked pieces are only "masked piece". */
+export function maskedName(state: GameState, piece: Piece): string {
+  return isMasked(state, piece) ? 'masked piece' : piece.type.replace('_', ' ');
+}
+
 /** The status chip: rounds left with masks on, or null. */
 export function getMasks(state: GameState): string | null {
   if (!isMasqueradeOn(state)) return null;

@@ -19,7 +19,7 @@
 - Everyone Has A Price built. Conflict (same player): Yeah, There Are Three Of Them.
 - Jump Scare built. No conflicts.
 - Spoiler Alert built. No conflicts.
-- Masquerade built. Conflicts (match): Sus, Shell Game, Main Character Syndrome, Imposter Syndrome, BOY. (The Berserker).
+- Masquerade built. Conflicts (match): Sus, Shell Game, Main Character Syndrome, Imposter Syndrome, BOY. (The Berserker), Everyone Has A Price.
 
 **Batch 14 (2026-11-27)**
 - Tide Goes In and Crop Circles count rounds, not turns, like Shake It Off and Night Shift.
@@ -955,6 +955,7 @@ An enemy pawn next to your Queen accepts a bribe and joins your side. It must be
 - Interaction: Zerg Rush. If the briber has it, a pawn could double-step to promote, so only a pawn on rank 4 (White) or 5 (Black) can be bribed.
 - Changed from design: a pawn on its own second rank (rank 2 for White, 7 for Black) cannot be bribed. A pawn changes direction when it changes sides, so from there it would promote on the next move, which the balance note rules out. The design gave no cooldown; the build uses 12 of your turns.
 - Conflict: Yeah, There Are Three Of Them has no Queen, so one player may not draft both.
+- Conflict: Masquerade. A refused bribe would name a masked piece's type, so the two may not be in the same match, whoever drafts it.
 
 ### MOD-C020 · Gotta Go Fast
 *Ref: Sonic the Hedgehog* · **Tier B** · Cost 2 · Curse 0 · Pawn · Cooldown 4 · Scope: Owner · Modes: All · **Built**
@@ -1190,7 +1191,9 @@ For the first 6 rounds, every piece except the Kings wears the same mask, for bo
 - Ruling: moves are legal by true type; selecting a piece still shows its real moves to its owner.
 - Skill: a memory test that the stronger player wins.
 - Built: counted in rounds. While fullMoveNumber is 1 to 6, every piece on the board but the Kings (a real King under Three Of Them too) is drawn as a mask for both players, with a status chip counting down. Rules use true types. Wherever the opponent needs a type, a masked piece is read as a pawn, like a Shell Game cup: bots, Tells, ability targets and online play, where the true type is never sent (the redacted state carries "pawn", and status marks tied to a type are dropped). The move list shows only the squares of a masked enemy move (like Poker Face), for the opponent only. A captured piece shows as itself. A pawn that promotes stays masked. The masks come off when round 7 starts, with an event; from then the whole move list reads normally.
-- Conflict: Sus and Shell Game disguise pieces, and Main Character Syndrome, Imposter Syndrome and BOY. (The Berserker) mark a piece type in plain sight, so none of them may be in a match with Masquerade, whoever drafts it.
+- Ruling: as with Sus and Shell Game cups, card rules that look at an enemy piece's type read a mask as a pawn, so no card gives a mask away: Get Off My Lawn pushes any masked enemy next to the King, Death And Taxes and MINE! pick from what the opponent sees as pawns, and pushes and pulls (YEET, GET OVER HERE!, conveyors) never put a mask on rank 1 or 8. Event text calls a masked piece a "masked piece".
+- Online: a masked piece is sent as a pawn with no type marks or ability timers, and a masked move is sent without its ability, promotion or en passant fields; the 50-move clock and castling rights are blanked as under fog. A masked piece giving check is sent as itself, like a fogged checker, so the board shows the check. Other illegal moves the masks hide (a pin by a masked piece) are refused by the server with the reason.
+- Conflict: Sus and Shell Game disguise pieces, Main Character Syndrome, Imposter Syndrome and BOY. (The Berserker) mark a piece type in plain sight, and a refused bribe (Everyone Has A Price) would name a type, so none of them may be in a match with Masquerade, whoever drafts it.
 
 ## Category E: Asymmetric Armies
 

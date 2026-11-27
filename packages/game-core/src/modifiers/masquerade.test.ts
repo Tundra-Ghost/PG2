@@ -72,10 +72,31 @@ describe('MOD-D020 Masquerade', () => {
 
   it('cannot share a match with the disguise and type-marking cards', () => {
     const ids = new Set(modifierRegistry.getAll().map(def => def.id));
-    for (const other of [MODIFIER_IDS.sus, MODIFIER_IDS.shellGame, MODIFIER_IDS.mainCharacterSyndrome, MODIFIER_IDS.imposterSyndrome, MODIFIER_IDS.berserker]) {
+    for (const other of [MODIFIER_IDS.sus, MODIFIER_IDS.shellGame, MODIFIER_IDS.mainCharacterSyndrome, MODIFIER_IDS.imposterSyndrome, MODIFIER_IDS.berserker, MODIFIER_IDS.everyoneHasAPrice]) {
       expect(getValidOptions([], [other], ids).some(c => c.id === ID)).toBe(false);
       expect(getValidOptions([other], [], ids).some(c => c.id === ID)).toBe(false);
       expect(getValidOptions([ID], [], ids).some(c => c.id === other)).toBe(false);
     }
+  });
+
+  it('online, a masked ability move and the 50-move clock name no type', () => {
+    let state = start([{ id: MODIFIER_IDS.yeet, sourceColor: 'white' }]);
+    state = play(state, 'e2', 'e4');
+    const seen = redactForViewer(state, 'black');
+    expect(seen.flags.halfMoveClock).toBe(0);
+    state.moveHistory[0] = { ...state.moveHistory[0], move: { ...state.moveHistory[0].move, ability: MODIFIER_IDS.yeet, promotion: 'queen' } };
+    const record = redactForViewer(state, 'black').moveHistory[0];
+    expect(record.move.ability).toBeUndefined();
+    expect(record.move.promotion).toBeUndefined();
+  });
+
+  it('online, a masked piece giving check is sent as itself', () => {
+    let state = start();
+    for (const [from, to] of [['e2', 'e3'], ['f7', 'f6'], ['d1', 'h5']] as const) state = play(state, from, to);
+    expect(chessEngine.isInCheck(state, 'black')).toBe(true);
+    const seen = redactForViewer(state, 'black');
+    expect(seen.pieces.get('h5')?.type).toBe('queen');
+    expect(seen.pieces.get('f1')?.type).toBe('pawn');
+    expect(chessEngine.isInCheck(seen, 'black')).toBe(true);
   });
 });

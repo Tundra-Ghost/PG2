@@ -4,6 +4,7 @@ import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { canMovePieceTo, offset, ORTHOGONAL_DIRECTIONS, shiftPiece } from '../../engine/push';
 import { getVisibleSquares } from '../../engine/visibility';
 import { MODIFIER_IDS } from '../ids';
+import { maskedName } from './masquerade';
 import { isQuietZoneClosedTo } from './quiet-quitting';
 import { getShownType } from './sus';
 
@@ -66,7 +67,7 @@ export const yeetDef: ModifierDefinition = {
           type: 'modifier',
           modifierId: ID,
           title: 'YEET',
-          message: `The ${rook.color} rook shoves the ${victim.color} ${victim.type} from ${shove.from} to ${shove.to}.`,
+          message: `The ${rook.color} ${maskedName(state, rook)} shoves the ${victim.color} ${maskedName(state, victim)} from ${shove.from} to ${shove.to}.`,
           squares: [shove.from, shove.to],
         }),
       };

@@ -1320,7 +1320,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'For the first 6 rounds, every piece except the Kings wears the same mask, for both players. Pieces still move as themselves. Remember your setup.',
     flavor: '"Everyone is wearing a mask. Viktor is wearing a mask. Viktor\'s mask has a better jawline."',
     prototypeRules:
-      'For rounds 1 to 6 every piece but the two Kings is drawn as the same mask, for both players. Pieces still move as themselves, and selecting one of your own pieces shows its real moves. The move list shows only the squares of a masked enemy move. A captured piece shows as itself. The masks come off when round 7 starts. Not in a match with Sus, Shell Game, Main Character Syndrome, Imposter Syndrome or BOY. (The Berserker).',
+      'For rounds 1 to 6 every piece but the two Kings is drawn as the same mask, for both players. Pieces still move as themselves, and selecting one of your own pieces shows its real moves. The move list shows only the squares of a masked enemy move. A captured piece shows as itself. The masks come off when round 7 starts. Cards that look at an enemy type read a mask as a pawn. Not in a match with Sus, Shell Game, Main Character Syndrome, Imposter Syndrome, BOY. (The Berserker) or Everyone Has A Price.',
   },
 
   // ── CATEGORY E — ASYMMETRIC ARMIES ─────────────────────────────────────────

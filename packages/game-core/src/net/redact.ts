@@ -2,6 +2,7 @@ import type { Color, GameEvent, GameFlags, GameState, MoveRecord, Piece, Square 
 import { pieceAttackSquares } from '../engine/moveGenerator';
 import { getHiddenPieceIds, getVisibleSquares, isMoveHidden } from '../engine/visibility';
 import { getShownNotation, getShownType } from '../modifiers/definitions/sus';
+import { isMasked, isMasqueradeOn } from '../modifiers/definitions/masquerade';
 import { MODIFIER_IDS } from '../modifiers/ids';
 import { affectsColor } from '../modifiers/owner';
 import { modifierRegistry } from '../modifiers/registry';
@@ -60,10 +61,15 @@ export function redactForViewer(state: GameState, viewer: Color, options: Redact
     return out;
   };
 
+  // Masquerade: a masked piece giving check is sent as itself, like a fogged checker,
+  // so the viewer's board shows the check and offers only moves that answer it.
+  const viewerKings = [...state.pieces.values()].filter(p => p.color === viewer && p.type === 'king').map(p => p.square);
   const project = (piece: Piece): Piece => {
     if (piece.color === viewer) return piece;
-    const type = getShownType(state, piece, viewer);
-    const disguised = type !== piece.type;
+    const masked = isMasked(state, piece);
+    const checking = masked && state.pieces.get(piece.square)?.id === piece.id && pieceAttackSquares(state, piece).some(sq => viewerKings.includes(sq));
+    const type = checking ? piece.type : getShownType(state, piece, viewer);
+    const disguised = type !== piece.type || (masked && !checking);
     const out: Piece = { id: idOf(piece.id), type, color: piece.color, square: piece.square, cooldowns: {} };
     for (const flag of STATUS_FLAGS) if (piece[flag]) out[flag] = true;
     if (!disguised) {
@@ -93,7 +99,13 @@ export function redactForViewer(state: GameState, viewer: Color, options: Redact
     }
     if (isMoveHidden(state, record, viewer, visible)) return blankRecord(record, viewer);
     // MOD-D019: the enemy's mark is a real piece id; the card state carries it when it may be seen.
-    const { spoiler: _spoiler, ...move } = record.move;
+    const { spoiler: _spoiler, ...sent } = record.move;
+    // MOD-D020: while the masks are on, nothing in a masked move may name the piece's type.
+    let move = sent;
+    if (isMasqueradeOn(state) && record.pieceMoved.type !== 'king' && !record.pieceMoved.isRealKing) {
+      const { ability: _a, promotion: _p, isEnPassant: _e, dropType: _d, isCastle: _c, ...plain } = sent;
+      move = plain;
+    }
     return {
       ...record,
       move,
@@ -143,7 +155,8 @@ export function redactForViewer(state: GameState, viewer: Color, options: Redact
     tiles.set(square, rest);
   }
 
-  const secret = visible !== null || hidden.size > 0;
+  // Masquerade: a reset clock would tell that a masked piece was a pawn.
+  const secret = visible !== null || hidden.size > 0 || isMasqueradeOn(state);
   const lastHidden = moveHistory[moveHistory.length - 1]?.hidden === true;
   const flags: GameFlags = secret
     ? {
