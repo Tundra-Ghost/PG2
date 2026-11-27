@@ -1294,6 +1294,7 @@ export default function App() {
                   onMove={move => act({ t: 'move', move })}
                   onShooGerald={() => act({ t: 'shoo' })}
                   onTouchPiece={square => act({ t: 'touch', square })}
+                  onUndo={() => act({ t: 'undo' })}
                   controlColor={vsBot ? 'white' : undefined}
                   onInfo={setInfoMessage}
                   notice={infoMessage}

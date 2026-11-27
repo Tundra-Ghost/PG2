@@ -96,6 +96,21 @@ describe('saved bot games', () => {
     expect(snapshot(rebuilt!)).toEqual(snapshot(state));
   });
 
+  it('rebuilds a match with a Ctrl+Z undo in its actions', () => {
+    const mods = [MODIFIER_IDS.ctrlZ, MODIFIER_IDS.floorIsLava];
+    const start = startMatchState('undo', 777, mods, []);
+    const first = playLogged(start, 6);
+    expect(applyAction(first.state, { t: 'undo' })).not.toBeNull();
+    const undone = applyAction(first.state, { t: 'undo' })!;
+    const after = playLogged(undone, 4);
+    const actions = [...first.actions, { t: 'undo' as const }, ...after.actions];
+    const rebuilt = rebuildMatch('undo', { prngSeed: 777, playerModifierIds: mods, botModifierIds: [], actions });
+    expect(rebuilt).not.toBeNull();
+    expect(snapshot(rebuilt!)).toEqual(snapshot(after.state));
+    // A second undo in the log does not apply: the save is dropped, not played wrong.
+    expect(rebuildMatch('undo', { prngSeed: 777, playerModifierIds: mods, botModifierIds: [], actions: [...actions, { t: 'undo' }] })).toBeNull();
+  });
+
   it('rebuilds a Sus match with the same disguised piece', () => {
     const mods = [MODIFIER_IDS.sus, MODIFIER_IDS.bigBeak];
     for (const seed of [1, 2, 3, 4, 5]) {

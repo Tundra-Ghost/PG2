@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 94 built, 6 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 95 built, 5 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -19,6 +19,7 @@
 - Tide Goes In and Crop Circles count rounds, not turns, like Shake It Off and Night Shift.
 - Speedrun Any% built, local games only (online rooms have no clock). No conflicts.
 - Rubber Banding built. No conflicts.
+- Ctrl+Z built. No conflicts.
 
 **Batch 13 (2026-11-27)**
 - Let It Go built. Conflicts: This Is My Swamp, Thinking With Portals, Tide Goes In.
@@ -879,7 +880,7 @@ Select your King and press Run. It runs two squares in a straight line, if both 
 - Changed from design: the design gave no cooldown; the build uses 10 of your moves.
 
 ### MOD-C015 · Ctrl+Z
-*Ref: Every computer ever* · **Tier S** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Every computer ever* · **Tier S** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Once per match, before your move, undo the last round: your last move and your opponent's reply both go back. Then you move again.
 
@@ -887,6 +888,7 @@ Once per match, before your move, undo the last round: your last move and your o
 
 - Ruling: random events of that round (lava, storm, gravity) are not rerolled. The seed is kept, so the world repeats.
 - Ruling: cannot undo a round that ended the game.
+- Built: a Ctrl+Z button sits with the ability buttons; tap it twice. Each move, ability or pass you make while you still have the undo saves the game as it stood (engine hook onTurnAction). Ctrl+Z puts that back, seed and all, and you move again; it does not cost your move. A move a card made for you (YOU DIED, a Speedrun timeout) is undone too, and you choose the move yourself. An extra turn (tempo token) counts as your last move, so only that move goes back. If both sides have the card, the other side keeps its own undo. Saved games record it as an action and replay it. Online, the server keeps the saved game and the players only learn whether the undo is ready.
 
 ### MOD-C016 · Bullet Time
 *Ref: The Matrix* · **Tier A** · Cost 4 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1530,7 +1532,7 @@ Values the game uses today. "Built" cards match the build.
 | C012 | Freaky Friday | C | B | 2 | 0 | Owner | Built |
 | C013 | Hold My Bread | C | B | 2 | 0 | Owner | Built |
 | C014 | Run, Forrest, Run | C | B | 2 | 0 | Owner | Built |
-| C015 | Ctrl+Z | C | S | 4 | 0 | Owner | Design |
+| C015 | Ctrl+Z | C | S | 4 | 0 | Owner | Built |
 | C016 | Bullet Time | C | A | 4 | 0 | Owner | Design |
 | C017 | Get Off My Lawn | C | B | 3 | 0 | Owner | Built |
 | C018 | Dirt Hut | C | A | 3 | 0 | Owner | Built |
@@ -1561,7 +1563,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-94 of 100 built. The other 6 are designs (v0.4).
+95 of 100 built. The other 5 are designs (v0.4).
 
 ### Balance test plan
 

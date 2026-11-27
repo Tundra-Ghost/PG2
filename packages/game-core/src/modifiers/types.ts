@@ -81,6 +81,12 @@ export interface ModifierDefinition {
   /** Called during move validation — can block a move. */
   onPreMoveValidate?: (state: GameState, move: Move) => PreMoveResult;
 
+  /**
+   * Called when the side to move acts (a move, an ability that costs the turn,
+   * or a pass), before anything changes (MOD-C015 saves the game here).
+   */
+  onTurnAction?: (state: GameState) => GameState;
+
   /** Called after validation, before board update — can mutate the move. */
   onPreMoveApply?: (state: GameState, move: Move) => PreMoveApplyResult;
 

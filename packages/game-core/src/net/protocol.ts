@@ -120,6 +120,8 @@ export interface ClientToServerEvents {
   'game:shoo_gerald': (ack: (res: ActionAck) => void) => void;
   /** MOD-B015: the player selected (touched) a piece and must now move it. */
   'game:touch': (req: { square: Square }, ack: (res: ActionAck) => void) => void;
+  /** MOD-C015: undo the last round, once per match. */
+  'game:undo': (ack: (res: ActionAck) => void) => void;
   'game:resign': (ack: (res: ActionAck) => void) => void;
   'game:draw_offer': (req: DrawOfferRequest, ack: (res: ActionAck) => void) => void;
   'chat:send': (req: { text: string }, ack: (res: ActionAck) => void) => void;

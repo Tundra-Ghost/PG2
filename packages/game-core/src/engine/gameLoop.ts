@@ -581,7 +581,17 @@ function applyFreeAbility(state: GameState, move: Move): GameState {
   return startAbilityCooldown(next, piece.id, move.ability!);
 }
 
+/** The side to move acts: each card may note the game as it stands (onTurnAction). */
+function runTurnActionHooks(state: GameState): GameState {
+  let next = state;
+  for (const def of getActiveDefinitions(state)) {
+    if (def.onTurnAction) next = def.onTurnAction(next);
+  }
+  return next;
+}
+
 function applyMoveOnce(state: GameState, move: Move): GameState {
+  state = runTurnActionHooks(state);
   // Abilities skip onPreMoveApply: they already are a rule-bending move.
   const prepared = move.ability ? { state: cloneState(state), move: { ...move } } : runPreMoveApplyHooks(state, move);
   const preparedState = prepared.state;
@@ -901,7 +911,7 @@ export function canShooGerald(state: GameState): boolean {
 export function shooGerald(state: GameState): GameState {
   if (!canShooGerald(state)) return state;
 
-  const next = cloneState(state);
+  const next = cloneState(runTurnActionHooks(state));
   for (const [sq, piece] of next.pieces) {
     if (piece.color !== state.turn || (piece.cooldowns[GERALD_ID] ?? 0) <= 0) continue;
     const cooldowns = { ...piece.cooldowns };

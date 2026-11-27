@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import type { Color, GameState, Move, PieceType, Square } from '@pigeon-chess/game-core';
 import { chessEngine } from '@pigeon-chess/game-core';
-import { buildMove, getShooBlocker, getTouchedPiece, hasTouchMove, touchPiece, touchedReason, isHiddenPieceMove } from '@pigeon-chess/game-core';
+import { buildMove, canCtrlZ, ctrlZ, ctrlZBlocker, getShooBlocker, getTouchedPiece, hasTouchMove, touchPiece, touchedReason, isHiddenPieceMove } from '@pigeon-chess/game-core';
 import {
   flipSquare,
   flippedMovesLeft,
@@ -46,6 +46,8 @@ interface BoardProps {
   onShooGerald?: () => void;
   /** Online play: MOD-B015 sends the touched piece to the server. Local play applies it here. */
   onTouchPiece?: (square: Square) => void;
+  /** MOD-C015: online and in bot games the undo is sent out. Local play applies it here. */
+  onUndo?: () => void;
   /** The side this player controls. Clicks are ignored on the other side's turn. */
   controlColor?: Color;
   /** Which side sits at the bottom. Black players see the board flipped. */
@@ -104,6 +106,7 @@ export default function Board({
   onMove,
   onShooGerald,
   onTouchPiece,
+  onUndo,
   controlColor,
   orientation = 'white',
   onInfo,
@@ -168,7 +171,18 @@ export default function Board({
 
   const abilitySide = controlColor ?? state.turn;
   const tempoTokens = state.tempoTokens[abilitySide] ?? 0;
-  const hasAbilityCards = state.activeModifiers.some(
+  // MOD-C015 Ctrl+Z: a once-per-match button, shown with the abilities.
+  const ownsCtrlZ = state.activeModifiers.some(
+    mod => mod.id === MODIFIER_IDS.ctrlZ && (mod.sourceColor == null || mod.sourceColor === abilitySide),
+  );
+  const ctrlZUsed = ownsCtrlZ && !!(state.modifierState[MODIFIER_IDS.ctrlZ] as Partial<Record<string, { used?: boolean }>> | undefined)?.[abilitySide]?.used;
+  const ctrlZReady = ownsCtrlZ && state.turn === abilitySide && canCtrlZ(state);
+  const [undoArmed, setUndoArmed] = useState(false);
+  useEffect(() => setUndoArmed(false), [state]);
+  const hasPieceAbilities = state.activeModifiers.some(
+    mod => modifierRegistry.get(mod.id)?.ability && (mod.sourceColor == null || mod.sourceColor === abilitySide),
+  );
+  const hasAbilityCards = ownsCtrlZ || state.activeModifiers.some(
     mod => modifierRegistry.get(mod.id)?.ability && (mod.sourceColor == null || mod.sourceColor === abilitySide),
   );
   const abilityOptions = selected && state.pieces.get(selected)?.color === abilitySide
@@ -567,11 +581,39 @@ export default function Board({
                 </span>
               </button>
             )}
-            {abilityOptions.length === 0 ? (
+            {ownsCtrlZ && (
+              <button
+                type="button"
+                className={`${styles.abilityButton} ${undoArmed ? styles.abilityArmed : ''}`}
+                disabled={!ctrlZReady}
+                aria-pressed={undoArmed}
+                title="Once per match: undo the last round (your last move and the reply), then move again."
+                onClick={() => {
+                  if (!undoArmed) {
+                    setUndoArmed(true);
+                    return;
+                  }
+                  setUndoArmed(false);
+                  if (onUndo) onUndo();
+                  else onStateChange?.(ctrlZ(state));
+                }}
+              >
+                <ModifierIcon id={MODIFIER_IDS.ctrlZ} size={20} className={styles.abilityIcon} />
+                {undoArmed ? 'Tap again to undo' : 'Ctrl+Z'}
+                <span className={styles.abilityState}>
+                  {ctrlZUsed
+                    ? 'used'
+                    : ctrlZReady
+                      ? undoArmed ? 'last round goes back' : 'once per match'
+                      : state.turn === abilitySide ? (ctrlZBlocker(state) ?? '').replace(/^Nothing to undo yet: /, '') : 'on your turn'}
+                </span>
+              </button>
+            )}
+            {abilityOptions.length === 0 ? (!hasPieceAbilities && !tempoTokens ? null : (
               <span className={styles.abilityHint}>
                 {selected ? 'This piece has no ability.' : 'Select a piece to see its ability.'}
               </span>
-            ) : (
+            )) : (
               abilityOptions.map(option => {
                 const ready = option.cooldownLeft === 0 && option.targets.length > 0;
                 const armed = abilityMode === option.modifierId;

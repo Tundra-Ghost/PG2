@@ -224,6 +224,14 @@ export function createGameServer(options: ServerOptions = {}): GameServer {
       if (res.ok) broadcast(seat.roomId);
     });
 
+    socket.on('game:undo', rawAck => {
+      const ack = safeAck<ActionAck>(rawAck);
+      if (!seat) return ack({ ok: false, reason: 'Join a room first.' });
+      const res = rooms.undo(seat.roomId, seat.color);
+      ack(res);
+      if (res.ok) broadcast(seat.roomId);
+    });
+
     socket.on('game:touch', (req, rawAck) => {
       const ack = safeAck<ActionAck>(rawAck);
       if (!seat) return ack({ ok: false, reason: 'Join a room first.' });

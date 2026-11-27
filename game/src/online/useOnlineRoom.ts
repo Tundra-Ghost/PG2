@@ -76,6 +76,8 @@ export interface OnlineRoom {
   shooGerald: () => void;
   /** MOD-B015: tell the server which piece was touched. */
   touchPiece: (square: Square) => void;
+  /** MOD-C015: undo the last round. */
+  undo: () => void;
   resign: () => void;
   /** Offers a draw, or accepts the opponent's open offer. */
   offerDraw: () => void;
@@ -206,6 +208,7 @@ export function useOnlineRoom(account: string | null = null): OnlineRoom {
       ),
     shooGerald: () => socketRef.current?.emit('game:shoo_gerald', actionAck),
     touchPiece: square => socketRef.current?.emit('game:touch', { square }, actionAck),
+    undo: () => socketRef.current?.emit('game:undo', actionAck),
     resign: () => socketRef.current?.emit('game:resign', actionAck),
     offerDraw: () => socketRef.current?.emit('game:draw_offer', {}, actionAck),
     answerDraw: accept => socketRef.current?.emit('game:draw_offer', { accept }, actionAck),
