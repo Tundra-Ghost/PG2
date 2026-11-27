@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 81 built, 19 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 82 built, 18 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -18,6 +18,7 @@
 **Batch 11 (2026-11-27)**
 - Hidden pieces (shared code in engine/visibility.ts): a hidden piece looks like an empty square to its opponent. A move it blocks is a bump: it reveals the piece and the player moves again. A hidden piece that gives check is always revealed.
 - Invisibility Cloak built.
+- Camouflage built. Conflict (same player): Invisibility Cloak.
 
 **Batch 10 (2026-11-25)**
 - Footprints, Flashlight, Crystal Ball and Tells built.
@@ -972,6 +973,7 @@ At match start, pick one of your non-King pieces. It is invisible to your oppone
 
 - Ruling: enemy pieces still cannot move through it. They bump into it and it is revealed.
 - Bots: bots play with the same blindness, so it works against them too.
+- Conflict: Camouflage. One player may not draft both.
 - Changed from design: the piece is picked at random (seeded) from the owner's knights, bishops and rooks (or another minor piece in a changed army, never the Queen; with none of those, any non-King piece but an Egg), not chosen. There is no picker screen yet.
 - Built: the opponent sees an empty square and is offered moves as if it were empty. A move that the hidden piece blocks (a slide through it, a pawn push into it, a move it pins) is a bump: the piece is revealed with a "Bump!" event and the same player moves again, so no move is lost. A move that lands on the hidden piece captures it. The cloak ends when the piece captures, gives check, promotes, or after 10 rounds. Its moves read "moves in the dark" in the opponent's log and leave no last-move highlight. The owner sees a ○ badge on it. If the opponent has no move on the board they see, every hidden piece is revealed, so no turn is ever stuck.
 - Ruling: a move is checked on the board its player sees first, so a pawn cannot "capture" an empty-looking square to find the piece. A hidden piece that blocks a check on the opponent's King is revealed at the start of their turn, so they never see a false check. Ability targets come from the board the player sees too. Everything is shown once the game ends.
@@ -1030,7 +1032,7 @@ Your Queen and two of your pawns look like cups to your opponent. Each cup shows
 - Not Sus: Sus fakes one piece forever; the shell game hides three until they move.
 
 ### MOD-D015 · Camouflage
-*Ref: Predator* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Predator* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Any of your non-King pieces that stays still for 4 of your moves blends in and turns invisible to your opponent. It reappears when it moves, gives check, or is touched by an enemy move.
 
@@ -1038,6 +1040,8 @@ Any of your non-King pieces that stays still for 4 of your moves blends in and t
 
 - Ruling: enemy moves still bump into hidden pieces, revealing them.
 - Skill: rewards patient, planned ambushes.
+- Built: uses the shared hidden-piece rules of Invisibility Cloak. Pawns count. A piece moved by any card counts as moved. After it shows (a move, a check, a bump, Big Beak) it must stay still for 4 more of your moves. The owner sees a ○ badge on hidden pieces.
+- Conflict: Invisibility Cloak. Both hide your pieces, so one player may not draft both.
 
 ### MOD-D016 · Jump Scare
 *Ref: Five Nights at Freddy's* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Design**
@@ -1467,7 +1471,7 @@ Values the game uses today. "Built" cards match the build.
 | D012 | Flashlight | D | B | 2 | 0 | Owner | Built |
 | D013 | Poker Face | D | B | 1 | 0 | Owner | Design |
 | D014 | Shell Game | D | A | 3 | 0 | Owner | Design |
-| D015 | Camouflage | D | A | 3 | 0 | Owner | Design |
+| D015 | Camouflage | D | A | 3 | 0 | Owner | Built |
 | D016 | Jump Scare | D | B | 2 | 1 | Shared | Design |
 | D017 | Crystal Ball | D | B | 1 | 0 | Owner | Built |
 | D018 | Tells | D | B | 1 | 0 | Owner | Built |
@@ -1486,7 +1490,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-81 of 100 built. The other 19 are designs (v0.4).
+82 of 100 built. The other 18 are designs (v0.4).
 
 ### Balance test plan
 

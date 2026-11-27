@@ -1209,6 +1209,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Any of your non-King pieces that stays still for 4 of your moves blends in and turns invisible to your opponent. It reappears when it moves, gives check, or is touched by an enemy move.',
     flavor: '"The rook has been very still. The rook is part of the board now. The rook has achieved peace."',
+    prototypeRules:
+      'Any of your pieces except the King that stays on its square for 4 of your moves turns invisible to your opponent. It shows again when it moves, gives check, or an enemy move runs into it (that player moves again). Then it must stay still for 4 more moves. You see a ○ badge on your hidden pieces.',
   },
   {
     id: 'MOD-D016',
