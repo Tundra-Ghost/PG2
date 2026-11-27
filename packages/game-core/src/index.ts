@@ -69,6 +69,7 @@ export { getQuakeArrows } from './modifiers/definitions/shake-it-off';
 export { getMineClues } from './modifiers/definitions/minesweeper';
 export { getSky, getNightPhase } from './modifiers/definitions/night-shift';
 export { SPEEDRUN_SECONDS, isOnSpeedrunClock, speedrunTimeoutMove } from './modifiers/definitions/speedrun';
+export { movesUntilLag } from './modifiers/definitions/rubber-banding';
 export { getHiddenPieceIds, getVisibleSquares, isHiddenPieceMove, isHopHidden, isMoveHidden, isPieceHidden } from './engine/visibility';
 export { getCloakedPiece } from './modifiers/definitions/invisibility-cloak';
 export { getOwnCups, isCup } from './modifiers/definitions/shell-game';

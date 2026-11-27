@@ -8,6 +8,7 @@ export const MODIFIER_IDS = {
   gravitationalAnomaly: 'MOD-A007',
   youDied: 'MOD-B001',
   speedrun: 'MOD-B009',
+  rubberBanding: 'MOD-B018',
   fiftyFirstMoves: 'MOD-B005',
   gerald: 'MOD-B002',
   heavyIsTheCrown: 'MOD-B004',

@@ -651,6 +651,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     description:
       'Every 7th move you make lags: the piece moves, then snaps back to where it started. The move still counts as your turn. A ping counter shows when the next lag is due.',
     flavor: '"Viktor moved the bishop. The bishop moved back. Viktor blames his internet. Viktor does not have internet."',
+    prototypeRules:
+      'Your 7th, 14th, 21st ... move lags: the piece moves, then snaps back to where it started, and the turn still passes. Captures, castling, promotions, abilities and moves made in check never lag; the lag waits for your next move that can. A snap that would leave your King in check does not happen. A piece moved or removed by another card on the way does not snap back. A ping counter under the board shows how many moves until the next lag.',
   },
   {
     id: 'MOD-B019',
