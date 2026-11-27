@@ -161,7 +161,12 @@ export const MAX_PER_CATEGORY = 2;
 export interface DraftRuleOptions {
   /** Practice sandbox (GDD VS Bots): no budget, count or category caps. */
   unlimited?: boolean;
+  /** An online room. Online games have no clock, so timed cards are left out. */
+  online?: boolean;
 }
+
+/** Cards that need a live clock: not offered in online rooms, which are played over days. */
+export const OFFLINE_ONLY: readonly string[] = [MODIFIER_IDS.speedrun];
 
 export function getSelectedCards(ids: string[]) {
   return ALL_MODIFIERS.filter(mod => ids.includes(mod.id));
@@ -179,7 +184,7 @@ export function getValidOptions(
   ownIds: string[],
   otherIds: string[],
   implementedIds: Set<string>,
-  { unlimited = false }: DraftRuleOptions = {},
+  { unlimited = false, online = false }: DraftRuleOptions = {},
 ): ModifierCard[] {
   const ownCards = getSelectedCards(ownIds);
   const ownCounts = getCategoryCounts(ownCards);
@@ -187,6 +192,7 @@ export function getValidOptions(
 
   return ALL_MODIFIERS.filter(card => {
     if (!implementedIds.has(card.id)) return false;
+    if (online && OFFLINE_ONLY.includes(card.id)) return false;
     if (ownIds.includes(card.id)) return false;
     if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return false;
     if (needsDarkFirst(card.id, ownIds, otherIds)) return false;
@@ -239,11 +245,12 @@ export function pickBlocker(
   otherIds: string[],
   implementedIds: Set<string>,
   otherName = 'Your opponent',
-  { unlimited = false }: DraftRuleOptions = {},
+  { unlimited = false, online = false }: DraftRuleOptions = {},
 ): string | null {
   const ownCards = getSelectedCards(ownIds);
   const ownCost = ownCards.reduce((sum, c) => sum + c.cost, 0);
   if (!implementedIds.has(card.id)) return 'Not in this build yet.';
+  if (online && OFFLINE_ONLY.includes(card.id)) return 'Not in online games: they have no clock.';
   if (ownIds.includes(card.id)) return 'Already in your draft.';
   if (isSharedDraftModifier(card.id) && otherIds.includes(card.id)) return `${otherName} already claimed this shared modifier.`;
   if (needsDarkFirst(card.id, ownIds, otherIds)) return 'Needs It\'s Dark And I\'m Scared or Night Shift in the match first.';

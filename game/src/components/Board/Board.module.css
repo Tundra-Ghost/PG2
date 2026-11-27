@@ -32,12 +32,12 @@
 
 /* Leave room for the legend row so the frame still fits short screens. */
 .withLegend {
-  --board-size: max(320px, min(80vmin, 560px, calc(100dvh - 360px)));
+  --board-size: max(320px, min(80vmin, 560px, calc(100dvh - 360px - var(--speedrun-bar, 0px))));
 }
 
 /* Active abilities (C cards) leave a little less room for the board. */
 .withAbilities {
-  --board-size: max(300px, min(78vmin, 540px, calc(100dvh - 400px)));
+  --board-size: max(300px, min(78vmin, 540px, calc(100dvh - 400px - var(--speedrun-bar, 0px))));
 }
 
 /*

@@ -56,6 +56,8 @@ interface BoardProps {
   showLegalMoves?: boolean;
   autoQueen?: boolean;
   showCoordinates?: boolean;
+  /** Told when a popup on the board (promotion or drop choice) opens or closes. */
+  onPopupChange?: (open: boolean) => void;
 }
 
 interface PendingPromotion {
@@ -109,6 +111,7 @@ export default function Board({
   showLegalMoves = true,
   autoQueen = false,
   showCoordinates = true,
+  onPopupChange,
 }: BoardProps) {
   const [selected, setSelected] = useState<Square | null>(null);
   const [legalMoves, setLegalMoves] = useState<Square[]>([]);
@@ -124,6 +127,10 @@ export default function Board({
   const [pendingPromotion, setPendingPromotion] = useState<PendingPromotion | null>(null);
   /** MOD-E008: an armed drop waiting for the player to pick which piece. */
   const [pendingDrop, setPendingDrop] = useState<{ move: Move; choices: PieceType[] } | null>(null);
+  const boardPopupOpen = pendingPromotion !== null || pendingDrop !== null;
+  useEffect(() => {
+    onPopupChange?.(boardPopupOpen);
+  }, [boardPopupOpen, onPopupChange]);
   /** The ability (modifier id) armed for the selected piece, if any. */
   const [abilityMode, setAbilityMode] = useState<string | null>(null);
 

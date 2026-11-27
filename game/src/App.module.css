@@ -109,8 +109,15 @@
 /* Board-only column: no GameStatus (moved below stageRow) */
 .boardOnly {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   min-width: 0;
+}
+
+/* Speedrun Any%: the board shrinks by the timer bar's height so it still fits. */
+.boardOnlyTimed {
+  --speedrun-bar: 40px;
+  --board-size: max(320px, min(80vmin, 560px, calc(100dvh - 330px - var(--speedrun-bar))));
 }
 
 .gameFooter {

@@ -25,7 +25,7 @@ function implementedIds(): Set<string> {
 }
 
 function canPick(draft: OnlineDraft, color: Color): boolean {
-  return !draft.done[color] && getValidOptions(draft.picks[color], draft.picks[other(color)], implementedIds()).length > 0;
+  return !draft.done[color] && getValidOptions(draft.picks[color], draft.picks[other(color)], implementedIds(), { online: true }).length > 0;
 }
 
 /** Marks sides with no legal pick left as done and works out whose turn it is. */
@@ -46,7 +46,7 @@ export function draftPick(draft: OnlineDraft, color: Color, modifierId: string):
   if (draft.turn !== color) return { ok: false, error: 'Not your pick.' };
   const card = ALL_MODIFIERS.find(c => c.id === modifierId);
   if (!card) return { ok: false, error: 'Unknown modifier.' };
-  const blocker = pickBlocker(card, draft.picks[color], draft.picks[other(color)], implementedIds());
+  const blocker = pickBlocker(card, draft.picks[color], draft.picks[other(color)], implementedIds(), 'Your opponent', { online: true });
   if (blocker) return { ok: false, error: blocker };
   const picks = { ...draft.picks, [color]: [...draft.picks[color], modifierId] };
   return { ok: true, draft: settle({ ...draft, picks }, other(color)) };

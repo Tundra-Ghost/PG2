@@ -2,7 +2,7 @@ import AdminScreen from './components/Admin/AdminScreen';
 import { reportUsage } from './online/usage';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { GameState } from '@pigeon-chess/game-core';
-import { chessEngine } from '@pigeon-chess/game-core';
+import { MODIFIER_IDS, chessEngine, isOnSpeedrunClock } from '@pigeon-chess/game-core';
 import { getBotReaction, getBotSpeaker } from './botChat';
 import type { BotId } from './opponents';
 import { unlockBgm, playClick, playGameBgm, playMenuBgm } from './sound';
@@ -53,6 +53,7 @@ import styles from './App.module.css';
 import { appBase, historySaveId, pathFor, popTarget, screenFromPath, type Screen } from './routes';
 import { markTutorialSeen, stepForScreen, tutorialSeen, type TutorialStep } from './tutorial';
 import TutorialCoach from './components/TutorialCoach/TutorialCoach';
+import SpeedrunTimer from './components/SpeedrunTimer/SpeedrunTimer';
 import OngoingGames from './components/OngoingGames/OngoingGames';
 import { abandonCountsAsLoss, describeOnline, describeSeat, movesPlayed } from './ongoingGames';
 import { useOnlineGameList } from './online/useOnlineGameList';
@@ -238,6 +239,8 @@ export default function App() {
   };
   /** Which way out of a match is waiting on "Leave this match?". */
   const [leaveAsk, setLeaveAsk] = useState<'menu' | 'new' | 'back' | null>(null);
+  /** A promotion or drop choice is open on the board (Speedrun pauses). */
+  const [boardPopup, setBoardPopup] = useState(false);
   /** Set while a confirmed Back is stepping through history, so it is not asked twice. */
   const leaveConfirmed = useRef(false);
   const closeLeaveAsk = useCallback(() => setLeaveAsk(null), []);
@@ -929,6 +932,9 @@ export default function App() {
   const opponentLevel = botProfile ? getProfileLevel(botProfile) : 1;
   const opponentTitle = botProfile ? getSelectedTitle(botProfile).name : 'Street Pigeon';
 
+  /** MOD-B009: the timer bar shows all match when a side this screen plays has Speedrun. */
+  const speedrunShown = gameState.activeModifiers.some(mod => mod.id === MODIFIER_IDS.speedrun && (!vsBot || mod.sourceColor !== 'black'));
+
   const settingsOverlay =
     screen === 'settings' ? (
       <SettingsScreen
@@ -1269,10 +1275,22 @@ export default function App() {
               />
             </div>
 
-            <div className={styles.boardOnly}>
+            <div className={`${styles.boardOnly} ${speedrunShown ? styles.boardOnlyTimed : ''}`}>
+              {speedrunShown && (
+                <SpeedrunTimer
+                  state={gameState}
+                  active={isOnSpeedrunClock(gameState) && (!vsBot || gameState.turn === 'white')}
+                  paused={
+                    boardPopup || leaveAsk !== null || profileViewer !== null || surveyFor !== null
+                    || pendingDialogue !== null || tutorialStep !== null || screen !== 'game'
+                  }
+                  onTimeout={(move, from) => act({ t: 'move', move }, from)}
+                />
+              )}
               <div className={styles.boardShell}>
                 <Board
                   state={gameState}
+                  onPopupChange={setBoardPopup}
                   onMove={move => act({ t: 'move', move })}
                   onShooGerald={() => act({ t: 'shoo' })}
                   onTouchPiece={square => act({ t: 'touch', square })}
