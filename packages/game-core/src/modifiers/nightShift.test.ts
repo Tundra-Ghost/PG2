@@ -9,6 +9,7 @@ import { getVisibleSquares } from '../engine/visibility';
 import { getValidOptions, pickBlocker } from '../draft/rules';
 import { redactForViewer } from '../net/redact';
 import { ALL_MODIFIERS } from './data';
+import { modifierRegistry } from './registry';
 import { makeEmptyState, makePiece, move } from './testHelpers';
 
 const ID = MODIFIER_IDS.nightShift;
@@ -87,5 +88,14 @@ describe('MOD-D010 Night Shift', () => {
     for (const support of [MODIFIER_IDS.catMode, MODIFIER_IDS.footprints, MODIFIER_IDS.flashlight]) expect(offered).toContain(support);
     const cat = ALL_MODIFIERS.find(c => c.id === MODIFIER_IDS.catMode)!;
     expect(pickBlocker(cat, [], [], built)).toMatch(/Night Shift/);
+  });
+
+  it('Flashlight has no targets by day and lights at night (interaction)', () => {
+    let state = start(BASE(), [{ id: MODIFIER_IDS.flashlight, sourceColor: 'white' }]);
+    const king = () => [...state.pieces.values()].find(p => p.type === 'king' && p.color === 'white')!;
+    const targets = () => modifierRegistry.get(MODIFIER_IDS.flashlight)!.ability!.getTargets(state, king());
+    expect(targets()).toEqual([]);
+    state = playToRound(state, 9);
+    expect(targets().length).toBeGreaterThan(0);
   });
 });

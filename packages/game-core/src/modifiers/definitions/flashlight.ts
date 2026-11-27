@@ -1,6 +1,7 @@
 import type { ModifierDefinition } from '../types';
 import type { Color, GameState, Square } from '../../engine/types';
 import { appendGameEvent, cloneState } from '../../engine/gameLoop';
+import { getVisibleSquares } from '../../engine/visibility';
 import { MODIFIER_IDS } from '../ids';
 import { affectsColor } from '../owner';
 
@@ -61,8 +62,9 @@ export const flashlightDef: ModifierDefinition = {
     cooldown: FLASHLIGHT_COOLDOWN,
     entersTarget: false,
     free: true,
-    getTargets() {
-      return CENTRES;
+    getTargets(state, piece) {
+      // Nothing to light while there is no fog (Night Shift by day).
+      return getVisibleSquares(state, piece.color) ? CENTRES : [];
     },
     apply(state, move) {
       const next = cloneState(state);
