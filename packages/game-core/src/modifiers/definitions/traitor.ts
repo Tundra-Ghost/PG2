@@ -4,6 +4,7 @@ import { appendGameEvent, cloneState } from '../../engine/gameLoop';
 import { prngPickIndex, prngStep } from '../../engine/prng';
 import { MODIFIER_IDS } from '../ids';
 import { affectsColor } from '../owner';
+import { getShownType } from './sus';
 
 const ID = MODIFIER_IDS.traitor;
 
@@ -28,10 +29,14 @@ function label(color: Color): string {
 }
 
 /**
- * A random non-king piece of `color` (balance round 3: was the most valuable).
+ * A random non-king, non-pawn piece of `color`, or a random pawn if only
+ * pawns are left (balance round 3: was the most valuable). Eggs and Ghosts
+ * are never picked.
  */
 function pickTraitor(state: GameState, color: Color, prngState: number): [Piece | null, number] {
-  const candidates = Array.from(state.pieces.values()).filter(p => p.color === color && p.type !== 'king' && p.type !== 'egg');
+  const own = Array.from(state.pieces.values()).filter(p => p.color === color && p.type !== 'king' && p.type !== 'egg' && !p.isGhost);
+  const pieces = own.filter(p => p.type !== 'pawn');
+  const candidates = pieces.length > 0 ? pieces : own;
   if (candidates.length === 0) return [null, prngState];
   const [idx, next] = prngPickIndex(prngState, candidates.length);
   return [candidates[idx], next];
@@ -54,7 +59,8 @@ function warn(state: GameState, color: Color): GameState {
     type: 'modifier',
     modifierId: ID,
     title: 'Traitor',
-    message: `${label(color)}'s ${traitor.type} on ${traitor.square} is acting sus. It defects next turn.`,
+    // Name what the opponent sees, so a Sus disguise is not given away.
+    message: `${label(color)}'s ${getShownType(state, traitor, color === 'white' ? 'black' : 'white')} on ${traitor.square} is acting sus. It defects next turn.`,
   });
 }
 

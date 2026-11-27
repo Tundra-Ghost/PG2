@@ -116,6 +116,21 @@ describe('MOD-B006 They Were The Traitor', () => {
     expect([...picked].sort()).toEqual(['queen', 'rook']);
   });
 
+  it('picks pawns only when nothing else is left, and never a Ghost', () => {
+    const base = traitorState();
+    base.turnNumber = TRAITOR_EARLIEST_TURN;
+    base.pieces.set('a2', makePiece('pawn', 'white', 'a2'));
+    base.pieces.set('d2', { ...base.pieces.get('d2')!, isGhost: true });
+    for (let seed = 1; seed < 200; seed++) {
+      const next = chessEngine.beginTurn({ ...base, prngState: seed });
+      for (const p of next.pieces.values()) if (p.isTraitor) expect(p.square).toBe('h1');
+    }
+    base.pieces.delete('h1');
+    base.pieces.delete('d2');
+    const pawn = warnTraitor(base, 'a2');
+    expect(pawn.pieces.get('a2')?.isTraitor).toBe(true);
+  });
+
   it('the warned piece defects on the owner next turn', () => {
     const base = traitorState();
     base.turnNumber = TRAITOR_EARLIEST_TURN;

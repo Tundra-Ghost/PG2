@@ -445,7 +445,7 @@ export const ALL_MODIFIERS: ModifierCard[] = [
       'After turn 10, at a random point, one random non-King piece of yours defects to the opponent. You are warned 1 turn in advance. The ejection screen appears briefly.',
     flavor: '"Queen was The Traitor. 7 pieces remain. Viktor stares at the screen. Viktor voted wrong."',
     prototypeRules:
-      'From move 11 on, each of your turns has a 1 in 4 chance to pick a traitor: a random non-king piece of yours. It is marked with ! and defects at the start of your next turn. Trade it off first and the search starts again. Happens once per match.',
+      'From move 11 on, each of your turns has a 1 in 4 chance to pick a traitor: a random non-king piece of yours (a pawn only if nothing else is left). It is marked with ! and defects at the start of your next turn. Trade it off first and the search starts again. Happens once per match.',
   },
   {
     id: 'MOD-B007',

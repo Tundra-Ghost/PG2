@@ -143,7 +143,7 @@ Promotion: once the square ahead of a pawn is storm, that pawn promotes on the l
 ### MOD-A006 · This Is My Swamp
 *Ref: Shrek* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
 
-The four centre squares (d4, d5, e4, e5) are the Swamp. A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Elephant, Camel, Nightrider, Grasshopper) that lands in the Swamp is stuck for 2 of its owner's moves, then leaps out normally (a Nightrider with a single jump). Swamp pieces still give check at full range (Core rule 3).
+The four centre squares (d4, d5, e4, e5) are the Swamp. A piece that starts its move in the Swamp moves only 1 square, captures included. Pieces may still slide through. A knight or other leaper (Pigeon, Camel, Nightrider, Grasshopper) that lands in the Swamp is stuck for 2 of its owner's moves, then leaps out normally (a Nightrider with a single jump). Swamp pieces still give check at full range (Core rule 3).
 
 *The Swamp is contested. The Swamp is disgusting. The Swamp is strategically essential.*
 
@@ -417,6 +417,8 @@ From move 11 on, each of the owner's moves has a 1 in 4 chance to pick a traitor
 - Moneyball ruling: a defected piece that is later captured can be bought back.
 - Changed from v0.2: the 1 in 4 roll replaces "a random turn after turn 10".
 - Changed in balance round 3: the traitor is a random non-king piece, not the most valuable one. Cost stays -3.
+- Ruling: pawns are picked only when no other non-king piece is left, so a home-rank pawn rarely defects one step from promoting. Eggs and Ghosts are never picked.
+- Ruling: the warning names the piece as the opponent sees it, so it never gives away a Sus disguise.
 
 ### MOD-B007 · Conscientious Objector
 *Ref: pacifist protest memes* · **Tier B** · Cost -1 · Curse 1 · Scope: Owner · Modes: All · **Built**
@@ -1346,11 +1348,11 @@ Your bishops become Elephants. An Elephant moves one or two squares diagonally. 
 - Built: Elephants have their own piece art (an elephant head) and write E in the move list. Unlike a xiangqi elephant, nothing on the square between can block the jump.
 - Ruling: only your starting bishops become Elephants. A bishop you promote to later is a normal bishop. A captured Elephant bought back with Moneyball is still an Elephant.
 - Ruling: an Elephant is not a bishop for other cards. Twin Telepathy does not move it and it does not clear infection. Infection does not slow it.
-- Interaction: This Is My Swamp. An Elephant is treated like a knight: entering the Swamp traps it for 2 turns, then it jumps out normally.
+- Interaction: This Is My Swamp. Since balance round 3 an Elephant can step 1 square, so the Swamp does not trap it. In the Swamp it moves only 1 square, like other pieces.
 - Ruling: Ghost bishops (I'm Literally Right Here) become Ghost Elephants, so they still look like the rest of your army.
 - Conflict: Holy Knight, The Small Council, Forgive Me, For I Have Moved and Leap Of Faith. Each needs a bishop, so one side cannot draft them with this card.
 - Interaction: Sus. A disguise never shows a bishop, since you have none. It shows an Elephant instead.
-- Note: an Elephant stays on its colour and can only ever reach 16 squares (a quarter of the board), so it can never give mate alone.
+- Note: an Elephant stays on its colour and reaches only the 32 squares of that colour, so it can never give mate alone.
 - Changed in balance round 2: cost -1 to -3. It won 11% of harness games at -1 (#150).
 
 ## Balance summary

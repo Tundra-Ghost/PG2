@@ -11,9 +11,10 @@ const KNIGHT_TRAP_TICKS = 3;
 
 /**
  * Leapers cannot make a 1-square move, so the Swamp traps them instead
- * (MOD-E020 Elephant, MOD-E011 Camel and MOD-E012 Grasshopper too; every hop is at least 2 squares).
+ * (MOD-E011 Camel and MOD-E012 Grasshopper too; every hop is at least 2 squares).
+ * The MOD-E020 Elephant can step 1 square, so it is not trapped.
  */
-const LEAPERS = new Set(['knight', 'pigeon', 'elephant', 'camel', 'grasshopper']);
+const LEAPERS = new Set(['knight', 'pigeon', 'camel', 'grasshopper']);
 /** MOD-E019 Nightriders are trapped like knights, and leave the Swamp with a single jump. */
 const KNIGHT_JUMP_DISTANCE = 2;
 

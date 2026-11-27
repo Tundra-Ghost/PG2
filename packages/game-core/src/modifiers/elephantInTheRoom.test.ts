@@ -124,7 +124,7 @@ describe('MOD-E020 Elephant In The Room', () => {
     expect(next.pieces.get('f1')?.type).toBe('elephant');
   });
 
-  it('is trapped by the Swamp like a knight, then jumps out', () => {
+  it('is not trapped by the Swamp, but moves only 1 square from it', () => {
     let state = makeEmptyState([
       makePiece('king', 'white', 'a1'),
       makePiece('elephant', 'white', 'b2'),
@@ -133,14 +133,10 @@ describe('MOD-E020 Elephant In The Room', () => {
     ]);
     state = chessEngine.activateDraftModifiers(state, [{ id: MODIFIER_IDS.thisIsMySwamp, sourceColor: null }]);
     state = chessEngine.applyMove(state, move('b2', 'd4', 'white'));
-    expect(state.pieces.get('d4')?.cooldowns[MODIFIER_IDS.thisIsMySwamp]).toBeGreaterThan(0);
+    expect(state.pieces.get('d4')?.cooldowns[MODIFIER_IDS.thisIsMySwamp] ?? 0).toBe(0);
     state = chessEngine.applyMove(state, move('a7', 'a6', 'black'));
     expect(chessEngine.validateMove(state, move('d4', 'f6', 'white')).valid).toBe(false);
-    state = chessEngine.applyMove(state, move('a1', 'a2', 'white'));
-    state = chessEngine.applyMove(state, move('a6', 'a5', 'black'));
-    state = chessEngine.applyMove(state, move('a2', 'a1', 'white'));
-    state = chessEngine.applyMove(state, move('a5', 'a4', 'black'));
-    expect(chessEngine.validateMove(state, move('d4', 'f6', 'white')).valid).toBe(true);
+    expect(chessEngine.validateMove(state, move('d4', 'e3', 'white')).valid).toBe(true);
   });
 
   it('turns Ghost bishops into Ghost Elephants, whichever card comes first', () => {

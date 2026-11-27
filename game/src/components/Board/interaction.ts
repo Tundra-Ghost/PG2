@@ -48,7 +48,7 @@ const MARKER_LEGEND: LegendRow[] = [
   { modifierId: MODIFIER_IDS.rejectQueen, mark: '»', label: 'Chain ready' },
   { modifierId: MODIFIER_IDS.chancellor, mark: 'C', label: 'Chancellor' },
   { modifierId: MODIFIER_IDS.holyKnight, mark: 'A', label: 'Archbishop in the move list (bishop + knight)' },
-  { modifierId: MODIFIER_IDS.elephantInTheRoom, mark: 'E', label: 'Elephant in the move list (jumps 2 diagonally)' },
+  { modifierId: MODIFIER_IDS.elephantInTheRoom, mark: 'E', label: 'Elephant in the move list (moves 1 or 2 diagonally)' },
   { modifierId: MODIFIER_IDS.lawrenceOfArabia, mark: 'L', label: 'Camel in the move list (leaps 3 and 1)' },
   { modifierId: MODIFIER_IDS.knightRider, mark: 'NN', label: 'Nightrider in the move list (knight jumps in a line)' },
   { modifierId: MODIFIER_IDS.overseasHire, mark: 'Cn', label: 'Cannon in the move list (hops one piece to capture)' },
