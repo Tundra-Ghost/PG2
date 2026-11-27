@@ -4,6 +4,7 @@ import { getAbilityOptions, performAbility } from './abilities';
 import { applyMoveInternal, buildMove, cloneState, getValidPromotionTypes } from './gameLoop';
 import { getHiddenPieceIds, getVisibleSquares } from './visibility';
 import { isCup } from '../modifiers/definitions/shell-game';
+import { withBotSpoiler } from '../modifiers/definitions/spoiler-alert';
 import { botRandom } from './prng';
 
 /**
@@ -99,7 +100,7 @@ function underFog(state: GameState, color: Color, pick: (view: GameState) => Mov
 }
 
 export function getChickBotMove(state: GameState, color: Color, random: () => number = botRandom(state)): Move | null {
-  return underFog(state, color, view => chickMove(view, color, random));
+  return withBotSpoiler(state, underFog(state, color, view => chickMove(view, color, random)));
 }
 
 function chickMove(state: GameState, color: Color, random: () => number): Move | null {
@@ -246,7 +247,7 @@ export interface PigeonBotOptions {
  */
 export function getPigeonBotMove(state: GameState, color: Color, options: PigeonBotOptions = {}): Move | null {
   const random = options.random ?? botRandom(state);
-  return underFog(state, color, view => pigeonMove(view, color, { ...options, random }));
+  return withBotSpoiler(state, underFog(state, color, view => pigeonMove(view, color, { ...options, random })));
 }
 
 function pigeonMove(state: GameState, color: Color, options: PigeonBotOptions): Move | null {

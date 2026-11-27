@@ -352,3 +352,41 @@
     align-items: center;
   }
 }
+
+/* MOD-D019 Spoiler Alert: the mark step after picking a move. */
+.spoilerBar {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: max-content;
+  max-width: calc(100% - 16px);
+  transform: translateX(-50%);
+  padding: 0.4rem 0.5rem 0.4rem 0.8rem;
+  border: 1px solid rgba(71, 136, 209, 0.7);
+  border-radius: 8px;
+  background: rgba(231, 238, 247, 0.95);
+  color: #0d233c;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  box-shadow: 0 4px 14px rgba(16, 37, 66, 0.2);
+  /* Taps go through to the pieces under the bar; only Cancel takes them. */
+  pointer-events: none;
+}
+
+.spoilerCancel {
+  pointer-events: auto;
+  flex: none;
+  min-height: 40px;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid #1f4f86;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #0d233c;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}

@@ -96,6 +96,7 @@ const MARKER_LEGEND: LegendRow[] = [
   { modifierId: MODIFIER_IDS.letItGo, mark: '❅', label: 'Ice: a rook, bishop or queen keeps sliding' },
   { modifierId: MODIFIER_IDS.shakeItOff, mark: '⤳', label: 'Quake arrow: where the next earthquake moves this piece' },
   { modifierId: MODIFIER_IDS.minesweeper, mark: '①', label: 'Mine clue: how many hidden mines touch this square' },
+  { modifierId: MODIFIER_IDS.spoilerAlert, mark: '→', label: 'Amber ring: the piece that side moves next' },
   { modifierId: MODIFIER_IDS.nightShift, mark: '☾', label: 'Night: you see only near your own pieces' },
   { modifierId: MODIFIER_IDS.oneWayStreet, mark: '↕', label: 'One-way file: move along it only the arrow\'s way' },
   { modifierId: MODIFIER_IDS.forgiveMe, mark: '✝', label: 'Confession and declared square' },
