@@ -15,6 +15,7 @@ const CHESS_GLYPH = /[\u2654-\u265F]/;
 // Draw order, bottom to top.
 const DEPTH = { squares: 0, tiles: 1, pulse: 2, tileIcons: 2.5, fog: 2.8, pieces: 3, badges: 4, marks: 5, bursts: 6 };
 const MOVE_MS = 140;
+const REMOVE_MS = 180;
 const BURST_MS = 1100;
 
 interface Theme {
@@ -319,8 +320,8 @@ export class BoardScene extends Phaser.Scene {
 
     for (const [id, sprite] of this.pieceSprites) {
       if (!seenPieces.has(id)) {
-        sprite.destroy();
         this.pieceSprites.delete(id);
+        this.removeSprite(sprite);
       }
     }
     for (const [id, bird] of this.geraldSprites) {
@@ -478,6 +479,25 @@ export class BoardScene extends Phaser.Scene {
       duration: MOVE_MS,
       ease: 'Quad.easeOut',
       onComplete: () => sprite.setDepth(DEPTH.pieces),
+    });
+  }
+
+  /** A taken or removed piece shrinks and fades on its square, under the piece that moves in. */
+  private removeSprite(sprite: Phaser.GameObjects.Image) {
+    this.tweens.killTweensOf(sprite);
+    if (this.calm) {
+      sprite.destroy();
+      return;
+    }
+    sprite.setDepth(DEPTH.pieces - 0.1);
+    this.tweens.add({
+      targets: sprite,
+      alpha: 0,
+      scaleX: sprite.scaleX * 0.6,
+      scaleY: sprite.scaleY * 0.6,
+      duration: REMOVE_MS,
+      ease: 'Quad.easeIn',
+      onComplete: () => sprite.destroy(),
     });
   }
 
