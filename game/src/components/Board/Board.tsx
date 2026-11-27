@@ -468,6 +468,9 @@ export default function Board({
     eggOnBoard: squareViews.some(view => view.piece?.type === 'egg'),
     flippedMovesLeft: flippedMovesLeft(state, controlColor ?? state.turn),
     touchScreen: typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches === true,
+    viewerModifierIds: state.activeModifiers
+      .filter(mod => mod.sourceColor == null || mod.sourceColor === (controlColor ?? state.turn))
+      .map(mod => mod.id),
   });
   // The layout follows the cards in play, not the rows showing now, so the
   // board keeps one size for the whole match.

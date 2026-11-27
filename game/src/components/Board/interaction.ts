@@ -25,10 +25,14 @@ export interface MarkerLegendContext {
   flippedMovesLeft?: number;
   /** A touch screen, so the legend says "tap" instead of "click". */
   touchScreen?: boolean;
+  /** Cards that apply to the viewer's side. Owner-only rows need the card here. */
+  viewerModifierIds?: readonly string[];
 }
 
 type LegendRow = {
   modifierId: string;
+  /** Only the side that owns the card sees this marker, so only that side gets the row. */
+  ownerOnly?: boolean;
   showIf?: (ctx: MarkerLegendContext) => boolean;
   /** A label that depends on the match, in place of `label`. */
   labelFor?: (ctx: MarkerLegendContext) => string;
@@ -71,7 +75,7 @@ const MARKER_LEGEND: LegendRow[] = [
   { modifierId: MODIFIER_IDS.knownUnknowns, mark: '⬚', label: 'Blind Spot' },
   { modifierId: MODIFIER_IDS.bigBeak, mark: '◉', label: 'Surveillance Square' },
   { modifierId: MODIFIER_IDS.smokeCloud, mark: '☁', label: 'Smoke' },
-  { modifierId: MODIFIER_IDS.sus, mark: '?', label: 'Your Sus piece' },
+  { modifierId: MODIFIER_IDS.sus, mark: '?', label: 'Your Sus piece', ownerOnly: true },
   { modifierId: MODIFIER_IDS.bandersnatch, mark: '┃', label: 'Mirror line (twins copy moves)' },
   {
     modifierId: MODIFIER_IDS.noIDontThinkIWill,
@@ -97,6 +101,7 @@ export function getMarkerLegend(
 ): MarkerLegendEntry[] {
   return MARKER_LEGEND
     .filter(entry => activeModifierIds.includes(entry.modifierId))
+    .filter(entry => !entry.ownerOnly || !ctx.viewerModifierIds || ctx.viewerModifierIds.includes(entry.modifierId))
     .filter(entry => !entry.showIf || entry.showIf(ctx))
     .map(({ mark, label, labelFor }) => ({ mark, label: labelFor ? labelFor(ctx) : label }));
 }

@@ -29,6 +29,14 @@ describe('board Gerald interaction', () => {
 });
 
 describe('board marker legend', () => {
+  it('shows the Sus row only to the side that owns Sus (MOD-D005)', () => {
+    const sus = MODIFIER_IDS.sus;
+    expect(getMarkerLegend([sus], { viewerModifierIds: [sus] })).toEqual([{ mark: '?', label: 'Your Sus piece' }]);
+    expect(getMarkerLegend([sus], { viewerModifierIds: [] })).toEqual([]);
+    // With no viewer given (board layout), the row still counts.
+    expect(getMarkerLegend([sus])).toHaveLength(1);
+  });
+
   it('is empty in a standard game', () => {
     expect(getMarkerLegend([])).toEqual([]);
   });
