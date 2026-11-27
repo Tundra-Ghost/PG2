@@ -132,4 +132,11 @@ export interface ModifierDefinition {
 
   /** Hidden pieces: show these pieces again (a bump, a capture, a check). */
   revealPieces?: (state: GameState, pieceIds: string[]) => GameState;
+
+  /**
+   * Online play (net/redact.ts): return `modifierState[id]` with anything
+   * `viewer` may not know removed, such as which enemy piece is hidden or
+   * disguised. `state` is the full state. Return undefined to drop the entry.
+   */
+  redactState?: (state: GameState, viewer: Color) => unknown;
 }

@@ -128,6 +128,8 @@ export interface MoveRecord {
   pieceMoved: Piece;
   pieceCaptured?: Piece;
   notation: string;
+  /** Online play: a move the receiving player may not see, sent as a blank (net/redact.ts). */
+  hidden?: boolean;
 }
 
 export type DrawReason = 'stalemate' | '50-move' | 'threefold' | 'insufficient' | 'agreement';
