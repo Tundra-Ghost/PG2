@@ -227,6 +227,7 @@ export class BoardScene extends Phaser.Scene {
       if (view.tide) this.drawTide(view.tide, x, y);
       if (view.cropCircle) this.drawCrop(view.cropCircle, x, y);
       if (view.portal) this.drawPortal(view.portal, cx, cy);
+      for (const flow of view.flow ?? []) this.drawFlow(flow, cx, cy);
       if (view.lavaNext) this.drawLavaNext(x, y);
       if (view.lit) this.drawLit(x, y);
       // Drawn over the fog: they are about squares you cannot see.
@@ -700,6 +701,19 @@ export class BoardScene extends Phaser.Scene {
         g.lineTo(x + CELL * (0.15 + i * 0.175), wy + (i % 2 === 0 ? 0 : -CELL * 0.06));
       }
       g.strokePath();
+    }
+  }
+
+  /** Conveyor belts and one-way squares: a faint chevron pointing the way pieces go. */
+  private drawFlow(flow: 'up' | 'down' | 'left' | 'right', cx: number, cy: number) {
+    const g = this.tileLayer;
+    const [dx, dy] = flow === 'up' ? [0, -1] : flow === 'down' ? [0, 1] : flow === 'left' ? [-1, 0] : [1, 0];
+    const len = CELL * 0.16;
+    // Tip ahead of the centre, two arms swept back.
+    const tx = cx + dx * len, ty = cy + dy * len;
+    g.lineStyle(4, 0x0c3a78, 0.4);
+    for (const side of [-1, 1]) {
+      g.lineBetween(tx, ty, tx - dx * len * 1.6 + dy * side * len * 1.4, ty - dy * len * 1.6 + dx * side * len * 1.4);
     }
   }
 

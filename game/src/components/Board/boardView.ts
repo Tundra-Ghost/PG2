@@ -1,5 +1,5 @@
 import type { Color, GameState, Piece, PieceType, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getFootprints, getFlashlightSquares, getForecast, getHiddenPieceIds, getOwnCups, isCup, getTells, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
+import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getFootprints, getFlashlightSquares, getForecast, getHiddenPieceIds, getOwnCups, isCup, getTells, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, getFlowArrows, MODIFIER_IDS, type Flow } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -85,9 +85,18 @@ export interface SquareView {
   cropCircle?: 'warning' | 'active';
   /** Dirt Hut: a wall built by this side stands here. */
   wall?: 'white' | 'black';
+  /** Conveyor belts and other one-way squares: the way pieces go here, on screen. */
+  flow?: ScreenFlow[];
   /** Bandersnatch Protocol: the mirror axis runs along this edge of a d-file square. */
   mirrorEdge?: 'left' | 'right';
 }
+
+export type ScreenFlow = 'up' | 'down' | 'left' | 'right';
+
+const SCREEN_FLOW: Record<'white' | 'black', Record<Flow, ScreenFlow>> = {
+  white: { north: 'up', south: 'down', east: 'right', west: 'left' },
+  black: { north: 'down', south: 'up', east: 'left', west: 'right' },
+};
 
 export interface BoardViewInput {
   state: GameState;
@@ -115,6 +124,8 @@ function hasAmazon(state: GameState, color: Color): boolean {
 export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const { state, orientation, selected, legalMoves, showLegalMoves, checkSquare, lastFrom, lastTo, bursts, viewer } = input;
   const visible = viewer ? getVisibleSquares(state, viewer) : null;
+  const flows = getFlowArrows(state);
+  const toScreen = (flow: Flow): ScreenFlow => SCREEN_FLOW[orientation][flow];
   const winterActive = state.activeModifiers.some(mod => mod.id === MODIFIER_IDS.winterIsComing);
   const quietZones = getQuietZoneSquares(state);
   const noFlySquares = getNoFlySquares(state);
@@ -183,6 +194,7 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(tile?.portal ? { portal: tile.portal } : {}),
         ...(tile?.tide ? { tide: tile.tide } : {}),
         ...(tile?.cropCircle ? { cropCircle: tile.cropCircle } : {}),
+        ...(flows.has(square) ? { flow: flows.get(square)!.map(toScreen) } : {}),
         // Bless You: badges go on the pieces as the viewer sees them (Sus). The count itself follows real
         // moves, which Sus already says can show a disguise through how the piece moves.
         ...(piece && ['rook', 'bishop', 'queen'].includes(piece.type) && sneezes[piece.color] != null ? { sneezeIn: sneezes[piece.color]! } : {}),

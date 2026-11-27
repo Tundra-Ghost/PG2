@@ -3,7 +3,7 @@
 **Ref:** PC-MOD-001 · **Version:** 0.4 · **Status:** Draft, pre-production
 **Related:** [GDD](gdd.md) · [TDD](tdd.md) · [Art Direction](art-direction.md) · [Hook model](modifier-hook-model.md)
 
-100 modifiers in 5 categories, 20 each: 84 built, 16 designed. Max curse 3. Max cost 5 pts.
+100 modifiers in 5 categories, 20 each: 85 built, 15 designed. Max curse 3. Max cost 5 pts.
 
 | Code | Category | What it does |
 |---|---|---|
@@ -14,6 +14,10 @@
 | E | Asymmetric Armies | Non-standard piece configurations |
 
 ## Change log
+
+**Batch 12 (2026-11-27)**
+- Board-moving cards share one rule set (engine/conveyor.ts): they move pieces once per round, after Black moves; never capture; never put a King in check or add a second checker; and reveal a hidden piece that blocks them.
+- The Factory Must Grow built.
 
 **Batch 11 (2026-11-27)**
 - Hidden pieces (shared code in engine/visibility.ts): a hidden piece looks like an empty square to its opponent. A move it blocks is a bump: it reveals the piece and the player moves again. A hidden piece that gives check is always revealed.
@@ -204,7 +208,7 @@ Every 6 rounds a flock lands on a random empty 2×2 area of ranks 3 to 6. Nothin
 - Conflict: Crop Circles. Both use the middle ranks; only one may be in a match, whoever drafts it.
 
 ### MOD-A010 · The Factory Must Grow
-*Ref: Factorio* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
+*Ref: Factorio* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Built**
 
 Ranks 4 and 5 are conveyor belts. At the end of each round, every piece on rank 4 slides one square right and every piece on rank 5 slides one square left. A piece stops at the board edge or behind another piece. Arrows show the belt direction.
 
@@ -213,6 +217,9 @@ Ranks 4 and 5 are conveyor belts. At the end of each round, every piece on rank 
 - Ruling: belts never capture. A blocked piece stays put.
 - Ruling: a King rides the belt only if the new square is safe. Otherwise it stays.
 - Conflict: This Is My Swamp. Pieces may ride into the Swamp. Intended.
+- Built: the belts run once per round, after Black moves. The front piece moves first, so a line of pieces moves together. A piece also stays before a wall, flock, statue, storm or Lava square. No slide may put any King in check: a King rides only to a safe square, and a piece shielding its King stays. Belts stop while Tide Goes In floods ranks 4 and 5. A belt never uses a portal (Thinking With Portals): only normal moves do. A pawn that stepped two squares and then rides the belt can no longer be taken en passant.
+- Built: a hidden piece (Invisibility Cloak, Camouflage) that blocks a belt slide is revealed, like a bump on a normal move.
+- Built: a stuck piece (This Is My Swamp) rides the belt like any other. Once it is carried off the Swamp it is no longer stuck. A piece that rides into the Swamp is not trapped: only a move into it traps.
 
 ### MOD-A011 · Thinking With Portals
 *Ref: Portal* · **Tier B** · Cost 2 · Curse 0 · Scope: Shared · Modes: All · **Built**
@@ -1446,7 +1453,7 @@ Values the game uses today. "Built" cards match the build.
 | E007 | Reject Queen, Embrace Knight | E | B | 2 | 1 | Owner | Built |
 | E008 | Moneyball | E | A | 4 | 0 | Owner | Built |
 | A009 | The Birds (Hitchcock Mode) | A | B | 2 | 0 | Shared | Built |
-| A010 | The Factory Must Grow | A | A | 3 | 1 | Shared | Design |
+| A010 | The Factory Must Grow | A | A | 3 | 1 | Shared | Built |
 | A011 | Thinking With Portals | A | B | 2 | 0 | Shared | Built |
 | A012 | Let It Go | A | A | 3 | 1 | Shared | Design |
 | A013 | The Magic Roundabout | A | B | 2 | 0 | Shared | Design |
@@ -1506,7 +1513,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-84 of 100 built. The other 16 are designs (v0.4).
+85 of 100 built. The other 15 are designs (v0.4).
 
 ### Balance test plan
 

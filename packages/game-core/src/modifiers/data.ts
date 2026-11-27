@@ -204,6 +204,8 @@ export const ALL_MODIFIERS: ModifierCard[] = [
     scope: 'shared',
     description:
       'Ranks 4 and 5 are conveyor belts. At the end of each round, every piece on rank 4 slides one square right and every piece on rank 5 slides one square left. A piece stops at the board edge or behind another piece. Arrows show the belt direction.',
+    prototypeRules:
+      'After every round (once Black has moved) each piece on rank 4 slides one square right and each piece on rank 5 one square left. The front piece moves first, so a line of pieces moves together. A piece stays put at the board edge, behind a piece that cannot move, or before a wall, flock, statue, storm or Lava square. Belts never capture. No slide may put a King in check, so a King rides only to a safe square, and a piece shielding a King from check stays. Belts stop while Tide Goes In floods ranks 4 and 5. A belt never uses a portal. A pawn that stepped two squares and then rides can no longer be taken en passant. A hidden piece that blocks the belt is revealed. A piece carried out of the Swamp is no longer stuck.',
     flavor: '"Viktor placed his knight on the belt. The knight is now somewhere else. The factory is pleased."',
   },
   {

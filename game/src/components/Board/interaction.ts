@@ -90,6 +90,7 @@ const MARKER_LEGEND: LegendRow[] = [
       return `${left} flipped move${left === 1 ? '' : 's'} left: ${verb} across the board`;
     },
   },
+  { modifierId: MODIFIER_IDS.factoryMustGrow, mark: '⇄', label: 'Conveyor belt: slides pieces one square after each round' },
   { modifierId: MODIFIER_IDS.forgiveMe, mark: '✝', label: 'Confession and declared square' },
   { modifierId: MODIFIER_IDS.ghosts, mark: '◌', label: 'Your Ghost (faded)' },
 ];
