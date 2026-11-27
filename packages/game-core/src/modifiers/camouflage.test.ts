@@ -102,6 +102,37 @@ describe('Camouflage', () => {
     expect([...getHiddenPieceIds(state, 'black')]).toEqual(['white-pawn-h2']);
   });
 
+  it('a hidden piece that uses an ability shows, even if it stays put', () => {
+    const state = chessEngine.activateDraftModifiers(makeEmptyState([
+      makePiece('king', 'white', 'a1'),
+      makePiece('pawn', 'white', 'd4'),
+      makePiece('bishop', 'white', 'e5'),
+      makePiece('king', 'black', 'h8'),
+    ]), [{ id: MODIFIER_IDS.holdMyBread, sourceColor: 'white' }, { id: card.id, sourceColor: 'white' }]);
+    state.modifierState = { ...state.modifierState, [card.id]: { 'white-pawn-d4': { square: 'd4', count: 4 }, 'white-bishop-e5': { square: 'e5', count: 0 } } };
+    expect(getHiddenPieceIds(state, 'black').has('white-pawn-d4')).toBe(true);
+    const next = chessEngine.applyMove(state, move('d4', 'e5', 'white', { ability: MODIFIER_IDS.holdMyBread }));
+    expect(getHiddenPieceIds(next, 'black').size).toBe(0);
+    expect(getCamouflageCountdown(next, 'white-pawn-d4')).toBe(4);
+  });
+
+  it('counts only the owner\'s moves when both sides own it', () => {
+    const both = makeEmptyState([
+      makePiece('king', 'white', 'h1'),
+      makePiece('rook', 'white', 'a1'),
+      makePiece('king', 'black', 'h8'),
+      makePiece('rook', 'black', 'a8'),
+    ]);
+    both.activeModifiers = [card, { ...card, sourceColor: 'black' as const }];
+    let s = camouflageDef.onActivate!(both);
+    s = chessEngine.applyMove(s, move('h1', 'g1', 'white'));
+    expect(getCamouflageCountdown(s, 'white-rook-a1')).toBe(3);
+    expect(getCamouflageCountdown(s, 'black-rook-a8')).toBe(4);
+    s = chessEngine.applyMove(s, move('h8', 'g8', 'black'));
+    expect(getCamouflageCountdown(s, 'white-rook-a1')).toBe(3);
+    expect(getCamouflageCountdown(s, 'black-rook-a8')).toBe(3);
+  });
+
   it('bots do not see it', () => {
     const s = play2(play(setup(), 3));
     expect(botView(s, 'black').pieces.has('a1')).toBe(false);

@@ -65,9 +65,10 @@ export const camouflageDef: ModifierDefinition = {
     if (!affectsColor(state, ID, color)) return state;
     const before = camo(state);
     const table: CamoState = {};
+    const byId = new Map([...state.pieces.values()].map(p => [p.id, p]));
     // Other owners' entries stay as they are.
     for (const [id, entry] of Object.entries(before)) {
-      const piece = [...state.pieces.values()].find(p => p.id === id);
+      const piece = byId.get(id);
       if (piece && piece.color !== color) table[id] = entry;
     }
     for (const piece of candidates(state, color)) {
