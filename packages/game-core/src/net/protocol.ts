@@ -55,7 +55,7 @@ export interface MoveRequest {
   ability?: ModifierID;
   /** The piece an ability places, such as a Moneyball drop. */
   dropType?: PieceType;
-  /** MOD-D019 Spoiler Alert: id of your own piece you will move next. */
+  /** MOD-D019 Spoiler Alert: square (before this move) of your own piece you will move next. */
   spoiler?: string;
 }
 

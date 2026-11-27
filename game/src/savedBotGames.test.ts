@@ -121,6 +121,28 @@ describe('saved bot games', () => {
     }
   });
 
+  it('saves, reloads and resumes a Spoiler Alert game (#233)', () => {
+    const mods = [MODIFIER_IDS.spoilerAlert];
+    for (const seed of [3, 9, 21]) {
+      const start = startMatchState('spoiler', seed, mods, []);
+      const first = playLogged(start, 16);
+      expect(first.actions.length).toBeGreaterThan(8);
+      expect(first.actions.some(a => a.t === 'move' && a.move.spoiler !== undefined)).toBe(true);
+      // Save and reload: the actions go through JSON and every piece gets a fresh id.
+      const saved = JSON.parse(JSON.stringify({ prngSeed: seed, playerModifierIds: mods, botModifierIds: [], actions: first.actions }));
+      const rebuilt = rebuildMatch('spoiler', saved);
+      expect(rebuilt).not.toBeNull();
+      expect(snapshot(rebuilt!)).toEqual(snapshot(first.state));
+      // Resume: play on from the reloaded game, then reload that save too.
+      const more = playLogged(rebuilt!, 10);
+      expect(more.actions.length).toBeGreaterThan(0);
+      const all = JSON.parse(JSON.stringify([...first.actions, ...more.actions]));
+      const again = rebuildMatch('spoiler', { prngSeed: seed, playerModifierIds: mods, botModifierIds: [], actions: all });
+      expect(again).not.toBeNull();
+      expect(snapshot(again!)).toEqual(snapshot(more.state));
+    }
+  });
+
   it('survives a trip through JSON', () => {
     const start = startMatchState('game-2', 7, [], []);
     const { state, actions } = playLogged(start, 12);
