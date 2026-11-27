@@ -105,6 +105,8 @@ export interface AbilityOption {
   targets: Square[];
   /** Replaces "ready" on the button, such as a token count. */
   status?: string;
+  /** Does not cost the move (AbilitySpec.free). */
+  free?: boolean;
 }
 
 /** Abilities the piece on `square` could use now or later, for the ability button. */
@@ -126,7 +128,7 @@ export function getAbilityOptions(state: GameState, square: Square): AbilityOpti
           validateMove(state, { from: square, to, playerColor: piece.color, ability: inst.id }).valid,
         );
     const status = ability.status?.(state, piece);
-    options.push({ modifierId: inst.id, label: ability.label, hint: ability.hint, cooldownLeft, targets, ...(status ? { status } : {}) });
+    options.push({ modifierId: inst.id, label: ability.label, hint: ability.hint, cooldownLeft, targets, ...(status ? { status } : {}), ...(ability.free ? { free: true } : {}) });
   }
   return options;
 }

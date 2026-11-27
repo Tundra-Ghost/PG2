@@ -76,7 +76,8 @@ function candidateActions(state: GameState, color: Color): Move[] {
     }
     for (const inst of state.activeModifiers) {
       const ability = getActiveAbility(state, inst.id);
-      if (!ability || !ability.pieceTypes.includes(piece.type)) continue;
+      // A free ability (Flashlight) is not a move, so it never switches a move rule on.
+      if (!ability || ability.free || !ability.pieceTypes.includes(piece.type)) continue;
       if (!affectsColor(state, inst.id, color) || abilityCooldownLeft(piece, inst.id) > 0) continue;
       for (const to of ability.getTargets(state, piece)) {
         if (visible && !visible.has(to)) continue;

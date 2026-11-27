@@ -33,7 +33,7 @@ function hasValidAction(state: GameState, square: Square): boolean {
       : validateMove(state, { ...buildMove(state, square, to), playerColor: piece.color }).valid;
     if (ok) return true;
   }
-  return getAbilityOptions(state, square).some(option => option.targets.length > 0);
+  return getAbilityOptions(state, square).some(option => !option.free && option.targets.length > 0);
 }
 
 /** True when the side to move is bound by touch-move. */

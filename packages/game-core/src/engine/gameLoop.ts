@@ -505,7 +505,21 @@ function buildNotation(
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function applyMove(state: GameState, move: Move): GameState {
+  if (move.ability && modifierRegistry.get(move.ability)?.ability?.free) return applyFreeAbility(state, move);
   return playTakenOverTurns(applyMoveOnce(state, move));
+}
+
+/**
+ * An ability that does not cost the move (AbilitySpec.free): its effect and
+ * cooldown only. The same side is still to move, nothing goes in the move
+ * list and no move counter changes. The cooldown ticks on the move that
+ * follows, like any other.
+ */
+function applyFreeAbility(state: GameState, move: Move): GameState {
+  const piece = state.pieces.get(move.from);
+  if (!piece) return state;
+  const { state: next } = performAbility(cloneState(state), move);
+  return startAbilityCooldown(next, piece.id, move.ability!);
 }
 
 function applyMoveOnce(state: GameState, move: Move): GameState {
@@ -747,7 +761,7 @@ export function hasAnyValidMove(state: GameState): boolean {
   // An ability that costs the turn (such as ordering a heavy King) is a move too.
   for (const piece of state.pieces.values()) {
     if (piece.color !== state.turn) continue;
-    if (getAbilityOptions(state, piece.square).some(option => option.targets.length > 0)) return true;
+    if (getAbilityOptions(state, piece.square).some(option => !option.free && option.targets.length > 0)) return true;
   }
   return false;
 }

@@ -898,6 +898,7 @@ Both players see only within 2 squares of their own pieces. The rest is dark. Pi
 - Built: dark squares are drawn as fog. Enemy moves that land in the dark show as "moves in the dark" in the log. Bots plan with the same fog, but always know where the enemy King is.
 - Synergy: Forgive Me, For I Have Moved. Reveals the target through fog.
 - Synergy: Vent Tiles. Vents are invisible in fog.
+- Interaction: Footprints and Flashlight. Footprints show in this fog, and a Flashlight sees through it.
 
 ### MOD-D002 · I'm Literally Right Here
 *Ref: invisible man memes* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -914,6 +915,7 @@ The owner places 2 Ghost Pieces during setup. They look real to the opponent. A 
 Every 10 rounds, and on each capture, a 2×2 smoke cloud appears there for 3 rounds. Pieces inside are hidden from the opponent of whoever made the cloud. Movement through smoke is normal.
 
 - Built: a capture cloud covers the capture square (shifted to stay on the board). The timed cloud lands in the middle of the board and belongs to the side that just moved. Both sides see the smoke itself. Bots plan with the same fog, but always know where the enemy King is.
+- Interaction: Footprints and Flashlight. Footprints show in this fog, and a Flashlight sees through it.
 
 ### MOD-D004 · Known Unknowns (The Rumsfeld)
 *Ref: Rumsfeld press conference* · **Tier B** · Cost 2 · Curse 1 · Scope: Shared · Modes: All · **Built**
@@ -921,6 +923,7 @@ Every 10 rounds, and on each capture, a 2×2 smoke cloud appears there for 3 rou
 Each player has a 2×2 Blind Spot they cannot see into. Blind Spots differ per player and move every 15 rounds. Players see the outline of their own Blind Spot.
 
 - Built: spots sit in ranks 3-6 and never overlap. Your own pieces inside your spot stay visible. Bots plan with the same fog, but always know where the enemy King is.
+- Interaction: Footprints and Flashlight. Footprints show in this fog, and a Flashlight sees through it.
 
 ### MOD-D005 · Sus (One Of These Is Lying)
 *Ref: Among Us* · **Tier A** · Cost 3 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -928,6 +931,7 @@ Each player has a 2×2 Blind Spot they cannot see into. Blind Spots differ per p
 One of the owner's pieces looks like a different type to the opponent. It moves like its true self. The King can never be Sus.
 
 - Built: the Sus piece is picked at random from the owner's pieces, and its fake type from pawn, knight, bishop, rook and queen. The opponent's move log shows the fake piece too. The owner sees a "?" badge on it. The disguise ends, with an event, when the piece is captured or promotes.
+- Interaction: Tells. A disguised piece's tell follows the type the opponent sees, so it never gives the disguise away.
 
 ### MOD-D006 · Cat Mode (Night Vision Activated)
 *Ref: cat night vision* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Built**
@@ -973,22 +977,26 @@ Every 8 rounds night falls for 4 rounds. At night, each player sees only within 
 - Synergy: Cat Mode. Works at night too.
 
 ### MOD-D011 · Footprints
-*Ref: CSI* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: CSI* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 When an enemy piece moves out of your sight, it leaves footprints on the square it left for 2 rounds. Only offered once a fog card is in the draft.
 
 *Something walked through here. It had small feet. Viktor suspects a pawn.*
 
 - Draft: gated like Cat Mode, so it is never a dead pick.
+- Built: the fog cards are It's Dark And I'm Scared, Known Unknowns and What's In The Cloud, Bro. Footprints mark the square the piece left when it lands on a square you cannot see. They show even in the fog, and both rounds count from that move.
+- Ruling: only a piece that leaves its square leaves prints. Drops, shoves and pulls leave none. Your own moves never leave prints for you.
 
 ### MOD-D012 · Flashlight
-*Ref: Five Nights at Freddy's* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Five Nights at Freddy's* · **Tier B** · Cost 2 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 Once every 4 of your moves, shine a light on any 3×3 area. You see through fog, smoke and blind spots there for 1 round. It does not use your move. Only offered once a fog card is in the draft.
 
 *Viktor shone the light. Something was there. It was a knight. It was so much worse than a knight.*
 
 - Draft: gated like Cat Mode.
+- Built: select your King and press Flashlight, then tap the middle of the area (never an edge square, so the area is always 3×3). You see through every fog card there through your move and the opponent's reply. The feed tells both players where you shone it. Then it waits 4 of your moves.
+- Ruling: it does not use your move. It is not a move for stalemate, for Commitment Issues, for Roll For Initiative or other must-move cards, or for the move list, and no every-N-moves card counts it. It may be used in check. Bots do not use it.
 
 ### MOD-D013 · Poker Face
 *Ref: Lady Gaga* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Design**
@@ -1031,22 +1039,27 @@ Every 10 rounds the lights go out for one round. Both players make one move with
 - Skill: the warning gives a round to memorise the board.
 
 ### MOD-D017 · Crystal Ball
-*Ref: Fortune tellers* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Fortune tellers* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 You see every timed event two rounds earlier than normal: lava moves, storm waves, gravity shifts, pigeon hops, earthquakes, tides and the like.
 
 *The ball shows lava. The ball always shows lava. This time it is right.*
 
 - Draft: only offered once a card with timed events is in the draft.
+- Built: squares where a timed event lands within the next 2 rounds wear a small violet ball, for you only. Hold the square to see which event and when. Timed cards: The Floor Is Lava, Storm Closes In, Gravitational Anomaly, Hatoful Gambit, The Birds, Tide Goes In and Crop Circles.
+- Ruling: The Cordyceptic Spread and What's In The Cloud, Bro are left out, since infection and clouds follow the moves players make. Known Unknowns is left out too: its blind spots are not a board event.
+- Changed from design: instead of moving each card's own warning earlier, the ball plays the next 2 rounds ahead on a copy of the game with stand-in moves and the same seed. It shows what happens if nothing changes, so a real move can change it. It never marks a square you cannot see.
 
 ### MOD-D018 · Tells
-*Ref: Poker* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Design**
+*Ref: Poker* · **Tier B** · Cost 1 · Curse 0 · Scope: Owner · Modes: All · **Built**
 
 You see a glow on every enemy piece whose ability is ready to use, and the number of turns left on the rest.
 
 *The rook twitched. Viktor knows what a twitching rook means.*
 
 - Draft: only offered once your opponent has an ability card.
+- Built: an enemy piece in sight glows blue when its ability is off cooldown and has a target; otherwise it wears a badge with the turns left. Hold it to read the tell.
+- Ruling: a Sus piece is judged by the type you see, so the tell never gives the disguise away. A ready ability with nothing to aim at (a Moneyball King with no token) shows nothing.
 
 ### MOD-D019 · Spoiler Alert
 *Ref: Spoilers, everywhere* · **Tier A** · Cost 3 · Curse 1 · Scope: Shared · Modes: All · **Design**
@@ -1439,14 +1452,14 @@ Values the game uses today. "Built" cards match the build.
 | C020 | Gotta Go Fast | C | B | 2 | 0 | Owner | Built |
 | D009 | Invisibility Cloak | D | A | 3 | 0 | Owner | Design |
 | D010 | Night Shift | D | A | 3 | 1 | Shared | Design |
-| D011 | Footprints | D | B | 1 | 0 | Owner | Design |
-| D012 | Flashlight | D | B | 2 | 0 | Owner | Design |
+| D011 | Footprints | D | B | 1 | 0 | Owner | Built |
+| D012 | Flashlight | D | B | 2 | 0 | Owner | Built |
 | D013 | Poker Face | D | B | 1 | 0 | Owner | Design |
 | D014 | Shell Game | D | A | 3 | 0 | Owner | Design |
 | D015 | Camouflage | D | A | 3 | 0 | Owner | Design |
 | D016 | Jump Scare | D | B | 2 | 1 | Shared | Design |
-| D017 | Crystal Ball | D | B | 1 | 0 | Owner | Design |
-| D018 | Tells | D | B | 1 | 0 | Owner | Design |
+| D017 | Crystal Ball | D | B | 1 | 0 | Owner | Built |
+| D018 | Tells | D | B | 1 | 0 | Owner | Built |
 | D019 | Spoiler Alert | D | A | 3 | 1 | Shared | Design |
 | D020 | Masquerade | D | S | 4 | 2 | Shared | Design |
 | E009 | Slay Queen (The Amazon) | E | S | 5 | 0 | Owner | Built |
@@ -1462,7 +1475,7 @@ Values the game uses today. "Built" cards match the build.
 | E019 | Knight Rider | E | A | 4 | 0 | Owner | Built |
 | E020 | Elephant In The Room | E | B | -3 | 1 | Owner | Built |
 
-76 of 100 built. The other 24 are designs (v0.4).
+80 of 100 built. The other 20 are designs (v0.4).
 
 ### Balance test plan
 

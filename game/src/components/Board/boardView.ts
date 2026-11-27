@@ -1,5 +1,5 @@
 import type { Color, GameState, Piece, PieceType, Square, TileEffectType } from '@pigeon-chess/game-core';
-import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
+import { getBlindSpot, getConfession, getLavaPreview, getTaxDayPawn, sneezeIn, isBandersnatchActive, getCrownOrders, getShownType, getSusPiece, getSmokeSquares, getSurveillanceSquare, getPigeonHops, getVisibleSquares, getFootprints, getFlashlightSquares, getForecast, getTells, getInfectedReach, getNoFlySquares, getQuietZoneSquares, isFrozenZoneSquare, MODIFIER_IDS } from '@pigeon-chess/game-core';
 
 const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
 const RANKS = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
@@ -59,6 +59,14 @@ export interface SquareView {
   confession?: 'piece' | 'target';
   /** The Floor Is Lava: lava moves here at the next rotation. */
   lavaNext?: boolean;
+  /** Footprints: an enemy piece left this square into the fog. */
+  footprint?: boolean;
+  /** Flashlight: the viewer is lighting this square. */
+  lit?: boolean;
+  /** Crystal Ball: a timed event lands here within 2 rounds. */
+  forecast?: { title: string; rounds: number };
+  /** Tells: this enemy piece's ability is ready (0) or this many turns away. */
+  tell?: number;
   /** Death And Taxes: the tax office takes this pawn after this move. */
   taxed?: boolean;
   /** The Birds: a flock sits here, or lands here next round. */
@@ -117,6 +125,10 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
   const eye = getSurveillanceSquare(state);
   const smoke = getSmokeSquares(state);
   const lavaNext = new Set(getLavaPreview(state));
+  const footprints = new Set(viewer ? getFootprints(state, viewer) : []);
+  const lit = new Set(viewer ? getFlashlightSquares(state, viewer) : []);
+  const forecast = viewer ? getForecast(state, viewer) : new Map();
+  const tells = viewer ? getTells(state, viewer) : new Map<Square, number>();
   const taxed = getTaxDayPawn(state);
   const sneezes = { white: sneezeIn(state, 'white'), black: sneezeIn(state, 'black') };
   const ownSus = viewer ? getSusPiece(state, viewer) : null;
@@ -173,6 +185,10 @@ export function buildSquareViews(input: BoardViewInput): SquareView[] {
         ...(eye === square ? { surveillance: true } : {}),
         ...(smoke.has(square) ? { smoke: smoke.get(square) } : {}),
         ...(lavaNext.has(square) ? { lavaNext: true } : {}),
+        ...(footprints.has(square) ? { footprint: true } : {}),
+        ...(lit.has(square) ? { lit: true } : {}),
+        ...(forecast.has(square) ? { forecast: forecast.get(square) } : {}),
+        ...(tells.has(square) ? { tell: tells.get(square) } : {}),
         ...(!hidden && taxed === square ? { taxed: true } : {}),
         ...(ownSus && real?.id === ownSus.pieceId ? { susAs: ownSus.shownAs } : {}),
         ...(mirrorEdge && file === 'd' ? { mirrorEdge } : {}),
