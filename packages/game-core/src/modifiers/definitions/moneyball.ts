@@ -8,7 +8,9 @@ import { MODIFIER_IDS } from '../ids';
 const ID = MODIFIER_IDS.moneyball;
 const FILES = 'abcdefgh';
 /** Most Mercenary Tokens a side can hold. */
-export const MAX_TOKENS = 3;
+export const MAX_TOKENS = 1;
+/** Drops land only on the owner's first three ranks. */
+const HOME_RANKS: Record<Color, string> = { white: '123', black: '678' };
 
 interface Ledger {
   tokens: number;
@@ -44,10 +46,10 @@ function dropState(state: GameState, color: Color, type: PieceType, to: Square):
   return next;
 }
 
-/** Pool types that may land on `to`: empty, on the board, no pawn on rank 1 or 8, no check. */
+/** Pool types that may land on `to`: empty, on the owner's first three ranks, no pawn on rank 1 or 8, no check. */
 function dropChoices(state: GameState, color: Color, to: Square): PieceType[] {
   const ledger = getMoneyballLedger(state, color);
-  if (ledger.tokens < 1 || state.pieces.has(to) || state.tiles.get(to)?.isVoid) return [];
+  if (ledger.tokens < 1 || !HOME_RANKS[color].includes(to[1]) || state.pieces.has(to) || state.tiles.get(to)?.isVoid) return [];
   const types = [...new Set(ledger.pool)];
   return types.filter(type => {
     if (type === 'pawn' && (to[1] === '1' || to[1] === '8')) return false;
@@ -63,7 +65,8 @@ function allSquares(): Square[] {
 
 /**
  * MOD-E008: lost pieces earn Mercenary Tokens. The owner's King spends one
- * (it costs the turn) to drop a lost piece back onto an empty square.
+ * (it costs the turn) to drop a lost piece back onto an empty square in
+ * its first three ranks.
  */
 export const moneyballDef: ModifierDefinition = {
   id: ID,
@@ -76,7 +79,7 @@ export const moneyballDef: ModifierDefinition = {
 
   ability: {
     label: 'Buy back',
-    hint: 'Spend a Mercenary Token to drop a lost piece on an empty square. It cannot give check. Costs your turn.',
+    hint: 'Spend your Mercenary Token to drop a lost piece on an empty square in your first three ranks. It cannot give check. Costs your turn.',
     pieceTypes: ['king'],
     cooldown: 0,
     getTargets(state, king) {
@@ -120,7 +123,7 @@ export const moneyballDef: ModifierDefinition = {
     if (move.ability !== ID) return { blocked: false };
     const choices = dropChoices(state, move.playerColor, move.to);
     if (move.dropType ? choices.includes(move.dropType) : choices.length > 0) return { blocked: false };
-    return { blocked: true, reason: 'That piece cannot be dropped there. A drop may not give check.' };
+    return { blocked: true, reason: 'That piece cannot be dropped there. Drops land in your first three ranks and may not give check.' };
   },
 
   onCapture(state, _move, captured) {

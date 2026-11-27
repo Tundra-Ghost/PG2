@@ -43,7 +43,7 @@ export const MODIFIER_SUMMARIES: Record<string, string> = {
   'MOD-E005': 'When one of your bishops moves, the other slides the same way.',
   'MOD-E006': 'One piece is a Berserker that captures twice in a row.',
   'MOD-E007': 'Pawns can\'t become queens, but promoted pieces capture twice.',
-  'MOD-E008': 'Lost pieces earn tokens to buy them back onto the board.',
+  'MOD-E008': 'Lose a piece, earn a token: buy one back onto your first three ranks.',
 
   // Design cards (not built yet)
   'MOD-A009': 'A flock lands on empty squares every few rounds and blocks them.',
