@@ -4,6 +4,7 @@ import { pieceAttackSquares } from './moveGenerator';
 import { getHiddenPieceIds } from './visibility';
 import { revealHiddenPieces } from './gameLoop';
 import { isSwampSquare } from '../modifiers/definitions/swamp';
+import { getShownType } from '../modifiers/definitions/sus';
 
 const SWAMP_ID = 'MOD-A006';
 
@@ -45,7 +46,9 @@ export type Bumped = Set<string>;
 export function slidePieceSafely(next: GameState, from: Square, to: Square | null, bumped?: Bumped): boolean {
   const piece = next.pieces.get(from);
   if (!piece) return false;
-  if (!canMovePieceTo(next, piece, to)) {
+  // Sus: the pawn rank rule uses the type the opponent sees, so a slide never gives a disguise away.
+  const shownType = getShownType(next, piece, piece.color === 'white' ? 'black' : 'white');
+  if (!canMovePieceTo(next, piece, to, { shownType })) {
     const blocker = to ? next.pieces.get(to) : undefined;
     // Any hidden blocker, of either side: a stalled slide shows its opponent something is there.
     if (blocker && bumped && getHiddenPieceIds(next, blocker.color === 'white' ? 'black' : 'white').has(blocker.id)) bumped.add(blocker.id);

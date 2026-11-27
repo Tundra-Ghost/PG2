@@ -102,6 +102,7 @@ const OWN_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
  * sit there, and the belts move the same squares at the same time.
  * Let It Go makes c3 to f6 ice: the Swamp, the portals and the tide sit on it
  * and change how far a piece may go there.
+ * Shake It Off and Gravitational Anomaly both shove the whole board on a timer.
  * One Way Street: Bandersnatch mirrors the c-file onto the f-file, so every
  * copied move along them would go against the arrow.
  */
@@ -123,6 +124,7 @@ const MATCH_CONFLICTS: ReadonlyArray<readonly [string, string]> = [
   [MODIFIER_IDS.letItGo, MODIFIER_IDS.thisIsMySwamp],
   [MODIFIER_IDS.letItGo, MODIFIER_IDS.thinkingWithPortals],
   [MODIFIER_IDS.letItGo, MODIFIER_IDS.tideGoesIn],
+  [MODIFIER_IDS.shakeItOff, MODIFIER_IDS.gravitationalAnomaly],
 ];
 
 /** The card in either draft that rules this one out of the match, if any. */

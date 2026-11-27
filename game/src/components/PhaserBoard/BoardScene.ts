@@ -243,6 +243,7 @@ export class BoardScene extends Phaser.Scene {
       // Drawn over the fog: both players always see the eye and the Roomba.
       if (view.surveillance) this.drawEye(cx, cy);
       if (view.roomba) this.drawRoomba(view.roomba, cx, cy);
+      if (view.quake) this.drawQuake(view.quake, cx, cy);
       if (view.burst) this.playBurst(view, cx, cy);
 
       if (view.isLegalTarget) {
@@ -725,6 +726,20 @@ export class BoardScene extends Phaser.Scene {
     g.lineStyle(4, 0x0c3a78, 0.4);
     for (const side of [-1, 1]) {
       g.lineBetween(tx, ty, tx - dx * len * 1.6 + dy * side * len * 1.4, ty - dy * len * 1.6 + dx * side * len * 1.4);
+    }
+  }
+
+  /** Shake It Off: an orange arrow at the edge of the square, pointing where the quake moves the piece. */
+  private drawQuake({ dx, dy }: { dx: number; dy: number }, cx: number, cy: number) {
+    const g = this.fogLayer;
+    const len = Math.hypot(dx, dy);
+    const ux = dx / len, uy = dy / len;
+    const tip = CELL * 0.46, tail = CELL * 0.24, head = CELL * 0.1;
+    const tx = cx + ux * tip, ty = cy + uy * tip;
+    g.lineStyle(4, 0xb35900, 0.95);
+    g.lineBetween(cx + ux * tail, cy + uy * tail, tx, ty);
+    for (const side of [-1, 1]) {
+      g.lineBetween(tx, ty, tx - ux * head + uy * side * head, ty - uy * head - ux * side * head);
     }
   }
 
