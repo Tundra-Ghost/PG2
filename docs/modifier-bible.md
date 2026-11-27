@@ -1026,7 +1026,7 @@ Your opponent's move log shows only the squares your pieces moved to, not which 
 
 - Ruling: the board itself is unchanged. This only hides the bookkeeping.
 - Why: punishes players who read the log instead of the board.
-- Built: display only, in game-core (getShownNotation), so online play and bots read the same text. The opponent's move list and match feed show only the square, such as "e5", or "e5+" with check (the board shows check anyway). No "x", no piece letter. Your own view of your moves is unchanged.
+- Built: display only, in game-core (getShownNotation), so online play and bots read the same text. The opponent's move list and match feed show only the square, such as "e5", or "e5+" with check (the board shows check anyway). No "x", no piece letter. Your own view of your moves is unchanged. Castling shows only the King's square; a promotion shows only the square (the board shows the new piece).
 - Changed from design: there is no captured-pieces tray in this build, so there is nothing else to hide. If a tray is added, it must hide the owner's captures from the opponent.
 
 ### MOD-D014 · Shell Game
