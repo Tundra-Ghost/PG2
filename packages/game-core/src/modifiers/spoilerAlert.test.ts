@@ -111,4 +111,25 @@ describe('MOD-D019 Spoiler Alert', () => {
     state.modifierState = { ...state.modifierState, [ID]: { white: 'white-king-e1' } };
     expect(chessEngine.validateMove(state, move('e1', 'g1', 'white', { isCastle: 'kingside' })).valid).toBe(true);
   });
+
+  // #238: a non-free ability is a move, so the mark sent with it is stored.
+  it('stores the mark sent with an ability move', () => {
+    let state = start([makePiece('king', 'white', 'd4'), makePiece('king', 'black', 'h8'), makePiece('knight', 'white', 'b1'),
+      makePiece('pawn', 'black', 'a7')], [{ id: MODIFIER_IDS.runForrestRun, sourceColor: 'white' }]);
+    state = chessEngine.applyMove(state, move('d4', 'd6', 'white', { ability: MODIFIER_IDS.runForrestRun, spoiler: 'b1' }));
+    expect(state.pieces.get('d6')?.type).toBe('king');
+    expect(getSpoilerMarks(state, 'white')).toEqual([{ square: 'b1', color: 'white' }]);
+  });
+
+  // #238: Forgive Me turns a confessing piece's move into a declaration; the mark must survive.
+  it('keeps the mark when Forgive Me turns the move into a declaration', () => {
+    let state = start([makePiece('king', 'white', 'a1'), makePiece('bishop', 'white', 'c1'), makePiece('rook', 'white', 'b2'),
+      makePiece('king', 'black', 'h8'), makePiece('knight', 'black', 'f4'), makePiece('pawn', 'black', 'a7')],
+    [{ id: MODIFIER_IDS.forgiveMe, sourceColor: 'white' }]);
+    state = chessEngine.applyMove(state, move('c1', 'f4', 'white', { ability: MODIFIER_IDS.forgiveMe, spoiler: 'b2' }));
+    expect(getSpoilerMarks(state, 'white').filter(mark => mark.color === 'white')).toEqual([{ square: 'b2', color: 'white' }]);
+    state = chessEngine.applyMove(state, move('f4', 'e6', 'black', { spoiler: 'a7' }));
+    expect(state.pieces.get('f4')?.type).toBe('knight');
+    expect(getSpoilerMarks(state, 'black').filter(mark => mark.color === 'black')).toEqual([{ square: 'a7', color: 'black' }]);
+  });
 });

@@ -112,6 +112,8 @@ export const spoilerAlertDef: ModifierDefinition = {
     return { blocked: false };
   },
 
+  // A non-free ability is a move too, so its mark is stored (#238).
+  preMoveApplyOnAbilities: true,
   onPreMoveApply(state, move) {
     if (!needsSpoilerMark(state, move)) return { state, move };
     // Without a mark, the piece that moves is marked.

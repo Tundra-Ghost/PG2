@@ -91,6 +91,12 @@ export interface ModifierDefinition {
   /** Called after validation, before board update — can mutate the move. */
   onPreMoveApply?: (state: GameState, move: Move) => PreMoveApplyResult;
 
+  /**
+   * Ability moves skip onPreMoveApply. Set this for a card whose onPreMoveApply
+   * must also see them (Spoiler Alert stores the mark sent with any move).
+   */
+  preMoveApplyOnAbilities?: boolean;
+
   /** Called after a capture occurs (state is post-move). */
   onCapture?: (state: GameState, move: Move, captured: Piece) => GameState;
 
