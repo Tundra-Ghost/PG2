@@ -122,7 +122,8 @@ export const forgiveMeDef: ModifierDefinition = {
     const c = getConfession(state);
     if (!c || c.declared || c.square !== move.from || isInCheck(state, c.color)) return { state, move };
     // First move of a confessing piece: declare it instead (see ability.apply).
-    return { state, move: { from: move.from, to: move.to, playerColor: move.playerColor, ability: ID } };
+    // Keep the player's Spoiler Alert mark (#238).
+    return { state, move: { from: move.from, to: move.to, playerColor: move.playerColor, ability: ID, ...(move.spoiler !== undefined ? { spoiler: move.spoiler } : {}) } };
   },
 
   onPostMove(state, move) {

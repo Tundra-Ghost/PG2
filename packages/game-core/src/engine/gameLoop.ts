@@ -217,6 +217,9 @@ export function runPreMoveApplyHooks(
   let nextMove = { ...move };
 
   for (const def of getActiveDefinitions(state)) {
+    // Abilities skip onPreMoveApply (they already are a rule-bending move), unless the card opts in.
+    // This checks the move as sent on purpose: a plain move a card rewrites into an ability (Forgive Me) still runs every hook.
+    if (move.ability && !def.preMoveApplyOnAbilities) continue;
     if (def.onPreMoveApply) {
       const result = def.onPreMoveApply(nextState, nextMove);
       nextState = result.state;
@@ -596,8 +599,7 @@ export function runTurnReadyHooks(state: GameState): GameState {
 }
 
 function applyMoveOnce(state: GameState, move: Move): GameState {
-  // Abilities skip onPreMoveApply: they already are a rule-bending move.
-  const prepared = move.ability ? { state: cloneState(state), move: { ...move } } : runPreMoveApplyHooks(state, move);
+  const prepared = runPreMoveApplyHooks(state, move);
   const preparedState = prepared.state;
   const preparedMove = prepared.move;
   const pieceMoved = preparedState.pieces.get(preparedMove.from)!;
