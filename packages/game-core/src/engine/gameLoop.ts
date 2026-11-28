@@ -218,6 +218,7 @@ export function runPreMoveApplyHooks(
 
   for (const def of getActiveDefinitions(state)) {
     // Abilities skip onPreMoveApply (they already are a rule-bending move), unless the card opts in.
+    // This checks the move as sent on purpose: a plain move a card rewrites into an ability (Forgive Me) still runs every hook.
     if (move.ability && !def.preMoveApplyOnAbilities) continue;
     if (def.onPreMoveApply) {
       const result = def.onPreMoveApply(nextState, nextMove);

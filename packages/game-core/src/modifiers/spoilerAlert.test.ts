@@ -123,9 +123,11 @@ describe('MOD-D019 Spoiler Alert', () => {
 
   // #238: Forgive Me turns a confessing piece's move into a declaration; the mark must survive.
   it('keeps the mark when Forgive Me turns the move into a declaration', () => {
-    let state = start([makePiece('king', 'white', 'a1'), makePiece('bishop', 'white', 'c1'), makePiece('rook', 'white', 'b2'),
-      makePiece('king', 'black', 'h8'), makePiece('knight', 'black', 'f4'), makePiece('pawn', 'black', 'a7')],
-    [{ id: MODIFIER_IDS.forgiveMe, sourceColor: 'white' }]);
+    // Forgive Me first in draft order, so it rewrites the move before Spoiler Alert stores the mark.
+    let state = chessEngine.beginTurn(chessEngine.activateDraftModifiers(makeEmptyState([makePiece('king', 'white', 'a1'),
+      makePiece('bishop', 'white', 'c1'), makePiece('rook', 'white', 'b2'), makePiece('king', 'black', 'h8'),
+      makePiece('knight', 'black', 'f4'), makePiece('pawn', 'black', 'a7')]),
+    [{ id: MODIFIER_IDS.forgiveMe, sourceColor: 'white' }, { id: ID, sourceColor: null }]));
     state = chessEngine.applyMove(state, move('c1', 'f4', 'white', { ability: MODIFIER_IDS.forgiveMe, spoiler: 'b2' }));
     expect(getSpoilerMarks(state, 'white').filter(mark => mark.color === 'white')).toEqual([{ square: 'b2', color: 'white' }]);
     state = chessEngine.applyMove(state, move('f4', 'e6', 'black', { spoiler: 'a7' }));
